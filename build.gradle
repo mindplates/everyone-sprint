@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.mindplates'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '1.8'
 
 configurations {
     compileOnly {
@@ -40,3 +40,8 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+springBoot {
+    buildInfo()
+}
+
