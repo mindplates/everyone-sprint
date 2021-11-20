@@ -1,0 +1,16 @@
+.app-wrapper {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+
+  > div {
+    &.app-header,
+    &.app-footer {
+      flex-grow: 0;
+    }
+
+    &.app-content {
+      flex-grow: 1;
+    }
+  }
+}

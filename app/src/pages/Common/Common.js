@@ -65,7 +65,6 @@ class Common extends React.Component {
 
   getSystemInfo = () => {
     const { setSystemInfo: setSystemInfoReducer } = this.props;
-    console.log(1);
     request.get('/api/common/system/info', null, (data) => {
       setSystemInfoReducer(data);
     });

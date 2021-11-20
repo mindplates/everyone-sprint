@@ -4,10 +4,12 @@ import {
   SET_CONFIRM,
   SET_LOADING,
   SET_MESSAGE,
+  SET_SETTING,
   SET_SUPPORTED,
   SET_SYSTEM_INFO,
   SET_USER_AND_GRP,
 } from '../actions';
+import storage from '@/utils/storage';
 
 const userState = {
   user: null,
@@ -126,6 +128,25 @@ const systemInfo = (state = systemInfoState, action) => {
   }
 };
 
+const storageSetting = storage.getCategory('setting');
+
+const settingState = {
+  footer: true,
+  ...storageSetting,
+};
+
+const setting = (state = settingState, action) => {
+  switch (action.type) {
+    case SET_SETTING:
+      const obj = {};
+      obj[action.key] = action.value;
+      storage.setItem('setting', action.key, action.value);
+      return { ...state, ...obj };
+    default:
+      return state;
+  }
+};
+
 const reducers = combineReducers({
   supported,
   user,
@@ -133,6 +154,7 @@ const reducers = combineReducers({
   loading,
   confirm,
   systemInfo,
+  setting,
 });
 
 export default reducers;
