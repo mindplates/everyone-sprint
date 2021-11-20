@@ -1,0 +1,56 @@
+@import '~bootstrap/scss/bootstrap.scss';
+@import 'fonts/fontawesome-free-5.15.4/css/all.css';
+
+@font-face {
+  font-family: 'pretendard';
+  font-weight: 100;
+  src: url('fonts/pretendard/Pretendard-Light.woff');
+}
+
+@font-face {
+  font-family: 'pretendard';
+  font-weight: 400;
+  src: url('fonts/pretendard/Pretendard-Regular.woff');
+}
+
+@font-face {
+  font-family: 'pretendard';
+  font-weight: 700;
+  src: url('fonts/pretendard/Pretendard-Bold.woff');
+}
+
+@font-face {
+  font-family: 'plex';
+  font-weight: 100;
+  src: url('fonts/ibm-plex-sans-kr/IBMPlexSansKR-Light.ttf');
+}
+
+@font-face {
+  font-family: 'plex';
+  font-weight: 400;
+  src: url('fonts/ibm-plex-sans-kr/IBMPlexSansKR-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'plex';
+  font-weight: 700;
+  src: url('fonts/ibm-plex-sans-kr/IBMPlexSansKR-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'tway';
+  src: url('fonts/tway-air/tway_air.ttf');
+}
+
+body {
+  margin: 0;
+  font-family: plex, pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}

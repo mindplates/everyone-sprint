@@ -35,3 +35,15 @@ out/
 
 ### VS Code ###
 .vscode/
+
+app/node_modules
+app/build
+app/npm-debug.log*
+app/yarn-debug.log*
+app/yarn-error.log*
+
+app/.DS_Store
+app/.env.local
+app/.env.development.local
+app/.env.test.local
+app/.env.production.local

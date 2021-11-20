@@ -1,0 +1,47 @@
+.common-wrapper {
+  .common-message {
+    padding: 2rem 0;
+    background-color: $white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.2);
+
+    .message-category {
+      font-size: 3rem;
+      line-height: 0;
+      margin-bottom: 0.5rem;
+
+      @media (max-width: 992px) {
+        font-size: 2.4rem;
+      }
+
+      &.ERROR {
+        color: $danger;
+      }
+    }
+
+    .message-title {
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+
+      @media (max-width: 992px) {
+        font-size: 1.1em;
+      }
+
+      &:before {
+        content: '<';
+        font-size: 1.4rem;
+      }
+      &:after {
+        content: '>';
+        font-size: 1.4rem;
+      }
+    }
+
+    .message-message {
+      margin-bottom: 1rem;
+      padding: 0 1rem;
+    }
+  }
+}
