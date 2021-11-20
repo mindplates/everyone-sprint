@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { HistoryPropTypes } from '@/proptypes';
-import './Main.scss';
+import './Header.scss';
 
-const Main = (props) => {
+const Header = (props) => {
   const { systemInfo } = props;
 
   useEffect(() => {}, []);
 
   return (
     <div className="main-wrapper">
-      MAIN
+      Header
     </div>
   );
 };
@@ -22,9 +22,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(Main);
+export default connect(mapStateToProps, undefined)(Header);
 
-Main.propTypes = {
+Header.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       promotionId: PropTypes.string,

@@ -5,6 +5,7 @@ export const SET_SUPPORTED = 'SET_SUPPORTED';
 export const SET_LOADING = 'SET_LOADING';
 export const SET_CONFIRM = 'SET_CONFIRM';
 export const SET_SYSTEM_INFO = 'SET_SYSTEM_INFO';
+export const SET_SETTING = 'SET_SETTING';
 
 export function setUserInfo(user, grps, shareCount) {
   return {
@@ -49,6 +50,14 @@ export function setSystemInfo(systemInfo) {
   return {
     type: SET_SYSTEM_INFO,
     systemInfo,
+  };
+}
+
+export function setSetting(key, value) {
+  return {
+    type: SET_SETTING,
+    key,
+    value,
   };
 }
 

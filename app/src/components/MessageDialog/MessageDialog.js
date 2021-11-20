@@ -102,11 +102,11 @@ class MessageDialog extends React.PureComponent {
             <div>
               {(noHandler || type === 'confirm') && (
                 <Button className="px-4 mx-1" color="white" outline onClick={this.onNoButtonClick}>
-                  {t('label.button.cancel')}
+                  {t('취소')}
                 </Button>
               )}
               <Button className="px-4 mx-1" color="primary" onClick={this.onOkButtonClick}>
-                {t('label.button.confirm')}
+                {t('확인')}
               </Button>
             </div>
           </div>

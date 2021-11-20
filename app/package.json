@@ -1,5 +1,5 @@
 {
-  "name": "everyone-sprint",
+  "name": "everyone-sprint-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -62,6 +62,7 @@
     "react-redux": "^7.2.6",
     "react-refresh": "^0.8.3",
     "react-router-dom": "^5",
+    "react-stomp": "^5.1.0",
     "react-tooltip": "^4.2.21",
     "reactstrap": "^9.0.1",
     "recompose": "^0.30.0",

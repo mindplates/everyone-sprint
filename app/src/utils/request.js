@@ -62,7 +62,7 @@ function processError(error, failHandler) {
   }
 
   if (!completeHandliing && (!error.response || !error.response.status)) {
-    dialog.setMessage(MESSAGE_CATEGORY.ERROR, 'NETWORK ERROR', i18n.t('message.networkError'));
+    dialog.setMessage(MESSAGE_CATEGORY.ERROR, 'NETWORK ERROR', i18n.t('네트워크 오류'));
   } else if (!completeHandliing && error && error.response) {
     switch (error.response.status) {
       case 400: {

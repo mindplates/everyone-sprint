@@ -20,7 +20,7 @@ public class CommonController {
     @GetMapping("/system/info")
     @Operation(summary = "API 버전 조회", description = "API 버전 조회")
     public SystemInfo selectSystemInfo() {
-        return SystemInfo.builder().version(buildProperties.getVersion()).build();
+        return SystemInfo.builder().version(buildProperties.getVersion()).name(buildProperties.getName()).build();
     }
 
 

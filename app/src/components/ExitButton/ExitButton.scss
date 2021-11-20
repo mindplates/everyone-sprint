@@ -1,0 +1,61 @@
+.exit-button-wrapper {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+
+  &.size-xs {
+    width: 22px;
+    height: 22px;
+  }
+
+  &.size-sm {
+    width: 28px;
+    height: 28px;
+  }
+
+  &.size-md {
+    width: 35px;
+    height: 35px;
+  }
+
+  &.size-lg {
+    width: 44px;
+    height: 44px;
+  }
+
+  > div.x-1 {
+    width: 140%;
+    height: 140%;
+    border-right: 1px solid $white;
+    transform: rotate(45deg);
+    position: absolute;
+    top: -68%;
+    left: -69%;
+    transform-origin: 50% 50%;
+  }
+
+  > div.x-2 {
+    width: 140%;
+    height: 140%;
+    border-right: 1px solid $white;
+    transform: rotate(-45deg);
+    position: absolute;
+    top: 29%;
+    left: -68%;
+    transform-origin: 50% 50%;
+  }
+
+  &.color-white {
+    > div.x-1,
+    > div.x-2 {
+      border-right: 1px solid $white;
+    }
+
+    &:hover {
+      > div.x-1,
+      > div.x-2 {
+        border-color: $yellow !important;
+      }
+    }
+  }
+}

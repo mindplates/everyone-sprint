@@ -1,4 +1,5 @@
 @import '~bootstrap/scss/bootstrap.scss';
+@import 'styles/project-custom';
 @import 'fonts/fontawesome-free-5.15.4/css/all.css';
 
 @font-face {
@@ -49,6 +50,12 @@ body {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
 }
 
 code {
