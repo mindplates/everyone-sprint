@@ -1,2 +1,82 @@
-.main-wrapper {
+.header-wrapper {
+  height: 50px;
+  display: flex;
+  width: 100%;
+  background-color: #333;
+  background-color: $primary;
+  background-color: #40404f;
+
+  &.header-wrapper,
+  > div > .product-logo > a,
+  > div > .top-menu ul li > a,
+  > div > .top-button > button {
+    color: $white;
+  }
+
+  > div {
+    align-self: center;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    max-width: $wrapper-width;
+    margin: 0 auto;
+
+    > .product-logo {
+      > a {
+        height: 100%;
+        display: block;
+        padding: 0 1rem;
+      }
+    }
+
+    > .top-menu {
+      flex-grow: 1;
+      align-self: center;
+      height: 100%;
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        align-self: center;
+        height: 100%;
+        display: inline-block;
+
+        li {
+          display: inline-block;
+          height: 100%;
+
+          > a {
+            display: inline-flex;
+            height: 100%;
+            text-decoration: none;
+
+            > span {
+              align-self: center;
+              padding: 0 1.5rem;
+            }
+          }
+
+          &.selected {
+            background-color: $white;
+
+            > a {
+              color: $black;
+              > span {
+                padding: 0 2rem;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    > .top-button {
+      flex-grow: 0;
+
+      > button {
+        height: 100%;
+      }
+    }
+  }
 }

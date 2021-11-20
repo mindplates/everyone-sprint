@@ -5,5 +5,6 @@ import Overlay from '@/components/Overlay/Overlay';
 import CompanyLogo from '@/components/CompanyLogo/CompanyLogo';
 import Liner from '@/components/Liner/Liner';
 import ExitButton from '@/components/ExitButton/ExitButton';
+import ProductLogo from '@/components/ProductLogo/ProductLogo';
 
-export { MessageDialog, SocketClient, Button, Overlay, CompanyLogo, Liner, ExitButton };
+export { MessageDialog, SocketClient, Button, Overlay, CompanyLogo, Liner, ExitButton, ProductLogo };

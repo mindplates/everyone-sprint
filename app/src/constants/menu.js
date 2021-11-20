@@ -1,41 +1,41 @@
 const MENU = {
   issues: {
-    name: '이슈',
+    name: '메뉴1',
     enabled: true,
-    subMenuType: 'category',
+    subMenuType: 'menu1',
     submenus: [],
   },
   clips: {
-    name: '클립',
+    name: '메뉴2',
     enabled: true,
-    subMenuType: 'category',
+    subMenuType: 'menu2',
     submenus: [],
   },
   hashtags: {
-    name: '해슈태그',
+    name: '메뉴3',
     enabled: false,
     submenus: [],
   },
   scraps: {
-    name: 'MY 스크랩',
+    name: '메뉴4',
     side: 'right',
     enabled: true,
     needLogin: true,
   },
   manage: {
-    name: '관리',
+    name: '메뉴5',
     side: 'right',
     enabled: true,
     adminOnly: true,
     submenus: [
       {
-        code: 'issues',
-        value: '삭제된 이슈',
+        code: 'submenu1',
+        value: '서브 메뉴 1',
         sortOrder: 0,
       },
       {
-        code: 'clips',
-        value: '삭제된 클립',
+        code: 'submenu2',
+        value: '서브 메뉴 2',
         sortOrder: 1,
       },
     ],

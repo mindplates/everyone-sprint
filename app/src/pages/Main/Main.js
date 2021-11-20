@@ -9,11 +9,7 @@ const Main = (props) => {
 
   useEffect(() => {}, []);
 
-  return (
-    <div className="main-wrapper">
-      MAIN
-    </div>
-  );
+  return <div className="main-wrapper"></div>;
 };
 
 const mapStateToProps = (state) => {
