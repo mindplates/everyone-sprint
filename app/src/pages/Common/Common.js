@@ -4,26 +4,12 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import ReactTooltip from 'react-tooltip';
 import PropTypes from 'prop-types';
-import { setSystemInfo, setUserInfo, } from '@/store/actions';
+import { setSystemInfo, setUserInfo } from '@/store/actions';
 import { MessageDialog, SocketClient } from '@/components';
 import request from '@/utils/request';
 import './Common.scss';
 
-const UNAUTH_URLS = {
-  '/': true,
-  '/shares': true,
-  '/topics': true,
-  '/users/register': true,
-  '/users/login': true,
-  '/users/join': true,
-  '/about/terms-and-conditions': true,
-  '/about/privacy-policy': true,
-  '/users/join/success': true,
-};
-
 class Common extends React.Component {
-  initialized = false;
-
   timer = null;
 
   constructor(props) {
@@ -64,9 +50,13 @@ class Common extends React.Component {
   }
 
   getSystemInfo = () => {
-    const { setSystemInfo: setSystemInfoReducer } = this.props;
+    const { setSystemInfo: setSystemInfoReducer, i18n } = this.props;
     request.get('/api/common/system/info', null, (data) => {
       setSystemInfoReducer(data);
+
+      if (1 > 2) {
+        i18n.changeLanguage('en');
+      }
     });
   };
 
@@ -85,24 +75,24 @@ class Common extends React.Component {
   };
 
   render() {
-    const { message, loading, confirm } = this.props;
+    const { message, loading, confirm, setUserInfo: setUserInfoReducer } = this.props;
     const { showLoading } = this.state;
+
+    console.log(setUserInfoReducer);
 
     return (
       <div className="common-wrapper">
-        {false &&
-        <SocketClient
-          topics={['/sub/public']}
-          onMessage={this.onMessage}
-          onConnect={() => {
-          }}
-          onDisconnect={() => {
-          }}
-          setRef={(client) => {
-            this.clientRef = client;
-          }}
-        />
-        }
+        {false && (
+          <SocketClient
+            topics={['/sub/public']}
+            onMessage={this.onMessage}
+            onConnect={() => {}}
+            onDisconnect={() => {}}
+            setRef={(client) => {
+              this.clientRef = client;
+            }}
+          />
+        )}
         {message && message.content && (
           <MessageDialog
             type="message"
@@ -149,7 +139,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setUserInfo: (user, grps, shareCount) => dispatch(setUserInfo(user, grps, shareCount)),
-
 
     setSystemInfo: (systemInfo) => dispatch(setSystemInfo(systemInfo)),
   };

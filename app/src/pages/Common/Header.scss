@@ -1,2 +1,210 @@
-.main-wrapper {
+.header-wrapper {
+  height: 60px;
+  display: flex;
+  width: 100%;
+  background-color: #333;
+  background-color: $primary;
+  background-color: #40404f;
+  background-color: #ffc125;
+  background-color: #353f3e;
+  background-color: #1d88ea;
+  background-color: $header-bg-color;
+  transition: all 0.3s;
+
+  &.collapsed {
+    height: 40px;
+    transition: all 0.3s;
+
+    .top-menu {
+      .icon {
+        opacity: 0;
+        transition: all 0.3s;
+      }
+
+      .text {
+        margin-top: 0;
+        transition: all 0.3s;
+        font-size: 13px;
+      }
+    }
+  }
+
+  &.header-wrapper,
+  > div > .product-logo > a,
+  > div > .top-menu ul li > a,
+  > div > .top-button > button {
+    color: $white;
+  }
+
+  > div {
+    align-self: center;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    max-width: $wrapper-width;
+    margin: 0 auto;
+
+    > .product-logo {
+      flex-grow: 0;
+      padding: 0 1rem;
+      > a {
+        height: 100%;
+        display: block;
+      }
+    }
+
+    > .top-menu {
+      flex: 1 1 0;
+      align-self: center;
+      height: 100%;
+      padding-left: 1rem;
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        align-self: center;
+        height: 100%;
+        display: inline-block;
+
+        li {
+          display: inline-block;
+          height: 100%;
+          vertical-align: top;
+          position: relative;
+          white-space: nowrap;
+
+          &.no-selected {
+            > a:hover {
+              background-color: $header-hover-bg-color;
+              transition: all 0.3s;
+
+              &:hover {
+                > div {
+                  > .icon.groups {
+                    > div {
+                      transition: none;
+                      animation: bouncing 1s;
+                      -moz-animation: bouncing 1s;
+                      -webkit-animation: bouncing 1s;
+                      -o-animation: bouncing 1s;
+                      animation-iteration-count: infinite;
+                      animation-timing-function: linear;
+                    }
+                  }
+
+                  > .icon.sprints {
+                    opacity: 0;
+                    transition: none;
+                    width: auto;
+                    animation: flyLeftToRight 1.5s;
+                    -moz-animation: flyLeftToRight 1.5s;
+                    -webkit-animation: flyLeftToRight 1.5s;
+                    -o-animation: flyLeftToRight 1.5s;
+                    animation-iteration-count: infinite;
+                    animation-timing-function: ease-in-out;
+                    animation-delay: 0.1s;
+                  }
+
+                  > .icon.scrums {
+                    > div {
+                      transition: none;
+                      animation: rotating 0.5s;
+                      -moz-animation: rotating 0.5s;
+                      -webkit-animation: rotating 0.5s;
+                      -o-animation: rotating 0.5s;
+                      animation-iteration-count: infinite;
+                      animation-timing-function: linear;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          > a {
+            display: inline-flex;
+            height: 100%;
+            text-decoration: none;
+
+            > div {
+              align-self: center;
+              padding: 0 1.5rem;
+              transition: all 0.3s;
+
+              > .icon {
+                position: absolute;
+                top: 4px;
+                left: 0;
+                width: 100%;
+                text-align: center;
+                transition: all 0.3s;
+                > div {
+                  display: inline-flex;
+                  font-size: 14px;
+                  width: 24px;
+                  height: 24px;
+                  background-color: rgba(0, 0, 0, 0.4);
+                  background-color: #104e8b;
+                  border-radius: 50%;
+
+                  > span {
+                    width: 100%;
+                    align-self: center;
+                    text-align: center;
+                  }
+                }
+              }
+
+              > .text {
+                font-weight: bold;
+                margin-top: 1rem;
+                transition: all 0.3s;
+                font-size: 14px;
+              }
+            }
+          }
+
+          &.selected {
+            background-color: $white;
+
+            > a {
+              > div {
+                padding: 0 2.5rem;
+                transition: all 0.3s;
+
+                > .icon {
+                  > div {
+                    background-color: #1d88ea;
+                  }
+                }
+
+                > .text {
+                  color: $black;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    > .top-button {
+      flex: 1 1 0;
+      text-align: right;
+      padding-right: 1rem;
+
+      > button {
+        height: 100%;
+
+        &:hover {
+          background-color: $header-hover-bg-color;
+        }
+
+        &:focus {
+          box-shadow: none;
+        }
+      }
+    }
+  }
 }

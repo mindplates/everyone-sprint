@@ -23,8 +23,6 @@ const userState = {
 };
 
 const user = (state = userState, action) => {
-  const currentState = { ...state };
-
   switch (action.type) {
     case SET_USER_AND_GRP:
       return {
@@ -132,13 +130,14 @@ const storageSetting = storage.getCategory('setting');
 
 const settingState = {
   footer: true,
+  collapsed: false,
   ...storageSetting,
 };
 
 const setting = (state = settingState, action) => {
+  const obj = {};
   switch (action.type) {
     case SET_SETTING:
-      const obj = {};
       obj[action.key] = action.value;
       storage.setItem('setting', action.key, action.value);
       return { ...state, ...obj };

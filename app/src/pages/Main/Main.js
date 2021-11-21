@@ -1,19 +1,12 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { HistoryPropTypes } from '@/proptypes';
 import './Main.scss';
 
-const Main = (props) => {
-  const { systemInfo } = props;
-
+const Main = () => {
   useEffect(() => {}, []);
 
-  return (
-    <div className="main-wrapper">
-      MAIN
-    </div>
-  );
+  return <div className="main-wrapper">컨텐츠</div>;
 };
 
 const mapStateToProps = (state) => {
@@ -31,7 +24,7 @@ Main.propTypes = {
       couponId: PropTypes.string,
     }),
   }),
-  history: HistoryPropTypes,
+
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),

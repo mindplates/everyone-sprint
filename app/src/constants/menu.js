@@ -1,44 +1,23 @@
+import React from 'react';
+
 const MENU = {
-  issues: {
-    name: '이슈',
-    enabled: true,
-    subMenuType: 'category',
-    submenus: [],
-  },
-  clips: {
-    name: '클립',
-    enabled: true,
-    subMenuType: 'category',
-    submenus: [],
-  },
-  hashtags: {
-    name: '해슈태그',
+  groups: {
+    icon: <i className="fas fa-igloo" />,
+    name: '그룹',
     enabled: false,
     submenus: [],
   },
-  scraps: {
-    name: 'MY 스크랩',
-    side: 'right',
+  sprints: {
+    icon: <i className="fas fa-plane" />,
+    name: '스프린트',
     enabled: true,
-    needLogin: true,
+    submenus: [],
   },
-  manage: {
-    name: '관리',
-    side: 'right',
+  scrums: {
+    icon: <i className="fas fa-circle-notch" />,
+    name: '스크럼',
     enabled: true,
-    adminOnly: true,
-    submenus: [
-      {
-        code: 'issues',
-        value: '삭제된 이슈',
-        sortOrder: 0,
-      },
-      {
-        code: 'clips',
-        value: '삭제된 클립',
-        sortOrder: 1,
-      },
-    ],
+    submenus: [],
   },
 };
 

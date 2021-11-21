@@ -1,17 +1,67 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { HistoryPropTypes } from '@/proptypes';
+import { SettingPropTypes } from '@/proptypes';
+import MENU from '@/constants/menu';
+import { Button, ProductLogo } from '@/components';
+import { setSetting } from '@/store/actions';
 import './Header.scss';
 
 const Header = (props) => {
-  const { systemInfo } = props;
+  const { setSetting: setSettingReducer, setting, location } = props;
 
   useEffect(() => {}, []);
 
+  const values = (location.pathname.split('/') || []).filter((value) => value);
+  const [currentTopMenu] = values;
+
   return (
-    <div className="main-wrapper">
-      Header
+    <div className={`header-wrapper ${setting.collapsed ? 'collapsed' : ''}`}>
+      <div>
+        <div className="top-menu">
+          <ul>
+            {Object.keys(MENU).map((topMenuKey) => {
+              const menu = MENU[topMenuKey];
+              return (
+                <li key={topMenuKey} className={`${currentTopMenu === topMenuKey ? 'selected' : 'no-selected'}`}>
+                  <Link to={`/${topMenuKey}`}>
+                    <div>
+                      <div className={`icon ${topMenuKey}`}>
+                        <div>
+                          <span>{menu.icon}</span>
+                        </div>
+                      </div>
+                      <div className="text">{menu.name}</div>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <div className="product-logo">
+          <Link to="/">
+            <ProductLogo hover collapsed={setting.collapsed} />
+          </Link>
+        </div>
+        <div className="top-button">
+          <Button
+            color="white"
+            size="lg"
+            outline
+            onClick={() => {
+              setSettingReducer('collapsed', !setting.collapsed);
+            }}
+          >
+            {!setting.collapsed && <i className="fas fa-angle-up" />}
+            {setting.collapsed && <i className="fas fa-angle-down" />}
+          </Button>
+          <Button color="white" size="lg" outline onClick={() => {}}>
+            <i className="fas fa-cog" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -19,10 +69,17 @@ const Header = (props) => {
 const mapStateToProps = (state) => {
   return {
     systemInfo: state.systemInfo,
+    setting: state.setting,
   };
 };
 
-export default connect(mapStateToProps, undefined)(Header);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setSetting: (key, value) => dispatch(setSetting(key, value)),
+  };
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));
 
 Header.propTypes = {
   match: PropTypes.shape({
@@ -31,8 +88,12 @@ Header.propTypes = {
       couponId: PropTypes.string,
     }),
   }),
-  history: HistoryPropTypes,
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }),
+  setting: SettingPropTypes,
+  setSetting: PropTypes.func,
 };

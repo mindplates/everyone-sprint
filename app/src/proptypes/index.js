@@ -6,4 +6,9 @@ const HistoryPropTypes = PropTypes.shape({
   push: PropTypes.func,
 });
 
-export { HistoryPropTypes };
+const SettingPropTypes = PropTypes.shape({
+  footer: PropTypes.bool,
+  collapsed: PropTypes.bool,
+});
+
+export { HistoryPropTypes, SettingPropTypes };

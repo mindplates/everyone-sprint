@@ -1,7 +1,7 @@
 import axios from 'axios';
+import i18n from 'i18next';
 import store from '@/store';
 import { setLoading, setUserInfo } from '@/store/actions';
-import i18n from 'i18next';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialog from '@/utils/dialog';
 

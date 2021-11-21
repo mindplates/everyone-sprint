@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { HistoryPropTypes } from '@/proptypes';
 import { setSetting } from '@/store/actions';
 import { CompanyLogo, ExitButton, Liner } from '@/components';
 import './Footer.scss';
 
-const Footer = ({ className, productName, systemInfo, setSetting }) => {
+const Footer = ({ className, productName, systemInfo, setSetting: setSettingReducer }) => {
   useEffect(() => {}, []);
 
   return (
@@ -37,7 +36,7 @@ const Footer = ({ className, productName, systemInfo, setSetting }) => {
               size="xs"
               color="white"
               onClick={() => {
-                setSetting('footer', false);
+                setSettingReducer('footer', false);
               }}
             />
           </div>
@@ -75,9 +74,9 @@ Footer.propTypes = {
       couponId: PropTypes.string,
     }),
   }),
-  history: HistoryPropTypes,
   systemInfo: PropTypes.shape({
     name: PropTypes.string,
     version: PropTypes.string,
   }),
+  setSetting: PropTypes.func,
 };
