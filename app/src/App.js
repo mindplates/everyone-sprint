@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Common, Footer, Header, Main } from './pages';
 import './App.scss';
+import { SettingPropTypes } from '@/proptypes';
 
 function App({ setting }) {
   return (
@@ -39,4 +40,5 @@ App.propTypes = {
     pathname: PropTypes.string,
     search: PropTypes.string,
   }),
+  setting: SettingPropTypes,
 };

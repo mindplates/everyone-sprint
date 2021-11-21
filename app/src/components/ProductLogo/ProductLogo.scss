@@ -1,44 +1,167 @@
 .product-logo-wrapper {
   text-align: center;
   width: 100%;
+  min-width: 200px;
   height: 100%;
   line-height: 100%;
   position: relative;
   display: flex;
+  background-color: #1874cd;
+
+  &.collapsed {
+    > div {
+      > div {
+        &.logo-icon {
+          font-size: 15px;
+          .hexagon {
+            width: 28px;
+            height: 16.17px;
+            margin: 8.08px 0;
+            transition: all 0.3s;
+          }
+
+          .hexagon:before,
+          .hexagon:after {
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            transition: all 0.3s;
+          }
+
+          .hexagon:before {
+            border-bottom-width: 8.08px;
+            transition: all 0.3s;
+          }
+
+          .hexagon:after {
+            top: 100%;
+            width: 0;
+            border-top-width: 8.08px;
+            transition: all 0.3s;
+          }
+        }
+
+        &.product-name {
+          > div.product-text {
+            > span {
+              font-size: 13px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.hover:hover {
+    background-color: $header-hover-bg-color;
+    transition: all 0.3s;
+    > div {
+      > div {
+        &.logo-icon {
+          .hexagon {
+            transform: rotate(360deg);
+            transition: all 1s;
+          }
+        }
+
+        &.product-name {
+          > div.product-text {
+            > span {
+              _text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            }
+          }
+        }
+      }
+    }
+  }
 
   > div {
     align-self: center;
     width: 100%;
-    display: flex;
     line-height: 100%;
     > div {
-      align-self: center;
-      line-height: 100%;
-    }
-
-    .logo-icon {
-      font-size: 24px;
-      margin-right: 0.5rem;
-
-      > div {
-        display: inline-flex;
+      &.logo-icon {
+        font-size: 20px;
         text-align: center;
-        span {
-          align-self: center;
-          width: 100%;
-          text-align: center;
+
+        .logo-char {
+          font-size: 20px;
+          font-weight: bold;
+          font-family: pretendard, sans-serif;
           line-height: 100%;
         }
+
+        .hexagon {
+          display: inline-block;
+          position: relative;
+          width: 36px;
+          height: 20.78px;
+          background-color: $logo-bg-color;
+          margin: 10.39px 0;
+          z-index: 1;
+          box-shadow: 4px 4px 10px 1px rgba(0, 0, 0, 0.4);
+          transition: all 0.3s;
+        }
+
+        .hexagon:before,
+        .hexagon:after {
+          content: '';
+          position: absolute;
+          width: 0;
+          left: 0;
+          border-left: 18px solid transparent;
+          border-right: 18px solid transparent;
+          transition: all 0.3s;
+        }
+
+        .hexagon:before {
+          bottom: 100%;
+          border-bottom: 10.39px solid $logo-bg-color;
+          transition: all 0.3s;
+        }
+
+        .hexagon:after {
+          top: 100%;
+          width: 0;
+          border-top: 10.39px solid $logo-bg-color;
+          transition: all 0.3s;
+        }
       }
-    }
 
-    .product-name {
-      font-size: 14px;
-      line-height: 100%;
+      &.product-name {
+        line-height: 100%;
+        position: absolute;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        top: 50%;
 
-      > div.product-text {
-        display: inline-block;
-        font-weight: bold;
+        > div.product-text {
+          width: 50%;
+
+          &.product-text-1 {
+            text-align: right;
+            position: absolute;
+            padding-right: 1.5rem;
+            top: -7px;
+            left: 0;
+          }
+
+          &.product-text-2 {
+            text-align: left;
+            position: absolute;
+            top: -7px;
+            right: 0;
+            padding-left: 1.5rem;
+          }
+
+          > span {
+            display: inline-block;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            padding: 0 0.125rem 0.125rem;
+          }
+        }
       }
     }
   }

@@ -1,44 +1,23 @@
+import React from 'react';
+
 const MENU = {
-  issues: {
-    name: '메뉴1',
-    enabled: true,
-    subMenuType: 'menu1',
-    submenus: [],
-  },
-  clips: {
-    name: '메뉴2',
-    enabled: true,
-    subMenuType: 'menu2',
-    submenus: [],
-  },
-  hashtags: {
-    name: '메뉴3',
+  groups: {
+    icon: <i className="fas fa-igloo" />,
+    name: '그룹',
     enabled: false,
     submenus: [],
   },
-  scraps: {
-    name: '메뉴4',
-    side: 'right',
+  sprints: {
+    icon: <i className="fas fa-plane" />,
+    name: '스프린트',
     enabled: true,
-    needLogin: true,
+    submenus: [],
   },
-  manage: {
-    name: '메뉴5',
-    side: 'right',
+  scrums: {
+    icon: <i className="fas fa-circle-notch" />,
+    name: '스크럼',
     enabled: true,
-    adminOnly: true,
-    submenus: [
-      {
-        code: 'submenu1',
-        value: '서브 메뉴 1',
-        sortOrder: 0,
-      },
-      {
-        code: 'submenu2',
-        value: '서브 메뉴 2',
-        sortOrder: 1,
-      },
-    ],
+    submenus: [],
   },
 };
 

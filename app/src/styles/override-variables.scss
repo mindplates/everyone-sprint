@@ -38,7 +38,10 @@ $dropdown-link-hover-color: $white;
 $dropdown-link-hover-bg: $primary;
 $transition-time: 0.3s;
 $border-light: 1px solid rgba(0, 0, 0, 0.1);
-$wrapper-width : 1600px;
+$wrapper-width: 1600px;
+$logo-bg-color: #ff030d;
+$header-bg-color: #1d88ea;
+$header-hover-bg-color: #104e8b;
 
 :export {
   primaryColor: $primary;

@@ -132,6 +132,7 @@ const storageSetting = storage.getCategory('setting');
 
 const settingState = {
   footer: true,
+  collapsed : false,
   ...storageSetting,
 };
 
