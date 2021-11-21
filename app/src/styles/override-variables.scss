@@ -1,49 +1,12 @@
-$white: #fff;
-$gray-100: #fafafa;
-$gray-200: #f9f8fc;
-$gray-300: #ededed;
-$gray-400: #cbc8d0;
-$gray-500: #adb5bd;
-$gray-600: #868e96;
-$gray-700: #444;
-$gray-800: #343a40;
-$gray-900: #17141f;
-$black: #333;
-$blue: #007bff;
-$indigo: #6610f2;
-$purple: #593196;
-$pink: #e83e8c;
-$red: #ff2b2b;
-$orange: #ffa500;
-$yellow: #ffbf00;
-$green: #13b955;
-$teal: #20c997;
-$cyan: #009cdc;
-$primary: rgb(11, 154, 223);
-$secondary: #324e5c;
-$success: $green;
-$info: $cyan;
-$warning: $yellow;
-$danger: $red;
-$light: $gray-200;
-$dark: $gray-900;
-$enable-rounded: false;
-$main-color: $primary;
-$link-hover-color: $primary;
-$font-size-base: 0.875rem;
-$table-border-color: rgba(0, 0, 0, 0.3);
-$input-focus-border-color: $primary;
-$dropdown-link-color: $gray-700;
-$dropdown-link-hover-color: $white;
-$dropdown-link-hover-bg: $primary;
-$transition-time: 0.3s;
-$border-light: 1px solid rgba(0, 0, 0, 0.1);
+$min-contrast-ratio: 2.5;
 $wrapper-width: 1600px;
 $logo-bg-color: #ff030d;
 $header-bg-color: #1d88ea;
 $header-hover-bg-color: #104e8b;
+$primary: rgb(11, 154, 223);
+
+@import '~bootstrap/scss/bootstrap.scss';
 
 :export {
   primaryColor: $primary;
-  white: $white;
 }
