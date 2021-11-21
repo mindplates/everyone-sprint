@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { HistoryPropTypes } from '@/proptypes';
+import { SettingPropTypes } from '@/proptypes';
 import MENU from '@/constants/menu';
 import { Button, ProductLogo } from '@/components';
 import { setSetting } from '@/store/actions';
 import './Header.scss';
 
 const Header = (props) => {
-  const { setSetting, setting, location } = props;
+  const { setSetting: setSettingReducer, setting, location } = props;
 
   useEffect(() => {}, []);
 
@@ -51,7 +51,7 @@ const Header = (props) => {
             size="lg"
             outline
             onClick={() => {
-              setSetting('collapsed', !setting.collapsed);
+              setSettingReducer('collapsed', !setting.collapsed);
             }}
           >
             {!setting.collapsed && <i className="fas fa-angle-up" />}
@@ -88,11 +88,12 @@ Header.propTypes = {
       couponId: PropTypes.string,
     }),
   }),
-  history: HistoryPropTypes,
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),
   location: PropTypes.shape({
     pathname: PropTypes.string,
   }),
+  setting: SettingPropTypes,
+  setSetting: PropTypes.func,
 };
