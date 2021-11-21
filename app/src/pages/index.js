@@ -1,6 +1,6 @@
-import Main from './Main/Main';
+import PublicPark from './PublicPark/PublicPark';
 import Common from './Common/Common';
 import Header from './Common/Header';
 import Footer from './Common/Footer';
 
-export { Main, Common, Header, Footer };
+export { PublicPark, Common, Header, Footer };

@@ -1,0 +1,26 @@
+.page-title-wrapper {
+  display: flex;
+  margin-bottom: 0.5rem;
+
+  > div {
+    align-self: center;
+
+    &.bullet {
+      margin-right: 0.5rem;
+      > span {
+        display: inline-block;
+        height: 12px;
+        width: 4px;
+        background-color: $primary;
+      }
+    }
+
+    &.text {
+      > span {
+        font-size: 20px;
+        font-weight: bold;
+        font-family: pretendard, sans-serif;
+      }
+    }
+  }
+}

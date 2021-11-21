@@ -2,6 +2,7 @@
   display: flex;
   height: 100%;
   flex-direction: column;
+  background-color: $light;
 
   > div {
     &.app-header,
@@ -11,6 +12,9 @@
 
     &.app-content {
       flex-grow: 1;
+      max-width: $wrapper-width;
+      width: 100%;
+      margin: 0 auto;
     }
   }
 }
