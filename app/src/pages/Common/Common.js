@@ -78,7 +78,10 @@ class Common extends React.Component {
     const { message, loading, confirm, setUserInfo: setUserInfoReducer } = this.props;
     const { showLoading } = this.state;
 
-    console.log(setUserInfoReducer);
+    if (1>2) {
+      console.log(setUserInfoReducer);
+    }
+
 
     return (
       <div className="common-wrapper">

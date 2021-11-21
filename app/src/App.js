@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Common, Footer, Header, Main } from './pages';
+import { Common, Footer, Header, PublicPark } from './pages';
 import './App.scss';
 import { SettingPropTypes } from '@/proptypes';
 
@@ -14,7 +14,8 @@ function App({ setting }) {
       </div>
       <div className="app-content">
         <Switch>
-          <Route exact path="/" component={Main} />
+          <Route exact path="/" component={PublicPark} />
+          <Route exact path="/public-park" component={PublicPark} />
         </Switch>
       </div>
       {setting.footer && (

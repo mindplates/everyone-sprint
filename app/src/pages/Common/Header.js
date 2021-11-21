@@ -24,7 +24,10 @@ const Header = (props) => {
             {Object.keys(MENU).map((topMenuKey) => {
               const menu = MENU[topMenuKey];
               return (
-                <li key={topMenuKey} className={`${currentTopMenu === topMenuKey ? 'selected' : 'no-selected'}`}>
+                <li
+                  key={topMenuKey}
+                  className={`${(currentTopMenu || 'public-park') === topMenuKey ? 'selected' : 'no-selected'}`}
+                >
                   <Link to={`/${topMenuKey}`}>
                     <div>
                       <div className={`icon ${topMenuKey}`}>

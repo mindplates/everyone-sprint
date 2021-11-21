@@ -1,0 +1,29 @@
+.public-park-wrapper {
+  height: 100%;
+  padding: 1rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+
+  .park-viewer {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    flex-grow: 1;
+    background-color: $white;
+    position: relative;
+
+    .viewer {
+      width: 100%;
+      height: 100%;
+    }
+
+    .controller {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      padding: 1rem;
+      > button {
+        margin-left: 0.25rem;
+      }
+    }
+  }
+}
