@@ -36,11 +36,9 @@ const PublicPark = () => {
         node
           .attr('time', `time-${now}`)
           .transition()
-          .duration(200)
           .attr('cx', u.x)
-          .transition()
-          .duration(200)
           .attr('cy', u.y)
+          .duration(200)
           .style('stroke', u.color)
           .style('fill', u.backgroundColor);
       } else {

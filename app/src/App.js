@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Common, Footer, Header, PublicPark } from './pages';
+import { Common, Footer, Groups, Header, PublicPark, Scrums, Sprints } from './pages';
 import './App.scss';
 import { SettingPropTypes } from '@/proptypes';
 
@@ -16,6 +16,10 @@ function App({ setting }) {
         <Switch>
           <Route exact path="/" component={PublicPark} />
           <Route exact path="/public-park" component={PublicPark} />
+          <Route exact path="/groups" component={Groups} />
+          <Route exact path="/sprints" component={Sprints} />
+          <Route exact path="/scrums" component={Scrums} />
+          <Route exact path="/starting-line" component={Scrums} />
         </Switch>
       </div>
       {setting.footer && (

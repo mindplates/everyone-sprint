@@ -9,7 +9,7 @@
   background-color: #1874cd;
 
   &.collapsed {
-    > div {
+    > div.product-logo-content {
       > div {
         &.logo-icon {
           font-size: 15px;
@@ -51,10 +51,57 @@
     }
   }
 
+  > div.side-rect {
+    position: absolute;
+    height: 100%;
+    overflow-y: hidden;
+    top: 0;
+
+    > div.side {
+      width: 0;
+      height: 0;
+      border-top: 60px solid transparent;
+      border-bottom: 60px solid transparent;
+      border-right: 10px solid transparent;
+      border-left: 10px solid transparent;
+    }
+  }
+
+  > div.side-left {
+    left: -20px;
+
+    > div.side {
+      border-right: 10px solid #1874cd;
+    }
+  }
+
+  > div.side-right {
+    left: 100%;
+
+    > div.side {
+      border-left: 10px solid #1874cd;
+    }
+  }
+
   &.hover:hover {
     background-color: $header-hover-bg-color;
     transition: all 0.3s;
-    > div {
+
+    > div.side-left {
+      > div.side {
+        border-right: 10px solid $header-hover-bg-color;
+        transition: all 0.3s;
+      }
+    }
+
+    > div.side-right {
+      > div.side {
+        border-left: 10px solid $header-hover-bg-color;
+        transition: all 0.3s;
+      }
+    }
+
+    > div.product-logo-content {
       > div {
         &.logo-icon {
           .hexagon {
@@ -74,7 +121,7 @@
     }
   }
 
-  > div {
+  > div.product-logo-content {
     align-self: center;
     width: 100%;
     line-height: 100%;

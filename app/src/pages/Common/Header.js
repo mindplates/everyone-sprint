@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { SettingPropTypes } from '@/proptypes';
 import MENU from '@/constants/menu';
-import { Button, ProductLogo } from '@/components';
+import { Button, Liner, ProductLogo } from '@/components';
 import { setSetting } from '@/store/actions';
 import './Header.scss';
 
 const Header = (props) => {
-  const { setSetting: setSettingReducer, setting, location } = props;
+  const { setSetting: setSettingReducer, setting, location, t } = props;
 
   useEffect(() => {}, []);
 
@@ -49,20 +50,34 @@ const Header = (props) => {
           </Link>
         </div>
         <div className="top-button">
-          <Button
-            color="white"
-            size="lg"
-            outline
-            onClick={() => {
-              setSettingReducer('collapsed', !setting.collapsed);
-            }}
-          >
-            {!setting.collapsed && <i className="fas fa-angle-up" />}
-            {setting.collapsed && <i className="fas fa-angle-down" />}
-          </Button>
-          <Button color="white" size="lg" outline onClick={() => {}}>
-            <i className="fas fa-cog" />
-          </Button>
+          <div className="login">
+            <div>
+              <Link to="/starting-line">
+                <span>{t('로그인')}</span>
+              </Link>
+            </div>
+          </div>
+          <div className="liner">
+            <Liner height="10px" />
+          </div>
+          <div>
+            <Button
+              color="white"
+              size="lg"
+              outline
+              onClick={() => {
+                setSettingReducer('collapsed', !setting.collapsed);
+              }}
+            >
+              {!setting.collapsed && <i className="fas fa-angle-up" />}
+              {setting.collapsed && <i className="fas fa-angle-down" />}
+            </Button>
+          </div>
+          <div>
+            <Button color="white" size="lg" outline onClick={() => {}}>
+              <i className="fas fa-cog" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -82,9 +97,10 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation()(Header)));
 
 Header.propTypes = {
+  t: PropTypes.func,
   match: PropTypes.shape({
     params: PropTypes.shape({
       promotionId: PropTypes.string,
