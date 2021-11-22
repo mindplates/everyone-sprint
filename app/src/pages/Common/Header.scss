@@ -32,7 +32,8 @@
   &.header-wrapper,
   > div > .product-logo > a,
   > div > .top-menu ul li > a,
-  > div > .top-button > button {
+  > div > .top-button > div > button,
+  > div > .top-button > div > div > a {
     color: $white;
   }
 
@@ -81,7 +82,7 @@
 
               &:hover {
                 > div {
-                  > .icon.groups {
+                  > .icon.groups___ {
                     > div {
                       transition: none;
                       animation: bouncing 1s;
@@ -193,16 +194,60 @@
       flex: 1 1 0;
       text-align: right;
       padding-right: 1rem;
+      display: flex;
 
-      > button {
+      > div {
+        align-self: center;
         height: 100%;
 
-        &:hover {
-          background-color: $header-hover-bg-color;
+        &.login {
+          flex-grow: 1;
+          display: flex;
+          text-align: right;
+          > div {
+            align-self: center;
+            flex-grow: 1;
+            text-align: right;
+            height: 100%;
+            > a {
+              text-decoration: none;
+              font-family: pretendard, sans-serif;
+              height: 100%;
+              display: inline-flex;
+              padding: 0 1rem;
+
+              &:hover {
+                background-color: $header-hover-bg-color;
+              }
+              > span {
+                align-self: center;
+              }
+            }
+          }
         }
 
-        &:focus {
-          box-shadow: none;
+        &.liner {
+          display: flex;
+          margin: 0 0.5rem;
+          > div {
+            align-self: center;
+          }
+        }
+
+        > button {
+          height: 100%;
+          border-radius: 0;
+          padding-left: 0;
+          padding-right: 0;
+          width: 40px;
+
+          &:hover {
+            background-color: $header-hover-bg-color;
+          }
+
+          &:focus {
+            box-shadow: none;
+          }
         }
       }
     }

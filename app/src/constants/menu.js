@@ -3,7 +3,7 @@ import React from 'react';
 const MENU = {
   'public-park': {
     icon: <i className="fas fa-tree" />,
-    name: '공원',
+    name: '모두의 공원',
     enabled: false,
     submenus: [],
   },

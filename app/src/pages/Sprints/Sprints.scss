@@ -1,0 +1,15 @@
+.page-wrapper {
+  height: 100%;
+  padding: 1rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+
+  .page-content {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    flex-grow: 1;
+    background-color: $white;
+    position: relative;
+    padding: 1rem;
+  }
+}
