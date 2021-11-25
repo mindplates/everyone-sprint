@@ -12,19 +12,21 @@
   transition: all 0.3s;
 
   &.collapsed {
-    height: 40px;
-    transition: all 0.3s;
+    @media (min-width: 992px) {
+      height: 40px;
+      transition: all 0.3s;
 
-    .top-menu {
-      .icon {
-        opacity: 0;
-        transition: all 0.3s;
-      }
+      .top-menu {
+        .icon {
+          opacity: 0;
+          transition: all 0.3s;
+        }
 
-      .text {
-        margin-top: 0;
-        transition: all 0.3s;
-        font-size: 13px;
+        .text {
+          margin-top: 0;
+          transition: all 0.3s;
+          font-size: 13px;
+        }
       }
     }
   }
@@ -32,8 +34,8 @@
   &.header-wrapper,
   > div > .product-logo > a,
   > div > .top-menu ul li > a,
-  > div > .top-button > div > button,
-  > div > .top-button > div > div > a {
+  > div > .top-button > div > div > button,
+  > div > .top-button > div > div > div > a {
     color: $white;
   }
 
@@ -59,8 +61,37 @@
       align-self: center;
       height: 100%;
       padding-left: 1rem;
+      @media (max-width: 992px) {
+        padding-left: 0;
+      }
+
+      .mobile-overlay {
+        display: none;
+
+        @media (max-width: 992px) {
+          display: block;
+        }
+      }
+
+      .menu-toggle-button {
+        height: 100%;
+        border-radius: 0;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        color: $white;
+        display: none;
+
+        &:hover {
+          background-color: $header-hover-bg-color;
+        }
+
+        @media (max-width: 992px) {
+          display: inline-block;
+        }
+      }
 
       ul {
+        vertical-align: top;
         list-style: none;
         padding: 0;
         margin: 0;
@@ -68,54 +99,87 @@
         height: 100%;
         display: inline-block;
 
+        @media (max-width: 992px) {
+          display: none;
+
+          &.opened {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            background-color: $header-bg-color;
+            z-index: 11;
+            width: 80%;
+            max-width: 400px;
+          }
+        }
+
         li {
           display: inline-block;
           height: 100%;
           vertical-align: top;
           position: relative;
           white-space: nowrap;
+          font-family: pretendard, sans-serif;
+
+          &.menu-toggle-list-button {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.2);
+            @media (max-width: 992px) {
+              display: block;
+              height: 60px;
+            }
+          }
+
+          @media (max-width: 992px) {
+            display: block;
+            height: auto;
+          }
 
           &.no-selected {
             > a:hover {
               background-color: $header-hover-bg-color;
               transition: all 0.3s;
 
-              &:hover {
-                > div {
-                  > .icon.groups___ {
-                    > div {
-                      transition: none;
-                      animation: bouncing 1s;
-                      -moz-animation: bouncing 1s;
-                      -webkit-animation: bouncing 1s;
-                      -o-animation: bouncing 1s;
-                      animation-iteration-count: infinite;
-                      animation-timing-function: linear;
+              @media (min-width: 992px) {
+                &:hover {
+                  > div {
+                    > .icon.groups___ {
+                      > div {
+                        transition: none;
+                        animation: bouncing 1s;
+                        -moz-animation: bouncing 1s;
+                        -webkit-animation: bouncing 1s;
+                        -o-animation: bouncing 1s;
+                        animation-iteration-count: infinite;
+                        animation-timing-function: linear;
+                      }
                     }
-                  }
 
-                  > .icon.sprints {
-                    opacity: 0;
-                    transition: none;
-                    width: auto;
-                    animation: flyLeftToRight 1.5s;
-                    -moz-animation: flyLeftToRight 1.5s;
-                    -webkit-animation: flyLeftToRight 1.5s;
-                    -o-animation: flyLeftToRight 1.5s;
-                    animation-iteration-count: infinite;
-                    animation-timing-function: ease-in-out;
-                    animation-delay: 0.1s;
-                  }
-
-                  > .icon.scrums {
-                    > div {
+                    > .icon.sprints {
+                      opacity: 0;
                       transition: none;
-                      animation: rotating 0.5s;
-                      -moz-animation: rotating 0.5s;
-                      -webkit-animation: rotating 0.5s;
-                      -o-animation: rotating 0.5s;
+                      width: auto;
+                      animation: flyLeftToRight 1.5s;
+                      -moz-animation: flyLeftToRight 1.5s;
+                      -webkit-animation: flyLeftToRight 1.5s;
+                      -o-animation: flyLeftToRight 1.5s;
                       animation-iteration-count: infinite;
-                      animation-timing-function: linear;
+                      animation-timing-function: ease-in-out;
+                      animation-delay: 0.1s;
+                    }
+
+                    > .icon.scrums {
+                      > div {
+                        transition: none;
+                        animation: rotating 0.5s;
+                        -moz-animation: rotating 0.5s;
+                        -webkit-animation: rotating 0.5s;
+                        -o-animation: rotating 0.5s;
+                        animation-iteration-count: infinite;
+                        animation-timing-function: linear;
+                      }
                     }
                   }
                 }
@@ -128,10 +192,23 @@
             height: 100%;
             text-decoration: none;
 
+            @media (max-width: 992px) {
+              display: block;
+            }
+
             > div {
               align-self: center;
               padding: 0 1.5rem;
               transition: all 0.3s;
+
+              @media (max-width: 1200px) {
+                padding: 0 1rem;
+              }
+
+              @media (max-width: 992px) {
+                display: flex;
+                padding: 1rem;
+              }
 
               > .icon {
                 position: absolute;
@@ -140,6 +217,13 @@
                 width: 100%;
                 text-align: center;
                 transition: all 0.3s;
+
+                @media (max-width: 992px) {
+                  position: static;
+                  width: auto;
+                  margin-right: 1rem;
+                }
+
                 > div {
                   display: inline-flex;
                   font-size: 14px;
@@ -162,6 +246,11 @@
                 margin-top: 1rem;
                 transition: all 0.3s;
                 font-size: 14px;
+
+                @media (max-width: 992px) {
+                  margin-top: 0;
+                  align-self: center;
+                }
               }
             }
           }
@@ -173,6 +262,14 @@
               > div {
                 padding: 0 2.5rem;
                 transition: all 0.3s;
+
+                @media (max-width: 1200px) {
+                  padding: 0 1.5rem;
+                }
+
+                @media (max-width: 992px) {
+                  padding: 1rem;
+                }
 
                 > .icon {
                   > div {
@@ -192,61 +289,97 @@
 
     > .top-button {
       flex: 1 1 0;
-      text-align: right;
       padding-right: 1rem;
       display: flex;
 
+      @media (max-width: 992px) {
+        padding-right: 0;
+      }
+
       > div {
-        align-self: center;
-        height: 100%;
+        display: flex;
+        text-align: right;
+        width: 100%;
 
-        &.login {
-          flex-grow: 1;
-          display: flex;
-          text-align: right;
-          > div {
-            align-self: center;
+        @media (max-width: 992px) {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          z-index: 11;
+          width: 80%;
+          max-width: 400px;
+          height: 60px;
+          background-color: rgba(0, 0, 0, 0.2);
+          display: none;
+
+          &.opened {
+            display: flex;
+          }
+        }
+        > div {
+          align-self: center;
+          height: 100%;
+
+          &.login {
             flex-grow: 1;
+            display: flex;
             text-align: right;
-            height: 100%;
-            > a {
-              text-decoration: none;
-              font-family: pretendard, sans-serif;
+            > div {
+              align-self: center;
+              flex-grow: 1;
+              text-align: right;
               height: 100%;
-              display: inline-flex;
-              padding: 0 1rem;
+              > a {
+                text-decoration: none;
+                font-family: pretendard, sans-serif;
+                height: 100%;
+                display: inline-flex;
+                padding: 0 1rem;
+                font-size: 14px;
 
-              &:hover {
-                background-color: $header-hover-bg-color;
-              }
-              > span {
-                align-self: center;
+                &:hover {
+                  background-color: $header-hover-bg-color;
+                }
+                > span {
+                  align-self: center;
+                }
               }
             }
           }
-        }
 
-        &.liner {
-          display: flex;
-          margin: 0 0.5rem;
-          > div {
-            align-self: center;
-          }
-        }
-
-        > button {
-          height: 100%;
-          border-radius: 0;
-          padding-left: 0;
-          padding-right: 0;
-          width: 40px;
-
-          &:hover {
-            background-color: $header-hover-bg-color;
+          &.liner {
+            display: flex;
+            margin: 0 0.5rem;
+            > div {
+              align-self: center;
+            }
           }
 
-          &:focus {
-            box-shadow: none;
+          > button {
+            height: 100%;
+            border-radius: 0;
+            padding-left: 0;
+            padding-right: 0;
+            width: 40px;
+            @media (max-width: 992px) {
+              width: auto;
+              padding-left: 1rem;
+              padding-right: 1rem;
+            }
+
+            &:hover {
+              background-color: $header-hover-bg-color;
+            }
+
+            &:focus {
+              box-shadow: none;
+            }
+          }
+
+          .collapsed-button {
+            @media (max-width: 992px) {
+              display: none;
+            }
           }
         }
       }

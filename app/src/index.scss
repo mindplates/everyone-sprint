@@ -1,5 +1,6 @@
 @import 'styles/project-custom';
 @import 'fonts/fontawesome-free-5.15.4/css/all.css';
+@import '~bootstrap/scss/bootstrap.scss';
 
 @font-face {
   font-family: 'pretendard';
@@ -44,8 +45,8 @@
 
 body {
   margin: 0;
-  font-family: plex, pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: plex, pretendard, sans-serif !important;
+
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

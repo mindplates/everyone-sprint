@@ -4,7 +4,7 @@ import './Overlay.scss';
 
 class Overlay extends React.PureComponent {
   render() {
-    const { children, className, zIndex } = this.props;
+    const { children, className, zIndex, onClick } = this.props;
 
     return (
       <div
@@ -12,6 +12,11 @@ class Overlay extends React.PureComponent {
           zIndex,
         }}
         className={`overlay-wrapper ${className}`}
+        onClick={() => {
+          if (onClick) {
+            onClick();
+          }
+        }}
       >
         <div>{children}</div>
       </div>
@@ -28,6 +33,7 @@ Overlay.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   zIndex: PropTypes.number,
+  onClick: PropTypes.func,
 };
 
 export default Overlay;

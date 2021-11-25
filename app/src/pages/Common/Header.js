@@ -1,16 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { SettingPropTypes } from '@/proptypes';
 import MENU from '@/constants/menu';
-import { Button, Liner, ProductLogo } from '@/components';
+import { Button, Liner, Overlay, ProductLogo } from '@/components';
 import { setSetting } from '@/store/actions';
 import './Header.scss';
 
 const Header = (props) => {
   const { setSetting: setSettingReducer, setting, location, t } = props;
+
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {}, []);
 
@@ -21,7 +23,40 @@ const Header = (props) => {
     <div className={`header-wrapper ${setting.collapsed ? 'collapsed' : ''}`}>
       <div>
         <div className="top-menu">
-          <ul>
+          <Button
+            className="menu-toggle-button"
+            color="white"
+            size="lg"
+            outline
+            onClick={() => {
+              setMenuOpen(!menuOpen);
+            }}
+          >
+            <i className="fas fa-bars" />
+          </Button>
+          {menuOpen && (
+            <Overlay
+              className="mobile-overlay"
+              zIndex={10}
+              onClick={() => {
+                setMenuOpen(false);
+              }}
+            />
+          )}
+          <ul className={menuOpen ? 'opened' : ''}>
+            <li className="menu-toggle-list-button">
+              <Button
+                className="menu-toggle-button"
+                color="white"
+                size="lg"
+                outline
+                onClick={() => {
+                  setMenuOpen(!menuOpen);
+                }}
+              >
+                <i className="fas fa-bars" />
+              </Button>
+            </li>
             {Object.keys(MENU).map((topMenuKey) => {
               const menu = MENU[topMenuKey];
               return (
@@ -29,7 +64,9 @@ const Header = (props) => {
                   key={topMenuKey}
                   className={`${(currentTopMenu || 'public-park') === topMenuKey ? 'selected' : 'no-selected'}`}
                 >
-                  <Link to={`/${topMenuKey}`}>
+                  <Link to={`/${topMenuKey}`} onClick={() => {
+                    setMenuOpen(false);
+                  }}>
                     <div>
                       <div className={`icon ${topMenuKey}`}>
                         <div>
@@ -50,33 +87,36 @@ const Header = (props) => {
           </Link>
         </div>
         <div className="top-button">
-          <div className="login">
-            <div>
-              <Link to="/starting-line">
-                <span>{t('로그인')}</span>
-              </Link>
+          <div className={menuOpen ? 'opened' : ''}>
+            <div className="login">
+              <div>
+                <Link to="/starting-line">
+                  <span>{t('로그인')}</span>
+                </Link>
+              </div>
             </div>
-          </div>
-          <div className="liner">
-            <Liner height="10px" />
-          </div>
-          <div>
-            <Button
-              color="white"
-              size="lg"
-              outline
-              onClick={() => {
-                setSettingReducer('collapsed', !setting.collapsed);
-              }}
-            >
-              {!setting.collapsed && <i className="fas fa-angle-up" />}
-              {setting.collapsed && <i className="fas fa-angle-down" />}
-            </Button>
-          </div>
-          <div>
-            <Button color="white" size="lg" outline onClick={() => {}}>
-              <i className="fas fa-cog" />
-            </Button>
+            <div className="liner">
+              <Liner height="10px" />
+            </div>
+            <div>
+              <Button
+                className="collapsed-button"
+                color="white"
+                size="lg"
+                outline
+                onClick={() => {
+                  setSettingReducer('collapsed', !setting.collapsed);
+                }}
+              >
+                {!setting.collapsed && <i className="fas fa-angle-up" />}
+                {setting.collapsed && <i className="fas fa-angle-down" />}
+              </Button>
+            </div>
+            <div>
+              <Button color="white" size="lg" outline onClick={() => {}}>
+                <i className="fas fa-cog" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

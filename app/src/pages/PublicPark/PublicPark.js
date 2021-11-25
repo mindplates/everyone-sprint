@@ -146,9 +146,9 @@ const PublicPark = () => {
   };
 
   return (
-    <div className="public-park-wrapper">
+    <div className="public-park-wrapper g-content">
       <PageTitle>모두의 공원</PageTitle>
-      <div className="park-viewer">
+      <div className="park-viewer g-page-content">
         <div ref={viewer} className="viewer" />
         <div className="controller">
           <Button

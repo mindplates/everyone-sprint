@@ -14,9 +14,9 @@ const Scrums = () => {
   }, []);
 
   return (
-    <div className="page-wrapper">
+    <div className="scrums-wrapper g-content">
       <PageTitle>스크럼</PageTitle>
-      <div className="page-content">컨텐츠</div>
+      <div className="g-page-content">컨텐츠</div>
     </div>
   );
 };

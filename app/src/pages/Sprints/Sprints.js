@@ -14,9 +14,9 @@ const Sprints = () => {
   }, []);
 
   return (
-    <div className="page-wrapper">
+    <div className="sprints-wrapper g-content">
       <PageTitle>스프린트</PageTitle>
-      <div className="page-content">컨텐츠</div>
+      <div className="g-page-content">컨텐츠</div>
     </div>
   );
 };

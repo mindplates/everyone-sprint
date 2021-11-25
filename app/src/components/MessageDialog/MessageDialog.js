@@ -39,15 +39,15 @@ class MessageDialog extends React.PureComponent {
   getMessageCategoryIcon = (category) => {
     switch (category) {
       case MESSAGE_CATEGORY.ERROR: {
-        return <i className="fas fa-exclamation-circle" />;
+        return <i className="fas fa-exclamation-triangle" />;
       }
 
       case MESSAGE_CATEGORY.WARNING: {
-        return <i className="fal fa-exclamation-circle" />;
+        return <i className="fas fa-exclamation-triangle" />;
       }
 
       case MESSAGE_CATEGORY.INFO: {
-        return <i className="fal fa-info-circle" />;
+        return <i className="fas fa-exclamation-circle" />;
       }
 
       default: {

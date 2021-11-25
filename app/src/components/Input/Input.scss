@@ -1,0 +1,207 @@
+.input-wrapper {
+  display: block;
+  position: relative;
+  padding-top: 20px;
+
+  .input-clear-button {
+    text-align: right;
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: -22px;
+    display: none;
+    > button {
+      background-color: transparent;
+      padding: 0 1px 0 0 !important;
+    }
+  }
+
+  &:hover {
+    .input-clear-button {
+      display: block;
+    }
+  }
+
+  input {
+    width: 100%;
+    border: none;
+    border-bottom: $input-border;
+    padding: 0 26px 5px 7px;
+    height: auto;
+
+    position: relative;
+    z-index: 2;
+    background-color: transparent;
+    border-radius: 0;
+
+    &:focus {
+      box-shadow: none;
+      outline: none;
+    }
+
+    &:invalid {
+      border-bottom: $input-border;
+    }
+  }
+
+  &.no-spin-button {
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type='number'] {
+      -moz-appearance: textfield;
+    }
+  }
+
+  &.sm {
+    input {
+      font-size: 0.75rem;
+    }
+  }
+
+  &.has-border {
+    input {
+      border: 1px solid $border-color;
+      border-radius: $input-radius;
+      padding: 4px 7px 3px 7px;
+      -webkit-appearance: none;
+
+      &:focus {
+        border-color: $primary;
+      }
+    }
+
+    &.sm {
+      input {
+        padding: 3px 6px;
+      }
+    }
+
+    &.xs {
+      input {
+        padding: 1px 6px;
+      }
+    }
+  }
+
+  .liner {
+    position: absolute;
+    width: 0;
+    left: 0;
+    height: 2px;
+    bottom: 0;
+    background-color: $blue;
+    border-radius: 2px;
+    z-index: 2;
+  }
+
+  .input-info {
+    font-size: 1rem;
+    position: absolute;
+    bottom: 9px;
+    left: 7px;
+    transition: all 0.3s;
+    color: $gray-700;
+    z-index: 1;
+    width: 100%;
+
+    @media (max-width: 576px) {
+      font-size: 0.9rem;
+    }
+
+    .label {
+      _color: $primary;
+    }
+
+    > div {
+      display: inline-block;
+
+      &.placeholder-message {
+        _color: $primary;
+        font-size: 0.9rem;
+        margin-left: 5px;
+        @media (max-width: 576px) {
+          font-size: 0.8rem;
+        }
+        &:before {
+          content: '<';
+        }
+        &:after {
+          content: '>';
+        }
+      }
+
+      &.invalid-message {
+        font-size: 0.7rem;
+        background-color: $danger;
+        color: $white;
+        display: inline-block;
+        padding: 2px 6px 1px;
+        border-radius: 2px;
+        float: right;
+      }
+    }
+  }
+
+  &.focus {
+    .liner {
+      width: 100%;
+    }
+
+    .input-info {
+      font-size: 0.8rem;
+      bottom: 30px;
+      transition: all 0.3s;
+      color: $gray-600;
+    }
+  }
+
+  &.has-value {
+    .input-info {
+      font-size: 0.8rem;
+      bottom: 30px;
+      transition: all 0.3s;
+      color: $gray-600;
+    }
+  }
+
+  &.in-valid {
+    input {
+      border-bottom: 1px solid $danger;
+    }
+  }
+
+  @media (min-width: 992px) {
+    &:hover {
+      .liner {
+        width: 100%;
+        transition: all 0.2s ease;
+      }
+
+      a {
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+
+    &.disabled {
+      &:hover {
+        .liner {
+          width: 0 !important;
+        }
+      }
+    }
+  }
+
+  &.simple {
+    padding-top: 5px;
+    padding-top: 0;
+    .input-info {
+      display: none;
+    }
+  }
+}
