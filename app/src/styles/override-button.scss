@@ -37,4 +37,27 @@ button.btn {
       height: 44px;
     }
   }
+
+  &.btn-white {
+    background-color: $white;
+    color: $black;
+
+    &:hover {
+      background-color: $yellow;
+    }
+
+    &.disabled:hover {
+      background-color: $white;
+    }
+  }
+
+  &.btn-outline-white {
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.7);
+      &.disabled {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
 }

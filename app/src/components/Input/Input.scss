@@ -28,7 +28,6 @@
     border-bottom: $input-border;
     padding: 0 26px 5px 7px;
     height: auto;
-
     position: relative;
     z-index: 2;
     background-color: transparent;
@@ -56,12 +55,6 @@
     }
   }
 
-  &.sm {
-    input {
-      font-size: 0.75rem;
-    }
-  }
-
   &.has-border {
     input {
       border: 1px solid $border-color;
@@ -71,18 +64,6 @@
 
       &:focus {
         border-color: $primary;
-      }
-    }
-
-    &.sm {
-      input {
-        padding: 3px 6px;
-      }
-    }
-
-    &.xs {
-      input {
-        padding: 1px 6px;
       }
     }
   }
@@ -96,6 +77,19 @@
     background-color: $blue;
     border-radius: 2px;
     z-index: 2;
+  }
+
+  &.outline {
+    input {
+      border: $input-border;
+
+      &:focus {
+        border: $input-focus-border;
+      }
+    }
+    .liner {
+      display: none;
+    }
   }
 
   .input-info {
@@ -198,10 +192,32 @@
   }
 
   &.simple {
-    padding-top: 5px;
     padding-top: 0;
+    display: inline-block;
+
     .input-info {
       display: none;
+    }
+
+    input {
+      padding: 0 8px;
+      height: 100%;
+    }
+
+    &.xs {
+      height: 26px;
+    }
+
+    &.sm {
+      height: 31px;
+    }
+
+    &.md {
+      height: 38px;
+    }
+
+    &.lg {
+      height: 48px;
     }
   }
 }

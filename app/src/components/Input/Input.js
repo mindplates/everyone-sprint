@@ -100,7 +100,7 @@ class Input extends React.Component {
       componentClassName,
       label,
       placeholderMessage,
-
+      outline,
       value,
       required,
       type,
@@ -128,7 +128,7 @@ class Input extends React.Component {
           valid ? 'valid' : 'in-valid'
         } ${simple ? 'simple' : ''} ${border ? 'has-border' : ''} ${disabled ? 'disabled' : ''} ${size} ${
           spinButton ? '' : 'no-spin-button'
-        }`}
+        } ${outline ? 'outline' : ''}`}
         onClick={() => {
           if (this.control.current) this.control.current.focus();
         }}
@@ -197,6 +197,7 @@ Input.defaultProps = {
   spinButton: true,
   isInherit: false,
   debounce: 0,
+  outline: false,
 };
 
 Input.propTypes = {
@@ -222,6 +223,7 @@ Input.propTypes = {
   isInherit: PropTypes.bool,
   debounce: PropTypes.number,
   tReady: PropTypes.bool,
+  outline: PropTypes.bool,
 };
 
 export default withTranslation()(Input);

@@ -8,5 +8,20 @@ import Liner from '@/components/Liner/Liner';
 import ExitButton from '@/components/ExitButton/ExitButton';
 import ProductLogo from '@/components/ProductLogo/ProductLogo';
 import PageTitle from '@/components/PageTitle/PageTitle';
+import SubTitle from '@/components/SubTitle/SubTitle';
+import CheckBox from '@/components/CheckBox/CheckBox';
 
-export { MessageDialog, SocketClient, Button, Input, Overlay, CompanyLogo, Liner, ExitButton, ProductLogo, PageTitle };
+export {
+  MessageDialog,
+  SocketClient,
+  Button,
+  Input,
+  Overlay,
+  CompanyLogo,
+  Liner,
+  ExitButton,
+  ProductLogo,
+  PageTitle,
+  SubTitle,
+  CheckBox,
+};

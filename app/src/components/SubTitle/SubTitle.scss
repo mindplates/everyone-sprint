@@ -1,0 +1,37 @@
+.sub-title-wrapper {
+  display: flex;
+  margin-bottom: 1rem;
+
+  > div {
+    align-self: center;
+
+    &.bullet {
+      margin-right: 2px;
+      height: 100%;
+      display: inline-flex;
+
+      &.bullet-3 {
+        margin-right: 0.25rem;
+      }
+
+      > span {
+        align-self: center;
+        line-height: 100%;
+        display: inline-block;
+        height: 9px;
+        width: 2px;
+
+        background-color: $primary;
+        background-color: $secondary;
+      }
+    }
+
+    &.text {
+      > span {
+        font-size: 18px;
+        font-weight: bold;
+        font-family: pretendard, sans-serif;
+      }
+    }
+  }
+}

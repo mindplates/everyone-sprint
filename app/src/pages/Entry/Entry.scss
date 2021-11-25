@@ -1,56 +1,125 @@
 .entry-wrapper {
-  padding-top: 2rem !important;
   .entry-content {
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    flex-grow: 1;
-    background-color: $white;
-    position: relative;
-    padding: 1rem;
-
+    display: flex;
+    flex-direction: column;
     .entry-info {
-      max-width: 400px;
-      margin: 0 auto;
+      _max-width: 400px;
+      _margin: 0 auto;
+      flex-grow: 1;
 
-      .message {
-        text-align: center;
-        margin-bottom: 1rem;
+      display: flex;
+      flex-direction: row;
+
+      .layout-1 {
+        flex: 1 1 0;
       }
 
-      video {
-        border: 1px solid rgba(0, 0, 0, 1);
-        background-color: red;
-        position: absolute;
-        top: 0;
-        left: 0;
-      }
-
-      .user-picture {
-        margin-bottom: 1rem;
+      .layout-2 {
+        flex-grow: 0;
+        display: flex;
+        padding: 1rem;
         > div {
-          width: 3.5cm;
-          height: 4.5cm;
-          background-color: $gray-100;
-          margin: 0 auto;
-          border: 1px solid rgba(0, 0, 0, 0.2);
-
-          canvas {
-            width: 100%;
-            height: 100%;
-          }
+          width: 1px;
+          height: 100%;
+          border-right: 1px dashed rgba(0, 0, 0, 0.4);
+          border-right: 1px solid rgba(0, 0, 0, 0.1);
+          align-self: center;
         }
       }
 
-      .picture-buttons {
-        text-align: center;
+      .layout-3 {
+        flex: 1 1 0;
       }
 
-      .inputs {
-        margin-bottom: 1rem;
+      .picture-info {
+        padding: 1rem;
+        display: none;
+
+        video {
+          border: 1px solid rgba(0, 0, 0, 0.4);
+          width: 120px;
+          height: 120px;
+          display: inline-block;
+        }
+
+        .user-picture {
+          margin-bottom: 1rem;
+          > div {
+            width: 120px;
+            height: 120px;
+            background-color: $gray-100;
+            margin: 0 auto;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+
+            canvas {
+              width: 100%;
+              height: 100%;
+            }
+          }
+        }
+
+        .picture-buttons {
+          text-align: center;
+        }
       }
 
-      .buttons {
-        text-align: center;
+      .general-info {
+        padding: 1rem;
+        .sub-label {
+          margin-bottom: 1rem;
+          font-family: pretendard, sans-serif;
+        }
+
+        .row-input {
+          > div {
+            align-self: center;
+
+            &:first-child {
+              min-width: 100px;
+            }
+          }
+        }
+
+        .row-input {
+          display: flex;
+          margin-bottom: 0.5rem;
+          > div {
+            align-self: center;
+
+            &:first-child {
+              margin-right: 1rem;
+              font-family: pretendard, sans-serif;
+              padding-left: 0.5rem;
+
+              > span {
+                position: relative;
+                .required {
+                  position: absolute;
+                  font-size: 10px;
+                  top: -8px;
+                  left: -12px;
+                  color: $warning;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .submit-buttons {
+      text-align: right;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      padding-top: 1.5rem;
+      padding-bottom: 0.5rem;
+
+      margin: 1rem 1rem 0;
+      > button {
+        margin-right: 1rem;
+
+        &:last-child {
+          margin-right: 0;
+        }
       }
     }
   }
