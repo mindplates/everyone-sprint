@@ -4,9 +4,14 @@ $logo-bg-color: #ff030d;
 $header-bg-color: #1d88ea;
 $header-hover-bg-color: #104e8b;
 $primary: rgb(11, 154, 223);
-$border: 1px solid rgba(0,0,0,0.2);
+$border: 1px solid rgba(0, 0, 0, 0.2);
+$input-border: 1px solid rgba(0, 0, 0, 0.4);
+$input-radius: 2px;
 
-@import '~bootstrap/scss/bootstrap.scss';
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/utilities";
 
 :export {
   primaryColor: $primary;

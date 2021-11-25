@@ -1,6 +1,10 @@
 button.btn {
+  border-radius: 2px;
+  font-family: pretendard, sans-serif;
   &.rounded {
     border-radius: 50% !important;
+    padding-left: 0;
+    padding-right: 0;
 
     &.btn-xs {
       width: 26px;

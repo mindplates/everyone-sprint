@@ -14,9 +14,9 @@ const Groups = () => {
   }, []);
 
   return (
-    <div className="groups-wrapper">
+    <div className="groups-wrapper g-content">
       <PageTitle>그룹</PageTitle>
-      <div className="page-content">컨텐츠</div>
+      <div className="g-page-content">컨텐츠</div>
     </div>
   );
 };

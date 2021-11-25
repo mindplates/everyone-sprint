@@ -7,6 +7,11 @@
   position: relative;
   display: flex;
   background-color: #1874cd;
+  font-family: pretendard, sans-serif;
+
+  @media (max-width: 992px) {
+    background-color: transparent;
+  }
 
   &.collapsed {
     > div.product-logo-content {
@@ -72,6 +77,10 @@
 
     > div.side {
       border-right: 10px solid #1874cd;
+
+      @media (max-width: 992px) {
+        display: none;
+      }
     }
   }
 
@@ -80,6 +89,9 @@
 
     > div.side {
       border-left: 10px solid #1874cd;
+      @media (max-width: 992px) {
+        display: none;
+      }
     }
   }
 

@@ -56,9 +56,9 @@ file:
 everyone_sprint:
   locale:
     default: ko
-  corsUrls: http://localhost:5000, http://everyone-sprint.com:5000, https://everyone-sprint.com
-  url: http://www.everyone-sprint.com
-  web-url: http://localhost:5000/
+  corsUrls: https://localhost:5000, https://everyone-sprint.com:5000, https://everyone-sprint.com
+  url: https://www.everyone-sprint.com
+  web-url: https://localhost:5000/
   mail:
     senderName: noreply@everyone-sprint.com
 server:
