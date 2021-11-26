@@ -1,4 +1,4 @@
-export const SET_USER_AND_GRP = 'SET_USER_AND_GRP';
+export const SET_USER = 'SET_USER';
 export const SET_MESSAGE = 'SET_MESSAGE';
 export const CLEAR_MESSAGE = 'CLEAR_ALL_MESSAGE';
 export const SET_SUPPORTED = 'SET_SUPPORTED';
@@ -7,12 +7,10 @@ export const SET_CONFIRM = 'SET_CONFIRM';
 export const SET_SYSTEM_INFO = 'SET_SYSTEM_INFO';
 export const SET_SETTING = 'SET_SETTING';
 
-export function setUserInfo(user, grps, shareCount) {
+export function setUserInfo(user) {
   return {
-    type: SET_USER_AND_GRP,
+    type: SET_USER,
     user,
-    grps,
-    shareCount,
   };
 }
 

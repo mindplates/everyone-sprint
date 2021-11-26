@@ -1,27 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
 import Webcam from 'webcam-easy';
 import PropTypes from 'prop-types';
-import { Button, CheckBox, Input, PageTitle, SubTitle } from '@/components';
+import { Button, CheckBox, ExitButton, Form, Input, PageTitle, SubTitle } from '@/components';
+import storage from '@/utils/storage';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './Entry.scss';
+import request from '@/utils/request';
+import RadioButton from '@/components/RadioButton/RadioButton';
+import { HistoryPropTypes } from '@/proptypes';
+import { setUserInfo } from '@/store/actions';
 
 const canvas = React.createRef();
 const video = React.createRef();
 let webcam = null;
 
-const Entry = ({ t }) => {
+const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
   const [info, setInfo] = useState({
     email: '',
-    password1: '',
+    password: '',
     password2: '',
     alias: '',
     name: '',
     tel: '',
-    openName: true,
-    openTel: true,
+    imageType: '',
+    imageData: '',
+    isNameOpened: true,
+    isTelOpened: true,
+    autoLogin: false,
+    language: 'ko',
+    country: 'KR',
   });
   const [supported, setSupported] = useState({ camera: false });
 
@@ -89,27 +100,78 @@ const Entry = ({ t }) => {
     // document.querySelector('#download-photo').href = picture;
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    if (info.password !== info.password2) {
+      dialog.setMessage(MESSAGE_CATEGORY.INFO, t('validation.badInput'), t('validation.notEqualPassword'));
+      return;
+    }
+
+    request.post('/api/users', info, (data) => {
+
+      const { autoLogin, ...last } = data;
+      if (data.autoLogin) {
+        storage.setItem('auth', 'token', data.loginToken);
+      }
+
+
+
+      setUserInfoReducer(last);
+
+      dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
+        history.push('/');
+      });
+    });
+  };
+
   return (
     <div className="entry-wrapper g-content">
       <PageTitle>스프린터 등록</PageTitle>
-      <div className="entry-content g-page-content">
+      <Form className="entry-content g-page-content" onSubmit={onSubmit}>
         <div className="entry-info">
           <div className="layout-1">
-            <div className="picture-info">
-              <SubTitle>이미지</SubTitle>
-              <video ref={video} playsinline autoPlay muted />
+            <div className="general-info picture-info">
+              <SubTitle>이미지 & 아이콘</SubTitle>
               <div className="user-picture">
+                <div className="preview">
+                  <div className="preview-content">
+                    {info.imageType && (
+                      <ExitButton size="xxs" color="black" className="remove-image-button" onClick={() => {}} />
+                    )}
+                    <div className="preview-image">
+                      <i className="fas fa-robot" />
+                    </div>
+                  </div>
+                </div>
+                <div className="picture-controls">
+                  <Button size="sm" color="white" outline rounded onClick={camera} data-tip="사진 찍기">
+                    <i className="fas fa-camera-retro" />
+                  </Button>
+                  <Button disabled size="sm" color="white" outline rounded onClick={camera} data-tip="이미지 업로드">
+                    <i className="fas fa-upload" />
+                  </Button>
+                  <Button disabled size="sm" color="white" outline rounded onClick={camera} data-tip="아이콘 선택">
+                    <i className="fas fa-icons" />
+                  </Button>
+                  <Button disabled size="sm" color="white" outline rounded onClick={camera} data-tip="문자">
+                    <i className="fas fa-font" />
+                  </Button>
+                </div>
+              </div>
+              <div className="camera-box">
+                <video ref={video} playsInline autoPlay muted />
                 <div>
                   <canvas ref={canvas} />
                 </div>
-              </div>
-              <div className="picture-buttons">
-                <Button size="sm" color="white" outline rounded onClick={camera}>
-                  <i className="fas fa-camera-retro" />
-                </Button>
-                <Button size="sm" color="white" outline rounded onClick={takePhoto}>
-                  <i className="fas fa-camera" />
-                </Button>
+                <div className="picture-buttons">
+                  <Button size="sm" color="white" outline rounded onClick={camera}>
+                    <i className="fas fa-camera-retro" />
+                  </Button>
+                  <Button size="sm" color="white" outline rounded onClick={takePhoto}>
+                    <i className="fas fa-camera" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -152,8 +214,8 @@ const Entry = ({ t }) => {
                 <div>
                   <Input
                     type="password"
-                    value={info.password1}
-                    onChange={(val) => changeInfo('password1', val)}
+                    value={info.password}
+                    onChange={(val) => changeInfo('password', val)}
                     required
                     minLength={4}
                     outline
@@ -223,11 +285,10 @@ const Entry = ({ t }) => {
                 </div>
                 <div>
                   <CheckBox
-                    className="mx-2"
                     size="sm"
                     type="checkbox"
-                    value={info.openName}
-                    onChange={(val) => changeInfo('openName', val)}
+                    value={info.isNameOpened}
+                    onChange={(val) => changeInfo('isNameOpened', val)}
                     label={t('이름을 공개합니다')}
                   />
                 </div>
@@ -248,12 +309,61 @@ const Entry = ({ t }) => {
                 </div>
                 <div>
                   <CheckBox
-                    className="mx-2"
                     size="sm"
                     type="checkbox"
-                    value={info.openTel}
-                    onChange={(val) => changeInfo('openTel', val)}
+                    value={info.isTelOpened}
+                    onChange={(val) => changeInfo('isTelOpened', val)}
                     label={t('전화번호를 공개합니다')}
+                  />
+                </div>
+              </div>
+              <div className="row-input">
+                <div>
+                  <span>언어</span>
+                </div>
+                <div>
+                  <RadioButton
+                    size="sm"
+                    items={[
+                      { key: 'ko', value: '한글' },
+                      { key: 'en', value: 'English' },
+                    ]}
+                    value={info.language}
+                    onClick={(val) => {
+                      changeInfo('language', val);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="row-input">
+                <div>
+                  <span>지역</span>
+                </div>
+                <div>
+                  <RadioButton
+                    size="sm"
+                    items={[
+                      { key: 'KR', value: '한국' },
+                      { key: 'US', value: 'US' },
+                    ]}
+                    value={info.country}
+                    onClick={(val) => {
+                      changeInfo('country', val);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="row-input">
+                <div>
+                  <span>자동 로그인</span>
+                </div>
+                <div className="g-line-height-0">
+                  <CheckBox
+                    size="sm"
+                    type="checkbox"
+                    value={info.autoLogin}
+                    onChange={(val) => changeInfo('autoLogin', val)}
+                    label={t('')}
                   />
                 </div>
               </div>
@@ -268,7 +378,7 @@ const Entry = ({ t }) => {
             <i className="fas fa-address-card" /> 스프린터 등록
           </Button>
         </div>
-      </div>
+      </Form>
     </div>
   );
 };
@@ -279,7 +389,13 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(Entry));
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setUserInfo: (user) => dispatch(setUserInfo(user)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(Entry)));
 
 Entry.propTypes = {
   t: PropTypes.func,
@@ -292,4 +408,6 @@ Entry.propTypes = {
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),
+  history: HistoryPropTypes,
+  setUserInfo: PropTypes.func,
 };

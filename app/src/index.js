@@ -8,7 +8,6 @@ import '@/languages/i18n';
 import App from './App';
 import './index.scss';
 
-
 ReactDOM.render(
   <Router>
     <Provider store={store}>

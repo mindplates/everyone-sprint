@@ -322,6 +322,10 @@
           align-self: center;
           height: 100%;
 
+          &.user-icon {
+            flex-grow: 1;
+          }
+
           &.login {
             flex-grow: 1;
             display: flex;

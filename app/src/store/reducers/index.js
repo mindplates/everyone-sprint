@@ -7,29 +7,30 @@ import {
   SET_SETTING,
   SET_SUPPORTED,
   SET_SYSTEM_INFO,
-  SET_USER_AND_GRP,
+  SET_USER,
 } from '../actions';
 import storage from '@/utils/storage';
 
 const userState = {
-  user: null,
-  grpId: null,
-  grps: [],
-  shareCount: 0,
-  join: {
-    email: null,
-  },
-  weather: 'sunny',
+  id: null,
+  alias: '',
+  autoLogin: false,
+  language: 'ko',
+  country: 'KR',
+  email: '',
+  imageData: '',
+  imageType: '',
+  loginToken: '',
+  name: '',
+  tel: '',
 };
 
 const user = (state = userState, action) => {
   switch (action.type) {
-    case SET_USER_AND_GRP:
+    case SET_USER:
       return {
-        ...state,
-        user: { ...action.user, isAdmin: action.user.activeRoleCode === 'SUPER_MAN' },
-        grps: action.grps,
-        shareCount: action.shareCount,
+        ...action.user,
+        isAdmin: action.user.activeRoleCode === 'SUPER_MAN',
       };
 
     default:
