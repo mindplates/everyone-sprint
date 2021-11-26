@@ -3,24 +3,29 @@
   position: relative;
   cursor: pointer;
 
+  &.size-xxs {
+    width: 18px;
+    height: 18px;
+  }
+
   &.size-xs {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
   }
 
   &.size-sm {
-    width: 28px;
-    height: 28px;
+    width: 31px;
+    height: 31px;
   }
 
   &.size-md {
-    width: 35px;
-    height: 35px;
+    width: 38px;
+    height: 38px;
   }
 
   &.size-lg {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
   }
 
   > div.x-1 {
@@ -55,6 +60,20 @@
       > div.x-1,
       > div.x-2 {
         border-color: $yellow !important;
+      }
+    }
+  }
+
+  &.color-black {
+    > div.x-1,
+    > div.x-2 {
+      border-right: 1px solid rgba(0,0,0,0.6);
+    }
+
+    &:hover {
+      > div.x-1,
+      > div.x-2 {
+        border-color: rgba(0,0,0,0.8) !important;
       }
     }
   }

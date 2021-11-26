@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import Webcam from 'webcam-easy';
 import PropTypes from 'prop-types';
-import { Button, CheckBox, Input, PageTitle, SubTitle } from '@/components';
+import { Button, CheckBox, ExitButton, Form, Input, PageTitle, SubTitle } from '@/components';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './Entry.scss';
@@ -22,6 +22,8 @@ const Entry = ({ t }) => {
     tel: '',
     openName: true,
     openTel: true,
+    imageType: '',
+    imageData: '',
   });
   const [supported, setSupported] = useState({ camera: false });
 
@@ -92,24 +94,50 @@ const Entry = ({ t }) => {
   return (
     <div className="entry-wrapper g-content">
       <PageTitle>스프린터 등록</PageTitle>
-      <div className="entry-content g-page-content">
+      <Form className="entry-content g-page-content" onSubmit={() => {}}>
         <div className="entry-info">
           <div className="layout-1">
             <div className="picture-info">
-              <SubTitle>이미지</SubTitle>
-              <video ref={video} playsinline autoPlay muted />
+              <SubTitle>이미지 & 아이콘</SubTitle>
               <div className="user-picture">
+                <div className="preview">
+                  <div className="preview-content">
+                    {info.imageType && (
+                      <ExitButton size="xxs" color="black" className="remove-image-button" onClick={() => {}} />
+                    )}
+                    <div className="preview-image">
+                      <i className="fas fa-robot" />
+                    </div>
+                  </div>
+                </div>
+                <div className="picture-controls">
+                  <Button size="sm" color="white" outline rounded onClick={camera} data-tip="사진 찍기">
+                    <i className="fas fa-camera-retro" />
+                  </Button>
+                  <Button disabled size="sm" color="white" outline rounded onClick={camera} data-tip="이미지 업로드">
+                    <i className="fas fa-upload" />
+                  </Button>
+                  <Button disabled size="sm" color="white" outline rounded onClick={camera} data-tip="아이콘 선택">
+                    <i className="fas fa-icons" />
+                  </Button>
+                  <Button disabled size="sm" color="white" outline rounded onClick={camera} data-tip="문자">
+                    <i className="fas fa-font" />
+                  </Button>
+                </div>
+              </div>
+              <div className="camera-box">
+                <video ref={video} playsInline autoPlay muted />
                 <div>
                   <canvas ref={canvas} />
                 </div>
-              </div>
-              <div className="picture-buttons">
-                <Button size="sm" color="white" outline rounded onClick={camera}>
-                  <i className="fas fa-camera-retro" />
-                </Button>
-                <Button size="sm" color="white" outline rounded onClick={takePhoto}>
-                  <i className="fas fa-camera" />
-                </Button>
+                <div className="picture-buttons">
+                  <Button size="sm" color="white" outline rounded onClick={camera}>
+                    <i className="fas fa-camera-retro" />
+                  </Button>
+                  <Button size="sm" color="white" outline rounded onClick={takePhoto}>
+                    <i className="fas fa-camera" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -268,7 +296,7 @@ const Entry = ({ t }) => {
             <i className="fas fa-address-card" /> 스프린터 등록
           </Button>
         </div>
-      </div>
+      </Form>
     </div>
   );
 };

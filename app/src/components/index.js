@@ -1,3 +1,4 @@
+import { Form } from 'reactstrap';
 import MessageDialog from '@/components/MessageDialog/MessageDialog';
 import SocketClient from '@/components/SocketClient/SocketClient';
 import Button from '@/components/Button/Button';
@@ -24,4 +25,5 @@ export {
   PageTitle,
   SubTitle,
   CheckBox,
+  Form,
 };
