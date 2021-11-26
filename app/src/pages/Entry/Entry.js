@@ -97,7 +97,7 @@ const Entry = ({ t }) => {
       <Form className="entry-content g-page-content" onSubmit={() => {}}>
         <div className="entry-info">
           <div className="layout-1">
-            <div className="picture-info">
+            <div className="general-info picture-info">
               <SubTitle>이미지 & 아이콘</SubTitle>
               <div className="user-picture">
                 <div className="preview">
@@ -251,7 +251,6 @@ const Entry = ({ t }) => {
                 </div>
                 <div>
                   <CheckBox
-                    className="mx-2"
                     size="sm"
                     type="checkbox"
                     value={info.openName}
@@ -276,7 +275,6 @@ const Entry = ({ t }) => {
                 </div>
                 <div>
                   <CheckBox
-                    className="mx-2"
                     size="sm"
                     type="checkbox"
                     value={info.openTel}
