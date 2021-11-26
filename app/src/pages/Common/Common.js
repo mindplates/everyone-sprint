@@ -22,6 +22,7 @@ class Common extends React.Component {
 
   componentDidMount() {
     this.getSystemInfo();
+    this.getMyInfo();
   }
 
   componentDidUpdate(prevProps) {
@@ -50,13 +51,17 @@ class Common extends React.Component {
   }
 
   getSystemInfo = () => {
-    const { setSystemInfo: setSystemInfoReducer, i18n } = this.props;
+    const { setSystemInfo: setSystemInfoReducer } = this.props;
     request.get('/api/common/system/info', null, (data) => {
       setSystemInfoReducer(data);
+    });
+  };
 
-      if (1 > 2) {
-        i18n.changeLanguage('en');
-      }
+  getMyInfo = () => {
+    request.get('/api/users/my-info', null, (data) => {
+      const { setUserInfo: setUserInfoReducer, i18n } = this.props;
+      setUserInfoReducer(data);
+      i18n.changeLanguage('en');
     });
   };
 
@@ -75,13 +80,8 @@ class Common extends React.Component {
   };
 
   render() {
-    const { message, loading, confirm, setUserInfo: setUserInfoReducer } = this.props;
+    const { message, loading, confirm } = this.props;
     const { showLoading } = this.state;
-
-    if (1>2) {
-      console.log(setUserInfoReducer);
-    }
-
 
     return (
       <div className="common-wrapper">
@@ -134,15 +134,14 @@ const mapStateToProps = (state) => {
   return {
     message: state.message,
     loading: state.loading.loading,
-    user: state.user.user,
+    user: state.user,
     confirm: state.confirm,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setUserInfo: (user, grps, shareCount) => dispatch(setUserInfo(user, grps, shareCount)),
-
+    setUserInfo: (user) => dispatch(setUserInfo(user)),
     setSystemInfo: (systemInfo) => dispatch(setSystemInfo(systemInfo)),
   };
 };
@@ -171,11 +170,5 @@ Common.propTypes = {
 
   location: PropTypes.shape({
     pathname: PropTypes.string,
-  }),
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }),
-  user: PropTypes.shape({
-    id: PropTypes.number,
   }),
 };

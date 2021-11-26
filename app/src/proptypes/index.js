@@ -11,4 +11,18 @@ const SettingPropTypes = PropTypes.shape({
   collapsed: PropTypes.bool,
 });
 
-export { HistoryPropTypes, SettingPropTypes };
+const UserPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  alias: PropTypes.string,
+  autoLogin: PropTypes.bool,
+  language: PropTypes.string,
+  country: PropTypes.string,
+  email: PropTypes.string,
+  imageData: PropTypes.string,
+  imageType: PropTypes.string,
+  loginToken: PropTypes.string,
+  name: PropTypes.string,
+  tel: PropTypes.string,
+});
+
+export { HistoryPropTypes, SettingPropTypes, UserPropTypes };

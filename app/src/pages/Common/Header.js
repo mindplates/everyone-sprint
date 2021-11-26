@@ -3,14 +3,14 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { SettingPropTypes } from '@/proptypes';
+import { SettingPropTypes, UserPropTypes } from '@/proptypes';
 import MENU from '@/constants/menu';
 import { Button, Liner, Overlay, ProductLogo } from '@/components';
 import { setSetting } from '@/store/actions';
 import './Header.scss';
 
 const Header = (props) => {
-  const { setSetting: setSettingReducer, setting, location, t } = props;
+  const { setSetting: setSettingReducer, setting, location, t, user } = props;
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -64,16 +64,19 @@ const Header = (props) => {
                   key={topMenuKey}
                   className={`${(currentTopMenu || 'public-park') === topMenuKey ? 'selected' : 'no-selected'}`}
                 >
-                  <Link to={`/${topMenuKey}`} onClick={() => {
-                    setMenuOpen(false);
-                  }}>
+                  <Link
+                    to={`/${topMenuKey}`}
+                    onClick={() => {
+                      setMenuOpen(false);
+                    }}
+                  >
                     <div>
                       <div className={`icon ${topMenuKey}`}>
                         <div>
                           <span>{menu.icon}</span>
                         </div>
                       </div>
-                      <div className="text">{menu.name}</div>
+                      <div className="text">{t(menu.name)}</div>
                     </div>
                   </Link>
                 </li>
@@ -88,13 +91,22 @@ const Header = (props) => {
         </div>
         <div className="top-button">
           <div className={menuOpen ? 'opened' : ''}>
-            <div className="login">
-              <div>
-                <Link to="/starting-line">
-                  <span>{t('로그인')}</span>
-                </Link>
+            {(user && user.id) && (
+              <div className="user-icon">
+                <Button color="white" size="lg" outline onClick={() => {}}>
+                  <i className="fas fa-robot" />
+                </Button>
               </div>
-            </div>
+            )}
+            {!(user && user.id) && (
+              <div className="login">
+                <div>
+                  <Link to="/starting-line">
+                    <span>{t('로그인')}</span>
+                  </Link>
+                </div>
+              </div>
+            )}
             <div className="liner">
               <Liner height="10px" />
             </div>
@@ -128,6 +140,7 @@ const mapStateToProps = (state) => {
   return {
     systemInfo: state.systemInfo,
     setting: state.setting,
+    user: state.user,
   };
 };
 
@@ -137,7 +150,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation()(Header)));
+export default withRouter(withTranslation()(connect(mapStateToProps, mapDispatchToProps)(Header)));
 
 Header.propTypes = {
   t: PropTypes.func,
@@ -155,4 +168,5 @@ Header.propTypes = {
   }),
   setting: SettingPropTypes,
   setSetting: PropTypes.func,
+  user: UserPropTypes,
 };

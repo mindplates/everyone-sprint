@@ -89,10 +89,7 @@ function processError(error, failHandler) {
       }
 
       case 401: {
-        // 로그인 정보 삭제 및 퍼블릭 스페이스만 보이도록 변경
-        const { user } = store.getState('user');
-        const grps = user.grps ? user.grps.filter((org) => org.publicYn) : [];
-        store.dispatch(setUserInfo({}, grps, user.shareCount));
+        store.dispatch(setUserInfo({}));
 
         dialog.setMessage(
           MESSAGE_CATEGORY.ERROR,
