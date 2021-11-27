@@ -12,12 +12,21 @@ class Button extends React.PureComponent {
     ReactTooltip.rebuild();
   }
 
+  onButtonClick = () => {
+    const { onClick } = this.props;
+    ReactTooltip.hide();
+    if (onClick) {
+      onClick();
+    }
+  };
+
   render() {
-    const { className, children, shadow, color, rounded, isInherit, ...rest } = this.props;
+    const { className, children, shadow, color, rounded, isInherit, onClick, ...rest } = this.props;
 
     return (
       <ReactButton
         color={color}
+        onClick={this.onButtonClick}
         {...rest}
         className={`${isInherit ? 'position-relative' : ''} ${className} ${shadow ? '' : 'shadow-none'} ${
           rounded ? 'rounded' : ''
@@ -52,6 +61,7 @@ Button.propTypes = {
   rounded: PropTypes.bool,
   size: PropTypes.string,
   isInherit: PropTypes.bool,
+  onClick : PropTypes.func,
 };
 
 export default Button;

@@ -1,5 +1,7 @@
 package com.mindplates.everyonesprint.framework.config;
 
+import com.mindplates.everyonesprint.common.util.SessionUtil;
+import com.mindplates.everyonesprint.framework.interceptor.LoginCheckInterceptor;
 import com.mindplates.everyonesprint.framework.resolver.MethodArgumentResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,9 +9,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import java.util.List;
 
@@ -17,7 +23,11 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
+    SessionUtil sessionUtil;
+    @Autowired
     MessageSourceAccessor messageSourceAccessor;
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
     @Value("${everyone_sprint.corsUrls}")
     private String[] corsUrls;
 
@@ -48,6 +58,38 @@ public class WebConfig implements WebMvcConfigurer {
 
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new MethodArgumentResolver());
+    }
+
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        interceptor.setParamName("lang");
+        return interceptor;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
+
+        registry.addInterceptor(
+                new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
+                .addPathPatterns("/**")
+                .excludePathPatterns("/test/**/")
+                .excludePathPatterns("/v3/**")
+                .excludePathPatterns("/webjars/**")
+                .excludePathPatterns("/swagger-ui/**")
+                .excludePathPatterns("/swagger**")
+                .excludePathPatterns("/swagger-resources/**")
+                .excludePathPatterns("/error");
+    }
+
+
+    @Bean
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        serializer.setSameSite("none");
+        serializer.setUseSecureCookie(true);
+        return serializer;
     }
 
 }

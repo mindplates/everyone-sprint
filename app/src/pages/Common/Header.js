@@ -5,7 +5,7 @@ import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { SettingPropTypes, UserPropTypes } from '@/proptypes';
 import MENU from '@/constants/menu';
-import { Button, Liner, Overlay, ProductLogo } from '@/components';
+import { Button, Liner, Overlay, ProductLogo, UserImage } from '@/components';
 import { setSetting } from '@/store/actions';
 import './Header.scss';
 
@@ -18,6 +18,8 @@ const Header = (props) => {
 
   const values = (location.pathname.split('/') || []).filter((value) => value);
   const [currentTopMenu] = values;
+
+  console.log(user);
 
   return (
     <div className={`header-wrapper ${setting.collapsed ? 'collapsed' : ''}`}>
@@ -91,10 +93,10 @@ const Header = (props) => {
         </div>
         <div className="top-button">
           <div className={menuOpen ? 'opened' : ''}>
-            {(user && user.id) && (
+            {user && user.id && (
               <div className="user-icon">
                 <Button color="white" size="lg" outline onClick={() => {}}>
-                  <i className="fas fa-robot" />
+                  <UserImage size="30px" imageType={user.imageType} imageData={user.imageData} rounded />
                 </Button>
               </div>
             )}
