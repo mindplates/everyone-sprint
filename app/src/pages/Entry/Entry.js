@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import Webcam from 'webcam-easy';
 import PropTypes from 'prop-types';
-import { Button, CheckBox, ExitButton, Form, Input, PageTitle, SubTitle } from '@/components';
+import { Button, CheckBox, ExitButton, Form, Input, PageTitle, Popup, SubTitle } from '@/components';
 import storage from '@/utils/storage';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
-import './Entry.scss';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes } from '@/proptypes';
 import { setUserInfo } from '@/store/actions';
-
-const canvas = React.createRef();
-const video = React.createRef();
-let webcam = null;
+import Camera from '@/pages/Entry/Camera';
+import './Entry.scss';
 
 const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
   const [info, setInfo] = useState({
@@ -30,59 +26,14 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
     imageData: '',
     isNameOpened: true,
     isTelOpened: true,
-    autoLogin: false,
+    autoLogin: true,
     language: 'ko',
     country: 'KR',
   });
-  const [supported, setSupported] = useState({ camera: false });
 
-  const camera = async () => {
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: false,
-        video: true,
-      })
-      .then((stream) => {
-        window.stream = stream; // make stream available to browser console
-        video.current.srcObject = stream;
-      })
-      .catch((error) => {
-        console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
-      });
-
-    if (false && supported.camera) {
-      if (1 > 2) {
-        webcam = new Webcam(video.current, 'user', canvas.current, null);
-        webcam
-          .start()
-          // .stream()
-          .then((result) => {
-            console.log('webcam started', result);
-          })
-          .catch((err) => {
-            console.log(err);
-            dialog.setMessage(
-              MESSAGE_CATEGORY.ERROR,
-              '디바이스 없음',
-              '카메라 디바이스를 찾을 수 없거나, 허용되지 않았습니다.',
-            );
-          });
-        console.log(webcam);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (1 > 2) {
-      const cameraSupported = 'mediaDevices' in navigator;
-      setSupported({
-        ...supported,
-        camera: cameraSupported,
-      });
-    }
-
-    // camera();
-  }, []);
+  const [popup, setPopup] = useState({
+    camera: false,
+  });
 
   const changeInfo = (key, value) => {
     const next = { ...info };
@@ -90,18 +41,10 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
     setInfo(next);
   };
 
-  const takePhoto = () => {
-    // const picture = webcam.snap();
-    // dialog.setMessage(MESSAGE_CATEGORY.ERROR, '디바이스 없음', picture);
-    canvas.current.width = video.current.videoWidth;
-    canvas.current.height = video.current.videoHeight;
-    canvas.current.getContext('2d').drawImage(video.current, 0, 0, canvas.current.width, canvas.current.height);
-
-    // document.querySelector('#download-photo').href = picture;
-  };
-
   const onSubmit = (e) => {
     e.preventDefault();
+
+    console.log(2);
 
     if (info.password !== info.password2) {
       dialog.setMessage(MESSAGE_CATEGORY.INFO, t('validation.badInput'), t('validation.notEqualPassword'));
@@ -109,13 +52,10 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
     }
 
     request.post('/api/users', info, (data) => {
-
       const { autoLogin, ...last } = data;
       if (data.autoLogin) {
         storage.setItem('auth', 'token', data.loginToken);
       }
-
-
 
       setUserInfoReducer(last);
 
@@ -140,36 +80,32 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                       <ExitButton size="xxs" color="black" className="remove-image-button" onClick={() => {}} />
                     )}
                     <div className="preview-image">
-                      <i className="fas fa-robot" />
+                      {info.imageType === 'image' && <img src={info.imageData} alt="USER" />}
+                      {info.imageType !== 'image' && <i className="fas fa-robot" />}
                     </div>
                   </div>
                 </div>
                 <div className="picture-controls">
-                  <Button size="sm" color="white" outline rounded onClick={camera} data-tip="사진 찍기">
+                  <Button
+                    size="sm"
+                    color="white"
+                    outline
+                    rounded
+                    onClick={() => {
+                      setPopup({ ...popup, camera: true });
+                    }}
+                    data-tip="사진 찍기"
+                  >
                     <i className="fas fa-camera-retro" />
                   </Button>
-                  <Button disabled size="sm" color="white" outline rounded onClick={camera} data-tip="이미지 업로드">
+                  <Button disabled size="sm" color="white" outline rounded onClick={() => {}} data-tip="이미지 업로드">
                     <i className="fas fa-upload" />
                   </Button>
-                  <Button disabled size="sm" color="white" outline rounded onClick={camera} data-tip="아이콘 선택">
+                  <Button disabled size="sm" color="white" outline rounded onClick={() => {}} data-tip="아이콘 선택">
                     <i className="fas fa-icons" />
                   </Button>
-                  <Button disabled size="sm" color="white" outline rounded onClick={camera} data-tip="문자">
+                  <Button disabled size="sm" color="white" outline rounded onClick={() => {}} data-tip="문자">
                     <i className="fas fa-font" />
-                  </Button>
-                </div>
-              </div>
-              <div className="camera-box">
-                <video ref={video} playsInline autoPlay muted />
-                <div>
-                  <canvas ref={canvas} />
-                </div>
-                <div className="picture-buttons">
-                  <Button size="sm" color="white" outline rounded onClick={camera}>
-                    <i className="fas fa-camera-retro" />
-                  </Button>
-                  <Button size="sm" color="white" outline rounded onClick={takePhoto}>
-                    <i className="fas fa-camera" />
                   </Button>
                 </div>
               </div>
@@ -374,11 +310,32 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
           <Button size="md" color="white" outline>
             <i className="fas fa-angle-left" /> 취소
           </Button>
-          <Button size="md" color="primary">
+          <Button type="submit" size="md" color="primary">
             <i className="fas fa-address-card" /> 스프린터 등록
           </Button>
         </div>
       </Form>
+      {popup.camera && (
+        <Popup
+          title="사진 찍기"
+          open
+          setOpen={() => {
+            setPopup({ ...popup, camera: false });
+          }}
+        >
+          <Camera
+            setOpen={() => {
+              setPopup({ ...popup, camera: false });
+            }}
+            onChange={(d) => {
+              const next = { ...info };
+              next.imageType = 'image';
+              next.imageData = d;
+              setInfo(next);
+            }}
+          />
+        </Popup>
+      )}
     </div>
   );
 };

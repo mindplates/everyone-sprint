@@ -61,7 +61,7 @@ class Common extends React.Component {
     request.get('/api/users/my-info', null, (data) => {
       const { setUserInfo: setUserInfoReducer, i18n } = this.props;
       setUserInfoReducer(data);
-      i18n.changeLanguage('en');
+      i18n.changeLanguage(data.language || 'ko');
     });
   };
 

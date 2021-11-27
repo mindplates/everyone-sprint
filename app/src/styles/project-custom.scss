@@ -81,3 +81,30 @@
 .g-line-height-0 {
   line-height: 0;
 }
+
+.g-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 13;
+  display: flex;
+  width: 100%;
+  height: 100%;
+
+  > div {
+    flex: 1;
+    align-self: center !important;
+    text-align: center;
+  }
+}
+
+.g-no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}

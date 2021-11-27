@@ -11,6 +11,8 @@ import ProductLogo from '@/components/ProductLogo/ProductLogo';
 import PageTitle from '@/components/PageTitle/PageTitle';
 import SubTitle from '@/components/SubTitle/SubTitle';
 import CheckBox from '@/components/CheckBox/CheckBox';
+import Popup from '@/components/Popup/Popup';
+import UserImage from '@/components/UserImage/UserImage';
 
 export {
   MessageDialog,
@@ -26,4 +28,6 @@ export {
   SubTitle,
   CheckBox,
   Form,
+  Popup,
+  UserImage,
 };

@@ -1,0 +1,10 @@
+.user-image-wrapper {
+  display: inline-block;
+  > img {
+    width: 100%;
+
+    &.image-rounded {
+      border-radius: 50%;
+    }
+  }
+}

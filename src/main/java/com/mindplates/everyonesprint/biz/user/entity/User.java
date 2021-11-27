@@ -45,7 +45,7 @@ public class User extends CommonEntity {
     @Column(name = "image_type")
     private String imageType;
 
-    @Column(name = "image_data")
+    @Column(columnDefinition = "text", name = "image_data")
     private String imageData;
 
     @Length(min = 2, max = 100)
