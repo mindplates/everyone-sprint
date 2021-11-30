@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -57,6 +58,17 @@ public class UserService {
         user.setLastUpdatedBy(user.getId());
         user.setCreatedBy(user.getId());
         return userRepository.save(user);
+    }
+
+    public User login(String email, String password) throws NoSuchAlgorithmException {
+        return userRepository.findByEmail(email).filter(user -> {
+
+            String salt = user.getSalt();
+            byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
+            String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
+
+            return user.getPassword().equals(encryptedText);
+        }).orElse(null);
     }
 
 

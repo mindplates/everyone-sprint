@@ -13,6 +13,7 @@ import { HistoryPropTypes } from '@/proptypes';
 import { setUserInfo } from '@/store/actions';
 import Camera from '@/pages/Entry/Camera';
 import './Entry.scss';
+import ImageMaker from '@/pages/Entry/ImageMaker';
 
 const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
   const [info, setInfo] = useState({
@@ -33,6 +34,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
 
   const [popup, setPopup] = useState({
     camera: false,
+    imageMaker: false,
   });
 
   const changeInfo = (key, value) => {
@@ -98,7 +100,16 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   >
                     <i className="fas fa-camera-retro" />
                   </Button>
-                  <Button disabled size="sm" color="white" outline rounded onClick={() => {}} data-tip="이미지 업로드">
+                  <Button
+                    size="sm"
+                    color="white"
+                    outline
+                    rounded
+                    onClick={() => {
+                      setPopup({ ...popup, imageMaker: true });
+                    }}
+                    data-tip="이미지 업로드"
+                  >
                     <i className="fas fa-upload" />
                   </Button>
                   <Button disabled size="sm" color="white" outline rounded onClick={() => {}} data-tip="아이콘 선택">
@@ -324,8 +335,29 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
           }}
         >
           <Camera
-            setOpen={() => {
+            close={() => {
               setPopup({ ...popup, camera: false });
+            }}
+            onChange={(d) => {
+              const next = { ...info };
+              next.imageType = 'image';
+              next.imageData = d;
+              setInfo(next);
+            }}
+          />
+        </Popup>
+      )}
+      {popup.imageMaker && (
+        <Popup
+          title="이미지 등록"
+          open
+          setOpen={() => {
+            setPopup({ ...popup, imageMaker: false });
+          }}
+        >
+          <ImageMaker
+            close={() => {
+              setPopup({ ...popup, imageMaker: false });
             }}
             onChange={(d) => {
               const next = { ...info };

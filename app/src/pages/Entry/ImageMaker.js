@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { Button } from '@/components';
-import './Camera.scss';
+import './ImageMaker.scss';
 
+const imagePreviewWidth = 300;
 const frameBorderWidth = 3;
 
 const canvas = React.createRef();
 const image = React.createRef();
-const video = React.createRef();
+const fileInput = React.createRef();
 
 const moveInfo = {
   isMoveStarted: false,
@@ -26,26 +27,10 @@ const sizerInfo = {
   },
 };
 
-const Camera = ({ t, close, onChange }) => {
-  const [supported, setSupported] = useState(false);
-  const [allowed, setAllowed] = useState(true);
+const ImageMaker = ({ t, close, onChange }) => {
   const [step, setStep] = useState(0);
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const [frameInfo, setFrameInfo] = useState({ top: 0, left: 0, width: 120, height: 120 });
-
-  const camera = async () => {
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: false,
-        video: true,
-      })
-      .then((stream) => {
-        video.current.srcObject = stream;
-      })
-      .catch(() => {
-        setAllowed(false);
-      });
-  };
 
   const makeImage = () => {
     image.current.width = frameInfo.width;
@@ -66,29 +51,10 @@ const Camera = ({ t, close, onChange }) => {
   };
 
   useEffect(() => {
-    if (step === 2) {
+    if (step === 1) {
       makeImage();
     }
   }, [step, frameInfo, imageSize]);
-
-  const takePhoto = () => {
-    const rect = video.current.getBoundingClientRect();
-    canvas.current.width = rect.width;
-    canvas.current.height = rect.height;
-    canvas.current.getContext('2d').drawImage(video.current, 0, 0, canvas.current.width, canvas.current.height);
-    setImageSize({
-      width: rect.width,
-      height: rect.height,
-    });
-
-    setFrameInfo({
-      width: 120,
-      height: 120,
-      top: rect.height / 2 - 60,
-      left: rect.width / 2 - 60,
-    });
-    setStep(1);
-  };
 
   const onMouseUp = () => {
     moveInfo.isMoveStarted = false;
@@ -178,15 +144,6 @@ const Camera = ({ t, close, onChange }) => {
   };
 
   useEffect(() => {
-    const isSupported = 'mediaDevices' in navigator;
-    setSupported(isSupported);
-
-    if (isSupported) {
-      setTimeout(() => {
-        camera();
-      }, 100);
-    }
-
     return () => {
       document.removeEventListener('mouseup', onMouseUp);
       document.removeEventListener('touchend', onMouseUp);
@@ -197,11 +154,44 @@ const Camera = ({ t, close, onChange }) => {
 
   const changeStep = (nextStep) => {
     setStep(nextStep);
-    if (nextStep === 2) {
+    if (nextStep === 1) {
       setTimeout(() => {
         // makeImage();
       }, 100);
     }
+  };
+
+  const onChangeImage = (file) => {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+      img.onload = function () {
+        const r = imagePreviewWidth / Math.max(img.width, img.height);
+        const width = Math.round(r * img.width);
+        const height = Math.round(r * img.height);
+        canvas.current.width = width; // img.width;
+        canvas.current.height = height; // img.height;
+        canvas.current
+          .getContext('2d')
+          .drawImage(this, 0, 0, img.width, img.height, 0, 0, canvas.current.width, canvas.current.height);
+
+        setImageSize({
+          width,
+          height,
+        });
+
+        setFrameInfo({
+          width: 120,
+          height: 120,
+          top: height / 2 - 60,
+          left: width / 2 - 60,
+        });
+
+        setStep(1);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   };
 
   const onSizerDown = (e) => {
@@ -221,68 +211,56 @@ const Camera = ({ t, close, onChange }) => {
 
   return (
     <div className="camera-wrapper g-no-select">
-      {!supported && (
-        <div className="not-support-content">
-          <div className="message">카메라 API를 찾을 수 없습니다.</div>
-          <div>
-            <Button
-              size="md"
-              color="white"
-              outline
+      <div className="camera-content">
+        <div className="camera-menu">
+          <ul>
+            <li
+              className={step === 0 ? 'selected' : ''}
               onClick={() => {
-                close();
+                changeStep(0);
               }}
             >
-              {t('닫기')}
-            </Button>
-          </div>
+              <span>이미지 선택</span>
+            </li>
+            <li className={step === 1 ? 'selected' : ''}>
+              <span>{t('위치 조정')}</span>
+            </li>
+          </ul>
         </div>
-      )}
-      {!allowed && (
-        <div className="not-support-content">
-          <div className="message">웹브라우저에서 접근할 수 있는 카메라가 없거나, 접근 권한이 허용되지 않았습니다.</div>
-          <div>
-            <Button
-              size="md"
-              color="white"
-              outline
-              onClick={() => {
-                close();
-              }}
-            >
-              {t('닫기')}
-            </Button>
-          </div>
-        </div>
-      )}
-      {allowed && supported && (
-        <div className="camera-content">
-          <div className="camera-menu">
-            <ul>
-              <li
-                className={step === 0 ? 'selected' : ''}
-                onClick={() => {
-                  changeStep(0);
-                }}
-              >
-                <span>카메라 세팅</span>
-              </li>
-              <li className={step === 1 ? 'selected' : ''}>
-                <span>이미지 확인</span>
-              </li>
-              <li className={step === 2 ? 'selected' : ''}>
-                <span>위치 조정</span>
-              </li>
-            </ul>
-          </div>
-          <div className="preview-content">
-            <div className={`video-content ${step === 0 ? 'live' : 'hide'}`}>
-              <video ref={video} playsInline autoPlay muted />
+        <div className="upload-content">
+          <div className={`file-selector ${step === 0 ? 'live' : 'hide'}`}>
+            <div>
+              <span className="icon">
+                <i className="fas fa-upload" />
+              </span>
+              <div className="message">이미지를 드래그하거나, 버튼을 클릭하여 선택해주세요.</div>
+              <div className="select-button">
+                <input
+                  ref={fileInput}
+                  type="file"
+                  className="d-none"
+                  onChange={() => {
+                    if (fileInput.current.files.length > 0) {
+                      onChangeImage(fileInput.current.files[0]);
+                    }
+                  }}
+                />
+                <Button
+                  size="xs"
+                  color="white"
+                  outline
+                  onClick={() => {
+                    fileInput.current.click();
+                  }}
+                >
+                  <i className="far fa-file-alt" /> 파일 선택
+                </Button>
+              </div>
             </div>
-            <div className="canvas-content">
-              <canvas ref={canvas} />
-            </div>
-            {step === 2 && (
+          </div>
+          <div className={`canvas-content ${step === 0 ? 'hide' : ''}`}>
+            <canvas ref={canvas} />
+            {step === 1 && (
               <div className="frame-content">
                 <div
                   style={{
@@ -309,100 +287,78 @@ const Camera = ({ t, close, onChange }) => {
               </div>
             )}
           </div>
-          <div className="picture-buttons">
-            {step === 0 && (
-              <div>
-                <div className="message">
-                  <i className="fas fa-info-circle" /> 카메라 영역을 확인하고, 촬영 버튼을 클릭해주세요.
-                </div>
-                <div className="buttons">
-                  <Button size="sm" color="white" outline onClick={takePhoto}>
-                    <i className="fas fa-camera" /> 촬영
-                  </Button>
-                </div>
-              </div>
-            )}
-            {step === 1 && (
-              <div>
-                <div className="message">
-                  <i className="fas fa-info-circle" /> 이미지를 확인해주세요.
-                </div>
-                <div className="buttons">
-                  <Button
-                    size="sm"
-                    color="white"
-                    outline
-                    onClick={() => {
-                      changeStep(0);
-                    }}
-                  >
-                    <i className="fas fa-redo" /> 다시 촬영
-                  </Button>
-                  <Button
-                    size="sm"
-                    color="white"
-                    outline
-                    onClick={() => {
-                      changeStep(2);
-                    }}
-                  >
-                    <i className="fas fa-arrow-right" /> 다음으로
-                  </Button>
-                </div>
-              </div>
-            )}
-            {step === 2 && (
-              <div>
-                <div className="message">
-                  <i className="fas fa-info-circle" /> 박스의 크기를 조절하거나 이동하여 사진 영역을 선택해주세요.
-                </div>
-                <div className="crop-preview">
-                  <div>
-                    <canvas
-                      ref={image}
-                      style={{
-                        width: 120,
-                        height: 120,
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="buttons px-0 mt-3">
-                  <Button
-                    size="sm"
-                    color="white"
-                    outline
-                    onClick={() => {
-                      changeStep(0);
-                    }}
-                  >
-                    <i className="fas fa-redo" /> 다시 촬영
-                  </Button>
-                  <Button
-                    size="sm"
-                    color="white"
-                    outline
-                    onClick={() => {
-                      const imgBase64 = image.current.toDataURL('image/jpeg', 'image/octet-stream');
-                      onChange(imgBase64);
-                      close();
-                    }}
-                  >
-                    <i className="fas fa-check" /> 선택 완료
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
-      )}
+        <div className="picture-buttons">
+          {step === 0 && (
+            <div>
+              <div className="message">
+                <i className="fas fa-info-circle" /> 이미지를 드래그하거나, 버튼을 클릭하여 선택해주세요.
+              </div>
+              <div className="buttons">
+                <Button
+                  size="sm"
+                  color="white"
+                  outline
+                  onClick={() => {
+                    fileInput.current.click();
+                  }}
+                >
+                  <i className="far fa-file-alt" /> 파일 선택
+                </Button>
+              </div>
+            </div>
+          )}
+          {step === 1 && (
+            <div>
+              <div className="message">
+                <i className="fas fa-info-circle" /> 박스의 크기를 조절하거나 이동하여 사진 영역을 선택해주세요.
+              </div>
+              <div className="crop-preview">
+                <div>
+                  <canvas
+                    ref={image}
+                    style={{
+                      width: 120,
+                      height: 120,
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="buttons px-0 mt-3">
+                <Button
+                  size="sm"
+                  color="white"
+                  outline
+                  onClick={() => {
+                    changeStep(0);
+                  }}
+                >
+                  <i className="fas fa-redo" /> 다시 선택
+                </Button>
+                <Button
+                  size="sm"
+                  color="white"
+                  outline
+                  onClick={() => {
+                    const imgBase64 = image.current.toDataURL('image/jpeg', 'image/octet-stream');
+                    onChange(imgBase64);
+                    close();
+                  }}
+                >
+                  <i className="fas fa-check" /> 선택 완료
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
 
-export default withTranslation()(Camera);
+export default withTranslation()(ImageMaker);
 
-Camera.propTypes = {
+ImageMaker.propTypes = {
   t: PropTypes.func,
   match: PropTypes.shape({
     params: PropTypes.shape({

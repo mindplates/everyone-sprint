@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -52,6 +54,25 @@ public class UserController {
         } else {
             return new MyInfoResponse();
         }
+    }
+
+    @DisableLogin
+    @PostMapping("/login")
+    public Boolean login(@RequestBody Map<String, String> account, HttpServletRequest request) throws NoSuchAlgorithmException {
+
+        User user = userService.login(account.get("email"), account.get("password"));
+        if (user != null) {
+            sessionUtil.login(request, user);
+            return true;
+        }
+
+        return false;
+    }
+
+    @DisableLogin
+    @DeleteMapping("/logout")
+    public void logout(HttpServletRequest request) {
+        sessionUtil.logout(request);
     }
 
 }
