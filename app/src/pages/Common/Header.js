@@ -6,8 +6,9 @@ import PropTypes from 'prop-types';
 import { SettingPropTypes, UserPropTypes } from '@/proptypes';
 import MENU from '@/constants/menu';
 import { Button, Liner, Overlay, ProductLogo, UserImage } from '@/components';
-import { setSetting } from '@/store/actions';
+import { setSetting, setUserInfo } from '@/store/actions';
 import './Header.scss';
+import request from '@/utils/request';
 
 const Header = (props) => {
   const { setSetting: setSettingReducer, setting, location, t, user } = props;
@@ -19,7 +20,13 @@ const Header = (props) => {
   const values = (location.pathname.split('/') || []).filter((value) => value);
   const [currentTopMenu] = values;
 
-  console.log(user);
+  const logout = () => {
+    const { setUserInfo: setUserInfoReducer } = props;
+
+    request.del('/api/users/logout', null, () => {
+      setUserInfoReducer({});
+    });
+  };
 
   return (
     <div className={`header-wrapper ${setting.collapsed ? 'collapsed' : ''}`}>
@@ -95,7 +102,14 @@ const Header = (props) => {
           <div className={menuOpen ? 'opened' : ''}>
             {user && user.id && (
               <div className="user-icon">
-                <Button color="white" size="lg" outline onClick={() => {}}>
+                <Button
+                  color="white"
+                  size="lg"
+                  outline
+                  onClick={() => {
+                    logout();
+                  }}
+                >
                   <UserImage size="30px" imageType={user.imageType} imageData={user.imageData} rounded />
                 </Button>
               </div>
@@ -149,6 +163,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setSetting: (key, value) => dispatch(setSetting(key, value)),
+    setUserInfo: (user) => dispatch(setUserInfo(user)),
   };
 };
 
@@ -171,4 +186,5 @@ Header.propTypes = {
   setting: SettingPropTypes,
   setSetting: PropTypes.func,
   user: UserPropTypes,
+  setUserInfo: PropTypes.func,
 };
