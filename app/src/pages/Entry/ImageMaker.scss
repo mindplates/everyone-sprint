@@ -1,6 +1,7 @@
 .image-maker-wrapper {
   .image-maker-content {
     display: flex;
+    background-color: $white;
 
     @media (max-width: 992px) {
       display: block;
@@ -54,7 +55,8 @@
   .upload-content {
     position: relative;
     padding: 2rem;
-    min-height: 364px;
+    min-height: 332px;
+    background-color: $white;
 
     .file-selector {
       width: 500px;
@@ -193,6 +195,7 @@
     padding-top: 2rem;
     text-align: left;
     padding-right: 2rem;
+    background-color: $white;
 
     @media (max-width: 992px) {
       padding: 1rem;

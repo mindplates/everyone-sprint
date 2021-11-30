@@ -11,10 +11,11 @@ import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes } from '@/proptypes';
 import { setUserInfo } from '@/store/actions';
-import Camera from '@/pages/Entry/Camera';
+import PictureMaker from '@/pages/Entry/PictureMaker';
 import './Entry.scss';
 import ImageMaker from '@/pages/Entry/ImageMaker';
 import TextMaker from '@/pages/Entry/TextMaker';
+import IconSelector from '@/pages/Entry/IconSelector';
 
 const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
   const [info, setInfo] = useState({
@@ -37,6 +38,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
     camera: false,
     imageMaker: false,
     textMaker: false,
+    iconSelector: false,
   });
 
   const changeInfo = (key, value) => {
@@ -99,6 +101,13 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                       </div>
                     )}
                     {info.imageType && info.imageType === 'text' && <div className="avatar-text">{info.imageData}</div>}
+                    {info.imageType && info.imageType === 'icon' && (
+                      <div className="avatar-icon">
+                        <span>
+                          <i className={info.imageData.icon} />
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="picture-controls">
@@ -126,7 +135,16 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   >
                     <i className="fas fa-upload" />
                   </Button>
-                  <Button disabled size="sm" color="white" outline rounded onClick={() => {}} data-tip="아이콘 선택">
+                  <Button
+                    size="sm"
+                    color="white"
+                    outline
+                    rounded
+                    onClick={() => {
+                      setPopup({ ...popup, iconSelector: true });
+                    }}
+                    data-tip="아이콘 선택"
+                  >
                     <i className="fas fa-icons" />
                   </Button>
                   <Button
@@ -357,7 +375,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
             setPopup({ ...popup, camera: false });
           }}
         >
-          <Camera
+          <PictureMaker
             close={() => {
               setPopup({ ...popup, camera: false });
             }}
@@ -413,6 +431,27 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
           />
         </Popup>
       )}
+      {popup.iconSelector && (
+        <Popup
+          title="아이콘 선택"
+          open
+          setOpen={() => {
+            setPopup({ ...popup, iconSelector: false });
+          }}
+        >
+          <IconSelector
+            close={() => {
+              setPopup({ ...popup, iconSelector: false });
+            }}
+            onChange={(d) => {
+              const next = { ...info };
+              next.imageType = 'icon';
+              next.imageData = d;
+              setInfo(next);
+            }}
+          />
+        </Popup>
+      )}
     </div>
   );
 };
@@ -433,12 +472,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(wi
 
 Entry.propTypes = {
   t: PropTypes.func,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      promotionId: PropTypes.string,
-      couponId: PropTypes.string,
-    }),
-  }),
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),

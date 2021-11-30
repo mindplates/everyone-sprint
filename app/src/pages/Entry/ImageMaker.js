@@ -210,7 +210,7 @@ const ImageMaker = ({ t, close, onChange }) => {
   };
 
   return (
-    <div className="image-maker-wrapper g-no-select">
+    <div className="image-maker-wrapper g-popup-wrapper g-no-select">
       <div className="image-maker-content">
         <div className="image-maker-menu">
           <ul>
@@ -360,12 +360,6 @@ export default withTranslation()(ImageMaker);
 
 ImageMaker.propTypes = {
   t: PropTypes.func,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      promotionId: PropTypes.string,
-      couponId: PropTypes.string,
-    }),
-  }),
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),

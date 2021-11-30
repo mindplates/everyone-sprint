@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { Button } from '@/components';
-import './Camera.scss';
+import './PictureMaker.scss';
 
 const frameBorderWidth = 3;
 
@@ -26,7 +26,7 @@ const sizerInfo = {
   },
 };
 
-const Camera = ({ t, close, onChange }) => {
+const PictureMaker = ({ t, close, onChange }) => {
   const [supported, setSupported] = useState(false);
   const [allowed, setAllowed] = useState(true);
   const [step, setStep] = useState(0);
@@ -220,7 +220,7 @@ const Camera = ({ t, close, onChange }) => {
   };
 
   return (
-    <div className="camera-wrapper g-no-select">
+    <div className="picture-maker-wrapper g-no-select">
       {!supported && (
         <div className="not-support-content">
           <div className="message">카메라 API를 찾을 수 없습니다.</div>
@@ -256,8 +256,8 @@ const Camera = ({ t, close, onChange }) => {
         </div>
       )}
       {allowed && supported && (
-        <div className="camera-content">
-          <div className="camera-menu">
+        <div className="picture-maker-content">
+          <div className="picture-maker-menu">
             <ul>
               <li
                 className={step === 0 ? 'selected' : ''}
@@ -400,16 +400,10 @@ const Camera = ({ t, close, onChange }) => {
   );
 };
 
-export default withTranslation()(Camera);
+export default withTranslation()(PictureMaker);
 
-Camera.propTypes = {
+PictureMaker.propTypes = {
   t: PropTypes.func,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      promotionId: PropTypes.string,
-      couponId: PropTypes.string,
-    }),
-  }),
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),

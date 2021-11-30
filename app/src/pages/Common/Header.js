@@ -170,12 +170,6 @@ export default withRouter(withTranslation()(connect(mapStateToProps, mapDispatch
 
 Header.propTypes = {
   t: PropTypes.func,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      promotionId: PropTypes.string,
-      couponId: PropTypes.string,
-    }),
-  }),
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),

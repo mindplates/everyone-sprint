@@ -1,0 +1,60 @@
+.icon-selector-wrapper {
+  .icon-list {
+    background-color: $white;
+    padding: 1rem 1rem 0.5rem;
+
+
+    @media (max-height: 800px) {
+      max-height: 370px;
+    }
+
+    @media (max-height: 600px) {
+      max-height: 280px;
+    }
+
+    @media (max-height: 500px) {
+      max-height: 180px;
+    }
+
+    @media (max-height: 400px) {
+      max-height: 140px;
+    }
+
+    @media (max-width: 1400px) {
+      max-height: 370px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      text-align: left;
+
+      li {
+        display: inline-flex;
+        width: 80px;
+        height: 80px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        &:hover {
+          border: 1px solid rgba(0, 0, 0, 0.6);
+        }
+
+        &.selected {
+          background-color: $yellow;
+          border: 1px solid rgba(0, 0, 0, 0.6);
+        }
+
+        > div {
+          font-size: 36px;
+          text-align: center;
+          align-self: center;
+          width: 100%;
+          line-height: 0;
+        }
+      }
+    }
+  }
+}

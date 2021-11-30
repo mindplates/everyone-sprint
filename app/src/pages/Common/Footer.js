@@ -68,12 +68,6 @@ Footer.defaultProps = {
 Footer.propTypes = {
   className: PropTypes.string,
   productName: PropTypes.string,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      promotionId: PropTypes.string,
-      couponId: PropTypes.string,
-    }),
-  }),
   systemInfo: PropTypes.shape({
     name: PropTypes.string,
     version: PropTypes.string,

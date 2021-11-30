@@ -1,4 +1,4 @@
-.camera-wrapper {
+.picture-maker-wrapper {
   .not-support-content {
     padding-bottom: 2rem;
     > .message {
@@ -7,14 +7,14 @@
     }
   }
 
-  .camera-content {
+  .picture-maker-content {
     display: flex;
 
     @media (max-width: 992px) {
       display: block;
     }
 
-    .camera-menu {
+    .picture-maker-menu {
       background-color: $light;
       border-right: 1px solid rgba(0, 0, 0, 0.1);
       padding: 1rem;
