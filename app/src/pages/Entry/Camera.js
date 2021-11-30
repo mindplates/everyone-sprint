@@ -275,7 +275,6 @@ const Camera = ({ t, setOpen, onChange }) => {
               </li>
             </ul>
           </div>
-
           <div className="preview-content">
             <div className={`video-content ${step === 0 ? 'live' : 'hide'}`}>
               <video ref={video} playsInline autoPlay muted />
@@ -309,65 +308,6 @@ const Camera = ({ t, setOpen, onChange }) => {
                 </div>
               </div>
             )}
-            <div className="preview-buttons d-none">
-              {step === 0 && (
-                <Button size="md" color="white" outline rounded onClick={takePhoto}>
-                  <i className="fas fa-camera" />
-                </Button>
-              )}
-              {step === 1 && (
-                <>
-                  <Button
-                    size="md"
-                    color="white"
-                    outline
-                    rounded
-                    onClick={() => {
-                      changeStep(0);
-                    }}
-                  >
-                    <i className="fas fa-redo" />
-                  </Button>
-                  <Button
-                    size="md"
-                    color="white"
-                    outline
-                    rounded
-                    onClick={() => {
-                      changeStep(2);
-                    }}
-                  >
-                    <i className="fas fa-arrow-right" />
-                  </Button>
-                </>
-              )}
-              {step === 2 && (
-                <>
-                  <Button
-                    size="md"
-                    color="white"
-                    outline
-                    rounded
-                    onClick={() => {
-                      changeStep(0);
-                    }}
-                  >
-                    <i className="fas fa-redo" />
-                  </Button>
-                  <Button
-                    size="md"
-                    color="white"
-                    outline
-                    rounded
-                    onClick={() => {
-                      makeImage();
-                    }}
-                  >
-                    <i className="fas fa-check" />
-                  </Button>
-                </>
-              )}
-            </div>
           </div>
           <div className="picture-buttons">
             {step === 0 && (
@@ -445,6 +385,7 @@ const Camera = ({ t, setOpen, onChange }) => {
                     onClick={() => {
                       const imgBase64 = image.current.toDataURL('image/jpeg', 'image/octet-stream');
                       onChange(imgBase64);
+                      setOpen(false);
                     }}
                   >
                     <i className="fas fa-check" /> 선택 완료
