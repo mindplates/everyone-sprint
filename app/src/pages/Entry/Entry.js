@@ -14,6 +14,7 @@ import { setUserInfo } from '@/store/actions';
 import Camera from '@/pages/Entry/Camera';
 import './Entry.scss';
 import ImageMaker from '@/pages/Entry/ImageMaker';
+import TextMaker from '@/pages/Entry/TextMaker';
 
 const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
   const [info, setInfo] = useState({
@@ -35,6 +36,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
   const [popup, setPopup] = useState({
     camera: false,
     imageMaker: false,
+    textMaker: false,
   });
 
   const changeInfo = (key, value) => {
@@ -45,8 +47,6 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-
-    console.log(2);
 
     if (info.password !== info.password2) {
       dialog.setMessage(MESSAGE_CATEGORY.INFO, t('validation.badInput'), t('validation.notEqualPassword'));
@@ -79,12 +79,26 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                 <div className="preview">
                   <div className="preview-content">
                     {info.imageType && (
-                      <ExitButton size="xxs" color="black" className="remove-image-button" onClick={() => {}} />
+                      <ExitButton
+                        size="xxs"
+                        color="black"
+                        className="remove-image-button"
+                        onClick={() => {
+                          setInfo({ ...setInfo, imageType: '', imageData: '' });
+                        }}
+                      />
                     )}
-                    <div className="preview-image">
-                      {info.imageType === 'image' && <img src={info.imageData} alt="USER" />}
-                      {info.imageType !== 'image' && <i className="fas fa-robot" />}
-                    </div>
+                    {!info.imageType && (
+                      <div className="preview-image">
+                        <i className="fas fa-robot" />
+                      </div>
+                    )}
+                    {info.imageType && info.imageType === 'image' && (
+                      <div className="preview-image">
+                        <img src={info.imageData} alt="USER" />
+                      </div>
+                    )}
+                    {info.imageType && info.imageType === 'text' && <div className="avatar-text">{info.imageData}</div>}
                   </div>
                 </div>
                 <div className="picture-controls">
@@ -115,7 +129,16 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   <Button disabled size="sm" color="white" outline rounded onClick={() => {}} data-tip="아이콘 선택">
                     <i className="fas fa-icons" />
                   </Button>
-                  <Button disabled size="sm" color="white" outline rounded onClick={() => {}} data-tip="문자">
+                  <Button
+                    size="sm"
+                    color="white"
+                    outline
+                    rounded
+                    onClick={() => {
+                      setPopup({ ...popup, textMaker: true });
+                    }}
+                    data-tip="문자"
+                  >
                     <i className="fas fa-font" />
                   </Button>
                 </div>
@@ -362,6 +385,28 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
             onChange={(d) => {
               const next = { ...info };
               next.imageType = 'image';
+              next.imageData = d;
+              setInfo(next);
+            }}
+          />
+        </Popup>
+      )}
+      {popup.textMaker && (
+        <Popup
+          title="텍스트 입력"
+          size="sm"
+          open
+          setOpen={() => {
+            setPopup({ ...popup, textMaker: false });
+          }}
+        >
+          <TextMaker
+            close={() => {
+              setPopup({ ...popup, textMaker: false });
+            }}
+            onChange={(d) => {
+              const next = { ...info };
+              next.imageType = 'text';
               next.imageData = d;
               setInfo(next);
             }}

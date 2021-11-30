@@ -1,0 +1,35 @@
+.text-maker-wrapper {
+  .text-maker-content {
+    padding: 2rem 1rem;
+    .preview {
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 1rem;
+
+      .text-input {
+        height: 100%;
+      }
+
+      input {
+        border: none;
+        height: 100%;
+        text-align: center;
+        font-size: 30px;
+      }
+    }
+
+    .message {
+      margin-bottom: 1rem;
+    }
+
+    .submit-buttons {
+      > button {
+        margin-right: 1rem;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}

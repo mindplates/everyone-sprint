@@ -129,7 +129,6 @@ const Header = (props) => {
             <div>
               <Button
                 className="collapsed-button"
-                color="white"
                 size="lg"
                 outline
                 onClick={() => {
@@ -141,7 +140,7 @@ const Header = (props) => {
               </Button>
             </div>
             <div>
-              <Button color="white" size="lg" outline onClick={() => {}}>
+              <Button size="lg" outline onClick={() => {}}>
                 <i className="fas fa-cog" />
               </Button>
             </div>

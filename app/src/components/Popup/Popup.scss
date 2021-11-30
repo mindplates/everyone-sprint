@@ -7,6 +7,10 @@
     border-radius: 1px;
     position: relative;
 
+    &.size-lg {
+      max-width: 1400px;
+    }
+
     @media (max-width: 1440px) {
       max-width: none;
       margin: 0 40px;
@@ -15,6 +19,27 @@
     @media (max-width: 768px) {
       max-width: none;
       margin: 0 1rem;
+    }
+
+    &.size-md {
+      max-width: 992px;
+    }
+
+    @media (max-width: 992px) {
+      &.size-md {
+        margin: 0 1rem;
+      }
+    }
+
+    &.size-sm {
+      max-width: 576px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 576px) {
+      &.size-sm {
+        margin: 0 1rem;
+      }
     }
 
     .popup-title-content {
