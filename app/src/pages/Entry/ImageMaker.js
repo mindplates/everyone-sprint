@@ -210,9 +210,9 @@ const ImageMaker = ({ t, close, onChange }) => {
   };
 
   return (
-    <div className="camera-wrapper g-no-select">
-      <div className="camera-content">
-        <div className="camera-menu">
+    <div className="image-maker-wrapper g-no-select">
+      <div className="image-maker-content">
+        <div className="image-maker-menu">
           <ul>
             <li
               className={step === 0 ? 'selected' : ''}

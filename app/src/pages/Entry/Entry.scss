@@ -71,6 +71,14 @@
                   width: 100%;
                 }
               }
+
+              > .avatar-text {
+                color: $black;
+                font-size: 30px;
+                align-self: center;
+                width: 100%;
+                text-align: center;
+              }
             }
           }
 

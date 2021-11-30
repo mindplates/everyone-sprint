@@ -10,14 +10,23 @@ class Popup extends React.PureComponent {
   componentDidMount() {
     this.overflow = document.querySelector('body').style.overflow;
     document.querySelector('body').style.overflow = 'hidden';
+    document.addEventListener('keydown', this.onKeyDown);
   }
 
   componentWillUnmount() {
     document.querySelector('body').style.overflow = this.overflow;
+    document.removeEventListener('keydown', this.onKeyDown);
   }
 
+  onKeyDown = (e) => {
+    const { setOpen } = this.props;
+    if (e.keyCode === 27) {
+      setOpen(false);
+    }
+  };
+
   render() {
-    const { className, open, children, title, setOpen, full, onClick } = this.props;
+    const { className, open, size, children, title, setOpen, full, onClick } = this.props;
 
     return (
       <div
@@ -28,10 +37,10 @@ class Popup extends React.PureComponent {
           }
         }}
       >
-        <div>
+        <div className={`size-${size}`}>
           <div className="popup-title-content">
-            <div className='popup-title'>{title}</div>
-            <div className='popup-button'>
+            <div className="popup-title">{title}</div>
+            <div className="popup-button">
               <ExitButton
                 size="xxs"
                 color="color"
@@ -55,6 +64,7 @@ Popup.defaultProps = {
   className: '',
   title: '',
   full: false,
+  size: 'lg',
 };
 
 Popup.propTypes = {
@@ -65,6 +75,7 @@ Popup.propTypes = {
   setOpen: PropTypes.func,
   full: PropTypes.bool,
   onClick: PropTypes.func,
+  size: PropTypes.string,
 };
 
 export default withTranslation()(Popup);

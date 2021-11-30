@@ -1,20 +1,12 @@
-.camera-wrapper {
-  .not-support-content {
-    padding-bottom: 2rem;
-    > .message {
-      padding-bottom: 2rem;
-      padding-top: 2rem;
-    }
-  }
-
-  .camera-content {
+.image-maker-wrapper {
+  .image-maker-content {
     display: flex;
 
     @media (max-width: 992px) {
       display: block;
     }
 
-    .camera-menu {
+    .image-maker-menu {
       background-color: $light;
       border-right: 1px solid rgba(0, 0, 0, 0.1);
       padding: 1rem;
