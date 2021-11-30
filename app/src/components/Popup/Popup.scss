@@ -9,11 +9,14 @@
 
     &.size-lg {
       max-width: 1400px;
+      margin: 0 auto;
     }
 
     @media (max-width: 1440px) {
-      max-width: none;
-      margin: 0 40px;
+      &.size-lg {
+        max-width: none;
+        margin: 0 40px;
+      }
     }
 
     @media (max-width: 768px) {
@@ -23,6 +26,7 @@
 
     &.size-md {
       max-width: 992px;
+      margin: 0 auto;
     }
 
     @media (max-width: 992px) {
@@ -44,7 +48,7 @@
 
     .popup-title-content {
       padding: 1rem;
-      background-color: $primary;
+      background-color: #0198e1;
       color: $white;
       border-radius: 1px 1px 0 0;
       text-align: left;

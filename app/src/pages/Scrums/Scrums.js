@@ -30,13 +30,6 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, undefined)(Scrums);
 
 Scrums.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      promotionId: PropTypes.string,
-      couponId: PropTypes.string,
-    }),
-  }),
-
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),

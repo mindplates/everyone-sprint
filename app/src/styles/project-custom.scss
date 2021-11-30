@@ -70,7 +70,6 @@
   padding: 1rem;
 
   @media (max-width: 992px) {
-
   }
 }
 
@@ -102,9 +101,49 @@
 }
 
 .g-no-select {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
+
+.g-scrollbar {
+  overflow-y: auto;
+}
+
+.g-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #ccc;
+}
+
+.g-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #ffa114;
+}
+
+.g-popup-wrapper {
+  background-color: $light;
+}
+
+.g-popup-content {
+  padding: 1rem;
+  > div {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+  }
+}
+
+.g-popup-bottom-button {
+  background-color: $gray-200;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  > button {
+    margin-right: 0.5rem;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+

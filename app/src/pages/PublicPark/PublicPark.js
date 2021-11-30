@@ -220,13 +220,6 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, undefined)(PublicPark);
 
 PublicPark.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      promotionId: PropTypes.string,
-      couponId: PropTypes.string,
-    }),
-  }),
-
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),
