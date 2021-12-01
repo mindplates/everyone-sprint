@@ -97,10 +97,11 @@
     position: absolute;
     bottom: 9px;
     left: 7px;
+    right: 7px;
     transition: all 0.3s;
     color: $gray-700;
     z-index: 1;
-    width: 100%;
+
 
     @media (max-width: 576px) {
       font-size: 0.9rem;
@@ -187,6 +188,65 @@
         .liner {
           width: 0 !important;
         }
+      }
+    }
+  }
+
+  &.xs {
+  }
+
+  &.sm {
+    height: 31px;
+  }
+
+  &.md {
+    &.outline {
+      .input-info {
+        bottom: 7px;
+      }
+
+      &.focus {
+        .input-info {
+          font-size: 0.8rem;
+          bottom: 37px;
+        }
+      }
+
+      &.has-value {
+        .input-info {
+          bottom: 37px;
+        }
+      }
+
+      input {
+        padding: 6px 26px 6px 7px !important;
+        height: 100%;
+      }
+    }
+  }
+
+  &.lg {
+    &.outline {
+      .input-info {
+        bottom: 12px;
+      }
+
+      &.focus {
+        .input-info {
+          font-size: 0.8rem;
+          bottom: 47px;
+        }
+      }
+
+      &.has-value {
+        .input-info {
+          bottom: 47px;
+        }
+      }
+
+      input {
+        padding: 11px 26px 11px 7px !important;
+        height: 100%;
       }
     }
   }

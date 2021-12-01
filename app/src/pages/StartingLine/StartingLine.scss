@@ -1,2 +1,38 @@
 .starting-line-wrapper {
+  padding-top: 2rem !important;
+
+  .starting-line-content {
+    display: flex;
+    > form {
+      width: 400px;
+      align-self: center;
+      margin: 0 auto;
+
+      .email {
+        margin-bottom: 0.5rem;
+      }
+
+      .password {
+        margin-bottom: 0.5rem;
+      }
+
+      .auto-login {
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .bottom-button {
+        text-align: center;
+      }
+
+      .message {
+        text-align: center;
+        margin-top: 1rem;
+
+        a {
+          text-decoration: none;
+        }
+      }
+    }
+  }
 }

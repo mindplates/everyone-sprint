@@ -1,5 +1,7 @@
 package com.mindplates.everyonesprint.framework.interceptor;
 
+import com.mindplates.everyonesprint.biz.user.entity.User;
+import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
@@ -20,7 +22,10 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
 
     private final String activeProfile;
 
-    public LoginCheckInterceptor(SessionUtil sessionUtil, MessageSourceAccessor messageSourceAccessor, String activeProfile) {
+    private final UserService userService;
+
+    public LoginCheckInterceptor(UserService userService, SessionUtil sessionUtil, MessageSourceAccessor messageSourceAccessor, String activeProfile) {
+        this.userService = userService;
         this.sessionUtil = sessionUtil;
         this.messageSourceAccessor = messageSourceAccessor;
         this.activeProfile = activeProfile;
@@ -28,6 +33,16 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        if (!sessionUtil.isLogin(request)) {
+            String token = request.getHeader("Token");
+            if (token != null) {
+                User user = userService.selectUserByLoginToken(token);
+                if (user != null) {
+                    sessionUtil.login(request, user);
+                }
+            }
+        }
 
         DisableLogin disableLogin = null;
 
@@ -43,8 +58,9 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        if(!sessionUtil.isLogin(request))
-        	throw new ServiceException("", "user.session.expired");
+        if (!sessionUtil.isLogin(request)) {
+            throw new ServiceException("", "user.session.expired");
+        }
 
         return true;
     }

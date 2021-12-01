@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.user.controller;
 
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.service.UserService;
+import com.mindplates.everyonesprint.biz.user.vo.request.LoginRequest;
 import com.mindplates.everyonesprint.biz.user.vo.request.UserRequest;
 import com.mindplates.everyonesprint.biz.user.vo.response.MyInfoResponse;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
@@ -16,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -58,20 +58,28 @@ public class UserController {
 
     @DisableLogin
     @PostMapping("/login")
-    public Boolean login(@RequestBody Map<String, String> account, HttpServletRequest request) throws NoSuchAlgorithmException {
+    public MyInfoResponse login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) throws NoSuchAlgorithmException {
 
-        User user = userService.login(account.get("email"), account.get("password"));
+        User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword(), loginRequest.getAutoLogin());
         if (user != null) {
             sessionUtil.login(request, user);
-            return true;
         }
 
-        return false;
+        return new MyInfoResponse(user);
     }
 
     @DisableLogin
     @DeleteMapping("/logout")
     public void logout(HttpServletRequest request) {
+
+        if (sessionUtil.isLogin(request)) {
+            Long userId = sessionUtil.getUserId(request);
+            User user = userService.selectUser(userId);
+            user.setAutoLogin(false);
+            user.setLoginToken(null);
+            userService.updateUser(user);
+        }
+
         sessionUtil.logout(request);
     }
 

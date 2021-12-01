@@ -12,10 +12,10 @@ import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes } from '@/proptypes';
 import { setUserInfo } from '@/store/actions';
 import PictureMaker from '@/pages/Entry/PictureMaker';
-import './Entry.scss';
 import ImageMaker from '@/pages/Entry/ImageMaker';
 import TextMaker from '@/pages/Entry/TextMaker';
 import IconSelector from '@/pages/Entry/IconSelector';
+import './Entry.scss';
 
 const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
   const [info, setInfo] = useState({
@@ -205,7 +205,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                     value={info.password}
                     onChange={(val) => changeInfo('password', val)}
                     required
-                    minLength={4}
+                    minLength={2}
                     outline
                     simple
                   />
@@ -226,7 +226,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                     value={info.password2}
                     onChange={(val) => changeInfo('password2', val)}
                     required
-                    minLength={4}
+                    minLength={2}
                     outline
                     simple
                   />

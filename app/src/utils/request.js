@@ -1,9 +1,17 @@
 import axios from 'axios';
 import i18n from 'i18next';
 import store from '@/store';
+import storage from '@/utils/storage';
 import { setLoading, setUserInfo } from '@/store/actions';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialog from '@/utils/dialog';
+
+const axiosConfig = {
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+};
 
 const local = ['localhost', '127.0.0.1', '192.168.39.3'].some((d) => d === window.location.hostname);
 
@@ -27,6 +35,16 @@ function beforeRequest(quiet, uri, method) {
   }
   if (!quiet) {
     store.dispatch(setLoading(true));
+  }
+
+  const token = storage.getItem('auth', 'token');
+  if (!axiosConfig.headers.Token && token) {
+    console.log(token);
+    axiosConfig.headers.Token = token;
+  }
+
+  if (axiosConfig.headers.Token && !token) {
+    delete axiosConfig.headers.Token;
   }
 }
 
@@ -135,19 +153,12 @@ function afterRequest(response, quiet) {
   }
 }
 
-const axiosConfig = {
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-};
-
 function get(uri, params, successHandler, failHandler, quiet) {
   beforeRequest(quiet, uri, 'get');
   return axios
     .get(`${base}${uri}`, {
       params,
-      withCredentials: true,
+      ...axiosConfig,
     })
     .then((response) => {
       processSuccess(response, successHandler);

@@ -26,6 +26,10 @@ public class UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    public User selectUserByLoginToken(String token) {
+        return userRepository.findByLoginToken(token).orElse(null);
+    }
+
     public User selectUser(Long id) {
         return userRepository.findById(id).orElse(null);
     }
@@ -60,15 +64,27 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User login(String email, String password) throws NoSuchAlgorithmException {
-        return userRepository.findByEmail(email).filter(user -> {
-
-            String salt = user.getSalt();
+    public User login(String email, String password, Boolean autoLogin) throws NoSuchAlgorithmException {
+        User user = userRepository.findByEmail(email).filter(u -> {
+            String salt = u.getSalt();
             byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
             String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
-
-            return user.getPassword().equals(encryptedText);
+            return u.getPassword().equals(encryptedText);
         }).orElse(null);
+
+        if (user != null) {
+            user.setLastUpdatedBy(user.getId());
+            user.setLastUpdateDate(LocalDateTime.now());
+            user.setLoginToken(autoLogin ? UUID.randomUUID().toString().replaceAll("-", "") : null);
+            user.setAutoLogin(autoLogin);
+            userRepository.saveAndFlush(user);
+        }
+
+        return user;
+    }
+
+    public User updateUser(User user) {
+        return userRepository.save(user);
     }
 
 

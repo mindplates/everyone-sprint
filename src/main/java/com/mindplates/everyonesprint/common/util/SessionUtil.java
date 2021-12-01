@@ -21,7 +21,7 @@ public class SessionUtil {
 
     }
 
-    public static UserSession getUserInfo(HttpServletRequest request) {
+    public UserSession getUserInfo(HttpServletRequest request) {
 
         HttpSession session = request.getSession(false);
 
@@ -33,7 +33,7 @@ public class SessionUtil {
 
     }
 
-    public static Long getUserId(HttpServletRequest request) {
+    public Long getUserId(HttpServletRequest request) {
         Long id = null;
         HttpSession session = request.getSession(false);
         if (session != null) {

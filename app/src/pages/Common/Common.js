@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { setSystemInfo, setUserInfo } from '@/store/actions';
 import { MessageDialog, SocketClient } from '@/components';
 import request from '@/utils/request';
+import storage from '@/utils/storage';
 import './Common.scss';
 
 class Common extends React.Component {
@@ -59,6 +60,10 @@ class Common extends React.Component {
 
   getMyInfo = () => {
     request.get('/api/users/my-info', null, (data) => {
+      const token = storage.setItem('auth', 'token');
+      if (!data.id && token) {
+        storage.setItem('auth', 'token', null);
+      }
       const { setUserInfo: setUserInfoReducer, i18n } = this.props;
       setUserInfoReducer(data);
       i18n.changeLanguage(data.language || 'ko');

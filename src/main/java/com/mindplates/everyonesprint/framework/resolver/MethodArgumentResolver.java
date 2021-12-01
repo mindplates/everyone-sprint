@@ -12,16 +12,22 @@ import javax.servlet.http.HttpServletRequest;
 
 public class MethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-	@Override
-	public boolean supportsParameter(MethodParameter parameter) {
-		return parameter.getParameterType().equals(UserSession.class);
-	}
+    private final SessionUtil sessionUtil;
 
-	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+    public MethodArgumentResolver(SessionUtil sessionUtil) {
+        this.sessionUtil = sessionUtil;
+    }
+
+    @Override
+    public boolean supportsParameter(MethodParameter parameter) {
+        return parameter.getParameterType().equals(UserSession.class);
+    }
+
+    @Override
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
-		return SessionUtil.getUserInfo((HttpServletRequest) webRequest.getNativeRequest());
-	}
+        return sessionUtil.getUserInfo((HttpServletRequest) webRequest.getNativeRequest());
+    }
 
 }
