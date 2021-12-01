@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.framework.config;
 
+import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.framework.interceptor.LoginCheckInterceptor;
 import com.mindplates.everyonesprint.framework.resolver.MethodArgumentResolver;
@@ -26,6 +27,9 @@ public class WebConfig implements WebMvcConfigurer {
     SessionUtil sessionUtil;
     @Autowired
     MessageSourceAccessor messageSourceAccessor;
+    @Autowired
+    UserService userService;
+
     @Value("${spring.profiles.active}")
     private String activeProfile;
     @Value("${everyone_sprint.corsUrls}")
@@ -57,7 +61,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new MethodArgumentResolver());
+        resolvers.add(new MethodArgumentResolver(sessionUtil));
     }
 
     @Bean
@@ -72,7 +76,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(localeChangeInterceptor());
 
         registry.addInterceptor(
-                new LoginCheckInterceptor(this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
+                new LoginCheckInterceptor(this.userService, this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
                 .addPathPatterns("/**")
                 .excludePathPatterns("/test/**/")
                 .excludePathPatterns("/v3/**")

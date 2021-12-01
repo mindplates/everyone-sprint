@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { SettingPropTypes, UserPropTypes } from '@/proptypes';
+import storage from '@/utils/storage';
 import MENU from '@/constants/menu';
 import { Button, Liner, Overlay, ProductLogo, UserImage } from '@/components';
 import { setSetting, setUserInfo } from '@/store/actions';
@@ -22,7 +23,7 @@ const Header = (props) => {
 
   const logout = () => {
     const { setUserInfo: setUserInfoReducer } = props;
-
+    storage.setItem('auth', 'token', null);
     request.del('/api/users/logout', null, () => {
       setUserInfoReducer({});
     });
@@ -34,7 +35,6 @@ const Header = (props) => {
         <div className="top-menu">
           <Button
             className="menu-toggle-button"
-            color="white"
             size="lg"
             outline
             onClick={() => {
@@ -56,7 +56,6 @@ const Header = (props) => {
             <li className="menu-toggle-list-button">
               <Button
                 className="menu-toggle-button"
-                color="white"
                 size="lg"
                 outline
                 onClick={() => {
@@ -103,7 +102,6 @@ const Header = (props) => {
             {user && user.id && (
               <div className="user-icon">
                 <Button
-                  color="white"
                   size="lg"
                   outline
                   onClick={() => {
