@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { Button, PageTitle, SocketClient } from '@/components';
 import { UserPropTypes } from '@/proptypes';
 import './PublicPark.scss';
+import request from '@/utils/request';
 
 const viewer = React.createRef();
 const r = 10;
@@ -85,7 +86,7 @@ const PublicPark = ({ user, t }) => {
 
   const send = (type, data) => {
     if (clientRef && clientRef.state && clientRef.state.connected) {
-      clientRef.sendMessage('/pub/api/message/public-park', JSON.stringify({ type, data }));
+      clientRef.sendMessage('/pub/api/park/message/send', JSON.stringify({ type, data }));
       return true;
     }
 
@@ -157,6 +158,38 @@ const PublicPark = ({ user, t }) => {
       }
     }
   };
+
+  const getAllWalkers = () => {
+    request.get('/api/park/walkers/all', null, (list) => {
+      console.log(list);
+      const nextUsers = users.slice(0);
+      list.forEach((u) => {
+        const exist = nextUsers.find((currentUser) => currentUser.userId === u.id);
+        if (!exist) {
+          nextUsers.push({
+            userId: Number(u.id),
+            x: u.x,
+            y: u.y,
+          });
+        }
+      });
+      setUsers(nextUsers);
+    });
+  };
+
+  useEffect(() => {
+    getAllWalkers();
+  }, []);
+
+  useEffect(() => {
+    enter();
+
+    window.addEventListener('resize', onChangeWindowSize);
+    onChangeWindowSize();
+    return () => {
+      window.removeEventListener('resize', onChangeWindowSize);
+    };
+  }, [user]);
 
   useEffect(() => {
     enter();

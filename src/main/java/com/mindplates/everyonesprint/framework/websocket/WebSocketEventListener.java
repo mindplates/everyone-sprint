@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.framework.websocket;
 
+import com.mindplates.everyonesprint.biz.park.service.WalkerService;
 import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.vo.UserSession;
@@ -18,6 +19,9 @@ public class WebSocketEventListener {
     @Autowired
     private MessageSendService messageSendService;
 
+    @Autowired
+    WalkerService walkerService;
+
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
     }
@@ -29,6 +33,8 @@ public class WebSocketEventListener {
         if (userSession != null) {
             MessageData data = MessageData.builder().type("PUBLIC-PARK-EXIT").build();
             messageSendService.sendTo("public-park", data, userSession);
+
+            walkerService.deleteById(userSession.getId().toString());
         }
 
     }

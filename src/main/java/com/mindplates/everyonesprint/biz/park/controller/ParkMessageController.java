@@ -1,7 +1,9 @@
-package com.mindplates.everyonesprint.common.message.controller;
+package com.mindplates.everyonesprint.biz.park.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mindplates.everyonesprint.biz.park.redis.Walker;
+import com.mindplates.everyonesprint.biz.park.service.WalkerService;
 import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
@@ -16,12 +18,13 @@ import java.util.Map;
 
 @Log
 @RestController
-@MessageMapping("/api/message")
-public class MessageController {
+@MessageMapping("/api/park/message")
+public class ParkMessageController {
 
     @Autowired
+    WalkerService walkerService;
+    @Autowired
     private ObjectMapper mapper;
-
     @Autowired
     private MessageSendService messageSendService;
 
@@ -31,7 +34,27 @@ public class MessageController {
         Map<String, Object> value = mapper.readValue(message, Map.class);
         UserSession userSession = SessionUtil.getUserInfo(headerAccessor);
 
-        messageSendService.sendTo("message", MessageData.builder().type((String) value.get("type")).data((Map<String, Object>) value.get("data")).build(), userSession);
+        String type = (String) value.get("type");
+        Map<String, Object> messageData = (Map<String, Object>) value.get("data");
+
+        if (userSession != null) {
+
+            MessageData data = MessageData.builder().type(type).data(messageData).build();
+            messageSendService.sendTo("public-park", data, userSession);
+
+            if ("PUBLIC-PARK-ENTER".equals(type) || "PUBLIC-PARK-USER-MOVE".equals(type)) {
+
+                Walker walker = Walker.builder()
+                        .id(userSession.getId().toString())
+                        .x(Double.parseDouble(String.valueOf(messageData.get("x"))))
+                        .y(Double.parseDouble(String.valueOf(messageData.get("y"))))
+                        .build();
+                walkerService.save(walker);
+            }
+
+        }
+
+
     }
 
 }
