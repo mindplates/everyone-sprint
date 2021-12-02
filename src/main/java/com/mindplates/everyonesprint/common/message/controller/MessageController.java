@@ -25,15 +25,13 @@ public class MessageController {
     @Autowired
     private MessageSendService messageSendService;
 
-    @MessageMapping("/public-park")
+    @MessageMapping("/send")
     @SuppressWarnings("unchecked")
-    public void enter(String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
+    public void send(String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
         Map<String, Object> value = mapper.readValue(message, Map.class);
         UserSession userSession = SessionUtil.getUserInfo(headerAccessor);
 
-        MessageData data = MessageData.builder().type((String) value.get("type")).data((Map<String, Object>) value.get("data")).build();
-        messageSendService.sendTo("public-park", data, userSession);
-
+        messageSendService.sendTo("message", MessageData.builder().type((String) value.get("type")).data((Map<String, Object>) value.get("data")).build(), userSession);
     }
 
 }
