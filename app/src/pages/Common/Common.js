@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import ReactTooltip from 'react-tooltip';
 import PropTypes from 'prop-types';
 import { setSystemInfo, setUserInfo } from '@/store/actions';
-import { MessageDialog, SocketClient } from '@/components';
+import { MessageDialog } from '@/components';
 import request from '@/utils/request';
 import storage from '@/utils/storage';
 import './Common.scss';
@@ -70,37 +70,12 @@ class Common extends React.Component {
     });
   };
 
-  onMessage = (msg) => {
-    const { type } = msg;
-
-    switch (type) {
-      case 'SHARE_PUBLIC_INFO_CHANGED': {
-        break;
-      }
-
-      default: {
-        break;
-      }
-    }
-  };
-
   render() {
     const { message, loading, confirm } = this.props;
     const { showLoading } = this.state;
 
     return (
       <div className="common-wrapper">
-        {false && (
-          <SocketClient
-            topics={['/sub/public']}
-            onMessage={this.onMessage}
-            onConnect={() => {}}
-            onDisconnect={() => {}}
-            setRef={(client) => {
-              this.clientRef = client;
-            }}
-          />
-        )}
         {message && message.content && (
           <MessageDialog
             type="message"
@@ -170,9 +145,7 @@ Common.propTypes = {
   }),
   loading: PropTypes.bool,
   setUserInfo: PropTypes.func,
-
   setSystemInfo: PropTypes.func,
-
   location: PropTypes.shape({
     pathname: PropTypes.string,
   }),

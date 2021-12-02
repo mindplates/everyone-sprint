@@ -28,19 +28,22 @@ public class MyInfoResponse {
     private RoleCode activeRoleCode;
 
     public MyInfoResponse(User user) {
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.name = user.getName();
-        this.isNameOpened = user.getIsNameOpened();
-        this.alias = user.getAlias();
-        this.tel = user.getTel();
-        this.isTelOpened = user.getIsTelOpened();
-        this.imageType = user.getImageType();
-        this.imageData = user.getImageData();
-        this.language = user.getLanguage();
-        this.country = user.getCountry();
-        this.autoLogin = user.getAutoLogin();
-        this.loginToken = user.getLoginToken();
-        this.activeRoleCode = user.getActiveRoleCode();
+        if (user != null) {
+            this.id = user.getId();
+            this.email = user.getEmail();
+            this.name = user.getName();
+            this.isNameOpened = user.getIsNameOpened();
+            this.alias = user.getAlias();
+            this.tel = user.getTel();
+            this.isTelOpened = user.getIsTelOpened();
+            this.imageType = user.getImageType();
+            this.imageData = user.getImageData();
+            this.language = user.getLanguage();
+            this.country = user.getCountry();
+            this.autoLogin = user.getAutoLogin();
+            this.loginToken = user.getLoginToken();
+            this.activeRoleCode = user.getActiveRoleCode();
+        }
+
     }
 }

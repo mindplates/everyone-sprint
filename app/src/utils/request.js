@@ -39,7 +39,6 @@ function beforeRequest(quiet, uri, method) {
 
   const token = storage.getItem('auth', 'token');
   if (!axiosConfig.headers.Token && token) {
-    console.log(token);
     axiosConfig.headers.Token = token;
   }
 

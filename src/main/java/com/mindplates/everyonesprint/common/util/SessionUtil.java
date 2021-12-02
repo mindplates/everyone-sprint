@@ -2,13 +2,16 @@ package com.mindplates.everyonesprint.common.util;
 
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.code.RoleCode;
+import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -21,7 +24,7 @@ public class SessionUtil {
 
     }
 
-    public UserSession getUserInfo(HttpServletRequest request) {
+    public static UserSession getUserInfo(HttpServletRequest request) {
 
         HttpSession session = request.getSession(false);
 
@@ -30,6 +33,38 @@ public class SessionUtil {
         } else {
             return null;
         }
+
+    }
+
+    public static UserSession getUserInfo(SimpMessageHeaderAccessor headerAccessor) {
+
+        Map<String, Object> attributes = headerAccessor.getSessionAttributes();
+
+        if (attributes == null) {
+            throw new ServiceException("session.error.expired");
+        }
+
+        UserSession userInfo = (UserSession) attributes.get("USER_INFO");
+
+        return userInfo;
+
+    }
+
+    public static Long getUserId(SimpMessageHeaderAccessor headerAccessor) {
+
+        Map<String, Object> attributes = headerAccessor.getSessionAttributes();
+
+        if (attributes == null) {
+            throw new ServiceException("session.error.expired");
+        }
+
+        UserSession userInfo = (UserSession) attributes.get("USER_INFO");
+
+        if (userInfo != null) {
+            return userInfo.getId();
+        }
+
+        return null;
 
     }
 
@@ -79,6 +114,10 @@ public class SessionUtil {
 
         UserSession info = UserSession.builder()
                 .id(user.getId())
+                .alias(user.getAlias())
+                .name(user.getName())
+                .isNameOpened(user.getIsNameOpened())
+                .email(user.getEmail())
                 .roleCode(user.getActiveRoleCode())
                 .locale(new Locale(user.getLanguage(), user.getCountry()))
                 .build();
