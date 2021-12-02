@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindplates.everyonesprint.biz.park.redis.Walker;
 import com.mindplates.everyonesprint.biz.park.service.WalkerService;
+import com.mindplates.everyonesprint.biz.user.entity.User;
+import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
@@ -23,8 +25,13 @@ public class ParkMessageController {
 
     @Autowired
     WalkerService walkerService;
+
+    @Autowired
+    UserService userService;
+
     @Autowired
     private ObjectMapper mapper;
+
     @Autowired
     private MessageSendService messageSendService;
 
@@ -39,18 +46,38 @@ public class ParkMessageController {
 
         if (userSession != null) {
 
-            MessageData data = MessageData.builder().type(type).data(messageData).build();
-            messageSendService.sendTo("public-park", data, userSession);
+            if ("PUBLIC-PARK-ENTER".equals(type)) {
+                User user = userService.selectUser(userSession.getId());
+                Walker walker = new Walker(user);
+                walker.setX(Double.parseDouble(String.valueOf(messageData.get("x"))));
+                walker.setY(Double.parseDouble(String.valueOf(messageData.get("y"))));
 
-            if ("PUBLIC-PARK-ENTER".equals(type) || "PUBLIC-PARK-USER-MOVE".equals(type)) {
+                messageData.put("email", user.getEmail());
+                messageData.put("name", user.getIsNameOpened() ? user.getName() : "");
+                messageData.put("alias", user.getAlias());
+                messageData.put("imageType", user.getImageType());
+                messageData.put("imageData", user.getImageData());
 
-                Walker walker = Walker.builder()
-                        .id(userSession.getId().toString())
-                        .x(Double.parseDouble(String.valueOf(messageData.get("x"))))
-                        .y(Double.parseDouble(String.valueOf(messageData.get("y"))))
-                        .build();
                 walkerService.save(walker);
             }
+
+            if ("PUBLIC-PARK-USER-MOVE".equals(type)) {
+                Walker walker = walkerService.findById(userSession.getId());
+                if (walker == null) {
+                    User user = userService.selectUser(userSession.getId());
+                    walker = new Walker(user);
+                    walker.setX(Double.parseDouble(String.valueOf(messageData.get("x"))));
+                    walker.setY(Double.parseDouble(String.valueOf(messageData.get("y"))));
+                }
+
+                walker.setX(Double.parseDouble(String.valueOf(messageData.get("x"))));
+                walker.setY(Double.parseDouble(String.valueOf(messageData.get("y"))));
+
+                walkerService.save(walker);
+            }
+
+            MessageData data = MessageData.builder().type(type).data(messageData).build();
+            messageSendService.sendTo("public-park", data, userSession);
 
         }
 

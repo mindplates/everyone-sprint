@@ -10,7 +10,7 @@ import './PublicPark.scss';
 import request from '@/utils/request';
 
 const viewer = React.createRef();
-const r = 10;
+const userIconRadius = 20;
 let clientRef = React.createRef();
 
 const PublicPark = ({ user, t }) => {
@@ -22,13 +22,36 @@ const PublicPark = ({ user, t }) => {
   });
 
   const setup = () => {
-    const svg = d3.select(viewer.current).select('svg');
+    let svg = d3.select(viewer.current).select('svg');
     let group = null;
 
     const { width, height } = dimension;
 
     if (svg.size() < 1) {
-      group = d3.select(viewer.current).append('svg').attr('width', width).attr('height', height).append('g');
+      svg = d3.select(viewer.current).append('svg').attr('width', width).attr('height', height);
+      const defs = svg.append('defs');
+      defs
+        .append('rect')
+        .attr('id', 'rect-shape')
+        .attr('x', '0')
+        .attr('y', '0')
+        .attr('width', userIconRadius * 2)
+        .attr('height', userIconRadius * 2);
+
+      defs
+        .append('circle')
+        .attr('id', 'circle-shape')
+        .attr('cx', userIconRadius)
+        .attr('cy', userIconRadius)
+        .attr('r', userIconRadius);
+
+      const rectClip = defs.append('clipPath').attr('id', 'rect-clip');
+      rectClip.append('use').attr('xlink:href', '#rect-shape');
+
+      const circleClip = defs.append('clipPath').attr('id', 'circle-clip');
+      circleClip.append('use').attr('xlink:href', '#circle-shape');
+
+      group = svg.append('g');
     } else {
       svg.attr('width', width).attr('height', height);
       group = svg.select('g');
@@ -39,29 +62,31 @@ const PublicPark = ({ user, t }) => {
       const node = group.selectAll(`#user-${u.userId}`);
 
       if (node.size() > 0) {
-        node
+        node.attr('time', `time-${now}`).transition().attr('transform', `translate(${u.x}, ${u.y})`).duration(200);
+      } else if (u.imageType === 'image') {
+        group
+          .append('g')
+          .attr('id', `user-${u.userId}`)
+          .attr('transform', `translate(${u.x}, ${u.y})`)
           .attr('time', `time-${now}`)
-          .transition()
-          .attr('cx', u.x)
-          .attr('cy', u.y)
-          .duration(200)
-          .style('stroke', u.color)
-          .style('fill', u.backgroundColor);
+          .append('svg:image')
+          .style('border-radius', '50%')
+          .attr('width', userIconRadius * 2)
+          .attr('height', userIconRadius * 2)
+          .attr('clip-path', 'url(#circle-clip)')
+          .attr('xlink:href', u.imageData);
       } else {
         group
-          .append('circle')
+          .append('g')
           .attr('id', `user-${u.userId}`)
+          .attr('transform', `translate(${u.x}, ${u.y})`)
           .attr('time', `time-${now}`)
-          .attr('r', r)
-          .attr('cx', u.x)
-          .attr('cy', u.y)
-          .style('stroke', u.color)
-          .style('stroke-width', 4)
-          .style('fill', u.backgroundColor);
+          .append('circle')
+          .attr('r', userIconRadius);
       }
     });
 
-    const nodes = group.selectAll(`circle:not([time=time-${now}])`);
+    const nodes = group.selectAll(`g:not([time=time-${now}])`);
     nodes.remove();
   };
 
@@ -69,8 +94,8 @@ const PublicPark = ({ user, t }) => {
     const position = {};
     if (!position.x || !position.y) {
       const { width, height } = dimension;
-      position.x = width / 2 - r / 2 + Math.round((width / 10) * Math.random());
-      position.y = height / 2 - r / 2 + Math.round((height / 10) * Math.random());
+      position.x = width / 2 - userIconRadius / 2 + Math.round((width / 10) * Math.random());
+      position.y = height / 2 - userIconRadius / 2 + Math.round((height / 10) * Math.random());
     }
     return position;
   };
@@ -102,6 +127,19 @@ const PublicPark = ({ user, t }) => {
     }
   };
 
+  const getUser = (userId, info) => {
+    return {
+      userId,
+      email: info.email,
+      name: info.name,
+      alias: info.alias,
+      imageType: info.imageType,
+      imageData: info.imageData,
+      x: info.x,
+      y: info.y,
+    };
+  };
+
   const onMessage = (info) => {
     const {
       senderInfo,
@@ -113,11 +151,7 @@ const PublicPark = ({ user, t }) => {
     switch (type) {
       case 'PUBLIC-PARK-ENTER': {
         const nextUsers = users.slice(0);
-        nextUsers.push({
-          userId: senderInfo.id,
-          x: data.x,
-          y: data.y,
-        });
+        nextUsers.push(getUser(senderInfo.id, data));
         setUsers(nextUsers);
 
         break;
@@ -166,11 +200,7 @@ const PublicPark = ({ user, t }) => {
       list.forEach((u) => {
         const exist = nextUsers.find((currentUser) => currentUser.userId === u.id);
         if (!exist) {
-          nextUsers.push({
-            userId: Number(u.id),
-            x: u.x,
-            y: u.y,
-          });
+          nextUsers.push(getUser(u.id, u));
         }
       });
       setUsers(nextUsers);
@@ -235,6 +265,8 @@ const PublicPark = ({ user, t }) => {
       send('PUBLIC-PARK-USER-MOVE', position);
     }
   };
+
+  console.log(users);
 
   return (
     <div className="public-park-wrapper g-content">

@@ -21,6 +21,10 @@ public class WalkerService {
         return walkerRepository.findAll();
     }
 
+    public Walker findById(Long id) {
+        return walkerRepository.findById(String.valueOf(id)).orElse(null);
+    }
+
     public void deleteById(String id) {
         walkerRepository.deleteById(id);
     }
