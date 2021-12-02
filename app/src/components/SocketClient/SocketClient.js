@@ -10,12 +10,12 @@ class SocketClient extends React.PureComponent {
     // eslint-disable-next-line no-nested-ternary
     let base = local
       ? window.location.hostname === '192.168.39.3'
-        ? 'http://192.168.39.3:8080'
-        : 'http://localhost:8080'
+        ? 'http://192.168.39.3:15000'
+        : 'http://localhost:15000'
       : '';
 
-    if (window.location.hostname === 'mindplates.com' && window.location.port === '4000') {
-      base = 'http://mindplates.com:8080';
+    if (window.location.hostname === 'mindplates.com' && window.location.port === '5000') {
+      base = 'http://mindplates.com:15000';
     }
 
     const { topics } = this.props;
@@ -35,8 +35,8 @@ class SocketClient extends React.PureComponent {
         }}
         // autoReconnect={false}
         onConnectFailure={(e) => {
-          // console.log(e);
-          dialog.setMessage(MESSAGE_CATEGORY.ERROR, '연결 오류', e);
+           console.error(e);
+          dialog.setMessage(MESSAGE_CATEGORY.ERROR, '연결 오류', '서버와의 소켓 연결에 실패하였습니다.');
         }}
         ref={(client) => {
           setRef(client);

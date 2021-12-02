@@ -15,6 +15,10 @@ import java.util.Locale;
 @AllArgsConstructor
 public class UserSession implements Serializable {
     private Long id;
+    private String email;
+    private String alias;
+    private String name;
+    private Boolean isNameOpened;
     private RoleCode roleCode;
     private Locale locale;
 }

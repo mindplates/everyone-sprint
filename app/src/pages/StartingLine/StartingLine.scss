@@ -1,6 +1,10 @@
 .starting-line-wrapper {
   padding-top: 2rem !important;
 
+  @media (max-width: 992px) {
+    padding-top: 1rem !important;
+  }
+
   .starting-line-content {
     display: flex;
     > form {

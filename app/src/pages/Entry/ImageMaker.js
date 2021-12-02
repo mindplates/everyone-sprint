@@ -163,9 +163,9 @@ const ImageMaker = ({ t, close, onChange }) => {
 
   const onChangeImage = (file) => {
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = (e) => {
       const img = new Image();
-      img.onload = function () {
+      img.onload = () => {
         const r = imagePreviewWidth / Math.max(img.width, img.height);
         const width = Math.round(r * img.width);
         const height = Math.round(r * img.height);

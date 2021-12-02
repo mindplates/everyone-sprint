@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import * as d3 from 'd3';
+import { Link, withRouter } from 'react-router-dom';
+import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { Button, PageTitle } from '@/components';
+import { Button, PageTitle, SocketClient } from '@/components';
+import { UserPropTypes } from '@/proptypes';
 import './PublicPark.scss';
 
 const viewer = React.createRef();
 const r = 10;
+let clientRef = React.createRef();
 
-const PublicPark = () => {
+const PublicPark = ({ user, t }) => {
   const [users, setUsers] = useState([]);
+  const [enterUserId, setEnterUserId] = useState(false);
   const [dimension, setDimension] = useState({
     width: null,
     height: null,
@@ -30,7 +35,7 @@ const PublicPark = () => {
 
     const now = Date.now();
     users.forEach((u) => {
-      const node = group.selectAll(`#user-${u.id}`);
+      const node = group.selectAll(`#user-${u.userId}`);
 
       if (node.size() > 0) {
         node
@@ -44,7 +49,7 @@ const PublicPark = () => {
       } else {
         group
           .append('circle')
-          .attr('id', `user-${u.id}`)
+          .attr('id', `user-${u.userId}`)
           .attr('time', `time-${now}`)
           .attr('r', r)
           .attr('cx', u.x)
@@ -59,13 +64,14 @@ const PublicPark = () => {
     nodes.remove();
   };
 
-  const getUser = (user) => {
-    if (!user.x || !user.y) {
+  const getPosition = () => {
+    const position = {};
+    if (!position.x || !position.y) {
       const { width, height } = dimension;
-      user.x = width / 2 - r / 2 + Math.round((width / 10) * Math.random());
-      user.y = height / 2 - r / 2 + Math.round((height / 10) * Math.random());
+      position.x = width / 2 - r / 2 + Math.round((width / 10) * Math.random());
+      position.y = height / 2 - r / 2 + Math.round((height / 10) * Math.random());
     }
-    return user;
+    return position;
   };
 
   const onChangeWindowSize = () => {
@@ -77,28 +83,93 @@ const PublicPark = () => {
     });
   };
 
+  const send = (type, data) => {
+    if (clientRef && clientRef.state && clientRef.state.connected) {
+      clientRef.sendMessage('/pub/api/message/public-park', JSON.stringify({ type, data }));
+      return true;
+    }
+
+    return false;
+  };
+
+  const enter = () => {
+    if (user.id && enterUserId !== user.id) {
+      const position = getPosition();
+      if (send('PUBLIC-PARK-ENTER', position)) {
+        setEnterUserId(user.id);
+      }
+    }
+  };
+
+  const onMessage = (info) => {
+    const {
+      senderInfo,
+      data: { type, data },
+    } = info;
+    console.log(info);
+    console.log(type, data, senderInfo);
+
+    switch (type) {
+      case 'PUBLIC-PARK-ENTER': {
+        const nextUsers = users.slice(0);
+        nextUsers.push({
+          userId: senderInfo.id,
+          x: data.x,
+          y: data.y,
+        });
+        setUsers(nextUsers);
+
+        break;
+      }
+
+      case 'PUBLIC-PARK-USER-MOVE': {
+        const nextUsers = users.slice(0);
+        const movedUser = nextUsers.find((u) => u.userId === senderInfo.id);
+        if (movedUser) {
+          movedUser.x = data.x;
+          movedUser.y = data.y;
+          setUsers(nextUsers);
+        } else {
+          nextUsers.push({
+            userId: senderInfo.id,
+            x: data.x,
+            y: data.y,
+          });
+          setUsers(nextUsers);
+        }
+
+        break;
+      }
+
+      case 'PUBLIC-PARK-EXIT': {
+        const nextUsers = users.slice(0);
+        const userIndex = nextUsers.findIndex((u) => u.userId === senderInfo.id);
+        if (userIndex > -1) {
+          nextUsers.splice(userIndex, 1);
+          setUsers(nextUsers);
+        }
+
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
+  };
+
   useEffect(() => {
-    const list = [];
-    list.push({ id: 1, name: '케빈', x: null, y: null, color: '#333', backgroundColor: 'transparent' });
-    list.push({ id: 2, name: '알렉스', x: null, y: null, color: '#E64402', backgroundColor: 'green' });
-    setUsers(list);
+    enter();
 
     window.addEventListener('resize', onChangeWindowSize);
     onChangeWindowSize();
     return () => {
       window.removeEventListener('resize', onChangeWindowSize);
     };
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (dimension.width && dimension.height) {
-      const next = users.slice(0);
-      next.forEach((d) => {
-        if (!d.x || !d.y) {
-          d = getUser(d);
-        }
-      });
-      setUsers(next);
       setup();
     }
   }, [dimension]);
@@ -109,103 +180,90 @@ const PublicPark = () => {
     }
   }, [users]);
 
-  const move = (id, dir) => {
+  const move = (dir) => {
     const { width, height } = dimension;
     const next = users.slice(0);
-    if (dir === 'up') {
-      const target = next.find((d) => d.id === id);
-      target.y -= height / 20;
-    } else if (dir === 'down') {
-      const target = next.find((d) => d.id === id);
-      target.y += height / 20;
-    } else if (dir === 'left') {
-      const target = next.find((d) => d.id === id);
-      target.x -= width / 20;
-    } else if (dir === 'right') {
-      const target = next.find((d) => d.id === id);
-      target.x += width / 20;
+    const target = next.find((d) => d.userId === user.id);
+
+    if (target) {
+      const position = {};
+      position.x = target.x;
+      position.y = target.y;
+      if (dir === 'up') {
+        position.y -= height / 20;
+      } else if (dir === 'down') {
+        position.y += height / 20;
+      } else if (dir === 'left') {
+        position.x -= width / 20;
+      } else if (dir === 'right') {
+        position.x += width / 20;
+      }
+
+      send('PUBLIC-PARK-USER-MOVE', position);
     }
-
-    setUsers(next);
-  };
-
-  const addUser = (id) => {
-    const next = users.slice(0);
-    next.push(getUser({ id, name: '알렉스', x: null, y: null, color: '#E64402', backgroundColor: 'green' }));
-    setUsers(next);
-  };
-
-  const removeUser = (id) => {
-    const next = users.slice(0);
-    const index = next.findIndex((d) => d.id === id);
-    if (index > -1) {
-      next.splice(index, 1);
-    }
-
-    setUsers(next);
   };
 
   return (
     <div className="public-park-wrapper g-content">
+      <SocketClient
+        topics={['/sub/public-park']}
+        onMessage={onMessage}
+        onConnect={() => {
+          enter();
+        }}
+        onDisconnect={() => {}}
+        setRef={(client) => {
+          clientRef = client;
+        }}
+      />
       <PageTitle>모두의 공원</PageTitle>
       <div className="park-viewer g-page-content">
         <div ref={viewer} className="viewer" />
-        <div className="controller">
-          <Button
-            rounded
-            size="sm"
-            onClick={() => {
-              removeUser(2);
-            }}
-          >
-            <i className="fas fa-minus" />
-          </Button>
-          <Button
-            rounded
-            size="sm"
-            onClick={() => {
-              addUser(3);
-            }}
-          >
-            <i className="fas fa-plus" />
-          </Button>
-          <Button
-            rounded
-            size="sm"
-            onClick={() => {
-              move(1, 'up');
-            }}
-          >
-            <i className="fas fa-chevron-up" />
-          </Button>
-          <Button
-            rounded
-            size="sm"
-            onClick={() => {
-              move(1, 'down');
-            }}
-          >
-            <i className="fas fa-chevron-down" />
-          </Button>
-          <Button
-            rounded
-            size="sm"
-            onClick={() => {
-              move(1, 'left');
-            }}
-          >
-            <i className="fas fa-chevron-left" />
-          </Button>
-          <Button
-            rounded
-            size="sm"
-            onClick={() => {
-              move(1, 'right');
-            }}
-          >
-            <i className="fas fa-chevron-right" />
-          </Button>
-        </div>
+        {(!user || !user.id) && (
+          <div className="message">
+            <Link to="/starting-line">{t('참여하기 위해서는 로그인이 필요합니다.')}</Link>
+          </div>
+        )}
+        {user && user.id && (
+          <div className="controller">
+            <Button
+              rounded
+              size="sm"
+              onClick={() => {
+                move('up');
+              }}
+            >
+              <i className="fas fa-chevron-up" />
+            </Button>
+            <Button
+              rounded
+              size="sm"
+              onClick={() => {
+                move('down');
+              }}
+            >
+              <i className="fas fa-chevron-down" />
+            </Button>
+            <Button
+              rounded
+              size="sm"
+              onClick={() => {
+                move('left');
+              }}
+            >
+              <i className="fas fa-chevron-left" />
+            </Button>
+            <Button
+              rounded
+              size="sm"
+              onClick={() => {
+                move('right');
+              }}
+            >
+              <i className="fas fa-chevron-right" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -214,13 +272,16 @@ const PublicPark = () => {
 const mapStateToProps = (state) => {
   return {
     systemInfo: state.systemInfo,
+    user: state.user,
   };
 };
 
-export default connect(mapStateToProps, undefined)(PublicPark);
+export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(PublicPark)));
 
 PublicPark.propTypes = {
+  t: PropTypes.func,
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),
+  user: UserPropTypes,
 };
