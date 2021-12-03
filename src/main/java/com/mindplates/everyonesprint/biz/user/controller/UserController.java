@@ -12,6 +12,7 @@ import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +56,12 @@ public class UserController {
         } else {
             return new MyInfoResponse();
         }
+    }
+
+    @PutMapping("/my-info/language")
+    public ResponseEntity updateUserLanguage(@Valid @RequestBody UserRequest userRequest, UserSession userSession) {
+        userService.updateUserLanguage(userSession.getId(), userRequest.getLanguage());
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @DisableLogin

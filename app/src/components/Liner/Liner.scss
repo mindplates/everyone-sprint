@@ -2,4 +2,22 @@
   > div {
     background-color: $white;
   }
+
+  &.color-white {
+    > div {
+      background-color: $white;
+    }
+  }
+
+  &.color-gray {
+    > div {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  &.color-light {
+    > div {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
 }

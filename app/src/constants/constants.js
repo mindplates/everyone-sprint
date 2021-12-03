@@ -1,3 +1,17 @@
+const USER_STUB = {
+  id: null,
+  alias: '',
+  autoLogin: false,
+  language: 'ko',
+  country: 'KR',
+  email: '',
+  imageData: '',
+  imageType: '',
+  loginToken: '',
+  name: '',
+  tel: '',
+};
+
 const THEMES = {
   WHITE: 'WHITE',
   BLACK: 'BLACK',
@@ -47,4 +61,4 @@ const VENDORS = {
   google: '구글',
 };
 
-export { THEMES, MESSAGE_CATEGORY, DEFAULT_INPUT_VALIDATION_MESSAGE, VALIDATIONS, USER_ROLES, DATE_FORMATS, LANGUAGES, VENDORS };
+export { USER_STUB, THEMES, MESSAGE_CATEGORY, DEFAULT_INPUT_VALIDATION_MESSAGE, VALIDATIONS, USER_ROLES, DATE_FORMATS, LANGUAGES, VENDORS };

@@ -87,5 +87,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUserLanguage(Long userId, String language) {
+        User user = selectUser(userId);
+        user.setLanguage(language);
+        return userRepository.save(user);
+    }
+
 
 }

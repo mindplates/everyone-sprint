@@ -32,14 +32,137 @@
   }
 
   &.header-wrapper,
-  > div > .product-logo > a,
-  > div > .top-menu ul li > a,
-  > div > .top-button > div > div > button,
-  > div > .top-button > div > div > div > a {
+  > div.header-content > .product-logo > a,
+  > div.header-content > .top-menu ul li > a,
+  > div.header-content > .top-button > div > div > button,
+  > div.header-content > .top-button > div > div > div > a {
     color: $white;
   }
 
-  > div {
+  > div.config-popup {
+    position: absolute;
+    top: 62px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    border-radius: 0;
+
+    &.logged-in {
+      > div.config-popup-layout {
+        > div {
+          .arrow {
+            right: 89px;
+
+            @media (max-width: 992px) {
+              right: 32px;
+            }
+          }
+        }
+      }
+    }
+
+    > div.config-popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+    }
+
+    > div.config-popup-layout {
+      max-width: $wrapper-width;
+      width: 100%;
+      margin: 0 auto;
+      text-align: right;
+      position: relative;
+      z-index: 2;
+      padding-right: 2px;
+
+      > div {
+        width: 300px;
+        background-color: $white;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        display: inline-block;
+        text-align: left;
+        padding: 1rem;
+        position: relative;
+
+        .arrow {
+          position: absolute;
+          top: -7px;
+          right: 150px;
+          @media (max-width: 992px) {
+            right: 76px;
+          }
+          @media (max-width: 576px) {
+            right: 69px;
+          }
+          > div {
+            width: 12px;
+            height: 12px;
+            background-color: $white;
+            transform: rotate(45deg);
+            border-left: 1px solid rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(0, 0, 0, 0.3);
+          }
+        }
+
+        .config-popup-content {
+          color: $black;
+          .user-info {
+            display: flex;
+
+            > div {
+              align-self: center;
+              &:last-child {
+                line-height: 100%;
+                flex-grow: 1;
+                padding: 0 1rem;
+
+                > div {
+                  margin-bottom: 0.25rem;
+                  &:last-child {
+                    margin-bottom: 0;
+                  }
+
+                  &.name {
+                    font-size: 14px;
+                    font-family: pretendard, sans-serif;
+                    text-transform: uppercase;
+                    span:first-child {
+                      margin-right: 0.25rem;
+                    }
+                  }
+
+                  &.email {
+                    font-size: 13px;
+                    text-transform: uppercase;
+                  }
+
+                  &.link {
+                  }
+                }
+              }
+            }
+          }
+
+          .sub-title {
+            margin-bottom: 0.25rem;
+          }
+
+          .quick-menu {
+            .lang-icon {
+              font-size: 18px;
+              margin-left: 0.25rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  > div.header-content {
     align-self: center;
     display: flex;
     width: 100%;
@@ -50,6 +173,10 @@
     > .product-logo {
       flex-grow: 0;
       padding: 0 1rem;
+
+      @media (max-width: 576px) {
+        padding: 0;
+      }
       > a {
         height: 100%;
         display: block;
@@ -303,33 +430,28 @@
         text-align: right;
         width: 100%;
 
-        @media (max-width: 992px) {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          z-index: 11;
-          width: 80%;
-          max-width: 400px;
-          height: 60px;
-          background-color: rgba(0, 0, 0, 0.2);
-          display: none;
-
-          &.opened {
-            display: flex;
-          }
-        }
         > div {
           align-self: center;
           height: 100%;
 
           &.user-icon {
             flex-grow: 1;
+            @media (max-width: 992px) {
+              &.logged-in {
+                margin-right: 1rem;
+              }
+            }
+            > button {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+              width: auto;
+            }
           }
 
           &.login {
-            flex-grow: 1;
             display: flex;
             text-align: right;
+            white-space: nowrap;
             > div {
               align-self: center;
               flex-grow: 1;
@@ -342,6 +464,10 @@
                 display: inline-flex;
                 padding: 0 1rem;
                 font-size: 14px;
+
+                @media (max-width: 576px) {
+                  padding: 0 0.75rem;
+                }
 
                 &:hover {
                   background-color: $header-hover-bg-color;
@@ -358,6 +484,10 @@
             margin: 0 0.5rem;
             > div {
               align-self: center;
+            }
+
+            @media (max-width: 992px) {
+              display: none;
             }
           }
 
