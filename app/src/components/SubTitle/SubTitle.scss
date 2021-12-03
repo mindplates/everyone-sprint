@@ -20,7 +20,6 @@
         display: inline-block;
         height: 9px;
         width: 2px;
-
         background-color: $primary;
         background-color: $secondary;
       }
@@ -29,9 +28,37 @@
     &.text {
       > span {
         font-size: 18px;
-        font-weight: bold;
+
         font-family: pretendard, sans-serif;
       }
     }
+  }
+
+  &.size-xs {
+    .text {
+      > span {
+        font-size: 12px;
+      }
+    }
+  }
+
+  &.size-sm {
+    .text {
+      > span {
+        font-size: 14px;
+      }
+    }
+  }
+
+  &.size-md {
+    .text {
+      > span {
+        font-size: 18px;
+      }
+    }
+  }
+
+  &.is-bold {
+    font-weight: bold;
   }
 }

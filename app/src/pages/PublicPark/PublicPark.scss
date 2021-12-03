@@ -1,5 +1,7 @@
 .public-park-wrapper {
   .park-viewer {
+    padding: 0 !important;
+
     .viewer {
       width: 100%;
       height: 100%;
@@ -17,9 +19,10 @@
       svg {
         > g {
           > g {
+            transition: 0.5s all;
             circle,
             image {
-              animation: bouncing 2s ease-in-out;
+              animation: bouncing-small 2s ease-in-out;
               animation-iteration-count: infinite;
             }
           }

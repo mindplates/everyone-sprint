@@ -2,15 +2,16 @@ package com.mindplates.everyonesprint.common.vo;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Builder
 @Getter
 public class ErrorResponse {
 
-    private String code;
+    private HttpStatus code;
     private String message;
 
-    public ErrorResponse(String code, String message) {
+    public ErrorResponse(HttpStatus code, String message) {
         this.code = code;
         this.message = message;
     }

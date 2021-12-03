@@ -10,19 +10,10 @@ import {
   SET_USER,
 } from '../actions';
 import storage from '@/utils/storage';
+import { USER_STUB } from '@/constants/constants';
 
 const userState = {
-  id: null,
-  alias: '',
-  autoLogin: false,
-  language: 'ko',
-  country: 'KR',
-  email: '',
-  imageData: '',
-  imageType: '',
-  loginToken: '',
-  name: '',
-  tel: '',
+  ...USER_STUB,
 };
 
 const user = (state = userState, action) => {

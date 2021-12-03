@@ -3,18 +3,30 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { SettingPropTypes, UserPropTypes } from '@/proptypes';
+import { HistoryPropTypes, SettingPropTypes, UserPropTypes } from '@/proptypes';
 import storage from '@/utils/storage';
 import MENU from '@/constants/menu';
-import { Button, Liner, Overlay, ProductLogo, UserImage } from '@/components';
+import { Button, Liner, Overlay, ProductLogo, SubTitle, UserImage } from '@/components';
 import { setSetting, setUserInfo } from '@/store/actions';
 import './Header.scss';
 import request from '@/utils/request';
+import RadioButton from '@/components/RadioButton/RadioButton';
+import { USER_STUB } from '@/constants/constants';
 
 const Header = (props) => {
-  const { setSetting: setSettingReducer, setting, location, t, user } = props;
+  const {
+    setSetting: setSettingReducer,
+    setUserInfo: setUserInfoReducer,
+    setting,
+    location,
+    t,
+    user,
+    i18n,
+    history,
+  } = props;
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [configOpen, setConfigOpen] = useState(false);
 
   useEffect(() => {}, []);
 
@@ -22,16 +34,28 @@ const Header = (props) => {
   const [currentTopMenu] = values;
 
   const logout = () => {
-    const { setUserInfo: setUserInfoReducer } = props;
     storage.setItem('auth', 'token', null);
     request.del('/api/users/logout', null, () => {
-      setUserInfoReducer({});
+      setUserInfoReducer({
+        ...USER_STUB,
+        language: user.language,
+      });
+    });
+  };
+
+  const updateLanguage = (language) => {
+    i18n.changeLanguage(language || 'ko');
+    request.put('/api/users/my-info/language', { language }, () => {
+      setUserInfoReducer({
+        ...user,
+        language,
+      });
     });
   };
 
   return (
     <div className={`header-wrapper ${setting.collapsed ? 'collapsed' : ''}`}>
-      <div>
+      <div className="header-content">
         <div className="top-menu">
           <Button
             className="menu-toggle-button"
@@ -98,20 +122,22 @@ const Header = (props) => {
           </Link>
         </div>
         <div className="top-button">
-          <div className={menuOpen ? 'opened' : ''}>
-            {user && user.id && (
-              <div className="user-icon">
-                <Button
-                  size="lg"
-                  outline
-                  onClick={() => {
-                    logout();
-                  }}
-                >
-                  <UserImage size="30px" imageType={user.imageType} imageData={user.imageData} rounded />
-                </Button>
-              </div>
-            )}
+          <div>
+            <div className={`user-icon ${user.id ? 'logged-in' : ''}`}>
+              <Button
+                size="lg"
+                outline
+                onClick={() => {
+                  setConfigOpen(!configOpen);
+                }}
+              >
+                {user && user.id && (
+                  <UserImage size="36px" imageType={user.imageType} imageData={user.imageData} rounded />
+                )}
+                {!(user && user.id) && <i className="fas fa-cog" />}
+              </Button>
+            </div>
+
             {!(user && user.id) && (
               <div className="login">
                 <div>
@@ -137,14 +163,97 @@ const Header = (props) => {
                 {setting.collapsed && <i className="fas fa-angle-down" />}
               </Button>
             </div>
-            <div>
-              <Button size="lg" outline onClick={() => {}}>
-                <i className="fas fa-cog" />
-              </Button>
-            </div>
           </div>
         </div>
       </div>
+      {configOpen && (
+        <div className={`config-popup ${user.id ? 'logged-in' : ''}`}>
+          <div
+            className="config-popup-overlay"
+            onClick={() => {
+              setConfigOpen(false);
+            }}
+          />
+          <div className="config-popup-layout">
+            <div>
+              <div className="arrow">
+                <div />
+              </div>
+              <div className="config-popup-content">
+                {user && user.id && (
+                  <>
+                    <div className="user-info">
+                      <div>
+                        <UserImage size="50px" imageType={user.imageType} imageData={user.imageData} rounded border />
+                      </div>
+                      <div>
+                        <div className="name">
+                          <span>{user.alias}</span>
+                          {user.name && <span>[{user.name}]</span>}
+                        </div>
+                        <div className="email">{user.email}</div>
+                        <div className="link">
+                          <Button
+                            size="xs"
+                            outline
+                            color="white"
+                            onClick={() => {
+                              history.push('/my-info');
+                              setConfigOpen(false);
+                            }}
+                          >
+                            내 정보
+                          </Button>
+                          <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                          <Button
+                            className="log-button"
+                            size="xs"
+                            outline
+                            color="danger"
+                            onClick={() => {
+                              logout();
+                              setConfigOpen(false);
+                            }}
+                          >
+                            로그아웃
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    <Liner width="100%" height="1px" color="light" margin="0.75rem 0" />
+                  </>
+                )}
+                <SubTitle className="sub-title" size="xs" bold={false}>
+                  QUICK MENU
+                </SubTitle>
+                <div className="d-flex quick-menu">
+                  <div className="lang-label small align-self-center">
+                    <span>언어</span>
+                  </div>
+                  <div className="lang-icon align-self-center">
+                    <span className="icon">
+                      <i className="fas fa-language" />
+                    </span>
+                  </div>
+                  <div className="mx-2">
+                    <RadioButton
+                      size="xs"
+                      items={[
+                        { key: 'ko', value: '한글' },
+                        { key: 'en', value: 'English' },
+                      ]}
+                      value={user.language}
+                      onClick={(val) => {
+                        updateLanguage(val);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -168,6 +277,7 @@ export default withRouter(withTranslation()(connect(mapStateToProps, mapDispatch
 
 Header.propTypes = {
   t: PropTypes.func,
+  i18n: PropTypes.objectOf(PropTypes.any),
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),
@@ -178,4 +288,5 @@ Header.propTypes = {
   setSetting: PropTypes.func,
   user: UserPropTypes,
   setUserInfo: PropTypes.func,
+  history: HistoryPropTypes,
 };
