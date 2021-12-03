@@ -19,15 +19,15 @@ public class RestApiExceptionHandler {
 
     BiFunction<HttpStatus, String, ResponseEntity<ErrorResponse>> messageResponse = (code, message) -> {
         return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
-                .code(code.toString())
-                .message(message)
-                .build(), HttpStatus.BAD_REQUEST);
-    };
-    BiFunction<String, String, ResponseEntity<ErrorResponse>> response = (code, message) -> {
-        return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
                 .code(code)
                 .message(message)
                 .build(), HttpStatus.BAD_REQUEST);
+    };
+    BiFunction<HttpStatus, String, ResponseEntity<ErrorResponse>> response = (code, message) -> {
+        return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
+                .code(code)
+                .message(message)
+                .build(), code);
     };
     @Autowired
     private MessageSourceAccessor messageSourceAccessor;

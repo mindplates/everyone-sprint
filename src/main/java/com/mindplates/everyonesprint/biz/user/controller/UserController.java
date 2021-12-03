@@ -11,6 +11,7 @@ import com.mindplates.everyonesprint.common.vo.UserSession;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ public class UserController {
 
         User alreadyRegisteredEmailUser = userService.selectUserByEmail(userRequest.getEmail());
         if (alreadyRegisteredEmailUser != null) {
-            throw new ServiceException("", "user.duplicated");
+            throw new ServiceException("user.duplicated");
         }
 
         User user = userRequest.buildEntity();
@@ -61,11 +62,13 @@ public class UserController {
     public MyInfoResponse login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) throws NoSuchAlgorithmException {
 
         User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword(), loginRequest.getAutoLogin());
-        if (user != null) {
-            sessionUtil.login(request, user);
+        if (user == null) {
+            throw new ServiceException(HttpStatus.UNAUTHORIZED, "common.login.fail");
         }
 
+        sessionUtil.login(request, user);
         return new MyInfoResponse(user);
+
     }
 
     @DisableLogin

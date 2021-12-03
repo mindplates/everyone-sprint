@@ -62,7 +62,7 @@ const PublicPark = ({ user, t }) => {
       const node = group.selectAll(`#user-${u.userId}`);
 
       if (node.size() > 0) {
-        node.attr('time', `time-${now}`).transition().attr('transform', `translate(${u.x}, ${u.y})`).duration(200);
+        node.attr('time', `time-${now}`).attr('transform', `translate(${u.x}, ${u.y})`);
       } else if (u.imageType === 'image') {
         group
           .append('g')

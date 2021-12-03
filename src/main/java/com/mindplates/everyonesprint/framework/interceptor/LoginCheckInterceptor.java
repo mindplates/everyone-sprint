@@ -59,7 +59,7 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
         }
 
         if (!sessionUtil.isLogin(request)) {
-            throw new ServiceException("", "user.session.expired");
+            throw new ServiceException("user.session.expired");
         }
 
         return true;
