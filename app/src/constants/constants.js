@@ -12,6 +12,11 @@ const USER_STUB = {
   tel: '',
 };
 
+const DATE_FORMATS = {
+  en: 'MM/dd/yyyy hh:mm',
+  ko: 'yyyy년 MM월 dd일 hh시 mm분',
+};
+
 const THEMES = {
   WHITE: 'WHITE',
   BLACK: 'BLACK',
@@ -23,7 +28,19 @@ const MESSAGE_CATEGORY = {
   INFO: 'INFO',
 };
 
-const VALIDATIONS = ['valueMissing', 'typeMismatch', 'patternMismatch', 'tooLong', 'tooShort', 'rangeUnderflow', 'rangeOverflow', 'stepMismatch', 'badInput', 'customError', 'valid'];
+const VALIDATIONS = [
+  'valueMissing',
+  'typeMismatch',
+  'patternMismatch',
+  'tooLong',
+  'tooShort',
+  'rangeUnderflow',
+  'rangeOverflow',
+  'stepMismatch',
+  'badInput',
+  'customError',
+  'valid',
+];
 
 const DEFAULT_INPUT_VALIDATION_MESSAGE = {
   valueMissing: 'validation.valueMissing',
@@ -44,11 +61,6 @@ const USER_ROLES = {
   MEMBER: '사용자',
 };
 
-const DATE_FORMATS = {
-  kr: 'YYYY-MM-DD HH:mm',
-  us: 'MM/DD/YYYY HH:mm',
-};
-
 const LANGUAGES = {
   ko: '한국어',
   en: 'English',
@@ -61,4 +73,14 @@ const VENDORS = {
   google: '구글',
 };
 
-export { USER_STUB, THEMES, MESSAGE_CATEGORY, DEFAULT_INPUT_VALIDATION_MESSAGE, VALIDATIONS, USER_ROLES, DATE_FORMATS, LANGUAGES, VENDORS };
+export {
+  USER_STUB,
+  THEMES,
+  MESSAGE_CATEGORY,
+  DEFAULT_INPUT_VALIDATION_MESSAGE,
+  VALIDATIONS,
+  USER_ROLES,
+  DATE_FORMATS,
+  LANGUAGES,
+  VENDORS,
+};

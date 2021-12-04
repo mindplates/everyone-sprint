@@ -21,6 +21,12 @@ button.btn {
       padding-left: 0;
       padding-right: 0;
       padding-top: 0;
+      display: inline-flex;
+      > i {
+        align-self: center;
+        width: 100%;
+        line-height: 0;
+      }
     }
 
     &.btn-sm {

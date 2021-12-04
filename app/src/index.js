@@ -7,13 +7,12 @@ import store from './store';
 import '@/languages/i18n';
 import App from './App';
 import './index.scss';
+import 'react-datepicker/dist/react-datepicker.css';
 
 ReactDOM.render(
   <Router>
     <Provider store={store}>
-
-        <App />
-
+      <App />
     </Provider>
   </Router>,
   document.getElementById('root'),

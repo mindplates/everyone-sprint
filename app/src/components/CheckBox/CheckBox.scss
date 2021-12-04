@@ -1,11 +1,11 @@
 .check-box-wrapper {
-  display: inline-block;
   position: relative;
   vertical-align: middle;
   align-self: center;
   justify-content: center;
   padding: 0;
   cursor: pointer;
+  display: inline-flex;
 
   label {
     margin: 0;
@@ -16,6 +16,7 @@
     cursor: pointer;
     display: inline-block;
     font-family: pretendard, sans-serif;
+    line-height: 100%;
   }
 
   .check-box-span {
@@ -59,8 +60,10 @@
   }
 
   &.md {
+    height: 38px;
+
     label {
-      font-size: 0.8rem;
+      font-size: 15px;
     }
 
     .check-box-span {
@@ -72,7 +75,7 @@
   }
 
   &.sm {
-    height: 16px;
+    height: 31px;
     line-height: 0;
     label {
       font-size: 14px;

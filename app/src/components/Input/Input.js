@@ -118,6 +118,7 @@ class Input extends React.Component {
       isInherit,
       debounce,
       onChange,
+      display,
       ...last
     } = this.props;
     const { focus, valid, message, innerValue } = this.state;
@@ -131,6 +132,9 @@ class Input extends React.Component {
         } ${outline ? 'outline' : ''}`}
         onClick={() => {
           if (this.control.current) this.control.current.focus();
+        }}
+        style={{
+          display,
         }}
       >
         {isInherit && (
@@ -198,6 +202,7 @@ Input.defaultProps = {
   isInherit: false,
   debounce: 0,
   outline: false,
+  display: 'inline-block',
 };
 
 Input.propTypes = {
@@ -224,6 +229,7 @@ Input.propTypes = {
   debounce: PropTypes.number,
   tReady: PropTypes.bool,
   outline: PropTypes.bool,
+  display: PropTypes.string,
 };
 
 export default withTranslation()(Input);

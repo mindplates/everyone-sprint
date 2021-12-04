@@ -1,0 +1,89 @@
+.user-card-wrapper {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+
+  > div {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    .role {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      display: inline-block;
+
+      > span {
+        margin-right: 0.25rem;
+        font-size: 12px;
+        display: inline-block;
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        padding: 4px;
+        line-height: 100%;
+      }
+    }
+
+    .remove-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      display: inline-block;
+    }
+
+    .user-image {
+      align-self: center;
+      margin: 1rem 0 0.5rem;
+
+      > div {
+        > div {
+          background-color: $light;
+        }
+      }
+    }
+
+    .user-card-content {
+      flex-grow: 1;
+      line-height: 100%;
+      font-size: 14px;
+      padding: 0 1rem 1rem;
+      text-align: center;
+
+      .email {
+        font-family: pretendard, sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .email,
+      .alias {
+        text-transform: uppercase;
+      }
+
+      .alias {
+        > span {
+          font-size: 13px;
+          &.alias-text {
+          }
+
+          &.name-text {
+            margin-left: 0.25rem;
+            &:before {
+              content: '[';
+            }
+
+            &:after {
+              content: ']';
+            }
+          }
+        }
+      }
+
+      > div {
+        margin-bottom: 0.5rem;
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
