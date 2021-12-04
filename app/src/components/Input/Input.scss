@@ -22,6 +22,11 @@
     }
   }
 
+  &.disabled {
+    background-color: $gray-100;
+    opacity: 0.6;
+  }
+
   input {
     width: 100%;
     border: none;
@@ -101,7 +106,6 @@
     transition: all 0.3s;
     color: $gray-700;
     z-index: 1;
-
 
     @media (max-width: 576px) {
       font-size: 0.9rem;

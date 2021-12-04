@@ -85,6 +85,11 @@
   }
 }
 
+.g-list-content {
+  flex-grow: 1;
+  position: relative;
+}
+
 .g-line-height-100 {
   line-height: 100%;
 }
@@ -158,4 +163,3 @@
     }
   }
 }
-

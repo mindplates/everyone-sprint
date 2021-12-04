@@ -1,14 +1,32 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { PageTitle } from '@/components';
+import { Button, PageTitle } from '@/components';
 import './Sprints.scss';
+import { HistoryPropTypes } from '@/proptypes';
 
-const Sprints = () => {
+const Sprints = ({ history }) => {
   return (
     <div className="sprints-wrapper g-content">
-      <PageTitle>스프린트</PageTitle>
-      <div className="g-page-content">컨텐츠</div>
+      <PageTitle
+        control={
+          <>
+            <Button
+              size="xs"
+              color="white"
+              outline
+              onClick={() => {
+                history.push('/sprints/new');
+              }}
+            >
+              <i className="fas fa-plus" /> 새 스프린트
+            </Button>
+          </>
+        }
+      >
+        스프린트
+      </PageTitle>
+      <div className="g-list-content" />
     </div>
   );
 };
@@ -25,4 +43,5 @@ Sprints.propTypes = {
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),
+  history: HistoryPropTypes,
 };

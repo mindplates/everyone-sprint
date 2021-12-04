@@ -7,12 +7,6 @@ const MENU = {
     enabled: false,
     submenus: [],
   },
-  groups: {
-    icon: <i className="fas fa-igloo" />,
-    name: '그룹',
-    enabled: false,
-    submenus: [],
-  },
   sprints: {
     icon: <i className="fas fa-plane" />,
     name: '스프린트',

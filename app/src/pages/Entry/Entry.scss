@@ -114,6 +114,11 @@
           padding: 0 0.5rem;
           margin-bottom: 1rem;
         }
+
+        @media (max-width: 576px) {
+          padding: 0;
+        }
+
         .sub-label {
           margin-bottom: 1rem;
           font-family: pretendard, sans-serif;

@@ -1,0 +1,50 @@
+.date-range-wrapper {
+  display: flex;
+  border: $input-border;
+  padding: 0 0.5rem;
+
+  @media (max-width: 576px) {
+    display: block;
+  }
+
+  > div {
+    align-self: center;
+
+    @media (max-width: 768px) {
+      flex: 1 1 0;
+      font-size: 14px;
+    }
+
+    &.dash {
+      margin: 0 0.5rem;
+      flex: 0;
+      @media (max-width: 576px) {
+        display: none;
+      }
+    }
+
+    .end-date-picker {
+      justify-content: flex-end;
+    }
+  }
+
+  &.size-md {
+    height: 38px;
+
+    @media (max-width: 576px) {
+      height: 76px;
+      > div {
+        height: 38px;
+        display: flex;
+
+        > div {
+          align-self: center;
+        }
+
+        &.dash {
+          display: none;
+        }
+      }
+    }
+  }
+}
