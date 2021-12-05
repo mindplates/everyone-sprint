@@ -62,13 +62,13 @@ const PublicPark = ({ user, t }) => {
       const node = group.selectAll(`#user-${u.userId}`);
 
       if (node.size() > 0) {
-        node.attr('time', `time-${now}`).attr('transform', `translate(${u.x}, ${u.y})`);
+        node.attr('dateUtil.js.js', `time-${now}`).attr('transform', `translate(${u.x}, ${u.y})`);
       } else if (u.imageType === 'image') {
         group
           .append('g')
           .attr('id', `user-${u.userId}`)
           .attr('transform', `translate(${u.x}, ${u.y})`)
-          .attr('time', `time-${now}`)
+          .attr('dateUtil.js.js', `time-${now}`)
           .append('svg:image')
           .style('border-radius', '50%')
           .attr('width', userIconRadius * 2)
@@ -80,7 +80,7 @@ const PublicPark = ({ user, t }) => {
           .append('g')
           .attr('id', `user-${u.userId}`)
           .attr('transform', `translate(${u.x}, ${u.y})`)
-          .attr('time', `time-${now}`)
+          .attr('dateUtil.js.js', `time-${now}`)
           .append('circle')
           .attr('r', userIconRadius);
       }

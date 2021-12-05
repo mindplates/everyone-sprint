@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { registerLocale } from 'react-datepicker';
-import ko from 'date-fns/locale/ko';
-import en from 'date-fns/locale/en-US';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button, CheckBox, DateRange, Form, Input, PageTitle, SubTitle, UserCard } from '@/components';
@@ -12,22 +9,38 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import auth from '@/utils/auth';
 import './NewSprint.scss';
 
-registerLocale('ko', ko);
-registerLocale('en', en);
+const start = new Date();
+start.setHours(9);
+start.setMinutes(0);
+start.setSeconds(0);
+start.setMilliseconds(0);
+
+const end = new Date();
+end.setHours(18);
+end.setMinutes(0);
+end.setSeconds(0);
+end.setMilliseconds(0);
+end.setDate(end.getDate() + 14);
 
 const NewSprint = ({ t, history, user }) => {
   const [info, setInfo] = useState({
     name: '',
-    startDate: Date.now(),
-    endDate: Date.now() + 1000 * 60 * 60 * 24 * 14,
-    isJiraSpring: false,
+    startDate: start.getTime(),
+    endDate: end.getTime(),
+    isJiraSprint: false,
     jiraSprintUrl: '',
     jiraAuthKey: '',
     allowSearch: true,
+    allowAutoJoin: true,
     users: [],
   });
+
+  useEffect(() => {
+    auth.checkUserLogin(history);
+  }, []);
 
   useEffect(() => {
     const users = info.users.splice(0);
@@ -58,18 +71,15 @@ const NewSprint = ({ t, history, user }) => {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (info.password !== info.password2) {
-      dialog.setMessage(MESSAGE_CATEGORY.INFO, t('validation.badInput'), t('validation.notEqualPassword'));
-      return;
-    }
-
-    request.post('/api/users', info, (data) => {
-      console.log(data);
-
-      dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
-        history.push('/');
-      });
-    });
+    request.post(
+      '/api/sprints',
+      { ...info, startDate: new Date(info.startDate), endDate: new Date(info.endDate) },
+      (data) => {
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
+          history.push(`/sprints/${data.id}`);
+        });
+      },
+    );
   };
 
   return (
@@ -110,7 +120,7 @@ const NewSprint = ({ t, history, user }) => {
               </div>
               <div className="date-range">
                 <DateRange
-                  language={user.language}
+                  country={user.country}
                   startDate={info.startDate}
                   endDate={info.endDate}
                   onChange={(key, value) => {
@@ -151,8 +161,8 @@ const NewSprint = ({ t, history, user }) => {
                 <CheckBox
                   size="md"
                   type="checkbox"
-                  value={info.isJiraSpring}
-                  onChange={(val) => changeInfo('isJiraSpring', val)}
+                  value={info.isJiraSprint}
+                  onChange={(val) => changeInfo('isJiraSprint', val)}
                   label={t('이 스프린트를 지라 스프린트와 연결합니다.')}
                 />
               </div>
@@ -170,7 +180,7 @@ const NewSprint = ({ t, history, user }) => {
                   outline
                   simple
                   display="block"
-                  disabled={!info.isJiraSpring}
+                  disabled={!info.isJiraSprint}
                 />
               </div>
             </div>
@@ -187,7 +197,7 @@ const NewSprint = ({ t, history, user }) => {
                   outline
                   simple
                   display="block"
-                  disabled={!info.isJiraSpring}
+                  disabled={!info.isJiraSprint}
                 />
               </div>
             </div>
@@ -214,7 +224,7 @@ const NewSprint = ({ t, history, user }) => {
             </div>
             <div className="row-input">
               <div>
-                <span>참여 승인</span>
+                <span>자동 승인</span>
               </div>
               <div className="g-line-height-0">
                 <RadioButton
@@ -223,9 +233,9 @@ const NewSprint = ({ t, history, user }) => {
                     { key: true, value: '누구나 참여' },
                     { key: false, value: '승인 후 참여' },
                   ]}
-                  value={info.allowSearch}
+                  value={info.allowAutoJoin}
                   onClick={(val) => {
-                    changeInfo('allowSearch', val);
+                    changeInfo('allowAutoJoin', val);
                   }}
                 />
               </div>

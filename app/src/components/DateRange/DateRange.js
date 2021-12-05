@@ -3,7 +3,7 @@ import { registerLocale } from 'react-datepicker';
 import PropTypes from 'prop-types';
 import ko from 'date-fns/locale/ko';
 import en from 'date-fns/locale/en-US';
-import { DatePicker } from '@/components';
+import { DatePicker, Liner } from '@/components';
 import { DATE_FORMATS } from '@/constants/constants';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
 import './DateRange.scss';
@@ -11,7 +11,7 @@ import './DateRange.scss';
 registerLocale('ko', ko);
 registerLocale('en', en);
 
-const DateRange = ({ className, language, startDate, endDate, onChange, size }) => {
+const DateRange = ({ className, country, startDate, endDate, onChange, size }) => {
   return (
     <div className={`date-range-wrapper ${className} size-${size}`}>
       <div>
@@ -22,12 +22,12 @@ const DateRange = ({ className, language, startDate, endDate, onChange, size }) 
           onChange={(date) => {
             onChange('startDate', date.getTime());
           }}
-          locale={language}
+          locale={country}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[language]}
+          dateFormat={DATE_FORMATS[country].picker}
         />
       </div>
-      <div className="dash">-</div>
+      <Liner width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
       <div>
         <DatePicker
           className="date-picker end-date-picker"
@@ -36,9 +36,9 @@ const DateRange = ({ className, language, startDate, endDate, onChange, size }) 
           onChange={(date) => {
             onChange('endDate', date.getTime());
           }}
-          locale={language}
+          locale={country}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[language]}
+          dateFormat={DATE_FORMATS[country].picker}
         />
       </div>
     </div>
@@ -54,7 +54,7 @@ DateRange.defaultProps = {
 
 DateRange.propTypes = {
   className: PropTypes.string,
-  language: PropTypes.string,
+  country: PropTypes.string,
   startDate: PropTypes.number,
   endDate: PropTypes.number,
   onChange: PropTypes.func,

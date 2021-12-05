@@ -1,23 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import qs from 'qs';
 import { Button, CheckBox, Form, Input } from '@/components';
 import { setUserInfo } from '@/store/actions';
 import request from '@/utils/request';
 import storage from '@/utils/storage';
+import { HistoryPropTypes, LocationPropTypes } from '@/proptypes';
 import './StartingLine.scss';
-import { HistoryPropTypes } from '@/proptypes';
 
-const StartingLine = ({ t, history, setUserInfo: setUserInfoReducer }) => {
+const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer }) => {
   const [info, setInfo] = useState({ email: '', password: '', autoLogin: false });
+  const [url, setUrl] = useState('');
 
   const changeInfo = (key, value) => {
     const next = { ...info };
     next[key] = value;
     setInfo(next);
   };
+
+  useEffect(() => {
+    const search = qs.parse(location.search, { ignoreQueryPrefix: true });
+    const { url: searchUrl } = search;
+    setUrl(searchUrl);
+  }, [location.search]);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -31,7 +39,11 @@ const StartingLine = ({ t, history, setUserInfo: setUserInfoReducer }) => {
       }
 
       setUserInfoReducer(data);
-      history.push('/');
+      if (url) {
+        history.push(url);
+      } else {
+        history.push('/');
+      }
     });
   };
 
@@ -39,6 +51,11 @@ const StartingLine = ({ t, history, setUserInfo: setUserInfoReducer }) => {
     <div className="starting-line-wrapper g-content">
       <div className="starting-line-content g-page-content">
         <Form onSubmit={onSubmit}>
+          {url && (
+            <div className="need-auth-message">
+              <span>{t('로그인이 필요합니다.')}</span>
+            </div>
+          )}
           <div className="email">
             <Input
               type="email"
@@ -105,4 +122,5 @@ StartingLine.propTypes = {
   }),
   history: HistoryPropTypes,
   setUserInfo: PropTypes.func,
+  location: LocationPropTypes,
 };

@@ -40,6 +40,7 @@ const Header = (props) => {
         ...USER_STUB,
         language: user.language,
       });
+      history.push('/');
     });
   };
 

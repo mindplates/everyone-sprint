@@ -15,6 +15,12 @@
     }
   }
 
+  &.color-black {
+    > div {
+      background-color: $black;
+    }
+  }
+
   &.color-light {
     > div {
       background-color: rgba(0, 0, 0, 0.2);
