@@ -12,6 +12,20 @@
       align-self: center;
       margin: 0 auto;
 
+      .need-auth-message {
+        text-align: center;
+        margin-bottom: 1rem;
+
+        > span {
+          background-color: $danger;
+          color: $white;
+          padding: 0.25rem 0.5rem;
+          font-family: pretendard, sans-serif;
+          font-size: 15px;
+          border-radius: 2px;
+        }
+      }
+
       .email {
         margin-bottom: 0.5rem;
       }

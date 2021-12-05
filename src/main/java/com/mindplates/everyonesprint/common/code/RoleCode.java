@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public enum RoleCode {
 
 	SUPER_MAN("ROOT"),
+	ADMIN("ADMIN"),
 	MEMBER("MEMBER");
 	private String code;
 

@@ -13,13 +13,8 @@ const USER_STUB = {
 };
 
 const DATE_FORMATS = {
-  en: 'MM/dd/yyyy hh:mm',
-  ko: 'yyyy년 MM월 dd일 hh시 mm분',
-};
-
-const THEMES = {
-  WHITE: 'WHITE',
-  BLACK: 'BLACK',
+  US: { moment: 'MM/DD/YYYY HH:mm', picker: 'MM/dd/yyyy HH:mm' },
+  KR: { moment: 'YYYY년 MM월 DD일 HH시 mm분', picker: 'yyyy년 MM월 dd일 HH시 mm분' },
 };
 
 const MESSAGE_CATEGORY = {
@@ -75,7 +70,6 @@ const VENDORS = {
 
 export {
   USER_STUB,
-  THEMES,
   MESSAGE_CATEGORY,
   DEFAULT_INPUT_VALIDATION_MESSAGE,
   VALIDATIONS,

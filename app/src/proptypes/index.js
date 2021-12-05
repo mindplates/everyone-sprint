@@ -6,6 +6,11 @@ const HistoryPropTypes = PropTypes.shape({
   push: PropTypes.func,
 });
 
+const LocationPropTypes = PropTypes.shape({
+  pathname: PropTypes.string,
+  search: PropTypes.string,
+});
+
 const SettingPropTypes = PropTypes.shape({
   footer: PropTypes.bool,
   collapsed: PropTypes.bool,
@@ -25,4 +30,4 @@ const UserPropTypes = PropTypes.shape({
   tel: PropTypes.string,
 });
 
-export { HistoryPropTypes, SettingPropTypes, UserPropTypes };
+export { HistoryPropTypes, SettingPropTypes, UserPropTypes, LocationPropTypes };

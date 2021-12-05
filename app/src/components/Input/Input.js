@@ -202,7 +202,7 @@ Input.defaultProps = {
   isInherit: false,
   debounce: 0,
   outline: false,
-  display: 'inline-block',
+  display: 'block',
 };
 
 Input.propTypes = {
