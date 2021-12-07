@@ -8,6 +8,8 @@ class UserCard extends React.PureComponent {
   render() {
     const { className, onClick, user, editable } = this.props;
 
+    console.log(user);
+
     return (
       <div
         className={`user-card-wrapper ${className}`}

@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button, CheckBox, DateRange, Form, Input, PageTitle, SubTitle, UserCard } from '@/components';
+import { BottomButtons, CheckBox, DateRange, Form, Input, PageTitle, SubTitle, UserCard } from '@/components';
 import dialog from '@/utils/dialog';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
@@ -106,6 +106,8 @@ const NewSprint = ({ t, history, user }) => {
                   onChange={(val) => changeInfo('name', val)}
                   outline
                   simple
+                  required
+                  minLength={1}
                 />
               </div>
             </div>
@@ -211,10 +213,7 @@ const NewSprint = ({ t, history, user }) => {
               <div>
                 <RadioButton
                   size="sm"
-                  items={[
-                    { key: true, value: '검색 허용' },
-                    { key: false, value: '초대 혹은 링크만 허용' },
-                  ]}
+                  items={ALLOW_SEARCHES}
                   value={info.allowSearch}
                   onClick={(val) => {
                     changeInfo('allowSearch', val);
@@ -229,10 +228,7 @@ const NewSprint = ({ t, history, user }) => {
               <div className="g-line-height-0">
                 <RadioButton
                   size="sm"
-                  items={[
-                    { key: true, value: '누구나 참여' },
-                    { key: false, value: '승인 후 참여' },
-                  ]}
+                  items={JOIN_POLICIES}
                   value={info.allowAutoJoin}
                   onClick={(val) => {
                     changeInfo('allowAutoJoin', val);
@@ -242,14 +238,14 @@ const NewSprint = ({ t, history, user }) => {
             </div>
           </div>
         </div>
-        <div className="submit-buttons">
-          <Button size="md" color="white" outline>
-            <i className="fas fa-angle-left" /> 취소
-          </Button>
-          <Button type="submit" size="md" color="primary">
-            <i className="fas fa-plane" /> 스프린트 등록
-          </Button>
-        </div>
+        <BottomButtons
+          onList={() => {
+            history.push('/sprints');
+          }}
+          onSubmit
+          onSubmitIcon={<i className="fas fa-plane" />}
+          onSubmitText="스프린트 등록"
+        />
       </Form>
     </div>
   );

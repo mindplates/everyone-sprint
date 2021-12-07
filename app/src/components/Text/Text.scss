@@ -1,0 +1,31 @@
+.text-wrapper {
+  display: inline-flex;
+
+  > div {
+    align-self: center;
+  }
+
+  &.size-xs {
+    height: 26px;
+    .text {
+    }
+  }
+
+  &.size-sm {
+    height: 31px;
+    .text {
+    }
+  }
+
+  &.size-md {
+    height: 38px;
+  }
+
+  &.size-lg {
+    height: 48px;
+  }
+
+  &.is-bold {
+    font-weight: bold;
+  }
+}

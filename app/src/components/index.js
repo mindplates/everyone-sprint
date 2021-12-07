@@ -15,6 +15,9 @@ import CheckBox from '@/components/CheckBox/CheckBox';
 import Popup from '@/components/Popup/Popup';
 import UserImage from '@/components/UserImage/UserImage';
 import DateRange from '@/components/DateRange/DateRange';
+import DateRangeText from '@/components/DateRange/DateRangeText';
+import Text from '@/components/Text/Text';
+import BottomButtons from '@/components/BottomButtons/BottomButtons';
 import UserCard from '@/components/UserCard/UserCard';
 
 export {
@@ -36,4 +39,7 @@ export {
   DatePicker,
   DateRange,
   UserCard,
+  DateRangeText,
+  Text,
+  BottomButtons,
 };

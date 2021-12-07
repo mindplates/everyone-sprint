@@ -34,5 +34,13 @@ public class SprintService {
         return sprintRepository.findAllByUsersUserId(userSession.getId());
     }
 
+    public void deleteSprintInfo(Long id) {
+        sprintRepository.deleteById(id);
+    }
+
+    public Sprint selectSprintInfo(Long id) {
+        return sprintRepository.findById(id).orElse(null);
+    }
+
 
 }

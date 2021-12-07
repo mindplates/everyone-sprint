@@ -1,0 +1,26 @@
+.bottom-buttons-wrapper {
+  text-align: right;
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  margin: 1rem 1rem 0;
+  display: flex;
+
+  &.has-top-border {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  > .delete-buttons {
+  }
+
+  > .other-buttons {
+    flex-grow: 1;
+  }
+
+  > div > button {
+    margin-right: 1rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
