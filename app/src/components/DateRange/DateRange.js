@@ -27,7 +27,7 @@ const DateRange = ({ className, country, language, startDate, endDate, onChange,
           dateFormat={DATE_FORMATS[country].picker}
         />
       </div>
-      <Liner width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
+      <Liner className='dash' width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
       <div>
         <DatePicker
           className="date-picker end-date-picker"

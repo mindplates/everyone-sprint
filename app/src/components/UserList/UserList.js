@@ -10,6 +10,9 @@ const UserList = ({ className, users, editable, onChange }) => {
       const next = users.slice();
       const target = next[targetIndex];
       target[field] = value;
+      if (field !== 'CRUD') {
+        target.CRUD = 'U';
+      }
       onChange(next);
     },
     [users],
@@ -22,7 +25,7 @@ const UserList = ({ className, users, editable, onChange }) => {
           <div>등록된 멤버가 없습니다.</div>
         </div>
       )}
-      {editable && (
+      {(editable || users.length > 0) && (
         <div className="sprint-user-list">
           {users.map((user, index) => {
             return (
