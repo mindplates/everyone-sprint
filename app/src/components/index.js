@@ -24,6 +24,7 @@ import PageContent from '@/components/PageContent/PageContent';
 import Block from '@/components/Block/Block';
 import Label from '@/components/Label/Label';
 import BlockRow from '@/components/BlockRow/BlockRow';
+import UserList from '@/components/UserList/UserList';
 
 export {
   MessageDialog,
@@ -52,4 +53,5 @@ export {
   Block,
   Label,
   BlockRow,
+  UserList,
 };

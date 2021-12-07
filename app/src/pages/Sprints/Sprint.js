@@ -15,12 +15,12 @@ import {
   PageTitle,
   Text,
   UserCard,
+  UserList,
 } from '@/components';
 import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import './Sprint.scss';
 
 const Sprint = ({
   t,
@@ -84,6 +84,7 @@ const Sprint = ({
         </Block>
         <Block>
           <BlockTitle>멤버</BlockTitle>
+          <UserList users={info.users} />
           {info.users.length < 1 && (
             <div className="sprint-user-list">
               <div>등록된 멤버가 없습니다.</div>
