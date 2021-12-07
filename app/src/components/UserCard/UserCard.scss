@@ -1,6 +1,37 @@
 .user-card-wrapper {
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 2px;
+  height: 128px;
+  line-height: 100%;
+  vertical-align: top;
+
+  &.add-card {
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  &.deleted {
+    border-color: $danger;
+  }
+
+  .add-card-content {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    cursor: pointer;
+
+    > div {
+      align-self: center;
+      width: 100%;
+      text-align: center;
+
+      .icon {
+        font-size: 36px;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
 
   > div {
     position: relative;
@@ -20,14 +51,28 @@
         border: 1px solid rgba(0, 0, 0, 0.4);
         padding: 4px;
         line-height: 100%;
+        min-width: 60px;
+        text-align: center;
+
+        &.deleted {
+          color: $danger;
+          border-color: $danger;
+        }
       }
     }
 
-    .remove-button {
+    .remove-button,
+    .redo-button {
       position: absolute;
       top: 0.5rem;
       right: 0.5rem;
       display: inline-block;
+      line-height: 100%;
+    }
+
+    .redo-button {
+      top: 0.25rem;
+      right: 0.25rem;
     }
 
     .user-image {

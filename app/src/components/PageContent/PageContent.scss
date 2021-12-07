@@ -1,0 +1,17 @@
+.page-content-wrapper {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  flex-grow: 1;
+  background-color: $white;
+  position: relative;
+  padding: 1rem;
+
+  .block-wrapper {
+    &:first-child {
+      padding-top: 0.5rem;
+    }
+  }
+
+  @media (max-width: 992px) {
+  }
+}

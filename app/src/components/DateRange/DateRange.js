@@ -11,7 +11,7 @@ import './DateRange.scss';
 registerLocale('ko', ko);
 registerLocale('en', en);
 
-const DateRange = ({ className, country, startDate, endDate, onChange, size }) => {
+const DateRange = ({ className, country, language, startDate, endDate, onChange, size }) => {
   return (
     <div className={`date-range-wrapper ${className} size-${size}`}>
       <div>
@@ -22,12 +22,12 @@ const DateRange = ({ className, country, startDate, endDate, onChange, size }) =
           onChange={(date) => {
             onChange('startDate', date.getTime());
           }}
-          locale={country}
+          locale={language}
           customInput={<DateCustomInput />}
           dateFormat={DATE_FORMATS[country].picker}
         />
       </div>
-      <Liner width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
+      <Liner className='dash' width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
       <div>
         <DatePicker
           className="date-picker end-date-picker"
@@ -36,7 +36,7 @@ const DateRange = ({ className, country, startDate, endDate, onChange, size }) =
           onChange={(date) => {
             onChange('endDate', date.getTime());
           }}
-          locale={country}
+          locale={language}
           customInput={<DateCustomInput />}
           dateFormat={DATE_FORMATS[country].picker}
         />
@@ -55,6 +55,7 @@ DateRange.defaultProps = {
 DateRange.propTypes = {
   className: PropTypes.string,
   country: PropTypes.string,
+  language: PropTypes.string,
   startDate: PropTypes.number,
   endDate: PropTypes.number,
   onChange: PropTypes.func,

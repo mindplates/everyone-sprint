@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { HistoryPropTypes, SettingPropTypes, UserPropTypes } from '@/proptypes';
 import storage from '@/utils/storage';
 import MENU from '@/constants/menu';
-import { Button, Liner, Overlay, ProductLogo, SubTitle, UserImage } from '@/components';
+import { Button, Liner, Overlay, ProductLogo, BlockTitle, UserImage } from '@/components';
 import { setSetting, setUserInfo } from '@/store/actions';
 import './Header.scss';
 import request from '@/utils/request';
@@ -224,9 +224,9 @@ const Header = (props) => {
                     <Liner width="100%" height="1px" color="light" margin="0.75rem 0" />
                   </>
                 )}
-                <SubTitle className="sub-title" size="xs" bold={false}>
+                <BlockTitle className="sub-title" size="xs" bold={false}>
                   QUICK MENU
-                </SubTitle>
+                </BlockTitle>
                 <div className="d-flex quick-menu">
                   <div className="lang-label small align-self-center">
                     <span>언어</span>
