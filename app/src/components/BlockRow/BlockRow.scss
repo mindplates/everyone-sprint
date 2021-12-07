@@ -1,0 +1,13 @@
+.block-row-wrapper {
+  display: flex;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 768px) {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  > div {
+    align-self: center;
+  }
+}

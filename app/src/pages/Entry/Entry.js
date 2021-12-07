@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button, CheckBox, ExitButton, Form, Input, PageTitle, Popup, SubTitle } from '@/components';
+import { Button, CheckBox, ExitButton, Form, Input, PageTitle, Popup, BlockTitle } from '@/components';
 import storage from '@/utils/storage';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
@@ -76,7 +76,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
         <div className="entry-info">
           <div className="layout-1">
             <div className="general-info picture-info">
-              <SubTitle>이미지 & 아이콘</SubTitle>
+              <BlockTitle>이미지 & 아이콘</BlockTitle>
               <div className="user-picture">
                 <div className="preview">
                   <div className="preview-content">
@@ -168,7 +168,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
           </div>
           <div className="layout-3">
             <div className="general-info">
-              <SubTitle>로그인 정보</SubTitle>
+              <BlockTitle>로그인 정보</BlockTitle>
               <div className="row-input">
                 <div>
                   <span>
@@ -234,7 +234,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
               </div>
             </div>
             <div className="general-info">
-              <SubTitle>사용자 정보</SubTitle>
+              <BlockTitle>사용자 정보</BlockTitle>
               <div className="row-input">
                 <div>
                   <span>

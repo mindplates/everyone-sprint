@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './SubTitle.scss';
+import './BlockTitle.scss';
 
-const SubTitle = ({ className, children, size, bold }) => {
+const BlockTitle = ({ className, children, size, bold }) => {
   return (
-    <div className={`sub-title-wrapper ${className} size-${size} ${bold ? 'is-bold' : ''}`}>
+    <div className={`block-title-wrapper ${className} size-${size} ${bold ? 'is-bold' : ''}`}>
       <div className="bullet bullet-1">
         <span />
       </div>
@@ -21,15 +21,15 @@ const SubTitle = ({ className, children, size, bold }) => {
   );
 };
 
-export default SubTitle;
+export default BlockTitle;
 
-SubTitle.defaultProps = {
+BlockTitle.defaultProps = {
   className: '',
   size: 'md',
   bold: true,
 };
 
-SubTitle.propTypes = {
+BlockTitle.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node,
   size: PropTypes.string,

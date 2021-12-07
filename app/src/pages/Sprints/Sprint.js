@@ -3,25 +3,24 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { BottomButtons, DateRangeText, PageTitle, SubTitle, Text, UserCard } from '@/components';
+import {
+  Block,
+  BlockRow,
+  BlockTitle,
+  BottomButtons,
+  DateRangeText,
+  Label,
+  Page,
+  PageContent,
+  PageTitle,
+  Text,
+  UserCard,
+} from '@/components';
 import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import './Sprint.scss';
-
-const start = new Date();
-start.setHours(9);
-start.setMinutes(0);
-start.setSeconds(0);
-start.setMilliseconds(0);
-
-const end = new Date();
-end.setHours(18);
-end.setMinutes(0);
-end.setSeconds(0);
-end.setMilliseconds(0);
-end.setDate(end.getDate() + 14);
 
 const Sprint = ({
   t,
@@ -33,8 +32,8 @@ const Sprint = ({
 }) => {
   const [info, setInfo] = useState({
     name: '',
-    startDate: start.getTime(),
-    endDate: end.getTime(),
+    startDate: '',
+    endDate: '',
     isJiraSprint: false,
     jiraSprintUrl: '',
     jiraAuthKey: '',
@@ -45,7 +44,6 @@ const Sprint = ({
 
   useEffect(() => {
     request.get(`/api/sprints/${id}`, null, (data) => {
-      console.log(data);
       setInfo(data);
     });
   }, [id]);
@@ -61,116 +59,87 @@ const Sprint = ({
   };
 
   return (
-    <div className="sprint-wrapper g-content">
+    <Page className="sprint-wrapper">
       <PageTitle>스프린트 정보</PageTitle>
-      <div className="sprint-content g-page-content">
-        <div className="sprint-info">
-          <div className="general-info">
-            <SubTitle>스프린트 정보</SubTitle>
-            <div className="row-input">
-              <div>
-                <span>이름</span>
-              </div>
-              <div>
-                <Text>{info.name}</Text>
-              </div>
+      <PageContent>
+        <Block>
+          <BlockTitle>스프린트 정보</BlockTitle>
+          <BlockRow>
+            <Label minWidth="130px">이름</Label>
+            <Text>{info.name}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label minWidth="130px">기간</Label>
+            <DateRangeText
+              country={user.country}
+              startDate={info.startDate}
+              endDate={info.endDate}
+              onChange={(key, value) => {
+                const v = {};
+                v[key] = value;
+                setInfo({ ...info, ...v });
+              }}
+            />
+          </BlockRow>
+        </Block>
+        <Block>
+          <BlockTitle>멤버</BlockTitle>
+          {info.users.length < 1 && (
+            <div className="sprint-user-list">
+              <div>등록된 멤버가 없습니다.</div>
             </div>
-            <div className="row-input">
-              <div>
-                <span>기간</span>
-              </div>
-              <div className="date-range">
-                <DateRangeText
-                  country={user.country}
-                  startDate={info.startDate}
-                  endDate={info.endDate}
-                  onChange={(key, value) => {
-                    const v = {};
-                    v[key] = value;
-                    setInfo({ ...info, ...v });
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="general-info">
-            <SubTitle>멤버</SubTitle>
-            {info.users.length < 1 && (
-              <div className="sprint-user-list">
-                <div>등록된 멤버가 없습니다.</div>
-              </div>
-            )}
-            {info.users.length > 0 && (
-              <div className="sprint-user-list">
-                {info.users.map((u) => {
-                  return (
-                    <div key={u.id} className="user-card">
-                      <UserCard user={u} editable={false} />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          <div className="general-info">
-            <SubTitle>지라 연동</SubTitle>
-            <div className="row-input">
-              <div>
-                <span>{t('지라 연동')}</span>
-              </div>
-              <div className="g-line-height-0 check-box">
-                <Text>{info.isJiraSprint ? 'Y' : 'N'}</Text>
-              </div>
-            </div>
-            {info.isJiraSprint && (
-              <>
-                <div className="row-input">
-                  <div>
-                    <span>지라 스트린트 URL</span>
+          )}
+          {info.users.length > 0 && (
+            <div className="sprint-user-list">
+              {info.users.map((u) => {
+                return (
+                  <div key={u.id} className="user-card">
+                    <UserCard user={u} editable={false} />
                   </div>
-                  <div className="jira-sprint-url">
-                    <Text>{info.jiraSprintUrl}</Text>
-                  </div>
-                </div>
-                <div className="row-input">
-                  <div>
-                    <span>지라 인증 키</span>
-                  </div>
-                  <div className="jira-auth-key">
-                    <Text>{info.jiraAuthKey}</Text>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="general-info">
-            <SubTitle>검색 및 참여 설정</SubTitle>
-            <div className="row-input">
-              <div>
-                <span>검색 허용</span>
-              </div>
-              <div>
-                <Text>{(ALLOW_SEARCHES.find((d) => d.key === info.allowSearch) || {}).value}</Text>
-              </div>
+                );
+              })}
             </div>
-            <div className="row-input">
-              <div>
-                <span>자동 승인</span>
-              </div>
-              <div className="g-line-height-0">
-                <Text>{(JOIN_POLICIES.find((d) => d.key === info.allowAutoJoin) || {}).value}</Text>
-              </div>
-            </div>
-          </div>
-        </div>
+          )}
+        </Block>
+        <Block>
+          <BlockTitle>{t('지라 연동')}</BlockTitle>
+          <BlockRow>
+            <Label minWidth="130px">지라 연동</Label>
+            <Text>{info.isJiraSprint ? 'Y' : 'N'}</Text>
+          </BlockRow>
+          {info.isJiraSprint && (
+            <>
+              <BlockRow>
+                <Label minWidth="130px">지라 스트린트 URL</Label>
+                <Text>{info.jiraSprintUrl}</Text>
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth="130px">지라 인증 키</Label>
+                <Text>{info.jiraAuthKey}</Text>
+              </BlockRow>
+            </>
+          )}
+        </Block>
+        <Block>
+          <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
+          <BlockRow>
+            <Label minWidth="130px">검색 허용</Label>
+            <Text>{(ALLOW_SEARCHES.find((d) => d.key === info.allowSearch) || {}).value}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label minWidth="130px">자동 승인</Label>
+            <Text>{(JOIN_POLICIES.find((d) => d.key === info.allowAutoJoin) || {}).value}</Text>
+          </BlockRow>
+        </Block>
+
         <BottomButtons
           onList={() => {
             history.push('/sprints');
           }}
           onDelete={onDelete}
         />
-      </div>
-    </div>
+      </PageContent>
+    </Page>
   );
 };
 

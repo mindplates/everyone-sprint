@@ -10,7 +10,7 @@ import Liner from '@/components/Liner/Liner';
 import ExitButton from '@/components/ExitButton/ExitButton';
 import ProductLogo from '@/components/ProductLogo/ProductLogo';
 import PageTitle from '@/components/PageTitle/PageTitle';
-import SubTitle from '@/components/SubTitle/SubTitle';
+import BlockTitle from '@/components/BlockTitle/BlockTitle';
 import CheckBox from '@/components/CheckBox/CheckBox';
 import Popup from '@/components/Popup/Popup';
 import UserImage from '@/components/UserImage/UserImage';
@@ -19,6 +19,11 @@ import DateRangeText from '@/components/DateRange/DateRangeText';
 import Text from '@/components/Text/Text';
 import BottomButtons from '@/components/BottomButtons/BottomButtons';
 import UserCard from '@/components/UserCard/UserCard';
+import Page from '@/components/Page/Page';
+import PageContent from '@/components/PageContent/PageContent';
+import Block from '@/components/Block/Block';
+import Label from '@/components/Label/Label';
+import BlockRow from '@/components/BlockRow/BlockRow';
 
 export {
   MessageDialog,
@@ -31,7 +36,7 @@ export {
   ExitButton,
   ProductLogo,
   PageTitle,
-  SubTitle,
+  BlockTitle,
   CheckBox,
   Form,
   Popup,
@@ -42,4 +47,9 @@ export {
   DateRangeText,
   Text,
   BottomButtons,
+  Page,
+  PageContent,
+  Block,
+  Label,
+  BlockRow,
 };

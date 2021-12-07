@@ -1,0 +1,14 @@
+.label-wrapper {
+  > span {
+    font-family: pretendard, sans-serif;
+    position: relative;
+
+    .required {
+      position: absolute;
+      font-size: 10px;
+      top: -8px;
+      left: -12px;
+      color: $warning;
+    }
+  }
+}

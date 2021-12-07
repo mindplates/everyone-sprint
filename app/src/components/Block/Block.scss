@@ -1,0 +1,11 @@
+.block-wrapper {
+  padding: 1rem;
+  @media (max-width: 992px) {
+    padding: 0 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 576px) {
+    padding: 0;
+  }
+}

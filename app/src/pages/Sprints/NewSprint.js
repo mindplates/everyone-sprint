@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { BottomButtons, CheckBox, DateRange, Form, Input, PageTitle, SubTitle, UserCard } from '@/components';
+import { BottomButtons, CheckBox, DateRange, Form, Input, PageTitle, BlockTitle, UserCard } from '@/components';
 import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
@@ -88,7 +88,7 @@ const NewSprint = ({ t, history, user }) => {
       <Form className="new-sprint-content g-page-content" onSubmit={onSubmit}>
         <div className="new-sprint-info">
           <div className="general-info">
-            <SubTitle>스프린트 정보</SubTitle>
+            <BlockTitle>스프린트 정보</BlockTitle>
             <div className="row-input">
               <div>
                 <span>
@@ -135,7 +135,7 @@ const NewSprint = ({ t, history, user }) => {
             </div>
           </div>
           <div className="general-info">
-            <SubTitle>멤버</SubTitle>
+            <BlockTitle>멤버</BlockTitle>
             {info.users.length < 1 && (
               <div className="sprint-user-list">
                 <div>등록된 멤버가 없습니다.</div>
@@ -154,7 +154,7 @@ const NewSprint = ({ t, history, user }) => {
             )}
           </div>
           <div className="general-info">
-            <SubTitle>지라 연동</SubTitle>
+            <BlockTitle>지라 연동</BlockTitle>
             <div className="row-input">
               <div>
                 <span>지라 연동</span>
@@ -205,7 +205,7 @@ const NewSprint = ({ t, history, user }) => {
             </div>
           </div>
           <div className="general-info">
-            <SubTitle>검색 및 참여 설정</SubTitle>
+            <BlockTitle>검색 및 참여 설정</BlockTitle>
             <div className="row-input">
               <div>
                 <span>검색 허용</span>
