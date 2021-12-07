@@ -1,26 +1,46 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import './UserList.scss';
 import { UserPropTypes } from '@/proptypes';
 import { UserCard } from '@/components';
 
-const UserList = ({ className, users, editable }) => {
+const UserList = ({ className, users, editable, onChange }) => {
+  const changeUser = useCallback(
+    (targetIndex, field, value) => {
+      const next = users.slice();
+      const target = next[targetIndex];
+      target[field] = value;
+      onChange(next);
+    },
+    [users],
+  );
+
   return (
     <div className={`user-list-wrapper ${className}`}>
-      {users.length < 1 && (
-        <div className="sprint-user-list">
+      {!editable && users.length < 1 && (
+        <div className="empty-message">
           <div>등록된 멤버가 없습니다.</div>
         </div>
       )}
-      {users.length > 0 && (
+      {editable && (
         <div className="sprint-user-list">
-          {users.map((u) => {
+          {users.map((user, index) => {
             return (
-              <div key={u.id} className="user-card">
-                <UserCard user={u} editable={editable} />
+              <div key={index} className="user-card">
+                <UserCard userIndex={index} user={user} editable={editable} onChange={changeUser} />
               </div>
             );
           })}
+          {editable && (
+            <div className="user-card">
+              <UserCard
+                addCard
+                onClick={() => {
+                  console.log('add');
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -38,4 +58,5 @@ UserList.propTypes = {
   className: PropTypes.string,
   users: PropTypes.arrayOf(UserPropTypes),
   editable: PropTypes.bool,
+  onChange: PropTypes.func,
 };

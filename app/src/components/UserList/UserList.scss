@@ -1,7 +1,17 @@
 .user-list-wrapper {
+  .empty-message {
+    padding: 2rem 1rem;
+    text-align: center;
+    background-color: $light;
+    vertical-align: top;
+  }
   .sprint-user-list {
     margin-bottom: -1rem;
+    line-height: 0;
+    vertical-align: top;
+
     .user-card {
+      vertical-align: top;
       width: calc((100% - 4rem) / 5);
       display: inline-block;
       margin-right: 1rem;

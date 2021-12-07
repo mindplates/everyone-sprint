@@ -14,13 +14,14 @@ import {
   PageContent,
   PageTitle,
   Text,
-  UserCard,
   UserList,
 } from '@/components';
 import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+
+const labelMinWidth = '140px';
 
 const Sprint = ({
   t,
@@ -59,17 +60,17 @@ const Sprint = ({
   };
 
   return (
-    <Page className="sprint-wrapper">
+    <Page>
       <PageTitle>스프린트 정보</PageTitle>
       <PageContent>
         <Block>
           <BlockTitle>스프린트 정보</BlockTitle>
           <BlockRow>
-            <Label minWidth="130px">이름</Label>
+            <Label minWidth={labelMinWidth}>이름</Label>
             <Text>{info.name}</Text>
           </BlockRow>
           <BlockRow>
-            <Label minWidth="130px">기간</Label>
+            <Label minWidth={labelMinWidth}>기간</Label>
             <DateRangeText
               country={user.country}
               startDate={info.startDate}
@@ -85,37 +86,21 @@ const Sprint = ({
         <Block>
           <BlockTitle>멤버</BlockTitle>
           <UserList users={info.users} />
-          {info.users.length < 1 && (
-            <div className="sprint-user-list">
-              <div>등록된 멤버가 없습니다.</div>
-            </div>
-          )}
-          {info.users.length > 0 && (
-            <div className="sprint-user-list">
-              {info.users.map((u) => {
-                return (
-                  <div key={u.id} className="user-card">
-                    <UserCard user={u} editable={false} />
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </Block>
         <Block>
           <BlockTitle>{t('지라 연동')}</BlockTitle>
           <BlockRow>
-            <Label minWidth="130px">지라 연동</Label>
+            <Label minWidth={labelMinWidth}>지라 연동</Label>
             <Text>{info.isJiraSprint ? 'Y' : 'N'}</Text>
           </BlockRow>
           {info.isJiraSprint && (
             <>
               <BlockRow>
-                <Label minWidth="130px">지라 스트린트 URL</Label>
+                <Label minWidth={labelMinWidth}>지라 스트린트 URL</Label>
                 <Text>{info.jiraSprintUrl}</Text>
               </BlockRow>
               <BlockRow>
-                <Label minWidth="130px">지라 인증 키</Label>
+                <Label minWidth={labelMinWidth}>지라 인증 키</Label>
                 <Text>{info.jiraAuthKey}</Text>
               </BlockRow>
             </>
@@ -124,18 +109,20 @@ const Sprint = ({
         <Block>
           <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
           <BlockRow>
-            <Label minWidth="130px">검색 허용</Label>
+            <Label minWidth={labelMinWidth}>검색 허용</Label>
             <Text>{(ALLOW_SEARCHES.find((d) => d.key === info.allowSearch) || {}).value}</Text>
           </BlockRow>
           <BlockRow>
-            <Label minWidth="130px">자동 승인</Label>
+            <Label minWidth={labelMinWidth}>자동 승인</Label>
             <Text>{(JOIN_POLICIES.find((d) => d.key === info.allowAutoJoin) || {}).value}</Text>
           </BlockRow>
         </Block>
-
         <BottomButtons
           onList={() => {
             history.push('/sprints');
+          }}
+          onEdit={() => {
+            history.push(`/sprints/${id}/edit`);
           }}
           onDelete={onDelete}
         />

@@ -5,8 +5,20 @@ import { Button } from '@/components';
 
 const BottomButtons = (props) => {
   const { className, size, border } = props;
-  const { onList, onListText, onListIcon, onDelete, onDeleteText, onDeleteIcon, onSubmit, onSubmitText, onSubmitIcon } =
-    props;
+  const {
+    onList,
+    onListText,
+    onListIcon,
+    onDelete,
+    onDeleteText,
+    onDeleteIcon,
+    onSubmit,
+    onSubmitText,
+    onSubmitIcon,
+    onEdit,
+    onEditText,
+    onEditIcon,
+  } = props;
   return (
     <div className={`bottom-buttons-wrapper ${className} ${border ? 'has-top-border' : ''}`}>
       {onDelete && (
@@ -20,6 +32,11 @@ const BottomButtons = (props) => {
         {onList && (
           <Button type="button" size={size} color="white" outline onClick={onList}>
             {onListIcon} {onListText}
+          </Button>
+        )}
+        {onEdit && (
+          <Button type="button" size={size} color="white" outline onClick={onEdit}>
+            {onEditIcon} {onEditText}
           </Button>
         )}
         {onSubmit && (
@@ -44,6 +61,8 @@ BottomButtons.defaultProps = {
   onDeleteIcon: <i className="far fa-trash-alt" />,
   onSubmitText: '등록',
   onSubmitIcon: <i className="far fa-paper-plane" />,
+  onEditText: '변경',
+  onEditIcon: <i className="fas fa-pen-nib" />,
 };
 
 BottomButtons.propTypes = {
@@ -58,5 +77,8 @@ BottomButtons.propTypes = {
   onSubmit: PropTypes.bool,
   onSubmitText: PropTypes.string,
   onSubmitIcon: PropTypes.node,
+  onEdit: PropTypes.func,
+  onEditText: PropTypes.string,
+  onEditIcon: PropTypes.node,
   border: PropTypes.bool,
 };

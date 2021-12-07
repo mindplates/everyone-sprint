@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Page.scss';
 
 const Page = ({ className, children }) => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return <div className={`page-wrapper ${className}`}>{children}</div>;
 };
 

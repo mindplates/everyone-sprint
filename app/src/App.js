@@ -29,7 +29,8 @@ function App({ setting }) {
           <Route exact path="/" component={PublicPark} />
           <Route exact path="/public-park" component={PublicPark} />
           <Route exact path="/groups" component={Groups} />
-          <Route exact path="/sprints/new" component={NewSprint} />
+          <Route exact path="/sprints/new" render={() => <NewSprint type="new" />} />
+          <Route exact path="/sprints/:id/edit" render={() => <NewSprint type="edit" />} />
           <Route exact path="/sprints/:id" component={Sprint} />
           <Route exact path="/sprints" component={Sprints} />
           <Route exact path="/scrums" component={Scrums} />

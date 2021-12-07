@@ -10,4 +10,12 @@
   > div {
     align-self: center;
   }
+
+  &.expand {
+    > div {
+      &:last-child {
+        flex-grow: 1;
+      }
+    }
+  }
 }
