@@ -2,7 +2,19 @@ import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Common, Entry, Footer, Groups, Header, NewSprint, PublicPark, Scrums, Sprints, StartingLine } from './pages';
+import {
+  Common,
+  Entry,
+  Footer,
+  Groups,
+  Header,
+  NewSprint,
+  PublicPark,
+  Scrums,
+  Sprint,
+  Sprints,
+  StartingLine,
+} from './pages';
 import './App.scss';
 import { SettingPropTypes } from '@/proptypes';
 
@@ -17,8 +29,9 @@ function App({ setting }) {
           <Route exact path="/" component={PublicPark} />
           <Route exact path="/public-park" component={PublicPark} />
           <Route exact path="/groups" component={Groups} />
-          <Route exact path="/sprints" component={Sprints} />
           <Route exact path="/sprints/new" component={NewSprint} />
+          <Route exact path="/sprints/:id" component={Sprint} />
+          <Route exact path="/sprints" component={Sprints} />
           <Route exact path="/scrums" component={Scrums} />
           <Route exact path="/starting-line" component={StartingLine} />
           <Route exact path="/entry" component={Entry} />

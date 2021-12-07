@@ -68,6 +68,28 @@ const VENDORS = {
   google: '구글',
 };
 
+const ALLOW_SEARCHES = [
+  {
+    key: true,
+    value: '검색 허용',
+  },
+  {
+    key: false,
+    value: '초대 혹은 링크만 허용',
+  },
+];
+
+const JOIN_POLICIES = [
+  {
+    key: true,
+    value: '누구나 참여',
+  },
+  {
+    key: false,
+    value: '승인 후 참여',
+  },
+];
+
 export {
   USER_STUB,
   MESSAGE_CATEGORY,
@@ -77,4 +99,6 @@ export {
   DATE_FORMATS,
   LANGUAGES,
   VENDORS,
+  ALLOW_SEARCHES,
+  JOIN_POLICIES,
 };

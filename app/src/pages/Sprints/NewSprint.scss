@@ -166,24 +166,5 @@
         }
       }
     }
-
-    .submit-buttons {
-      text-align: right;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      padding-top: 1.5rem;
-      padding-bottom: 0.5rem;
-      margin: 1rem 1rem 0;
-
-      @media (max-width: 576px) {
-        text-align: center;
-      }
-      > button {
-        margin-right: 1rem;
-
-        &:last-child {
-          margin-right: 0;
-        }
-      }
-    }
   }
 }

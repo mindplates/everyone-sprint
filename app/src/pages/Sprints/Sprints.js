@@ -66,7 +66,7 @@ const Sprints = ({ t, history }) => {
                         <div>
                           <div className="start-date">
                             <span className="date-label">FROM</span>
-                            {dateUtil.getDate(sprint.startDate)}
+                            {dateUtil.getDateString(sprint.startDate)}
                           </div>
                           <Liner
                             className="date-liner"
@@ -78,7 +78,7 @@ const Sprints = ({ t, history }) => {
                           />
                           <div className="end-date">
                             <span className="date-label">TO</span>
-                            {dateUtil.getDate(sprint.endDate)}
+                            {dateUtil.getDateString(sprint.endDate)}
                           </div>
                         </div>
                       </div>
