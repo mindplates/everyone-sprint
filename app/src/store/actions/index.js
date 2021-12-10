@@ -3,6 +3,8 @@ export const SET_MESSAGE = 'SET_MESSAGE';
 export const CLEAR_MESSAGE = 'CLEAR_ALL_MESSAGE';
 export const SET_SUPPORTED = 'SET_SUPPORTED';
 export const SET_LOADING = 'SET_LOADING';
+export const ADD_LOADING = 'ADD_LOADING';
+export const REMOVE_LOADING = 'REMOVE_LOADING';
 export const SET_CONFIRM = 'SET_CONFIRM';
 export const SET_SYSTEM_INFO = 'SET_SYSTEM_INFO';
 export const SET_SETTING = 'SET_SETTING';
@@ -41,6 +43,21 @@ export function setLoading(loading) {
   return {
     type: SET_LOADING,
     loading,
+  };
+}
+
+export function addLoading(id, text) {
+  return {
+    type: ADD_LOADING,
+    id,
+    text,
+  };
+}
+
+export function removeLoading(id) {
+  return {
+    type: REMOVE_LOADING,
+    id,
   };
 }
 

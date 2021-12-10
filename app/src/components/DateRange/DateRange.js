@@ -24,7 +24,7 @@ const DateRange = ({ className, country, language, startDate, endDate, onChange,
           }}
           locale={language}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[country].picker}
+          dateFormat={DATE_FORMATS[country || 'KR'].picker}
         />
       </div>
       <Liner className='dash' width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
@@ -38,7 +38,7 @@ const DateRange = ({ className, country, language, startDate, endDate, onChange,
           }}
           locale={language}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[country].picker}
+          dateFormat={DATE_FORMATS[country || 'KR'].picker}
         />
       </div>
     </div>

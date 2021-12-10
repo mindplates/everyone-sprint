@@ -78,7 +78,7 @@ const EditSprint = ({
       const users = info.users.splice(0);
       if (user && user.id && users.length < 1) {
         users.push({
-          id: user.id,
+          userId: user.id,
           email: user.email,
           alias: user.alias,
           name: user.name,
@@ -99,6 +99,12 @@ const EditSprint = ({
   const changeInfo = (key, value) => {
     const next = { ...info };
     next[key] = value;
+    setInfo(next);
+  };
+
+  const changeUsers = (users) => {
+    const next = { ...info };
+    next.users = users;
     setInfo(next);
   };
 
@@ -169,7 +175,7 @@ const EditSprint = ({
           </Block>
           <Block>
             <BlockTitle>멤버</BlockTitle>
-            <UserList users={info.users} onChange={(val) => changeInfo('users', val)} editable />
+            <UserList users={info.users} onChange={(val) => changeInfo('users', val)} onChangeUsers={changeUsers} editable />
           </Block>
           <Block>
             <BlockTitle>{t('지라 연동')}</BlockTitle>

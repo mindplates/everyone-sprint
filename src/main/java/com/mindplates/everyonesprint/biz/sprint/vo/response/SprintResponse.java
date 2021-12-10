@@ -37,6 +37,7 @@ public class SprintResponse {
         this.users = sprint.getUsers().stream().map(
                 (sprintUser) -> User.builder()
                         .id(sprintUser.getId())
+                        .userId(sprintUser.getUser().getId())
                         .role(sprintUser.getRole())
                         .email(sprintUser.getUser().getEmail())
                         .name(sprintUser.getUser().getName())
@@ -50,6 +51,7 @@ public class SprintResponse {
     @Builder
     public static class User {
         private Long id;
+        private Long userId;
         private RoleCode role;
         private String email;
         private String name;

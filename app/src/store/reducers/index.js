@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
 import {
+  ADD_LOADING,
   CLEAR_MESSAGE,
+  REMOVE_LOADING,
   SET_CONFIRM,
   SET_LOADING,
   SET_MESSAGE,
@@ -57,12 +59,26 @@ const message = (state = messageState, action) => {
 
 const loadingState = {
   loading: false,
+  requests: [],
 };
 
 const loading = (state = loadingState, action) => {
+  const requests = state.requests.slice(0);
   switch (action.type) {
     case SET_LOADING:
       return { ...state, loading: action.loading };
+    case ADD_LOADING:
+      requests.push({
+        id: action.id,
+        text: action.text,
+      });
+      return { ...state, requests };
+    case REMOVE_LOADING:
+      requests.splice(
+        requests.findIndex((d) => d.id === action.id),
+        1,
+      );
+      return { ...state, requests };
     default:
       return state;
   }

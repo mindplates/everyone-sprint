@@ -10,13 +10,18 @@ import dateUtil from '@/utils/dateUtil';
 import './Sprints.scss';
 
 const Sprints = ({ t, history }) => {
-  const [sprints, setSprints] = useState([]);
+  const [sprints, setSprints] = useState(null);
 
   const getSprints = () => {
-    request.get('/api/sprints', null, (list) => {
-      console.log(list);
-      setSprints(list);
-    });
+    request.get(
+      '/api/sprints',
+      null,
+      (list) => {
+        setSprints(list);
+      },
+      null,
+      '사용자의 스프린트 목록을 모으고 있습니다',
+    );
   };
 
   useEffect(() => {
@@ -43,82 +48,84 @@ const Sprints = ({ t, history }) => {
       >
         스프린트
       </PageTitle>
-      <div className={`${sprints && sprints.length > 0 ? 'g-list-content' : 'g-page-content'}`}>
-        {!(sprints && sprints.length > 0) && (
-          <div className="empty-sprint">
-            <div>{t('스프린트가 없습니다.')}</div>
-          </div>
-        )}
-        {sprints && sprints.length > 0 && (
-          <ul className="sprint-list">
-            {sprints.map((sprint) => {
-              return (
-                <li
-                  key={sprint.id}
-                  onClick={() => {
-                    history.push(`/sprints/${sprint.id}`);
-                  }}
-                >
-                  <div>
-                    <div className="name-and-date">
-                      <div className="name">{sprint.name}</div>
-                      <div className="sprint-date">
-                        <div>
-                          <div className="start-date">
-                            <span className="date-label">FROM</span>
-                            {dateUtil.getDateString(sprint.startDate)}
+      {sprints != null && (
+        <div className={`${sprints && sprints.length > 0 ? 'g-list-content' : 'g-page-content'}`}>
+          {!(sprints && sprints.length > 0) && (
+            <div className="empty-sprint">
+              <div>{t('스프린트가 없습니다.')}</div>
+            </div>
+          )}
+          {sprints && sprints.length > 0 && (
+            <ul className="sprint-list">
+              {sprints.map((sprint) => {
+                return (
+                  <li
+                    key={sprint.id}
+                    onClick={() => {
+                      history.push(`/sprints/${sprint.id}`);
+                    }}
+                  >
+                    <div>
+                      <div className="name-and-date">
+                        <div className="name">{sprint.name}</div>
+                        <div className="sprint-date">
+                          <div>
+                            <div className="start-date">
+                              <span className="date-label">FROM</span>
+                              {dateUtil.getDateString(sprint.startDate)}
+                            </div>
+                            <Liner
+                              className="date-liner"
+                              width="10px"
+                              height="1px"
+                              display="inline-block"
+                              color="black"
+                              margin="0 0.5rem"
+                            />
+                            <div className="end-date">
+                              <span className="date-label">TO</span>
+                              {dateUtil.getDateString(sprint.endDate)}
+                            </div>
                           </div>
-                          <Liner
-                            className="date-liner"
-                            width="10px"
-                            height="1px"
-                            display="inline-block"
-                            color="black"
-                            margin="0 0.5rem"
-                          />
-                          <div className="end-date">
-                            <span className="date-label">TO</span>
-                            {dateUtil.getDateString(sprint.endDate)}
+                        </div>
+                      </div>
+                      <div className="liner">
+                        <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 0.5rem" />
+                      </div>
+                      <div className="others">
+                        <div className="user-count">
+                          <div className="label">
+                            <span>USERS</span>
                           </div>
+                          <div className="value">{sprint.userCount}</div>
+                        </div>
+                        <div className="is-jira-sprint">
+                          <div className="label">
+                            <span>JIRA</span>
+                          </div>
+                          <div className="value">{sprint.isJiraSprint ? 'Y' : 'N'}</div>
+                        </div>
+                        <div className="allow-auto-join">
+                          <div className="label">
+                            <span>자동 승인</span>
+                          </div>
+                          <div className="value">{sprint.allowAutoJoin ? 'Y' : 'N'}</div>
+                        </div>
+                        <div className="allow-search">
+                          <div className="label">
+                            <span>검색 허용</span>
+                          </div>
+                          <div className="value">{sprint.allowSearch ? 'Y' : 'N'}</div>
                         </div>
                       </div>
                     </div>
-                    <div className="liner">
-                      <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 0.5rem" />
-                    </div>
-                    <div className="others">
-                      <div className="user-count">
-                        <div className="label">
-                          <span>USERS</span>
-                        </div>
-                        <div className="value">{sprint.userCount}</div>
-                      </div>
-                      <div className="is-jira-sprint">
-                        <div className="label">
-                          <span>JIRA</span>
-                        </div>
-                        <div className="value">{sprint.isJiraSprint ? 'Y' : 'N'}</div>
-                      </div>
-                      <div className="allow-auto-join">
-                        <div className="label">
-                          <span>자동 승인</span>
-                        </div>
-                        <div className="value">{sprint.allowAutoJoin ? 'Y' : 'N'}</div>
-                      </div>
-                      <div className="allow-search">
-                        <div className="label">
-                          <span>검색 허용</span>
-                        </div>
-                        <div className="value">{sprint.allowSearch ? 'Y' : 'N'}</div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 };
