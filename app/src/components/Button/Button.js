@@ -12,11 +12,11 @@ class Button extends React.PureComponent {
     ReactTooltip.rebuild();
   }
 
-  onButtonClick = () => {
+  onButtonClick = (e) => {
     const { onClick } = this.props;
     ReactTooltip.hide();
     if (onClick) {
-      onClick();
+      onClick(e);
     }
   };
 

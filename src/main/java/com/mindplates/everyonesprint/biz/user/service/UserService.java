@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,6 +33,10 @@ public class UserService {
 
     public User selectUser(Long id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    public List<User> selectUserList(String email, String alias) {
+        return userRepository.findAllByUseYnTrueAndEmailLikeOrAliasLike(email, alias);
     }
 
     public User createUser(User user) {

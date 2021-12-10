@@ -44,9 +44,15 @@ const Sprint = ({
   });
 
   useEffect(() => {
-    request.get(`/api/sprints/${id}`, null, (data) => {
-      setInfo(data);
-    });
+    request.get(
+      `/api/sprints/${id}`,
+      null,
+      (data) => {
+        setInfo(data);
+      },
+      null,
+      '스프린트 정보를 가져오고 있습니다',
+    );
   }, [id]);
 
   const onDelete = () => {
