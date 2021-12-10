@@ -11,44 +11,9 @@ import storage from '@/utils/storage';
 import './Common.scss';
 
 class Common extends React.Component {
-  timer = null;
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      showLoading: false,
-    };
-  }
-
   componentDidMount() {
     this.getSystemInfo();
     this.getMyInfo();
-  }
-
-  componentDidUpdate(prevProps) {
-    const { loading } = this.props;
-
-    if (!prevProps.loading && loading) {
-      setTimeout(() => {
-        this.setState({
-          showLoading: true,
-        });
-      }, 0);
-    }
-
-    if (prevProps.loading && !loading) {
-      if (this.timer) {
-        clearTimeout(this.timer);
-        this.timer = null;
-      }
-
-      this.timer = setTimeout(() => {
-        this.setState({
-          showLoading: false,
-        });
-      }, 300);
-    }
   }
 
   getSystemInfo = () => {
@@ -71,8 +36,11 @@ class Common extends React.Component {
   };
 
   render() {
-    const { message, loading, confirm } = this.props;
-    const { showLoading } = this.state;
+    const {
+      message,
+      loading: { requests, loading },
+      confirm,
+    } = this.props;
 
     return (
       <div className="common-wrapper">
@@ -95,15 +63,31 @@ class Common extends React.Component {
             noHandler={confirm.noHandler}
           />
         )}
-        {false && (loading || showLoading) && (
-          <div className={`g-overlay ${showLoading ? 'show-loading' : 'hide-loading'}`}>
+        <div className={`g-overlay loader ${requests.length > 0 ? 'show-loading' : 'hide-loading'}`}>
+          <div>
+            {requests.map((info, inx) => {
+              return (
+                <div key={inx}>
+                  <div className="loading-message show-loading">
+                    <div className="spinner">
+                      <div>
+                        <div />
+                      </div>
+                    </div>
+                    <div>{info.text}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div className={`g-overlay loader ${loading ? 'show-loading' : 'hide-loading'}`}>
+          <div>
             <div>
-              <div>
-                <div>loading</div>
-              </div>
+              <div className="loading-message">loading</div>
             </div>
           </div>
-        )}
+        </div>
         <ReactTooltip effect="solid" />
       </div>
     );
@@ -113,7 +97,7 @@ class Common extends React.Component {
 const mapStateToProps = (state) => {
   return {
     message: state.message,
-    loading: state.loading.loading,
+    loading: state.loading,
     user: state.user,
     confirm: state.confirm,
   };
@@ -143,7 +127,15 @@ Common.propTypes = {
     okHandler: PropTypes.func,
     noHandler: PropTypes.func,
   }),
-  loading: PropTypes.bool,
+  loading: PropTypes.shape({
+    loading: PropTypes.bool,
+    requests: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        text: PropTypes.string,
+      }),
+    ),
+  }),
   setUserInfo: PropTypes.func,
   setSystemInfo: PropTypes.func,
   location: PropTypes.shape({

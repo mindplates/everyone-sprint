@@ -13,10 +13,15 @@ const Sprints = ({ t, history }) => {
   const [sprints, setSprints] = useState([]);
 
   const getSprints = () => {
-    request.get('/api/sprints', null, (list) => {
-      console.log(list);
-      setSprints(list);
-    });
+    request.get(
+      '/api/sprints',
+      null,
+      (list) => {
+        setSprints(list);
+      },
+      null,
+      '스프린트 정보를 가져오는중',
+    );
   };
 
   useEffect(() => {

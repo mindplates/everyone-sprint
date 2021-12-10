@@ -2,9 +2,11 @@ import axios from 'axios';
 import i18n from 'i18next';
 import store from '@/store';
 import storage from '@/utils/storage';
-import { setLoading, setUserInfo } from '@/store/actions';
+import { addLoading, removeLoading, setLoading, setUserInfo } from '@/store/actions';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialog from '@/utils/dialog';
+
+const loadingTime = 300;
 
 const axiosConfig = {
   withCredentials: true,
@@ -28,13 +30,17 @@ function getBase() {
   return base;
 }
 
-function beforeRequest(quiet, uri, method) {
+function beforeRequest(showLoading, uri, method) {
   if (logging) {
     // eslint-disable-next-line no-console
     console.log(`${method} ${uri}`);
   }
-  if (!quiet) {
-    store.dispatch(setLoading(true));
+  if (showLoading) {
+    if (typeof showLoading === 'string') {
+      store.dispatch(addLoading(showLoading, showLoading));
+    } else {
+      store.dispatch(setLoading(true));
+    }
   }
 
   const token = storage.getItem('auth', 'token');
@@ -108,10 +114,13 @@ function processError(error, failHandler) {
       case 401: {
         store.dispatch(setUserInfo({}));
 
-        dialog.setMessage(
+        dialog.setConfirm(
           MESSAGE_CATEGORY.ERROR,
           '인증 실패',
-          error.response && error.response.data && error.response.data.message,
+          '인증이 되어 있지 않거나, 만료되었습니다. 로그인 페이지로 이동하시겠습니까?',
+          () => {
+            window.location.href = '/starting-line';
+          },
         );
 
         break;
@@ -146,14 +155,22 @@ function processError(error, failHandler) {
   }
 }
 
-function afterRequest(response, quiet) {
-  if (!quiet) {
-    store.dispatch(setLoading(false));
+function afterRequest(response, showLoading) {
+  if (showLoading) {
+    if (typeof showLoading === 'string') {
+      setTimeout(() => {
+        store.dispatch(removeLoading(showLoading));
+      }, loadingTime);
+    } else {
+      setTimeout(() => {
+        store.dispatch(setLoading(false));
+      }, loadingTime);
+    }
   }
 }
 
-function get(uri, params, successHandler, failHandler, quiet) {
-  beforeRequest(quiet, uri, 'get');
+function get(uri, params, successHandler, failHandler, showLoading) {
+  beforeRequest(showLoading, uri, 'get');
   return axios
     .get(`${base}${uri}`, {
       params,
@@ -166,12 +183,12 @@ function get(uri, params, successHandler, failHandler, quiet) {
       processError(error, failHandler);
     })
     .finally((response) => {
-      afterRequest(response, quiet);
+      afterRequest(response, showLoading);
     });
 }
 
-function post(uri, params, successHandler, failHandler, quiet) {
-  beforeRequest(quiet, uri, 'post');
+function post(uri, params, successHandler, failHandler, showLoading) {
+  beforeRequest(showLoading, uri, 'post');
   return axios
     .post(`${base}${uri}`, params, axiosConfig)
     .then((response) => {
@@ -181,12 +198,12 @@ function post(uri, params, successHandler, failHandler, quiet) {
       processError(error, failHandler);
     })
     .finally((response) => {
-      afterRequest(response, quiet);
+      afterRequest(response, showLoading);
     });
 }
 
-function put(uri, params, successHandler, failHandler, quiet) {
-  beforeRequest(quiet, uri, 'put');
+function put(uri, params, successHandler, failHandler, showLoading) {
+  beforeRequest(showLoading, uri, 'put');
   return axios
     .put(`${base}${uri}`, params, axiosConfig)
     .then((response) => {
@@ -196,12 +213,12 @@ function put(uri, params, successHandler, failHandler, quiet) {
       processError(error, failHandler);
     })
     .finally((response) => {
-      afterRequest(response, quiet);
+      afterRequest(response, showLoading);
     });
 }
 
-function del(uri, params, successHandler, failHandler, quiet) {
-  beforeRequest(quiet, uri, 'del');
+function del(uri, params, successHandler, failHandler, showLoading) {
+  beforeRequest(showLoading, uri, 'del');
   return axios
     .delete(`${base}${uri}`, { ...axiosConfig, data: { ...params } })
     .then((response) => {
@@ -211,7 +228,7 @@ function del(uri, params, successHandler, failHandler, quiet) {
       processError(error, failHandler);
     })
     .finally((response) => {
-      afterRequest(response, quiet);
+      afterRequest(response, showLoading);
     });
 }
 

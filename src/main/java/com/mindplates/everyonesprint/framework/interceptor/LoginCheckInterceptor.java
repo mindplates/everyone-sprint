@@ -7,6 +7,7 @@ import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -59,7 +60,7 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
         }
 
         if (!sessionUtil.isLogin(request)) {
-            throw new ServiceException("user.session.expired");
+            throw new ServiceException(HttpStatus.UNAUTHORIZED, "user.session.expired");
         }
 
         return true;

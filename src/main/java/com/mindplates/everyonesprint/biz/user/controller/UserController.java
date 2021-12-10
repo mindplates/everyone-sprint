@@ -70,7 +70,7 @@ public class UserController {
 
         User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword(), loginRequest.getAutoLogin());
         if (user == null) {
-            throw new ServiceException(HttpStatus.UNAUTHORIZED, "common.login.fail");
+            throw new ServiceException(HttpStatus.BAD_REQUEST, "common.login.fail");
         }
 
         sessionUtil.login(request, user);
