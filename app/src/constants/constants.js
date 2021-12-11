@@ -57,8 +57,13 @@ const USER_ROLES = {
 };
 
 const LANGUAGES = {
-  ko: '한국어',
+  ko: '한글',
   en: 'English',
+};
+
+const COUNTRIES = {
+  KR: '한국',
+  US: 'US',
 };
 
 const VENDORS = {
@@ -101,4 +106,5 @@ export {
   VENDORS,
   ALLOW_SEARCHES,
   JOIN_POLICIES,
+  COUNTRIES,
 };

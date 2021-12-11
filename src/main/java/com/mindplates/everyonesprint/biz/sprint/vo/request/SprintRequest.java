@@ -2,7 +2,6 @@ package com.mindplates.everyonesprint.biz.sprint.vo.request;
 
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintUser;
-import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import lombok.Data;
 
@@ -38,9 +37,13 @@ public class SprintRequest {
                 .allowAutoJoin(allowAutoJoin)
                 .build();
 
-        List<SprintUser> sprintUsers = users.stream().map((user) -> SprintUser.builder()
-                .user(com.mindplates.everyonesprint.biz.user.entity.User.builder().id(user.getId()).build())
-                .role(user.getRole()).sprint(sprint).build()).collect(Collectors.toList());
+        List<SprintUser> sprintUsers = users.stream().map(
+                (user) -> SprintUser.builder()
+                        .id(user.getId())
+                        .user(com.mindplates.everyonesprint.biz.user.entity.User.builder()
+                                .id(user.getUserId()).build())
+                        .role(user.getRole())
+                        .sprint(sprint).build()).collect(Collectors.toList());
 
         sprint.setUsers(sprintUsers);
 
@@ -50,6 +53,7 @@ public class SprintRequest {
     @Data
     public static class User {
         private Long id;
+        private Long userId;
         private RoleCode role;
     }
 

@@ -6,7 +6,7 @@ import { addLoading, removeLoading, setLoading, setUserInfo } from '@/store/acti
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialog from '@/utils/dialog';
 
-const loadingTime = 300;
+const loadingTime = 500;
 
 const axiosConfig = {
   withCredentials: true,

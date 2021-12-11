@@ -30,4 +30,15 @@ const UserPropTypes = PropTypes.shape({
   tel: PropTypes.string,
 });
 
-export { HistoryPropTypes, SettingPropTypes, UserPropTypes, LocationPropTypes };
+const SprintPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
+  userCount: PropTypes.number,
+  isJiraSprint: PropTypes.bool,
+  allowAutoJoin: PropTypes.bool,
+  allowSearch: PropTypes.bool,
+});
+
+export { HistoryPropTypes, SettingPropTypes, UserPropTypes, LocationPropTypes, SprintPropTypes };

@@ -18,30 +18,63 @@ const BottomButtons = (props) => {
     onEdit,
     onEditText,
     onEditIcon,
+    onCancel,
+    onCancelText,
+    onCancelIcon,
   } = props;
   return (
-    <div className={`bottom-buttons-wrapper ${className} ${border ? 'has-top-border' : ''}`}>
+    <div className={`bottom-buttons-wrapper ${className} ${border ? 'has-border' : ''}`}>
       {onDelete && (
         <div className="delete-buttons">
           <Button type="button" size={size} color="danger" onClick={onDelete}>
-            {onDeleteIcon} {onDeleteText}
+            <div>
+              <div className="icon">
+                <span>{onDeleteIcon}</span>
+              </div>
+              <div>{onDeleteText}</div>
+            </div>
           </Button>
         </div>
       )}
       <div className="other-buttons">
+        {onCancel && (
+          <Button type="button" size={size} color="white" outline onClick={onCancel}>
+            <div>
+              <div className="icon">
+                <span>{onCancelIcon}</span>
+              </div>
+              <div>{onCancelText}</div>
+            </div>
+          </Button>
+        )}
         {onList && (
           <Button type="button" size={size} color="white" outline onClick={onList}>
-            {onListIcon} {onListText}
+            <div>
+              <div className="icon">
+                <span>{onListIcon}</span>
+              </div>
+              <div>{onListText}</div>
+            </div>
           </Button>
         )}
         {onEdit && (
-          <Button type="button" size={size} color="white" outline onClick={onEdit}>
-            {onEditIcon} {onEditText}
+          <Button type="button" size={size} color="blue" onClick={onEdit}>
+            <div>
+              <div className="icon">
+                <span>{onEditIcon}</span>
+              </div>
+              <div>{onEditText}</div>
+            </div>
           </Button>
         )}
         {onSubmit && (
           <Button type="submit" size={size} color="primary">
-            {onSubmitIcon} {onSubmitText}
+            <div>
+              <div className="icon">
+                <span>{onSubmitIcon}</span>
+              </div>
+              <div>{onSubmitText}</div>
+            </div>
           </Button>
         )}
       </div>
@@ -56,13 +89,15 @@ BottomButtons.defaultProps = {
   size: 'md',
   border: true,
   onListText: '목록',
-  onListIcon: <i className="fas fa-list" />,
+  onListIcon: <i className="far fa-file-alt" />,
   onDeleteText: '삭제',
   onDeleteIcon: <i className="far fa-trash-alt" />,
   onSubmitText: '등록',
   onSubmitIcon: <i className="far fa-paper-plane" />,
   onEditText: '변경',
   onEditIcon: <i className="fas fa-pen-nib" />,
+  onCancelText: '취소',
+  onCancelIcon: <i className="fas fa-chevron-left" />,
 };
 
 BottomButtons.propTypes = {
@@ -80,5 +115,8 @@ BottomButtons.propTypes = {
   onEdit: PropTypes.func,
   onEditText: PropTypes.string,
   onEditIcon: PropTypes.node,
+  onCancel: PropTypes.func,
+  onCancelText: PropTypes.string,
+  onCancelIcon: PropTypes.node,
   border: PropTypes.bool,
 };

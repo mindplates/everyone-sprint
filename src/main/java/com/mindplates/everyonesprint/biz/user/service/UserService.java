@@ -98,5 +98,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUserCountry(Long userId, String country) {
+        User user = selectUser(userId);
+        user.setCountry(country);
+        return userRepository.save(user);
+    }
+
 
 }

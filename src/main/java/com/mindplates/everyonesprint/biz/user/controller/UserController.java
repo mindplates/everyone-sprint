@@ -67,6 +67,12 @@ public class UserController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PutMapping("/my-info/country")
+    public ResponseEntity updateUserCountry(@Valid @RequestBody UserRequest userRequest, UserSession userSession) {
+        userService.updateUserCountry(userSession.getId(), userRequest.getCountry());
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     @DisableLogin
     @PostMapping("/login")
     public MyInfoResponse login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) throws NoSuchAlgorithmException {

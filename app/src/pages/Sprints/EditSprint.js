@@ -63,14 +63,19 @@ const EditSprint = ({
 
   useEffect(() => {
     if (id && type === 'edit')
-      request.get(`/api/sprints/${id}`, null, (data) => {
-        console.log(data);
-        setInfo({
-          ...data,
-          startDate: dateUtil.getDateValue(data.startDate),
-          endDate: dateUtil.getDateValue(data.endDate),
-        });
-      });
+      request.get(
+        `/api/sprints/${id}`,
+        null,
+        (data) => {
+          setInfo({
+            ...data,
+            startDate: dateUtil.getDateValue(data.startDate),
+            endDate: dateUtil.getDateValue(data.endDate),
+          });
+        },
+        null,
+        t('스프린트 정보를 가져오고 있습니다'),
+      );
   }, [id, type]);
 
   useEffect(() => {
@@ -113,37 +118,46 @@ const EditSprint = ({
 
     if (type === 'edit') {
       request.put(
-        '/api/sprints',
-        { ...info, startDate: new Date(info.startDate), endDate: new Date(info.endDate) },
+        `/api/sprints/${info.id}`,
+        {
+          ...info,
+          startDate: new Date(info.startDate),
+          endDate: new Date(info.endDate),
+          users: info.users.filter((u) => u.CRUD !== 'D'),
+        },
         (data) => {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
             history.push(`/sprints/${data.id}`);
           });
         },
+        null,
+        t('스프린트를 변경하고 있습니다.'),
       );
     } else {
       request.post(
         '/api/sprints',
         { ...info, startDate: new Date(info.startDate), endDate: new Date(info.endDate) },
         (data) => {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
             history.push(`/sprints/${data.id}`);
           });
         },
+        null,
+        t('새로운 스프린트를 만들고 있습니다.'),
       );
     }
   };
 
   return (
     <Page className="sprint-wrapper">
-      <PageTitle>{type === 'edit' ? '스프린트 변경' : '새로운 스프린트'}</PageTitle>
+      <PageTitle>{type === 'edit' ? t('스프린트 변경') : t('새로운 스프린트')}</PageTitle>
       <PageContent>
         <Form className="new-sprint-content" onSubmit={onSubmit}>
           <Block>
-            <BlockTitle>스프린트 정보</BlockTitle>
+            <BlockTitle className="mb-2 mb-sm-3">{t('스프린트 정보')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
-                이름
+                {t('이름')}
               </Label>
               <Input
                 type="name"
@@ -158,7 +172,7 @@ const EditSprint = ({
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
-                기간
+                {t('기간')}
               </Label>
               <DateRange
                 country={user.country}
@@ -174,13 +188,18 @@ const EditSprint = ({
             </BlockRow>
           </Block>
           <Block>
-            <BlockTitle>멤버</BlockTitle>
-            <UserList users={info.users} onChange={(val) => changeInfo('users', val)} onChangeUsers={changeUsers} editable />
+            <BlockTitle className="mb-2 mb-sm-3">{t('멤버')}</BlockTitle>
+            <UserList
+              users={info.users}
+              onChange={(val) => changeInfo('users', val)}
+              onChangeUsers={changeUsers}
+              editable
+            />
           </Block>
           <Block>
-            <BlockTitle>{t('지라 연동')}</BlockTitle>
+            <BlockTitle className="mb-2 mb-sm-3">{t('지라 연동')}</BlockTitle>
             <BlockRow>
-              <Label minWidth={labelMinWidth}>지라 연동</Label>
+              <Label minWidth={labelMinWidth}>{t('지라 연동')}</Label>
               <CheckBox
                 size="md"
                 type="checkbox"
@@ -190,7 +209,7 @@ const EditSprint = ({
               />
             </BlockRow>
             <BlockRow expand>
-              <Label minWidth={labelMinWidth}>지라 스트린트 URL</Label>
+              <Label minWidth={labelMinWidth}>{t('지라 스트린트 URL')}</Label>
               <Input
                 type="name"
                 size="md"
@@ -203,7 +222,7 @@ const EditSprint = ({
               />
             </BlockRow>
             <BlockRow expand>
-              <Label minWidth={labelMinWidth}>지라 인증 키</Label>
+              <Label minWidth={labelMinWidth}>{t('지라 인증 키')}</Label>
               <Input
                 type="name"
                 size="md"
@@ -217,9 +236,9 @@ const EditSprint = ({
             </BlockRow>
           </Block>
           <Block className="mb-2">
-            <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
+            <BlockTitle className="mb-2 mb-sm-3">{t('검색 및 참여 설정')}</BlockTitle>
             <BlockRow>
-              <Label minWidth={labelMinWidth}>검색 허용</Label>
+              <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
               <RadioButton
                 size="sm"
                 items={ALLOW_SEARCHES}
@@ -230,7 +249,7 @@ const EditSprint = ({
               />
             </BlockRow>
             <BlockRow>
-              <Label minWidth={labelMinWidth}>자동 승인</Label>
+              <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
               <RadioButton
                 size="sm"
                 items={JOIN_POLICIES}
@@ -242,12 +261,12 @@ const EditSprint = ({
             </BlockRow>
           </Block>
           <BottomButtons
-            onList={() => {
-              history.push('/sprints');
+            onCancel={() => {
+              history.goBack();
             }}
             onSubmit
             onSubmitIcon={<i className="fas fa-plane" />}
-            onSubmitText={type === 'edit' ? '스프린트 변경' : '스프린트 등록'}
+            onSubmitText={type === 'edit' ? t('스프린트 변경') : t('스프린트 등록')}
           />
         </Form>
       </PageContent>

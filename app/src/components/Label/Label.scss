@@ -1,7 +1,34 @@
 .label-wrapper {
+  display: inline-flex;
+  margin-right: 1rem;
+  @media (max-width: 768px) {
+    display: flex;
+    margin-right: 0;
+    > span {
+      align-self: center;
+    }
+  }
+
+  &.size-xs {
+    min-height: 26px;
+  }
+
+  &.size-sm {
+    min-height: 31px;
+  }
+
+  &.size-md {
+    min-height: 38px;
+  }
+
+  &.size-lg {
+    min-height: 48px;
+  }
+
   > span {
     font-family: pretendard, sans-serif;
     position: relative;
+    align-self: center;
 
     .required {
       position: absolute;
@@ -9,6 +36,21 @@
       top: -8px;
       left: -12px;
       color: $warning;
+    }
+
+    &.liner {
+      flex-grow: 1;
+      text-align: right;
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+      > span {
+        display: inline-block;
+        height: 10px;
+        width: 1px;
+        background-color: $gray-500;
+      }
     }
   }
 }
