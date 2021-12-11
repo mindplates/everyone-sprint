@@ -71,6 +71,7 @@
   }
 
   .loader {
+    z-index: 20;
     &.show-loading {
       animation: fadeinLoader 0.3s;
       -moz-animation: fadeinLoader 0.3s;

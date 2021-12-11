@@ -75,4 +75,56 @@ button.btn {
       }
     }
   }
+
+  &.btn-blue {
+    background-color: $blue;
+    color: $white;
+
+    &:hover {
+      background-color: darken($blue, 5%);
+    }
+
+    &.disabled:hover {
+      background-color: $blue;
+    }
+  }
+
+  &.btn-outline-blue {
+    background-color: $blue;
+    color: $white;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.7);
+      &.disabled {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
+  &.btn-gray {
+    background-color: $gray-400;
+    color: $black;
+
+    &:hover {
+      background-color: darken($blue, 5%);
+    }
+
+    &.disabled:hover {
+      background-color: $blue;
+    }
+  }
+
+  &.btn-outline-gray {
+    background-color: $gray-400;
+    color: $black;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.7);
+      &.disabled {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
+
 }

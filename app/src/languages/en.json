@@ -1,5 +1,32 @@
 {
   "en": "ENG",
   "ko": "한글",
-  "모두의 공원": "PUBLIC PARK"
+  "모두의 공원": "PUBLIC PARK",
+  "네트워크 오류": "The server is not responding. Please check the Internet connection or contact the server administrator.",
+  "취소": "Cancel",
+  "확인": "Confirm",
+
+  "사용자의 스프린트 목록을 모으고 있습니다.": "Collecting the user's sprint list.",
+  "새 스프린트": "New Sprint",
+  "스프린트": "Sprint",
+  "스프린트가 없습니다.": "There's no sprint.",
+  "사용자": "User",
+  "JIRA": "JIRA",
+  "자동 승인": "AUTO APRV",
+  "검색 허용": "ALLOW FIND",
+
+  "validation.valueMissing": "필수 입력 값입니다",
+  "validation.typeMismatch": "입력 형식이 올바르지 않습니다",
+  "validation.patternMismatch": "입력 양식이 올바르지 않습니다",
+  "validation.tooLong": "입력 값이 너무 깁니다.",
+  "validation.tooShort": "입력 값이 너무 짧습니다.",
+  "validation.rangeUnderflow": "입력 값이 너무 작습니다.",
+  "validation.rangeOverflow": "입력 값이 너무 큽니다.",
+  "validation.stepMismatch": "입력 할 수 없는 단위의 값입니다.",
+  "validation.badInput": "입력 값이 올바르지 않습니다.",
+  "validation.customError": "입력 값이 올바르지 않습니다.",
+  "validation.valid": "올바른 입력 값입니다.",
+  "validation.invalidEmail": "올바른 이메일 형식이 아닙니다.",
+  "validation.notEqualPassword": "입력하신 패스워드가 일치하지 않습니다.",
+  "validation.alreadyJoinedEmail": "이미 가입된 이메일입니다"
 }

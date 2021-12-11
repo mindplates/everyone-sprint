@@ -1,0 +1,14 @@
+.empty-content-wrapper {
+  display: flex;
+  > div {
+    align-self: center;
+    flex-grow: 1;
+    text-align: center;
+    padding: 1rem;
+
+    .icon {
+      font-size: 3rem;
+      color: $gray-600;
+    }
+  }
+}

@@ -6,12 +6,12 @@ import PropTypes from 'prop-types';
 import { HistoryPropTypes, SettingPropTypes, UserPropTypes } from '@/proptypes';
 import storage from '@/utils/storage';
 import MENU from '@/constants/menu';
-import { Button, Liner, Overlay, ProductLogo, BlockTitle, UserImage } from '@/components';
+import { BlockTitle, Button, Liner, Overlay, ProductLogo, UserImage } from '@/components';
 import { setSetting, setUserInfo } from '@/store/actions';
 import './Header.scss';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
-import { USER_STUB } from '@/constants/constants';
+import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
 
 const Header = (props) => {
   const {
@@ -46,12 +46,33 @@ const Header = (props) => {
 
   const updateLanguage = (language) => {
     i18n.changeLanguage(language || 'ko');
-    request.put('/api/users/my-info/language', { language }, () => {
-      setUserInfoReducer({
-        ...user,
-        language,
-      });
-    });
+    request.put(
+      '/api/users/my-info/language',
+      { language },
+      () => {
+        setUserInfoReducer({
+          ...user,
+          language,
+        });
+      },
+      null,
+      t('언어 설정을 변경하고 있습니다.'),
+    );
+  };
+
+  const updateCountry = (country) => {
+    request.put(
+      '/api/users/my-info/country',
+      { country },
+      () => {
+        setUserInfoReducer({
+          ...user,
+          country,
+        });
+      },
+      null,
+      t('지역 설정을 변경하고 있습니다.'),
+    );
   };
 
   return (
@@ -228,24 +249,53 @@ const Header = (props) => {
                   QUICK MENU
                 </BlockTitle>
                 <div className="d-flex quick-menu">
-                  <div className="lang-label small align-self-center">
+                  <div className="quick-menu-label small align-self-center">
                     <span>언어</span>
                   </div>
-                  <div className="lang-icon align-self-center">
+                  <div className="quick-menu-icon language-icon align-self-center">
                     <span className="icon">
                       <i className="fas fa-language" />
                     </span>
                   </div>
                   <div className="mx-2">
                     <RadioButton
+                      className="radio-button"
                       size="xs"
-                      items={[
-                        { key: 'ko', value: '한글' },
-                        { key: 'en', value: 'English' },
-                      ]}
+                      items={Object.keys(LANGUAGES).map((key) => {
+                        return {
+                          key,
+                          value: LANGUAGES[key],
+                        };
+                      })}
                       value={user.language}
                       onClick={(val) => {
                         updateLanguage(val);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="d-flex quick-menu">
+                  <div className="quick-menu-label small align-self-center">
+                    <span>지역</span>
+                  </div>
+                  <div className="quick-menu-icon align-self-center">
+                    <span className="icon">
+                      <i className="fas fa-globe-americas" />
+                    </span>
+                  </div>
+                  <div className="mx-2">
+                    <RadioButton
+                      className="radio-button"
+                      size="xs"
+                      items={Object.keys(COUNTRIES).map((key) => {
+                        return {
+                          key,
+                          value: COUNTRIES[key],
+                        };
+                      })}
+                      value={user.country}
+                      onClick={(val) => {
+                        updateCountry(val);
                       }}
                     />
                   </div>

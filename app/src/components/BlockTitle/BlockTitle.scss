@@ -1,9 +1,41 @@
 .block-title-wrapper {
   display: flex;
   margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+
+  @media (max-width: 576px) {
+    padding-bottom: 0;
+  }
 
   > div {
     align-self: center;
+
+    &.liner {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 1px;
+      width: 100%;
+      background-color: $gray-300;
+      background: rgb(122, 122, 124);
+      background: linear-gradient(
+        90deg,
+        rgba(122, 122, 124, 1) 0%,
+        rgba(255, 68, 0, 1) 20%,
+        rgba(111, 205, 17, 1) 40%,
+        rgba(42, 60, 188, 1) 60%,
+        rgba(226, 21, 80, 1) 80%,
+        rgba(238, 251, 10, 1) 100%
+      );
+      opacity: 0.4;
+
+      @media (max-width: 576px) {
+        display: none;
+      }
+    }
 
     &.bullet {
       margin-right: 2px;

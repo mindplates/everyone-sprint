@@ -152,9 +152,30 @@
           }
 
           .quick-menu {
-            .lang-icon {
-              font-size: 18px;
+            margin-bottom: 0.5rem;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+            > div {
+              align-self: center;
+            }
+            .quick-menu-label {
+              width: 28px;
+            }
+            .quick-menu-icon {
               margin-left: 0.25rem;
+              width: 25px;
+              font-size: 14px;
+              &.language-icon {
+                font-size: 18px;
+              }
+            }
+
+            .radio-button {
+              > button {
+                min-width: 42px;
+              }
             }
           }
         }

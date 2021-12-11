@@ -67,8 +67,6 @@ const UserSelector = ({ t, users: parentUsers, close, onChangeUsers }) => {
     setCurrentUsers(nextUsers);
   };
 
-  console.log(currentUsers);
-
   return (
     <div className="user-selector-wrapper g-no-select">
       <div className="search-content">
@@ -150,7 +148,6 @@ const UserSelector = ({ t, users: parentUsers, close, onChangeUsers }) => {
                               size="xs"
                               outline
                               onClick={(e) => {
-                                console.log(e);
                                 e.stopPropagation();
                                 changeRole(currentUser.userId);
                               }}

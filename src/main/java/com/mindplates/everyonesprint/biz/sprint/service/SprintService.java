@@ -21,7 +21,7 @@ public class SprintService {
         return sprintRepository.findByName(name).orElse(null);
     }
 
-    public Sprint createSprint(Sprint sprint, UserSession userSession) {
+    public Sprint createSprintInfo(Sprint sprint, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         sprint.setCreationDate(now);
         sprint.setLastUpdateDate(now);
@@ -30,12 +30,19 @@ public class SprintService {
         return sprintRepository.save(sprint);
     }
 
-    public List<Sprint> selectUserSprintList(UserSession userSession) {
-        return sprintRepository.findAllByUsersUserId(userSession.getId());
+    public Sprint updateSprintInfo(Sprint sprint, UserSession userSession) {
+        LocalDateTime now = LocalDateTime.now();
+        sprint.setLastUpdateDate(now);
+        sprint.setLastUpdatedBy(userSession.getId());
+        return sprintRepository.save(sprint);
     }
 
-    public void deleteSprintInfo(Long id) {
-        sprintRepository.deleteById(id);
+    public void deleteSprintInfo(Sprint sprint) {
+        sprintRepository.delete(sprint);
+    }
+
+    public List<Sprint> selectUserSprintList(UserSession userSession) {
+        return sprintRepository.findAllByUsersUserId(userSession.getId());
     }
 
     public Sprint selectSprintInfo(Long id) {

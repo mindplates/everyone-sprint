@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Label.scss';
 
-const Label = ({ className, children, minWidth, required }) => {
+const Label = ({ className, children, minWidth, required, separator, size }) => {
   return (
     <div
-      className={`label-wrapper ${className}`}
+      className={`label-wrapper size-${size} ${className}`}
       style={{
         minWidth,
       }}
@@ -18,6 +18,11 @@ const Label = ({ className, children, minWidth, required }) => {
           </span>
         )}
       </span>
+      {separator && (
+        <span className="liner">
+          <span />
+        </span>
+      )}
     </div>
   );
 };
@@ -28,6 +33,8 @@ Label.defaultProps = {
   className: '',
   minWidth: '100px',
   required: false,
+  separator: true,
+  size: 'md',
 };
 
 Label.propTypes = {
@@ -35,4 +42,6 @@ Label.propTypes = {
   children: PropTypes.node,
   minWidth: PropTypes.string,
   required: PropTypes.bool,
+  separator: PropTypes.bool,
+  size: PropTypes.string,
 };

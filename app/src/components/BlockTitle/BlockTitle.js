@@ -17,6 +17,7 @@ const BlockTitle = ({ className, children, size, bold }) => {
       <div className="text">
         <span>{children}</span>
       </div>
+      <div className='liner' />
     </div>
   );
 };
