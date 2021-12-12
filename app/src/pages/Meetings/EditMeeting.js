@@ -8,7 +8,7 @@ import {
   BlockRow,
   BlockTitle,
   BottomButtons,
-  CheckBox,
+  Button,
   DateRange,
   Form,
   Input,
@@ -16,29 +16,31 @@ import {
   Page,
   PageContent,
   PageTitle,
+  Selector,
   UserList,
 } from '@/components';
 import dialog from '@/utils/dialog';
-import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
-import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
+import './EditMeeting.scss';
 
 const start = new Date();
-start.setHours(9);
+start.setHours(start.getHours() + 1);
 start.setMinutes(0);
 start.setSeconds(0);
 start.setMilliseconds(0);
 
 const end = new Date();
-end.setHours(18);
+end.setHours(end.getHours() + 2);
 end.setMinutes(0);
 end.setSeconds(0);
 end.setMilliseconds(0);
-end.setDate(end.getDate() + 14);
 
 const labelMinWidth = '140px';
+
+const quickTimes = [10, 11, 14, 15, 16, 17, 18, 23];
 
 const EditSprint = ({
   t,
@@ -49,17 +51,75 @@ const EditSprint = ({
     params: { id },
   },
 }) => {
+  const [sprints, setSprints] = useState([]);
   const [info, setInfo] = useState({
+    sprintId: null,
     name: '',
     startDate: start.getTime(),
     endDate: end.getTime(),
-    isJiraSprint: false,
-    jiraSprintUrl: '',
-    jiraAuthKey: '',
-    allowSearch: true,
-    allowAutoJoin: true,
     users: [],
   });
+
+  const getSprints = () => {
+    request.get(
+      '/api/sprints',
+      null,
+      (list) => {
+        const current = list.find((sprint) => sprint.id === id);
+        if (id && current) {
+          setInfo({
+            ...info,
+            sprintId: current.id,
+          });
+        } else if (list.length > 0) {
+          setInfo({
+            ...info,
+            sprintId: list[0].id,
+          });
+        }
+
+        setSprints(list);
+      },
+      null,
+      t('사용자의 스프린트 목록을 모으고 있습니다.'),
+    );
+  };
+
+  const getSprint = (sprintId) => {
+    request.get(
+      `/api/sprints/${sprintId}`,
+      null,
+      (data) => {
+        const users = data.users.map((u) => {
+          return {
+            userId: u.userId,
+            email: u.email,
+            alias: u.alias,
+            name: u.name,
+            imageType: u.imageType,
+            imageData: u.imageData,
+          };
+        });
+
+        setInfo({
+          ...info,
+          users,
+        });
+      },
+      null,
+      t('스프린트가 변경되어 참여자를 변경 중입니다.'),
+    );
+  };
+
+  useEffect(() => {
+    getSprints();
+  }, []);
+
+  useEffect(() => {
+    if (info.sprintId) {
+      getSprint(info.sprintId);
+    }
+  }, [info.sprintId]);
 
   useEffect(() => {
     if (id && type === 'edit')
@@ -135,26 +195,48 @@ const EditSprint = ({
       );
     } else {
       request.post(
-        '/api/sprints',
+        '/api/meetings',
         { ...info, startDate: new Date(info.startDate), endDate: new Date(info.endDate) },
         (data) => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/sprints/${data.id}`);
+            history.push(`/meetings/${data.id}`);
           });
         },
         null,
-        t('새로운 스프린트를 만들고 있습니다.'),
+        t('새로운 미팅을 만들고 있습니다.'),
       );
     }
   };
 
+  const nowHours = new Date().getHours();
+
+  console.log(sprints);
+
   return (
-    <Page className="sprint-wrapper">
-      <PageTitle>{type === 'edit' ? t('스프린트 변경') : t('새로운 스프린트')}</PageTitle>
+    <Page className="edit-meeting-wrapper">
+      <PageTitle>{type === 'edit' ? t('미팅 정보 변경') : t('새로운 미팅')}</PageTitle>
       <PageContent>
-        <Form className="new-sprint-content" onSubmit={onSubmit}>
-          <Block className='pt-0'>
-            <BlockTitle className="mb-2 mb-sm-3">{t('스프린트 정보')}</BlockTitle>
+        <Form onSubmit={onSubmit}>
+          <Block className="pt-0">
+            <BlockTitle className="mb-2 mb-sm-3">{t('미팅 정보')}</BlockTitle>
+            <BlockRow>
+              <Label minWidth={labelMinWidth} required>
+                {t('스프린트')}
+              </Label>
+              <Selector
+                outline
+
+                items={sprints.map((sprint) => {
+                  return {
+                    key: sprint.id,
+                    value: sprint.name,
+                  };
+                })}
+                value={info.sprintId}
+                onChange={(val) => changeInfo('sprintId', val)}
+                minWidth="160px"
+              />
+            </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
                 {t('이름')}
@@ -172,7 +254,7 @@ const EditSprint = ({
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
-                {t('기간')}
+                {t('시간')}
               </Label>
               <DateRange
                 country={user.country}
@@ -186,82 +268,59 @@ const EditSprint = ({
                 }}
               />
             </BlockRow>
+            <BlockRow>
+              <div
+                className="range-quick-buttons"
+                style={{
+                  marginLeft: labelMinWidth,
+                }}
+              >
+                <div className="g-scrollbar">
+                  <div>
+                    <Button size="sm" color="white" outline>
+                      지금
+                    </Button>
+                    <Button size="sm" color="white" outline>
+                      다음 시간
+                    </Button>
+                  </div>
+                  <div>
+                    <span className="day-label">오늘</span>
+                    {quickTimes
+                      .filter((d) => d > nowHours)
+                      .map((d) => {
+                        return (
+                          <Button size="sm" color="white" outline>
+                            {d}시
+                          </Button>
+                        );
+                      })}
+                  </div>
+                  <div className="next-day">
+                    <span className="day-label">내일</span>
+                    {quickTimes.map((d) => {
+                      return (
+                        <Button size="sm" color="white" outline>
+                          {d}시
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </BlockRow>
           </Block>
           <Block>
-            <BlockTitle className="mb-2 mb-sm-3">{t('멤버')}</BlockTitle>
+            <BlockTitle className="mb-2 mb-sm-3">{t('참여자')}</BlockTitle>
             <UserList
               users={info.users}
               onChange={(val) => changeInfo('users', val)}
               onChangeUsers={changeUsers}
               editable={{
-                role: true,
+                role: false,
                 member: true,
               }}
             />
-          </Block>
-          <Block>
-            <BlockTitle className="mb-2 mb-sm-3">{t('지라 연동')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('지라 연동')}</Label>
-              <CheckBox
-                size="md"
-                type="checkbox"
-                value={info.isJiraSprint}
-                onChange={(val) => changeInfo('isJiraSprint', val)}
-                label={t('이 스프린트를 지라 스프린트와 연결합니다.')}
-              />
-            </BlockRow>
-            <BlockRow expand>
-              <Label minWidth={labelMinWidth}>{t('지라 스트린트 URL')}</Label>
-              <Input
-                type="name"
-                size="md"
-                value={info.jiraSprintUrl}
-                onChange={(val) => changeInfo('jiraSprintUrl', val)}
-                outline
-                simple
-                display="block"
-                disabled={!info.isJiraSprint}
-              />
-            </BlockRow>
-            <BlockRow expand>
-              <Label minWidth={labelMinWidth}>{t('지라 인증 키')}</Label>
-              <Input
-                type="name"
-                size="md"
-                value={info.jiraAuthKey}
-                onChange={(val) => changeInfo('jiraAuthKey', val)}
-                outline
-                simple
-                display="block"
-                disabled={!info.isJiraSprint}
-              />
-            </BlockRow>
-          </Block>
-          <Block className="mb-2">
-            <BlockTitle className="mb-2 mb-sm-3">{t('검색 및 참여 설정')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
-              <RadioButton
-                size="sm"
-                items={ALLOW_SEARCHES}
-                value={info.allowSearch}
-                onClick={(val) => {
-                  changeInfo('allowSearch', val);
-                }}
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
-              <RadioButton
-                size="sm"
-                items={JOIN_POLICIES}
-                value={info.allowAutoJoin}
-                onClick={(val) => {
-                  changeInfo('allowAutoJoin', val);
-                }}
-              />
-            </BlockRow>
           </Block>
           <BottomButtons
             onCancel={() => {

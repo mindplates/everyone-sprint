@@ -3,11 +3,12 @@ import StartingLine from './StartingLine/StartingLine';
 import Entry from './Entry/Entry';
 import Groups from './Groups/Groups';
 import Sprints from './Sprints/Sprints';
-import NewSprint from './Sprints/EditSprint';
+import EditSprint from './Sprints/EditSprint';
 import Sprint from './Sprints/Sprint';
-import Scrums from './Scrums/Scrums';
+import EditMeeting from './Meetings/EditMeeting';
+import Meetings from './Meetings/Meetings';
 import Common from './Common/Common';
 import Header from './Common/Header';
 import Footer from './Common/Footer';
 
-export { PublicPark, Common, Header, Footer, Groups, Sprints, NewSprint, Sprint, Scrums, StartingLine, Entry };
+export { PublicPark, Common, Header, Footer, Groups, Sprints, EditSprint, Sprint, Meetings, EditMeeting, StartingLine, Entry };

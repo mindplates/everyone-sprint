@@ -13,9 +13,9 @@ const MENU = {
     enabled: true,
     submenus: [],
   },
-  scrums: {
+  meetings: {
     icon: <i className="fas fa-circle-notch" />,
-    name: '스크럼',
+    name: '미팅',
     enabled: true,
     submenus: [],
   },

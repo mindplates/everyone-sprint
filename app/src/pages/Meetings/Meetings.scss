@@ -1,0 +1,21 @@
+.meetings-wrapper {
+  .search {
+    padding: 0 0.5rem 1rem;
+    text-align: right;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    _margin-bottom: 1rem;
+
+    > div {
+      display: inline-flex;
+      > div {
+        align-self: center;
+
+        &.label {
+          margin-right: 0.5rem;
+          font-size: 14px;
+          font-family: pretendard, sans-serif;
+        }
+      }
+    }
+  }
+}
