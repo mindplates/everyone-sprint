@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import TimeAgo from 'javascript-time-ago/modules/TimeAgo';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { HistoryPropTypes, SettingPropTypes, UserPropTypes } from '@/proptypes';
@@ -50,6 +51,7 @@ const Header = (props) => {
       '/api/users/my-info/language',
       { language },
       () => {
+        TimeAgo.setDefaultLocale(language || 'ko');
         setUserInfoReducer({
           ...user,
           language,

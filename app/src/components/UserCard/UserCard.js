@@ -36,24 +36,22 @@ class UserCard extends React.PureComponent {
                 <span className="deleted">DELETED</span>
               </div>
             )}
-            {CRUD !== 'D' && (
+            {editable.role && CRUD !== 'D' && (
               <div className="role">
                 <span>{user.role}</span>
-                {editable && (
-                  <Button
-                    rounded
-                    size="xs"
-                    outline
-                    onClick={() => {
-                      onChange(userIndex, 'role', user.role === 'ADMIN' ? 'MEMBER' : 'ADMIN');
-                    }}
-                  >
-                    <i className="fas fa-exchange-alt" />
-                  </Button>
-                )}
+                <Button
+                  rounded
+                  size="xs"
+                  outline
+                  onClick={() => {
+                    onChange(userIndex, 'role', user.role === 'ADMIN' ? 'MEMBER' : 'ADMIN');
+                  }}
+                >
+                  <i className="fas fa-exchange-alt" />
+                </Button>
               </div>
             )}
-            {editable && (
+            {editable.member && (
               <>
                 {CRUD === 'D' && (
                   <div className="redo-button">
@@ -102,8 +100,11 @@ class UserCard extends React.PureComponent {
 
 UserCard.defaultProps = {
   className: '',
-  editable: false,
   addCard: false,
+  editable: {
+    role: true,
+    member: true,
+  },
 };
 
 UserCard.propTypes = {
@@ -111,7 +112,10 @@ UserCard.propTypes = {
   onClick: PropTypes.func,
   user: UserPropTypes,
   userIndex: PropTypes.number,
-  editable: PropTypes.bool,
+  editable: PropTypes.shape({
+    role: PropTypes.bool,
+    member: PropTypes.bool,
+  }),
   onChange: PropTypes.func,
   addCard: PropTypes.bool,
 };

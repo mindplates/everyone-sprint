@@ -12,6 +12,11 @@ $input-border: 1px solid rgba(0, 0, 0, 0.4);
 $input-focus-border: 1px solid rgba(0, 0, 0, 0.6);
 $input-radius: 2px;
 
+$control-xs-height : 26px;
+$control-sm-height : 31px;
+$control-md-height : 38px;
+$control-lg-height : 48px;
+
 @import '~bootstrap/scss/functions';
 @import '~bootstrap/scss/variables';
 @import '~bootstrap/scss/mixins';

@@ -1,0 +1,38 @@
+.edit-meeting-wrapper {
+  .range-quick-buttons {
+    flex-grow: 1;
+    padding-left: 1rem;
+    overflow: auto;
+
+    @media (max-width: 768px) {
+      margin-left: 0 !important;
+      padding-left: 0;
+    }
+    > div {
+      display: flex;
+      overflow: auto;
+      padding-bottom: 0.5rem;
+
+      > div {
+        align-self: center;
+        white-space: nowrap;
+
+        &.next-day {
+          flex-grow: 1;
+        }
+
+        .day-label {
+          font-size: 12px;
+          margin: 0 0.5rem;
+        }
+
+        > button {
+          margin-right: 0.25rem;
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+  }
+}

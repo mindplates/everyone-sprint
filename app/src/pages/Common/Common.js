@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import ReactTooltip from 'react-tooltip';
 import PropTypes from 'prop-types';
+import TimeAgo from 'javascript-time-ago';
+
 import { setSystemInfo, setUserInfo } from '@/store/actions';
 import { MessageDialog } from '@/components';
 import request from '@/utils/request';
@@ -32,6 +34,7 @@ class Common extends React.Component {
       const { setUserInfo: setUserInfoReducer, i18n } = this.props;
       setUserInfoReducer(data);
       i18n.changeLanguage(data.language || 'ko');
+      TimeAgo.setDefaultLocale(data.language || 'ko');
     });
   };
 

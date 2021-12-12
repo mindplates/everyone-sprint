@@ -6,7 +6,7 @@ import { Button, Input, Liner, UserImage } from '@/components';
 import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
 
-const UserSelector = ({ t, users: parentUsers, close, onChangeUsers }) => {
+const UserSelector = ({ t, users: parentUsers, close, onChangeUsers, editable }) => {
   const [word, setWord] = useState('');
   const [users, setUsers] = useState([]);
   const [currentUsers, setCurrentUsers] = useState([]);
@@ -139,24 +139,26 @@ const UserSelector = ({ t, users: parentUsers, close, onChangeUsers }) => {
                           <Liner display="inline-block" width="1px" height="14px" color="light" />
                         </div>
                       )}
-                      <div className="user-role">
-                        {currentUser && (
-                          <div>
-                            <span className="role">{currentUser.role}</span>
-                            <Button
-                              rounded
-                              size="xs"
-                              outline
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                changeRole(currentUser.userId);
-                              }}
-                            >
-                              <i className="fas fa-exchange-alt" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
+                      {editable && (
+                        <div className="user-role">
+                          {currentUser && (
+                            <div>
+                              <span className="role">{currentUser.role}</span>
+                              <Button
+                                rounded
+                                size="xs"
+                                outline
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  changeRole(currentUser.userId);
+                                }}
+                              >
+                                <i className="fas fa-exchange-alt" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </li>
                 );
@@ -166,7 +168,7 @@ const UserSelector = ({ t, users: parentUsers, close, onChangeUsers }) => {
         </div>
       )}
       <div className="g-popup-bottom-button">
-        <Button size="md" color="white" outline onClick={() => {}}>
+        <Button size="md" color="white" outline onClick={close}>
           <i className="fas fa-times" /> 취소
         </Button>
         <Button
@@ -188,9 +190,14 @@ const UserSelector = ({ t, users: parentUsers, close, onChangeUsers }) => {
 
 export default withTranslation()(UserSelector);
 
+UserSelector.defaultProps = {
+  editable: true,
+};
+
 UserSelector.propTypes = {
   t: PropTypes.func,
   close: PropTypes.func,
   users: PropTypes.arrayOf(UserPropTypes),
   onChangeUsers: PropTypes.func,
+  editable: PropTypes.bool,
 };

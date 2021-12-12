@@ -26,9 +26,9 @@ const BottomButtons = (props) => {
     <div className={`bottom-buttons-wrapper ${className} ${border ? 'has-border' : ''}`}>
       {onDelete && (
         <div className="delete-buttons">
-          <Button type="button" size={size} color="danger" onClick={onDelete}>
+          <Button type="button" size={size} color="secondary" onClick={onDelete}>
             <div>
-              <div className="icon">
+              <div className="icon delete-icon">
                 <span>{onDeleteIcon}</span>
               </div>
               <div>{onDeleteText}</div>

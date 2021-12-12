@@ -33,12 +33,12 @@ const UserList = ({ className, users, editable, onChange, onChangeUsers }) => {
 
   return (
     <div className={`user-list-wrapper ${className}`}>
-      {!editable && users.length < 1 && (
+      {!editable.member && users.length < 1 && (
         <div className="empty-message">
           <div>등록된 멤버가 없습니다.</div>
         </div>
       )}
-      {(editable || users.length > 0) && (
+      {(editable.member || users.length > 0) && (
         <div className="sprint-user-list">
           {users.map((user, index) => {
             return (
@@ -47,7 +47,7 @@ const UserList = ({ className, users, editable, onChange, onChangeUsers }) => {
               </div>
             );
           })}
-          {editable && (
+          {editable.member && (
             <div className="user-card">
               <UserCard
                 addCard
@@ -75,6 +75,7 @@ const UserList = ({ className, users, editable, onChange, onChangeUsers }) => {
             onChange={() => {}}
             users={users}
             onChangeUsers={onChangeUsers}
+            editable={editable.role}
           />
         </Popup>
       )}
@@ -86,13 +87,19 @@ export default UserList;
 
 UserList.defaultProps = {
   className: '',
-  editable: false,
+  editable: {
+    role: true,
+    member: true,
+  },
 };
 
 UserList.propTypes = {
   className: PropTypes.string,
   users: PropTypes.arrayOf(UserPropTypes),
-  editable: PropTypes.bool,
+  editable: PropTypes.shape({
+    role: PropTypes.bool,
+    member: PropTypes.bool,
+  }),
   onChange: PropTypes.func,
   onChangeUsers: PropTypes.func,
 };

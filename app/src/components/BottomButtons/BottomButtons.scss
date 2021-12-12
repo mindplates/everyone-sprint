@@ -54,6 +54,14 @@
               align-self: center;
             }
           }
+
+          &.delete-icon {
+            > span {
+              i {
+                margin-bottom: 2px;
+              }
+            }
+          }
         }
       }
     }

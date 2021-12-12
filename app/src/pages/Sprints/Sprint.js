@@ -88,7 +88,13 @@ const Sprint = ({
           </Block>
           <Block>
             <BlockTitle className="mb-2 mb-sm-3">{t('멤버')}</BlockTitle>
-            <UserList users={sprint.users} />
+            <UserList
+              users={sprint.users}
+              editable={{
+                role: false,
+                member: false,
+              }}
+            />
           </Block>
           <Block>
             <BlockTitle>{t('지라 연동')}</BlockTitle>
@@ -128,7 +134,7 @@ const Sprint = ({
               history.push(`/sprints/${id}/edit`);
             }}
             onDelete={onDelete}
-            onDeleteText="스프린트 삭제"
+            onDeleteText="삭제"
           />
         </PageContent>
       )}

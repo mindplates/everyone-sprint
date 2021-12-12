@@ -4,13 +4,14 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Common,
+  EditMeeting,
+  EditSprint,
   Entry,
   Footer,
   Groups,
   Header,
-  NewSprint,
+  Meetings,
   PublicPark,
-  Scrums,
   Sprint,
   Sprints,
   StartingLine,
@@ -29,11 +30,12 @@ function App({ setting }) {
           <Route exact path="/" component={PublicPark} />
           <Route exact path="/public-park" component={PublicPark} />
           <Route exact path="/groups" component={Groups} />
-          <Route exact path="/sprints/new" render={() => <NewSprint type="new" />} />
-          <Route exact path="/sprints/:id/edit" render={() => <NewSprint type="edit" />} />
+          <Route exact path="/sprints/new" render={() => <EditSprint type="new" />} />
+          <Route exact path="/sprints/:id/edit" render={() => <EditSprint type="edit" />} />
           <Route exact path="/sprints/:id" component={Sprint} />
           <Route exact path="/sprints" component={Sprints} />
-          <Route exact path="/scrums" component={Scrums} />
+          <Route exact path="/meetings/new" render={() => <EditMeeting type="new" />} />
+          <Route exact path="/meetings" component={Meetings} />
           <Route exact path="/starting-line" component={StartingLine} />
           <Route exact path="/entry" component={Entry} />
         </Switch>
