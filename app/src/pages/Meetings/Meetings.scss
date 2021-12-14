@@ -1,9 +1,8 @@
 .meetings-wrapper {
   .search {
     padding: 0 0.5rem 1rem;
-    text-align: right;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    _margin-bottom: 1rem;
+    _text-align: right;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
 
     > div {
       display: inline-flex;
@@ -14,6 +13,21 @@
           margin-right: 0.5rem;
           font-size: 14px;
           font-family: pretendard, sans-serif;
+        }
+
+        .day-selector {
+          display: inline-flex;
+          > div {
+            align-self: center;
+
+            &.day-quick-button {
+              margin-right: 0.5rem;
+            }
+
+            &.date-picker {
+              margin: 0 0.5rem;
+            }
+          }
         }
       }
     }

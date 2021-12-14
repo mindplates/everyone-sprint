@@ -55,8 +55,14 @@ public class MeetingService {
         meetingRepository.delete(meeting);
     }
 
-    public List<Meeting> selectUserMeetingList(UserSession userSession) {
-        return meetingRepository.findAllByUsersUserId(userSession.getId());
+    public List<Meeting> selectUserMeetingList(Long sprintId, LocalDateTime date, UserSession userSession) {
+
+        LocalDateTime nextDay = date.plusDays(1);
+        if (sprintId != null) {
+            return meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(sprintId, date, nextDay, userSession.getId());
+        }
+
+        return meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(date, nextDay, userSession.getId());
     }
 
     public Meeting selectMeetingInfo(Long id) {

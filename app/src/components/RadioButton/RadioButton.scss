@@ -21,7 +21,7 @@
     }
 
     &:first-child {
-      border-radius: 4px 0 0 4px !important;
+      border-radius: 2px 0 0 2px !important;
       .liner {
         border-radius: 3px 0 0 3px;
       }
@@ -30,7 +30,7 @@
     &:last-child {
       margin-right: 0;
       border-right-style: solid !important;
-      border-radius: 0 4px 4px 0 !important;
+      border-radius: 0 2px 2px 0 !important;
       .liner {
         border-radius: 0 3px 3px 0;
       }
