@@ -1,31 +1,57 @@
 .meetings-wrapper {
   .search {
     padding: 0 0.5rem 1rem;
-    _text-align: right;
     border-bottom: 1px solid rgba(0, 0, 0, 0.4);
 
-    > div {
-      display: inline-flex;
-      > div {
-        align-self: center;
+    @media (max-width: 992px) {
+      padding-left: 0;
+      padding-right: 0;
+    }
 
-        &.label {
-          margin-right: 0.5rem;
-          font-size: 14px;
-          font-family: pretendard, sans-serif;
+    > div {
+      > div {
+        display: inline-flex;
+        @media (max-width: 992px) {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 0.5rem;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .date-quick-control,
+          .all-control {
+            display: none !important;
+          }
+
+          .sprint-control {
+            margin-right: 0.5rem;
+          }
         }
 
-        .day-selector {
-          display: inline-flex;
-          > div {
-            align-self: center;
+        > div {
+          align-self: center;
 
-            &.day-quick-button {
-              margin-right: 0.5rem;
-            }
+          &.label {
+            margin-right: 0.5rem;
+            font-size: 14px;
+            font-family: pretendard, sans-serif;
+            white-space: nowrap;
+          }
 
-            &.date-picker {
-              margin: 0 0.5rem;
+          .day-selector {
+            display: inline-flex;
+            > div {
+              align-self: center;
+
+              &.day-quick-button {
+                margin-right: 0.5rem;
+              }
+
+              &.date-picker {
+                margin: 0 0.5rem;
+              }
             }
           }
         }

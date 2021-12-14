@@ -29,10 +29,12 @@ const Meetings = ({ t, user, history }) => {
     {
       key: 'list',
       value: t('리스트'),
+      icon: <i className="fas fa-bars" />,
     },
     {
       key: 'calendar',
       value: t('캘린더'),
+      icon: <i className="far fa-calendar-alt" />,
     },
   ]);
   const [tab, setTab] = useState(tabs[0].key);
@@ -99,129 +101,153 @@ const Meetings = ({ t, user, history }) => {
       <div className={`${meetings && meetings.length > 0 ? 'g-page-content' : 'g-page-content'}`}>
         <div className="search">
           <div>
-            <div className="label">{t('날짜')}</div>
             <div>
-              <div className="day-selector">
-                <div className="day-quick-button">
-                  <RadioButton
-                    size="xs"
-                    items={ranges.map((d) => {
-                      return {
-                        key: d.key.getTime(),
-                        value: d.value,
-                      };
-                    })}
-                    value={query.date.getTime()}
-                    onClick={(val) => {
-                      setQuery({
-                        ...query,
-                        date: new Date(val),
-                      });
-                    }}
-                  />
-                </div>
-                <div>
-                  <Button
-                    size="xs"
-                    color="white"
-                    outline
-                    onClick={() => {
-                      setQuery({
-                        ...query,
-                        date: dateUtil.addDays(query.date, -1),
-                      });
-                    }}
-                  >
-                    <i className="fas fa-chevron-left" />
-                  </Button>
-                </div>
-                <div className="date-picker">
-                  <DatePicker
-                    className="date-picker start-date-picker"
-                    selected={query.date}
-                    onChange={(date) => {
-                      setQuery({
-                        ...query,
-                        date: dateUtil.getTruncateDate(date),
-                      });
-                    }}
-                    locale={user.language}
-                    customInput={<DateCustomInput />}
-                    dateFormat={DATE_FORMATS[user.country || 'KR'].days.picker}
-                  />
-                </div>
-                <div>
-                  <Button
-                    size="xs"
-                    color="white"
-                    outline
-                    onClick={() => {
-                      setQuery({
-                        ...query,
-                        date: dateUtil.addDays(query.date, 1),
-                      });
-                    }}
-                  >
-                    <i className="fas fa-chevron-right" />
-                  </Button>
+              <div className="label date-quick-control">{t('날짜')}</div>
+              <div>
+                <div className="day-selector">
+                  <div className="day-quick-button  date-quick-control">
+                    <RadioButton
+                      size="xs"
+                      items={ranges.map((d) => {
+                        return {
+                          key: d.key.getTime(),
+                          value: d.value,
+                        };
+                      })}
+                      value={query.date.getTime()}
+                      onClick={(val) => {
+                        setQuery({
+                          ...query,
+                          date: new Date(val),
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Button
+                      size="xs"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        setQuery({
+                          ...query,
+                          date: dateUtil.addDays(query.date, -1),
+                        });
+                      }}
+                    >
+                      <i className="fas fa-chevron-left" />
+                    </Button>
+                  </div>
+                  <div className="date-picker">
+                    <DatePicker
+                      className="date-picker start-date-picker"
+                      selected={query.date}
+                      onChange={(date) => {
+                        setQuery({
+                          ...query,
+                          date: dateUtil.getTruncateDate(date),
+                        });
+                      }}
+                      locale={user.language}
+                      customInput={<DateCustomInput />}
+                      dateFormat={DATE_FORMATS[user.country || 'KR'].days.picker}
+                    />
+                  </div>
+                  <div>
+                    <Button
+                      size="xs"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        setQuery({
+                          ...query,
+                          date: dateUtil.addDays(query.date, 1),
+                        });
+                      }}
+                    >
+                      <i className="fas fa-chevron-right" />
+                    </Button>
+                  </div>
                 </div>
               </div>
+              <div>
+                <Liner
+                  className="date-quick-control"
+                  display="inline-block"
+                  width="1px"
+                  height="10px"
+                  color="light"
+                  margin="0 1rem"
+                />
+              </div>
             </div>
+
             <div>
-              <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-            </div>
-            <div className="label">{t('스프린트')}</div>
-            <div>
-              <Selector
-                outline
-                size="xs"
-                items={[{ key: null, value: t('모두') }].concat(
-                  sprints.map((sprint) => {
-                    return {
-                      key: sprint.id,
-                      value: sprint.name,
-                    };
-                  }),
-                )}
-                value={query.sprintId}
-                onChange={(val) =>
-                  setQuery({
-                    ...query,
-                    sprintId: val,
-                  })
-                }
-                minWidth="65px"
-              />
-            </div>
-            <div>
-              <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-            </div>
-            <div>
-              <CheckBox
-                size="sm"
-                type="checkbox"
-                value={options.all}
-                onChange={() =>
-                  setOptions({
-                    all: !options.all,
-                  })
-                }
-                label={t('지난 일정 포함')}
-              />
-            </div>
-            <div>
-              <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-            </div>
-            <div className="label">{t('보기')}</div>
-            <div>
-              <RadioButton
-                size="xs"
-                items={tabs}
-                value={tab}
-                onClick={(val) => {
-                  setTab(val);
-                }}
-              />
+              <div className="label">{t('스프린트')}</div>
+              <div className="sprint-control">
+                <Selector
+                  outline
+                  size="xs"
+                  items={[{ key: null, value: t('모두') }].concat(
+                    sprints.map((sprint) => {
+                      return {
+                        key: sprint.id,
+                        value: sprint.name,
+                      };
+                    }),
+                  )}
+                  value={query.sprintId}
+                  onChange={(val) =>
+                    setQuery({
+                      ...query,
+                      sprintId: val,
+                    })
+                  }
+                  minWidth="65px"
+                />
+              </div>
+              <div className="all-control">
+                <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+              </div>
+              <div className="all-control">
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={options.all}
+                  onChange={() =>
+                    setOptions({
+                      all: !options.all,
+                    })
+                  }
+                  label={t('지난 일정 포함')}
+                />
+              </div>
+              <div className="all-control">
+                <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+              </div>
+              <div className="label">{t('보기')}</div>
+              <div>
+                <RadioButton
+                  className="d-none d-sm-inline-block"
+                  size="xs"
+                  items={tabs}
+                  value={tab}
+                  onClick={(val) => {
+                    setTab(val);
+                  }}
+                />
+                <RadioButton
+                  className="d-inline-block d-sm-none"
+                  size="xs"
+                  items={tabs.map((d) => {
+                    return { key: d.key, value: d.icon };
+                  })}
+                  value={tab}
+                  onClick={(val) => {
+                    setTab(val);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
