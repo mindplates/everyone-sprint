@@ -12,9 +12,26 @@ const USER_STUB = {
   tel: '',
 };
 
+const DATE_FORMATS_TYPES = {
+  full: 'full',
+  days: 'days',
+  hours: 'hours',
+  dayHours: 'dayHours',
+};
+
 const DATE_FORMATS = {
-  US: { moment: 'MM/DD/YYYY HH:mm', picker: 'MM/dd/yyyy HH:mm' },
-  KR: { moment: 'YYYY년 MM월 DD일 HH시 mm분', picker: 'yyyy년 MM월 dd일 HH시 mm분' },
+  US: {
+    full: { moment: 'MM/DD/YYYY HH:mm', picker: 'MM/dd/yyyy HH:mm' },
+    days: { moment: 'MM/DD/YYYY', picker: 'MM/dd/yyyy' },
+    dayHours: { moment: 'MM/DD HH:mm', picker: 'MM/dd HH:mm' },
+    hours: { moment: 'HH:mm', picker: 'HH:mm' },
+  },
+  KR: {
+    full: { moment: 'YYYY년 MM월 DD일 HH시 mm분', picker: 'yyyy년 MM월 dd일 HH시 mm분' },
+    days: { moment: 'YYYY년 MM월 DD일', picker: 'yyyy년 MM월 dd일' },
+    dayHours: { moment: 'MM월 DD일 HH시 mm분', picker: 'MM월 dd일 HH시 mm분' },
+    hours: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
+  },
 };
 
 const MESSAGE_CATEGORY = {
@@ -107,4 +124,5 @@ export {
   ALLOW_SEARCHES,
   JOIN_POLICIES,
   COUNTRIES,
+  DATE_FORMATS_TYPES,
 };

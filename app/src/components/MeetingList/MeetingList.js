@@ -9,62 +9,85 @@ import { Button, Liner } from '@/components';
 import { HistoryPropTypes, SprintPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './MeetingList.scss';
+import { DATE_FORMATS_TYPES } from '@/constants/constants';
 
 const MeetingList = ({ t, history, meetings, user }) => {
-  console.log(user);
+  const now = new Date();
+
   return (
     <ul className="meeting-list-wrapper">
       {meetings.map((meeting) => {
+        const startTime = dateUtil.getDate(meeting.startDate);
+        const isSameDay = dateUtil.isSameDay(startTime, now);
+
         return (
           <li
             key={meeting.id}
+            className={startTime > now ? 'future' : 'past'}
             onClick={() => {
               history.push(`/meetings/${meeting.id}`);
             }}
           >
             <div>
+              <div className="status">
+                <span className="time-ago">
+                  <ReactTimeAgo locale={user.language || 'ko'} date={startTime} />
+                </span>
+              </div>
               <div className="name-and-date">
-                <div className="name">{meeting.name}</div>
+                <div className="name">
+                  <span className="text">{meeting.name}</span>
+                  <span className="time-ago">
+                    <ReactTimeAgo locale={user.language || 'ko'} date={startTime} />
+                  </span>
+                </div>
                 <div className="meeting-date">
-                  <div className="status">종료</div>
-                  <div className="time-ago">
-                    <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getDateValue(meeting.startDate)} />
+                  <div className="start-date">
+                    {dateUtil.getDateString(
+                      meeting.startDate,
+                      isSameDay ? DATE_FORMATS_TYPES.hours : DATE_FORMATS_TYPES.dayHours,
+                    )}
                   </div>
-                  <div>
-                    <div className="start-date">
-                      <span className="date-label">FROM</span>
-                      {dateUtil.getDateString(meeting.startDate)}
-                    </div>
-                    <Liner
-                      className="date-liner"
-                      width="10px"
-                      height="1px"
-                      display="inline-block"
-                      color="black"
-                      margin="0 0.5rem"
-                    />
-                    <div className="end-date">
-                      <span className="date-label">TO</span>
-                      {dateUtil.getDateString(meeting.endDate)}
-                    </div>
-                  </div>
+                  <Liner
+                    className="date-liner"
+                    width="10px"
+                    height="1px"
+                    display="inline-block"
+                    color="black"
+                    margin="0 0.5rem"
+                  />
+                  <div className="end-date">{dateUtil.getDateString(meeting.endDate, DATE_FORMATS_TYPES.hours)}</div>
+                </div>
+              </div>
+              <div className="users">
+                <div>
+                  <span className="icon">
+                    <i className="fas fa-child" />
+                  </span>
+                  {meeting.users.map((d) => {
+                    return (
+                      <span className="user-alias" key={d.id}>
+                        {d.alias}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
               <div className="liner">
-                <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 0.5rem" />
+                <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 1rem" />
               </div>
-              <div className="others">
-                <div className="user-count">
-                  <div className="label">
-                    <span>{t('사용자')}</span>
-                  </div>
-                  <div className="value">{meeting.userCount}</div>
-                </div>
-                <div className="allow-search">
-                  <Button size="lg" color="white" outline rounded onClick={() => {}}>
-                    <i className="fas fa-arrow-right" />
-                  </Button>
-                </div>
+              <div className="buttons d-none d-sm-flex">
+                <Button size="md" data-tip={t('참여')} color="white" outline rounded onClick={() => {}}>
+                  <i className="fas fa-arrow-right" />
+                </Button>
+                <Button size="md" color="white" outline rounded onClick={() => {}}>
+                  <i className="fas fa-ellipsis-h" />
+                </Button>
+              </div>
+              <div className="buttons d-flex d-sm-none ">
+                <Button size="sm" color="white" outline rounded onClick={() => {}}>
+                  <i className="fas fa-ellipsis-h" />
+                </Button>
               </div>
             </div>
           </li>

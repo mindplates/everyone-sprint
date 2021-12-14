@@ -69,8 +69,8 @@ const EditSprint = ({
         (data) => {
           setInfo({
             ...data,
-            startDate: dateUtil.getDateValue(data.startDate),
-            endDate: dateUtil.getDateValue(data.endDate),
+            startDate: dateUtil.getTime(data.startDate),
+            endDate: dateUtil.getTime(data.endDate),
           });
         },
         null,

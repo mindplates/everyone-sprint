@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 @Data
 public class MeetingListResponse {
     private Long id;
-    private String name;
-    private String code;
     private Long sprintId;
     private String sprintName;
+    private String name;
+    private String code;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer userCount;
