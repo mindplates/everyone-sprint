@@ -17,13 +17,13 @@ const MeetingList = ({ t, history, meetings, user }) => {
   return (
     <ul className="meeting-list-wrapper">
       {meetings.map((meeting) => {
-        const startTime = dateUtil.getDate(meeting.startDate);
-        const isSameDay = dateUtil.isSameDay(startTime, now);
+        const startDate = dateUtil.getDate(meeting.startDate);
+        const isSameDay = dateUtil.isSameDay(startDate, now);
 
         return (
           <li
             key={meeting.id}
-            className={startTime > now ? 'future' : 'past'}
+            className={startDate > now ? 'future' : 'past'}
             onClick={() => {
               history.push(`/meetings/${meeting.id}`);
             }}
@@ -31,14 +31,14 @@ const MeetingList = ({ t, history, meetings, user }) => {
             <div>
               <div className="status">
                 <span className="time-ago">
-                  <ReactTimeAgo locale={user.language || 'ko'} date={startTime} />
+                  <ReactTimeAgo locale={user.language || 'ko'} date={startDate} />
                 </span>
               </div>
               <div className="name-and-date">
                 <div className="name">
                   <span className="text">{meeting.name}</span>
                   <span className="time-ago">
-                    <ReactTimeAgo locale={user.language || 'ko'} date={startTime} />
+                    <ReactTimeAgo locale={user.language || 'ko'} date={startDate} />
                   </span>
                 </div>
                 <div className="meeting-date">

@@ -1,19 +1,59 @@
 .meetings-wrapper {
   .search {
     padding: 0 0.5rem 1rem;
-    text-align: right;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    _margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+
+    @media (max-width: 992px) {
+      padding-left: 0;
+      padding-right: 0;
+    }
 
     > div {
-      display: inline-flex;
       > div {
-        align-self: center;
+        display: inline-flex;
+        @media (max-width: 992px) {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 0.5rem;
 
-        &.label {
-          margin-right: 0.5rem;
-          font-size: 14px;
-          font-family: pretendard, sans-serif;
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .date-quick-control,
+          .all-control {
+            display: none !important;
+          }
+
+          .sprint-control {
+            margin-right: 0.5rem;
+          }
+        }
+
+        > div {
+          align-self: center;
+
+          &.label {
+            margin-right: 0.5rem;
+            font-size: 14px;
+            font-family: pretendard, sans-serif;
+            white-space: nowrap;
+          }
+
+          .day-selector {
+            display: inline-flex;
+            > div {
+              align-self: center;
+
+              &.day-quick-button {
+                margin-right: 0.5rem;
+              }
+
+              &.date-picker {
+                margin: 0 0.5rem;
+              }
+            }
+          }
         }
       }
     }

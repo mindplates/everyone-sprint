@@ -3,7 +3,6 @@ package com.mindplates.everyonesprint.biz.meeting.controller;
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
 import com.mindplates.everyonesprint.biz.meeting.vo.request.MeetingRequest;
-import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingListResponse;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingResponse;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
@@ -12,11 +11,13 @@ import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,8 +74,8 @@ public class MeetingController {
     }
 
     @GetMapping("")
-    public List<MeetingResponse> selectUserMeetingList(UserSession userSession) {
-        List<Meeting> meetings = meetingService.selectUserMeetingList(userSession);
+    public List<MeetingResponse> selectUserMeetingList(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @RequestParam(value = "sprintId", required = false) Long sprintId, UserSession userSession) {
+        List<Meeting> meetings = meetingService.selectUserMeetingList(sprintId, date, userSession);
         return meetings.stream().map(MeetingResponse::new).collect(Collectors.toList());
     }
 

@@ -29,7 +29,6 @@
     display: flex;
     cursor: pointer;
     border: none;
-
     text-align: left;
     position: relative;
     z-index: 1;
@@ -72,7 +71,7 @@
         text-transform: uppercase;
         flex: 1;
         align-self: center;
-        line-height: 0;
+        overflow: hidden;
       }
 
       &.liner {
@@ -179,13 +178,12 @@
   .selector-list {
     position: absolute;
     background-color: $white;
-    width: 100%;
-    margin-top: 0;
+    min-width: 100%;
+    margin-top: 2px;
     max-height: calc(30px * 6);
     overflow-y: auto;
     z-index: 3;
     border: 1px solid rgba(0, 0, 0, 0.3);
-    border-top: none;
 
     ul {
       list-style: none;
@@ -205,6 +203,7 @@
         text-align: left;
         margin-bottom: 1px;
         line-height: 100%;
+        white-space: nowrap;
 
         &:last-child {
           border-bottom: none;

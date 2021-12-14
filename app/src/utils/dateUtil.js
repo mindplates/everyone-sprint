@@ -2,33 +2,21 @@ import moment from 'moment';
 import store from '@/store';
 import { DATE_FORMATS, DATE_FORMATS_TYPES } from '@/constants/constants';
 
-function getDateString(val, format, isUtc = true) {
+function getDateString(val, format) {
   const state = store.getState();
 
-  if (isUtc) {
-    return moment
-      .utc(val)
-      .local()
-      .format(DATE_FORMATS[state.user.country || 'KR'][format || DATE_FORMATS_TYPES.full].moment);
-  }
-
-  return moment(val).format(DATE_FORMATS[state.user.country || 'KR'][format || DATE_FORMATS_TYPES.full].moment);
+  return moment
+    .utc(val)
+    .local()
+    .format(DATE_FORMATS[state.user.country || 'KR'][format || DATE_FORMATS_TYPES.full].moment);
 }
 
-function getDate(val, isUtc = true) {
-  if (isUtc) {
-    return new Date(moment.utc(val).local().valueOf());
-  }
-
-  return new Date(moment(val).valueOf());
+function getDate(val) {
+  return new Date(`${val}Z`);
 }
 
-function getTime(val, isUtc = true) {
-  if (isUtc) {
-    return moment.utc(val).local().valueOf();
-  }
-
-  return moment(val).valueOf();
+function getTime(val) {
+  return getDate(val).getTime();
 }
 
 function isSameDay(val1, val2) {
@@ -39,11 +27,47 @@ function isSameDay(val1, val2) {
   );
 }
 
+function getToday() {
+  const today = new Date();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+  return today;
+}
+
+function getTomorrow() {
+  const tomorrow = new Date();
+  tomorrow.setHours(0);
+  tomorrow.setMinutes(0);
+  tomorrow.setSeconds(0);
+  tomorrow.setMilliseconds(0);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow;
+}
+
+function getTruncateDate(val) {
+  val.setHours(0);
+  val.setMinutes(0);
+  val.setSeconds(0);
+  val.setMilliseconds(0);
+  return val;
+}
+
+function addDays(val, days) {
+  val.setDate(val.getDate() + days);
+  return val;
+}
+
 const dateUtil = {
   getDateString,
   getDate,
   getTime,
   isSameDay,
+  getToday,
+  getTomorrow,
+  getTruncateDate,
+  addDays,
 };
 
 export default dateUtil;
