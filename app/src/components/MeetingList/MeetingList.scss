@@ -8,65 +8,131 @@
     padding: 0.5rem 1rem;
     background-color: $white;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-
     cursor: pointer;
+
+    @media (max-width: 576px) {
+      padding: 0.5rem;
+    }
+
     &:hover {
       border-bottom: 1px solid rgba(0, 0, 0, 0.6);
     }
+
+    span.time-ago {
+      display: inline-block;
+      padding: 0.25rem;
+      background-color: $green;
+      color: $white;
+      line-height: 100%;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    &.future {
+      span.time-ago {
+        background-color: $green !important;
+        color: $white;
+      }
+    }
+
+    &.past {
+      span.time-ago {
+        background-color: $gray-300 !important;
+        color: $gray-700 !important;
+      }
+    }
+
     > div {
       display: flex;
 
-      @media (max-width: 992px) {
-        flex-direction: column;
+      > div {
+        align-self: center;
+        font-size: 13px;
+      }
+
+      .status {
+        min-width: 70px;
+        margin-right: 0.5rem;
+
+        @media (max-width: 576px) {
+          display: none;
+        }
       }
 
       .name-and-date {
-        flex-grow: 1;
+        flex-grow: 0;
+        margin-right: 2rem;
+        white-space: nowrap;
+
+        @media (max-width: 768px) {
+          flex-grow: 1;
+        }
+
+        @media (max-width: 576px) {
+          margin-right: 0.5rem;
+        }
+
         .name {
-          font-weight: bold;
           margin-bottom: 0;
-          font-size: 20px;
+          display: flex;
+          > span {
+            align-self: center;
+          }
+
+          .time-ago {
+            display: none;
+
+            @media (max-width: 576px) {
+              margin-left: 0.5rem;
+              display: inline-block;
+            }
+          }
+
+          .text {
+            font-weight: bold;
+            font-size: 18px;
+            @media (max-width: 576px) {
+              font-size: 16px;
+              max-width: 180px;
+              overflow-x: hidden;
+              text-overflow: ellipsis;
+            }
+          }
         }
 
         .meeting-date {
+          display: inline-flex;
+          border-radius: 2px;
+          font-size: 14px;
+
           > div {
-            display: inline-flex;
-            border-radius: 2px;
-            font-size: 14px;
+            align-self: center;
+          }
+        }
+      }
 
-            &.time-ago {
-              margin-right: 0.5rem;
-            }
+      .users {
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow-x: hidden;
 
-            @media (max-width: 576px) {
-              display: block;
+        @media (max-width: 768px) {
+          display: none;
+        }
 
-              .date-liner {
-                display: none !important;
-              }
-            }
-            > div {
-              align-self: center;
-              @media (max-width: 576px) {
-                display: flex;
-              }
-            }
+        > div {
+          text-align: right;
 
-            .date-label {
-              display: none;
-              align-self: center;
-              border: 1px solid rgba(0, 0, 0, 0.2);
-              width: 40px;
-              text-align: center;
-              line-height: 100%;
-              padding: 2px 0;
+          > span {
+            display: inline-block;
+            padding: 0.25rem;
+            line-height: 100%;
+            margin-right: 0.5rem;
+            text-transform: uppercase;
+
+            &.user-alias {
               border-radius: 2px;
-
-              @media (max-width: 576px) {
-                display: inline-block;
-                margin-right: 0.5rem;
-                font-size: 10px;
-              }
+              border: 1px solid rgba(0, 0, 0, 0.4);
             }
           }
         }
@@ -77,49 +143,20 @@
         flex-grow: 0;
         align-self: center;
 
-        @media (max-width: 992px) {
+        @media (max-width: 768px) {
           display: none;
         }
       }
 
-      .others {
+      .buttons {
         display: flex;
         flex-grow: 0;
+        margin-right: 0;
+        > button {
+          margin-right: 0.5rem;
 
-        @media (max-width: 992px) {
-          margin-top: 0.5rem;
-        }
-
-        > div {
-          width: 80px;
-          text-align: center;
-          align-self: center;
-
-          @media (max-width: 992px) {
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            margin-right: 0.5rem;
-
-            &:last-child {
-              margin-right: 0;
-            }
-          }
-
-          @media (max-width: 576px) {
-            flex: 1 1 0;
-          }
-
-          .label {
-            > span {
-              font-size: 12px;
-              display: inline-block;
-            }
-          }
-
-          .value {
-            font-size: 20px;
-            @media (max-width: 992px) {
-              margin-bottom: 0.25rem;
-            }
+          &:last-child {
+            margin-right: 0;
           }
         }
       }

@@ -73,9 +73,9 @@ public class MeetingController {
     }
 
     @GetMapping("")
-    public List<MeetingListResponse> selectUserSprintList(UserSession userSession) {
+    public List<MeetingResponse> selectUserMeetingList(UserSession userSession) {
         List<Meeting> meetings = meetingService.selectUserMeetingList(userSession);
-        return meetings.stream().map(MeetingListResponse::new).collect(Collectors.toList());
+        return meetings.stream().map(MeetingResponse::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
