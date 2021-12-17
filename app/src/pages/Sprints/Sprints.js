@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { Button, EmptyContent, PageTitle, SprintList } from '@/components';
+import { Button, EmptyContent, Page, PageTitle, SprintList } from '@/components';
 import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 
@@ -27,7 +27,7 @@ const Sprints = ({ t, history }) => {
   }, []);
 
   return (
-    <div className="g-content">
+    <Page>
       <PageTitle
         buttons={[
           {
@@ -65,7 +65,7 @@ const Sprints = ({ t, history }) => {
           )}
         </div>
       )}
-    </div>
+    </Page>
   );
 };
 

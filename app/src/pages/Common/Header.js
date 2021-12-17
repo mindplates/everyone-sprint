@@ -34,6 +34,11 @@ const Header = (props) => {
   const values = (location.pathname.split('/') || []).filter((value) => value);
   const [currentTopMenu] = values;
 
+  let menuAlias = currentTopMenu;
+  if (currentTopMenu === 'conferences') {
+    menuAlias = 'meetings';
+  }
+
   const logout = () => {
     storage.setItem('auth', 'token', null);
     request.del('/api/users/logout', null, () => {
@@ -118,7 +123,7 @@ const Header = (props) => {
               return (
                 <li
                   key={topMenuKey}
-                  className={`${(currentTopMenu || 'public-park') === topMenuKey ? 'selected' : 'no-selected'}`}
+                  className={`${(menuAlias || 'public-park') === topMenuKey ? 'selected' : 'no-selected'}`}
                 >
                   <Link
                     to={`/${topMenuKey}`}

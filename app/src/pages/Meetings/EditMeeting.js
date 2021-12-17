@@ -42,7 +42,7 @@ const labelMinWidth = '140px';
 
 const quickTimes = [10, 11, 14, 15, 16, 17, 18, 23];
 
-const EditSprint = ({
+const EditMeeting = ({
   t,
   type,
   history,
@@ -210,13 +210,11 @@ const EditSprint = ({
 
   const nowHours = new Date().getHours();
 
-  console.log(sprints);
-
   return (
     <Page className="edit-meeting-wrapper">
       <PageTitle>{type === 'edit' ? t('미팅 정보 변경') : t('새로운 미팅')}</PageTitle>
       <PageContent>
-        <Form onSubmit={onSubmit}>
+        <Form onSubmit={onSubmit} className="d-flex flex-column h-100">
           <Block className="pt-0">
             <BlockTitle className="mb-2 mb-sm-3">{t('미팅 정보')}</BlockTitle>
             <BlockRow>
@@ -225,7 +223,6 @@ const EditSprint = ({
               </Label>
               <Selector
                 outline
-
                 items={sprints.map((sprint) => {
                   return {
                     key: sprint.id,
@@ -290,7 +287,7 @@ const EditSprint = ({
                       .filter((d) => d > nowHours)
                       .map((d) => {
                         return (
-                          <Button size="sm" color="white" outline>
+                          <Button key={d} size="sm" color="white" outline>
                             {d}시
                           </Button>
                         );
@@ -300,7 +297,7 @@ const EditSprint = ({
                     <span className="day-label">내일</span>
                     {quickTimes.map((d) => {
                       return (
-                        <Button size="sm" color="white" outline>
+                        <Button key={d} size="sm" color="white" outline>
                           {d}시
                         </Button>
                       );
@@ -310,7 +307,7 @@ const EditSprint = ({
               </div>
             </BlockRow>
           </Block>
-          <Block>
+          <Block className="flex-grow-1">
             <BlockTitle className="mb-2 mb-sm-3">{t('참여자')}</BlockTitle>
             <UserList
               users={info.users}
@@ -328,7 +325,7 @@ const EditSprint = ({
             }}
             onSubmit
             onSubmitIcon={<i className="fas fa-plane" />}
-            onSubmitText={type === 'edit' ? t('스프린트 변경') : t('스프린트 등록')}
+            onSubmitText={type === 'edit' ? t('변경') : t('미팅 추가')}
           />
         </Form>
       </PageContent>
@@ -342,9 +339,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(EditSprint)));
+export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(EditMeeting)));
 
-EditSprint.propTypes = {
+EditMeeting.propTypes = {
   t: PropTypes.func,
   user: UserPropTypes,
   history: HistoryPropTypes,

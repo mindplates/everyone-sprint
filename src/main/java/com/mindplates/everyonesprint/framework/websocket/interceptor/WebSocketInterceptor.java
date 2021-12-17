@@ -28,6 +28,8 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
             if (userSession != null) {
                 attributes.put("USER_INFO", userSession);
             }
+
+            attributes.put("USER_IP", request.getRemoteAddress().getAddress().toString());
         }
         return true;
     }

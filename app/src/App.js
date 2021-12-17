@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Common,
+  Conference,
   EditMeeting,
   EditSprint,
   Entry,
@@ -36,6 +37,8 @@ function App({ setting }) {
           <Route exact path="/sprints" component={Sprints} />
           <Route exact path="/meetings/new" render={() => <EditMeeting type="new" />} />
           <Route exact path="/meetings" component={Meetings} />
+          <Route exact path="/conferences/:code" component={Conference} />
+          <Route exact path="/conferences" component={Conference} />
           <Route exact path="/starting-line" component={StartingLine} />
           <Route exact path="/entry" component={Entry} />
         </Switch>

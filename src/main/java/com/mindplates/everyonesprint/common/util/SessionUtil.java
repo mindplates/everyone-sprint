@@ -50,6 +50,14 @@ public class SessionUtil {
 
     }
 
+    public static String getUserIP(SimpMessageHeaderAccessor headerAccessor) {
+
+        Map<String, Object> attributes = headerAccessor.getSessionAttributes();
+        return (String) attributes.get("USER_IP");
+
+
+    }
+
     public static Long getUserId(SimpMessageHeaderAccessor headerAccessor) {
 
         Map<String, Object> attributes = headerAccessor.getSessionAttributes();
@@ -84,7 +92,7 @@ public class SessionUtil {
     public boolean isLogin(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
-            return Optional.<UserSession>ofNullable((UserSession) session.getAttribute("userSession")).isPresent();
+            return Optional.ofNullable((UserSession) session.getAttribute("userSession")).isPresent();
 
         } else {
             return false;

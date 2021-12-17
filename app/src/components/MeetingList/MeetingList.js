@@ -6,12 +6,12 @@ import ReactTimeAgo from 'react-time-ago';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button, Liner } from '@/components';
-import { HistoryPropTypes, SprintPropTypes, UserPropTypes } from '@/proptypes';
+import { SprintPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './MeetingList.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
 
-const MeetingList = ({ t, history, meetings, user }) => {
+const MeetingList = ({ t, meetings, user, onJoin }) => {
   const now = new Date();
 
   return (
@@ -21,13 +21,7 @@ const MeetingList = ({ t, history, meetings, user }) => {
         const isSameDay = dateUtil.isSameDay(startDate, now);
 
         return (
-          <li
-            key={meeting.id}
-            className={startDate > now ? 'future' : 'past'}
-            onClick={() => {
-              history.push(`/meetings/${meeting.id}`);
-            }}
-          >
+          <li key={meeting.id} className={startDate > now ? 'future' : 'past'}>
             <div>
               <div className="status">
                 <span className="time-ago">
@@ -77,7 +71,18 @@ const MeetingList = ({ t, history, meetings, user }) => {
                 <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 1rem" />
               </div>
               <div className="buttons d-none d-sm-flex">
-                <Button size="md" data-tip={t('참여')} color="white" outline rounded onClick={() => {}}>
+                <Button
+                  size="md"
+                  data-tip={t('참여')}
+                  color="white"
+                  outline
+                  rounded
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log(meeting);
+                    onJoin(meeting.code);
+                  }}
+                >
                   <i className="fas fa-arrow-right" />
                 </Button>
                 <Button size="md" color="white" outline rounded onClick={() => {}}>
@@ -108,6 +113,6 @@ export default compose(withRouter, withTranslation(), connect(mapStateToProps, u
 MeetingList.propTypes = {
   t: PropTypes.func,
   meetings: PropTypes.arrayOf(SprintPropTypes),
-  history: HistoryPropTypes,
   user: UserPropTypes,
+  onJoin: PropTypes.func,
 };
