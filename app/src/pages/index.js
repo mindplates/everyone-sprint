@@ -7,8 +7,9 @@ import EditSprint from './Sprints/EditSprint';
 import Sprint from './Sprints/Sprint';
 import EditMeeting from './Meetings/EditMeeting';
 import Meetings from './Meetings/Meetings';
+import Conference from './Meetings/Conference';
 import Common from './Common/Common';
 import Header from './Common/Header';
 import Footer from './Common/Footer';
 
-export { PublicPark, Common, Header, Footer, Groups, Sprints, EditSprint, Sprint, Meetings, EditMeeting, StartingLine, Entry };
+export { PublicPark, Common, Header, Footer, Groups, Sprints, EditSprint, Sprint, Meetings, EditMeeting, StartingLine, Entry, Conference};

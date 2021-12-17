@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     Long countByCode(String code);
+
+    Optional<Meeting> findByCode(String code);
 
     List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(LocalDateTime date, LocalDateTime nextDay, Long userId);
 

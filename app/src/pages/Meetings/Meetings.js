@@ -43,7 +43,7 @@ const Meetings = ({ t, user, history }) => {
     sprintId: null,
   });
   const [options, setOptions] = useState({
-    all: true,
+    all: false,
   });
 
   const [sprints, setSprints] = useState([]);
@@ -253,7 +253,14 @@ const Meetings = ({ t, user, history }) => {
         </div>
         {tab === 'list' && meetings != null && (
           <>
-            {meetings && list.length > 0 && <MeetingList meetings={list} />}
+            {meetings && list.length > 0 && (
+              <MeetingList
+                meetings={list}
+                onJoin={(code) => {
+                  history.push(`/conferences/${code}`);
+                }}
+              />
+            )}
             {!(meetings && list.length > 0) && (
               <EmptyContent
                 height="100%"

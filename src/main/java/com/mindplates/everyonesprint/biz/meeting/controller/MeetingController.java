@@ -56,7 +56,7 @@ public class MeetingController {
 
         Sprint sprint = sprintService.selectSprintInfo(meetingRequest.getSprintId());
         checkIsMember(userSession, sprint);
-        Meeting meeting = meetingService.selectMeetingInfo(id);
+        Meeting meeting = meetingService.selectMeetingInfo(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         Meeting meetingInfo = meetingRequest.buildEntity();
         meetingService.updateMeetingInfo(meetingInfo, userSession);
@@ -65,7 +65,7 @@ public class MeetingController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteMeetingInfo(@PathVariable Long id, UserSession userSession) {
-        Meeting meeting = meetingService.selectMeetingInfo(id);
+        Meeting meeting = meetingService.selectMeetingInfo(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if (!userSession.getId().equals(meeting.getCreatedBy())) {
             throw new ServiceException("common.not.authorized");
         }
@@ -81,7 +81,7 @@ public class MeetingController {
 
     @GetMapping("/{id}")
     public MeetingResponse selectMeetingInfo(@PathVariable Long id, UserSession userSession) {
-        Meeting meeting = meetingService.selectMeetingInfo(id);
+        Meeting meeting = meetingService.selectMeetingInfo(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         checkIsMember(userSession, meeting.getSprint());
         return new MeetingResponse(meeting);
     }

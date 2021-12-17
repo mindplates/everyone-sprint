@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -65,8 +66,12 @@ public class MeetingService {
         return meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(date, nextDay, userSession.getId());
     }
 
-    public Meeting selectMeetingInfo(Long id) {
-        return meetingRepository.findById(id).orElse(null);
+    public Optional<Meeting> selectMeetingInfo(Long id) {
+        return meetingRepository.findById(id);
+    }
+
+    public Optional<Meeting> selectMeetingInfo(String code) {
+        return meetingRepository.findByCode(code);
     }
 
 
