@@ -42,7 +42,7 @@ const peerConnectionConfig = {
   iceServers: [{ url: 'stun:stun.services.mozilla.com' }, { url: 'stun:stun.l.google.com:19302' }],
 };
 
-const logging = false;
+const logging = true;
 
 class Conference extends React.Component {
   myStream = null;
@@ -96,6 +96,14 @@ class Conference extends React.Component {
 
     if (code && code !== prevState.code) {
       this.getConference(code);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.myStream) {
+      this.myStream.getTracks().forEach(function (track) {
+        track.stop();
+      });
     }
   }
 
@@ -165,6 +173,7 @@ class Conference extends React.Component {
   setUpUserMedia = (retrying) => {
     const { supportInfo } = this.state;
 
+    console.log(navigator.mediaDevices);
     if (navigator.mediaDevices.getUserMedia) {
       this.setState({
         supportInfo: {
@@ -476,7 +485,7 @@ class Conference extends React.Component {
                     .map((userInfo) => {
                       return (
                         <div key={userInfo.id} className={`video-content ${userInfo.tracking ? 'tracking' : ''}`}>
-                          <video id={`video-${userInfo.userId}`} autoPlay muted />
+                          <video id={`video-${userInfo.userId}`} autoPlay />
                           <div className="name">
                             <span>{userInfo.alias}</span>
                           </div>

@@ -2,6 +2,7 @@ import axios from 'axios';
 import i18n from 'i18next';
 import store from '@/store';
 import storage from '@/utils/storage';
+import configUtil from '@/utils/configUtil';
 import { addLoading, removeLoading, setLoading, setUserInfo } from '@/store/actions';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialog from '@/utils/dialog';
@@ -15,16 +16,8 @@ const axiosConfig = {
   },
 };
 
-const local = ['localhost', '127.0.0.1', '192.168.39.3'].some((d) => d === window.location.hostname);
-
 const logging = true;
-// eslint-disable-next-line no-nested-ternary
-let base = local
-  ? window.location.hostname === '192.168.39.3'
-    ? 'http://192.168.39.3:15000'
-    : 'http://localhost:15000'
-  : '';
-base = window.location.port === '5000' ? `http://${window.location.hostname}:15000` : '';
+const base = configUtil.getBaseUrl();
 
 function getBase() {
   return base;
@@ -89,23 +82,14 @@ function processError(error, failHandler) {
   } else if (!completeHandliing && error && error.response) {
     switch (error.response.status) {
       case 400: {
-        if (
-          error.response.data &&
-          error.response.data &&
-          error.response.data.errors &&
-          error.response.data.errors.length > 0
-        ) {
+        if (error.response.data && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
           dialog.setMessage(
             MESSAGE_CATEGORY.ERROR,
             '요청이 올바르지 않습니다.',
             `${error.response.data.errors[0].field.toUpperCase()} : ${error.response.data.errors[0].defaultMessage}`,
           );
         } else {
-          dialog.setMessage(
-            MESSAGE_CATEGORY.ERROR,
-            '요청이 올바르지 않습니다.',
-            error.response && error.response.data && error.response.data.message,
-          );
+          dialog.setMessage(MESSAGE_CATEGORY.ERROR, '요청이 올바르지 않습니다.', error.response && error.response.data && error.response.data.message);
         }
 
         break;
@@ -114,14 +98,9 @@ function processError(error, failHandler) {
       case 401: {
         store.dispatch(setUserInfo({}));
 
-        dialog.setConfirm(
-          MESSAGE_CATEGORY.ERROR,
-          '인증 실패',
-          '인증이 되어 있지 않거나, 만료되었습니다. 로그인 페이지로 이동하시겠습니까?',
-          () => {
-            window.location.href = '/starting-line';
-          },
-        );
+        dialog.setConfirm(MESSAGE_CATEGORY.ERROR, '인증 실패', '인증이 되어 있지 않거나, 만료되었습니다. 로그인 페이지로 이동하시겠습니까?', () => {
+          window.location.href = '/starting-line';
+        });
 
         break;
       }
@@ -132,20 +111,12 @@ function processError(error, failHandler) {
       }
 
       case 409: {
-        dialog.setMessage(
-          MESSAGE_CATEGORY.ERROR,
-          '요청이 올바르지 않습니다.',
-          error.response && error.response.data && error.response.data.message,
-        );
+        dialog.setMessage(MESSAGE_CATEGORY.ERROR, '요청이 올바르지 않습니다.', error.response && error.response.data && error.response.data.message);
         break;
       }
 
       default: {
-        dialog.setMessage(
-          MESSAGE_CATEGORY.ERROR,
-          '오류',
-          error.response && error.response.data && error.response.data.message,
-        );
+        dialog.setMessage(MESSAGE_CATEGORY.ERROR, '오류', error.response && error.response.data && error.response.data.message);
 
         break;
       }
