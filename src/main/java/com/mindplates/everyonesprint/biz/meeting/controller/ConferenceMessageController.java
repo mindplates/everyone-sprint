@@ -39,7 +39,7 @@ public class ConferenceMessageController {
 
     @MessageMapping("/send")
     @SuppressWarnings("unchecked")
-    public void send(@DestinationVariable(value = "code") String code, String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
+    public void sendToConference(@DestinationVariable(value = "code") String code, String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
 
         UserSession userSession = SessionUtil.getUserInfo(headerAccessor);
         Map<String, Object> value = mapper.readValue(message, Map.class);
@@ -62,8 +62,20 @@ public class ConferenceMessageController {
 
         MessageData data = MessageData.builder().type(type).data(sendData != null ? sendData : receiveData).build();
         messageSendService.sendTo("conferences/" + code, data, userSession);
+    }
 
+    @MessageMapping("/{userId}/send")
+    @SuppressWarnings("unchecked")
+    public void sendToUser(@DestinationVariable(value = "code") String code, @DestinationVariable(value = "userId") Long userId, String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
 
+        UserSession userSession = SessionUtil.getUserInfo(headerAccessor);
+        Map<String, Object> value = mapper.readValue(message, Map.class);
+
+        String type = (String) value.get("type");
+        Map<String, Object> receiveData = (Map<String, Object>) value.get("data");
+
+        MessageData data = MessageData.builder().type(type).data(receiveData).build();
+        messageSendService.sendTo("conferences/" + code + "/" + userId, data, userSession);
     }
 
 }
