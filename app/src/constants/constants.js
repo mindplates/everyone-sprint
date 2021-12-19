@@ -1,3 +1,8 @@
+const PORTS = {
+  LOCAL_WEB_PORT: 5000,
+  LOCAL_API_PORT: 15000,
+};
+
 const USER_STUB = {
   id: null,
   alias: '',
@@ -113,6 +118,7 @@ const JOIN_POLICIES = [
 ];
 
 export {
+  PORTS,
   USER_STUB,
   MESSAGE_CATEGORY,
   DEFAULT_INPUT_VALIDATION_MESSAGE,

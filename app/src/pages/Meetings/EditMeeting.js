@@ -197,9 +197,9 @@ const EditMeeting = ({
       request.post(
         '/api/meetings',
         { ...info, startDate: new Date(info.startDate), endDate: new Date(info.endDate) },
-        (data) => {
+        () => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/meetings/${data.id}`);
+            history.push('/meetings');
           });
         },
         null,
@@ -238,16 +238,7 @@ const EditMeeting = ({
               <Label minWidth={labelMinWidth} required>
                 {t('이름')}
               </Label>
-              <Input
-                type="name"
-                size="md"
-                value={info.name}
-                onChange={(val) => changeInfo('name', val)}
-                outline
-                simple
-                required
-                minLength={1}
-              />
+              <Input type="name" size="md" value={info.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>

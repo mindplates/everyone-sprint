@@ -69,7 +69,7 @@ const Meetings = ({ t, user, history }) => {
         setMeetings(list.sort((a, b) => dateUtil.getTime(a.startDate) - dateUtil.getTime(b.startDate)));
       },
       null,
-      t('사용자의 스프린트 목록을 모으고 있습니다.'),
+      t('사용자의 미팅 목록을 모으고 있습니다.'),
     );
   };
 
