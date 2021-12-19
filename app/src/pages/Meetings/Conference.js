@@ -2,6 +2,7 @@ import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import { debounce } from 'lodash';
 import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
 import { Block, BlockTitle, Button, Page, PageContent, PageTitle, SocketClient, UserImage } from '@/components';
@@ -39,7 +40,7 @@ const constraints = {
 };
 
 const peerConnectionConfig = {
-  iceServers: [{ url: 'stun:stun.services.mozilla.com' }, { url: 'stun:stun.l.google.com:19302' }],
+  iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
 };
 
 const logging = true;
@@ -51,8 +52,15 @@ class Conference extends React.Component {
 
   myVideo = createRef();
 
+  streamingContent = createRef();
+
+  setVideoInfoDebounced;
+
   constructor(props) {
     super(props);
+
+    this.setVideoInfoDebounced = debounce(this.setVideoInfo, 100);
+
     this.state = {
       conference: null,
       code: null,
@@ -63,6 +71,11 @@ class Conference extends React.Component {
       supportInfo: {
         supportUserMedia: null,
         retrying: false,
+      },
+      videoInfo: {
+        init: false,
+        width: 320,
+        height: 240,
       },
     };
   }
@@ -85,6 +98,8 @@ class Conference extends React.Component {
 
   componentDidMount() {
     const { code } = this.state;
+    window.addEventListener('resize', this.setVideoInfoDebounced);
+    this.setVideoInfoDebounced();
 
     if (code) {
       this.getConference(code);
@@ -92,7 +107,11 @@ class Conference extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { code } = this.state;
+    const { code, videoInfo } = this.state;
+
+    if (!videoInfo.init) {
+      this.setVideoInfo();
+    }
 
     if (code && code !== prevState.code) {
       this.getConference(code);
@@ -105,7 +124,60 @@ class Conference extends React.Component {
         track.stop();
       });
     }
+
+    if (this.setVideoInfoDebounced) {
+      this.setVideoInfoDebounced.cancel();
+    }
+
+    window.removeEventListener('resize', this.setVideoInfoDebounced);
   }
+
+  setVideoInfo = () => {
+    if (this.streamingContent && this.streamingContent.current) {
+      const { conference } = this.state;
+
+      const contentWidth = this.streamingContent.current.offsetWidth;
+      const contentHeight = this.streamingContent.current.offsetHeight;
+
+      let width;
+      let height;
+
+      const connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected).length;
+
+      const sqrtNo = Math.ceil(Math.sqrt(connectedUserCount));
+
+      let rows = 0;
+      let cols = 0;
+
+      if (contentWidth > contentHeight) {
+        rows = sqrtNo;
+        cols = Math.ceil(connectedUserCount / rows);
+        width = (contentWidth - 16 * rows) / rows;
+        height = (contentHeight - 16 * (cols - 1)) / cols;
+      } else {
+        cols = sqrtNo;
+        rows = Math.ceil(connectedUserCount / cols);
+
+        width = (contentWidth - 16 * rows) / rows;
+        height = (contentHeight - 16 * (cols - 1)) / cols;
+
+        if (height > width * 2) {
+          cols = Math.ceil((connectedUserCount / rows) * 2);
+          rows = Math.ceil(connectedUserCount / cols);
+          width = (contentWidth - 16 * rows) / rows;
+          height = (contentHeight - 16 * (cols - 1)) / cols;
+        }
+      }
+
+      this.setState({
+        videoInfo: {
+          width,
+          height,
+          init: true,
+        },
+      });
+    }
+  };
 
   getConference = (code) => {
     const { t } = this.props;
@@ -173,7 +245,6 @@ class Conference extends React.Component {
   setUpUserMedia = (retrying) => {
     const { supportInfo } = this.state;
 
-    console.log(navigator.mediaDevices);
     if (navigator.mediaDevices.getUserMedia) {
       this.setState({
         supportInfo: {
@@ -299,7 +370,9 @@ class Conference extends React.Component {
     };
 
     if (this.myStream) {
-      userInfo.peerConnection.addStream(this.myStream);
+      if (userInfo.peerConnection && userInfo.peerConnection.addStream) {
+        userInfo.peerConnection.addStream(this.myStream);
+      }
     }
 
     if (isSender) {
@@ -342,9 +415,14 @@ class Conference extends React.Component {
     switch (type) {
       case 'LEAVE': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
-        this.setState({
-          conference: nextConference,
-        });
+        this.setState(
+          {
+            conference: nextConference,
+          },
+          () => {
+            this.setVideoInfo();
+          },
+        );
         break;
       }
 
@@ -355,6 +433,7 @@ class Conference extends React.Component {
             conference: nextConference,
           },
           () => {
+            this.setVideoInfo();
             if (!isMe) {
               // 다른 사람이 조인한 경우,
               setTimeout(() => {
@@ -424,6 +503,7 @@ class Conference extends React.Component {
       conference,
       align: { type, order },
       supportInfo,
+      videoInfo,
     } = this.state;
 
     const existConference = conference && conference.id;
@@ -447,56 +527,75 @@ class Conference extends React.Component {
             />
             <PageTitle>{conference?.name}</PageTitle>
             <div className="conference-content">
-              <div className="streaming-content">
-                <div className="videos">
-                  <div className="video-content">
-                    <div className="name">
-                      <span>{user.alias}</span>
-                    </div>
-                    {supportInfo.supportUserMedia !== null && !supportInfo.supportUserMedia && (
-                      <div className="not-supported-user-media">
-                        <div>
-                          <div className="message">
-                            미디어를 사용할 수 없습니다
-                            {supportInfo.retrying && (
-                              <div className="loading">
-                                <img src={images.spinner} alt="loading" />
-                              </div>
-                            )}
-                          </div>
-                          <Button
-                            size="sm"
-                            color="white"
-                            outline
-                            onClick={() => {
-                              this.setUpUserMedia(true);
-                            }}
-                          >
-                            <i className="fas fa-retweet" /> 다시 시도
-                          </Button>
-                        </div>
+              <div className="streaming-content" ref={this.streamingContent}>
+                <div>
+                  <div className="videos">
+                    <div
+                      className="video-content"
+                      style={{
+                        width: `${videoInfo.width}px`,
+                        height: `${videoInfo.height}px`,
+                      }}
+                    >
+                      <div className="name">
+                        <span>{user.alias}</span>
                       </div>
-                    )}
-                    <video ref={this.myVideo} autoPlay muted />
-                  </div>
-                  {conference.users
-                    .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
-                    .filter((userInfo) => userInfo.participant?.connected)
-                    .map((userInfo) => {
-                      return (
-                        <div key={userInfo.id} className={`video-content ${userInfo.tracking ? 'tracking' : ''}`}>
-                          <video id={`video-${userInfo.userId}`} autoPlay />
-                          <div className="name">
-                            <span>{userInfo.alias}</span>
+                      {supportInfo.supportUserMedia !== null && !supportInfo.supportUserMedia && (
+                        <div className="not-supported-user-media">
+                          <div>
+                            <div className="message">
+                              미디어를 사용할 수 없습니다
+                              {supportInfo.retrying && (
+                                <div className="loading">
+                                  <img src={images.spinner} alt="loading" />
+                                </div>
+                              )}
+                            </div>
+                            <Button
+                              size="sm"
+                              color="white"
+                              outline
+                              onClick={() => {
+                                this.setUpUserMedia(true);
+                              }}
+                            >
+                              <i className="fas fa-retweet" /> 다시 시도
+                            </Button>
                           </div>
-                          <div className="no-tracking-info">
-                            <div>
-                              <UserImage border rounded size="60px" iconFontSize="24px" imageType={userInfo.imageType} imageData={userInfo.imageData} />
+                        </div>
+                      )}
+                      <video ref={this.myVideo} autoPlay playsInline muted>
+                        <div className="name">
+                          <span>{user.alias}</span>
+                        </div>
+                      </video>
+                    </div>
+                    {conference.users
+                      .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+                      .filter((userInfo) => userInfo.participant?.connected)
+                      .map((userInfo) => {
+                        return (
+                          <div
+                            key={userInfo.id}
+                            style={{
+                              width: `${videoInfo.width}px`,
+                              height: `${videoInfo.height}px`,
+                            }}
+                            className={`video-content ${userInfo.tracking ? 'tracking' : ''}`}
+                          >
+                            <video id={`video-${userInfo.userId}`} playsInline autoPlay />
+                            <div className="name">
+                              <span>{userInfo.alias}</span>
+                            </div>
+                            <div className="no-tracking-info">
+                              <div>
+                                <UserImage border rounded size="60px" iconFontSize="24px" imageType={userInfo.imageType} imageData={userInfo.imageData} />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                  </div>
                 </div>
               </div>
               <div className="users">
