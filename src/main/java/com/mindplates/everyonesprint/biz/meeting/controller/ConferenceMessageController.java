@@ -54,7 +54,7 @@ public class ConferenceMessageController {
                 sendData = new HashMap<>();
                 sendData.put("type", type);
                 User user = userService.selectUser(userSession.getId());
-                Participant participant = new Participant(code, user, SessionUtil.getUserIP(headerAccessor), headerAccessor.getSessionId());
+                Participant participant = new Participant(user, code, SessionUtil.getUserIP(headerAccessor), headerAccessor.getSessionId(), (Boolean) receiveData.get("audio"), (Boolean) receiveData.get("video"));
                 participantService.save(participant);
                 sendData.put("participant", participant);
             }

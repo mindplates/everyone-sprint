@@ -32,6 +32,8 @@ public class Participant {
     private LocalDateTime joinTime;
     private LocalDateTime leaveTime;
     private String ip;
+    private Boolean audio;
+    private Boolean video;
     @Indexed
     private String socketId;
 
@@ -39,7 +41,7 @@ public class Participant {
 
     }
 
-    public Participant(String code, User user, String ip, String socketId) {
+    public Participant(User user, String code, String ip, String socketId, Boolean audio, Boolean video) {
         if (user != null) {
             this.key = code + user.getId();
             this.id = String.valueOf(user.getId());
@@ -53,6 +55,8 @@ public class Participant {
             this.joinTime = LocalDateTime.now();
             this.ip = ip;
             this.socketId = socketId;
+            this.audio = audio;
+            this.video = video;
         }
     }
 }

@@ -28,8 +28,9 @@ import UserList from '@/components/UserList/UserList';
 import EmptyContent from '@/components/EmptyContent/EmptyContent';
 import SprintList from '@/components/SprintList/SprintList';
 import MeetingList from '@/components/MeetingList/MeetingList';
-
 import Selector from '@/components/Selector/Selector';
+import ParticipantsList from '@/components/ParticipantsList/ParticipantsList';
+import VideoElement from '@/components/VideoElement/VideoElement';
 
 export {
   MessageDialog,
@@ -63,4 +64,6 @@ export {
   SprintList,
   Selector,
   MeetingList,
+  ParticipantsList,
+  VideoElement,
 };

@@ -15,16 +15,7 @@ import RadioButton from '@/components/RadioButton/RadioButton';
 import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
 
 const Header = (props) => {
-  const {
-    setSetting: setSettingReducer,
-    setUserInfo: setUserInfoReducer,
-    setting,
-    location,
-    t,
-    user,
-    i18n,
-    history,
-  } = props;
+  const { setSetting: setSettingReducer, setUserInfo: setUserInfoReducer, setting, location, t, user, i18n, history } = props;
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
@@ -121,10 +112,7 @@ const Header = (props) => {
             {Object.keys(MENU).map((topMenuKey) => {
               const menu = MENU[topMenuKey];
               return (
-                <li
-                  key={topMenuKey}
-                  className={`${(menuAlias || 'public-park') === topMenuKey ? 'selected' : 'no-selected'}`}
-                >
+                <li key={topMenuKey} className={`${(menuAlias || 'public-park') === topMenuKey ? 'selected' : 'no-selected'}`}>
                   <Link
                     to={`/${topMenuKey}`}
                     onClick={() => {
@@ -160,9 +148,7 @@ const Header = (props) => {
                   setConfigOpen(!configOpen);
                 }}
               >
-                {user && user.id && (
-                  <UserImage size="36px" imageType={user.imageType} imageData={user.imageData} rounded />
-                )}
+                {user && user.id && <UserImage size="36px" iconFontSize="20px" imageType={user.imageType} imageData={user.imageData} rounded />}
                 {!(user && user.id) && <i className="fas fa-cog" />}
               </Button>
             </div>

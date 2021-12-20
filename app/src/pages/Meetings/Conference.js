@@ -3,14 +3,10 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { debounce } from 'lodash';
-import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
-import { Block, BlockTitle, Button, Page, PageContent, PageTitle, SocketClient, UserImage } from '@/components';
+import { Button, Page, PageContent, PageTitle, ParticipantsList, SocketClient, VideoElement } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import RadioButton from '@/components/RadioButton/RadioButton';
-import dateUtil from '@/utils/dateUtil';
-import images from '@/images';
 import './Conference.scss';
 
 /*
@@ -23,16 +19,6 @@ const constraints = {
   audio: true,
 };
  */
-
-const USER_ALIGNS = {
-  CONNECT: 'CONNECT',
-  NAME: 'NAME',
-};
-
-const USER_ALIGNS_ORDER = {
-  ASC: 'ASC',
-  DESC: 'DESC',
-};
 
 const constraints = {
   video: true,
@@ -65,8 +51,8 @@ class Conference extends React.Component {
       conference: null,
       code: null,
       align: {
-        type: USER_ALIGNS.CONNECT,
-        order: USER_ALIGNS_ORDER.ASC,
+        type: 'CONNECT',
+        order: 'ASC',
       },
       supportInfo: {
         supportUserMedia: null,
@@ -76,6 +62,10 @@ class Conference extends React.Component {
         init: false,
         width: 320,
         height: 240,
+      },
+      controls: {
+        audio: true,
+        video: true,
       },
     };
   }
@@ -142,7 +132,10 @@ class Conference extends React.Component {
       let width;
       let height;
 
-      const connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected).length;
+      let connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected).length;
+      if (connectedUserCount < 3) {
+        connectedUserCount = 4;
+      }
 
       const sqrtNo = Math.ceil(Math.sqrt(connectedUserCount));
 
@@ -252,11 +245,12 @@ class Conference extends React.Component {
           retrying,
         },
       });
+
       navigator.mediaDevices
         .getUserMedia(constraints)
         .then((stream) => {
           this.myStream = stream;
-          this.myVideo.current.srcObject = stream;
+          this.myVideo.srcObject = stream;
           this.setState({
             supportInfo: {
               supportUserMedia: true,
@@ -286,7 +280,7 @@ class Conference extends React.Component {
     }
   };
 
-  send = (type, data) => {
+  sendToAll = (type, data) => {
     const { code } = this.state;
     if (this.socket && this.socket.state && this.socket.state.connected) {
       this.socket.sendMessage(`/pub/api/message/conferences/${code}/send`, JSON.stringify({ type, data }));
@@ -404,15 +398,30 @@ class Conference extends React.Component {
 
     const { user } = this.props;
     const {
+      conference,
       conference: { users },
     } = this.state;
 
-    // console.log(info);
+    console.log(info);
     // console.log(type, data, senderInfo);
 
     const isMe = Number(senderInfo.id) === Number(user.id);
 
     switch (type) {
+      case 'AUDIO':
+      case 'VIDEO': {
+        const nextConference = { ...conference };
+        const nextUsers = nextConference.users;
+        const targetUser = nextUsers.find((d) => Number(d.userId) === Number(senderInfo.id));
+        if (targetUser) {
+          targetUser.participant = { ...targetUser.participant, ...data };
+          this.setState({
+            conference: nextConference,
+          });
+        }
+        break;
+      }
+
       case 'LEAVE': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
         this.setState(
@@ -428,6 +437,7 @@ class Conference extends React.Component {
 
       case 'JOIN': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
+
         this.setState(
           {
             conference: nextConference,
@@ -497,14 +507,51 @@ class Conference extends React.Component {
     }
   };
 
+  setAlign = (align) => {
+    this.setState({
+      align,
+    });
+  };
+
+  toggleMyAudio = () => {
+    const { controls } = this.state;
+
+    this.setState(
+      {
+        controls: { ...controls, audio: !controls.audio },
+      },
+      () => {
+        const { controls: nextControls } = this.state;
+        const audioTrack = this.myStream.getTracks().find((d) => d.kind === 'audio');
+        if (audioTrack) {
+          audioTrack.enabled = nextControls.audio;
+        }
+        this.sendToAll('AUDIO', { audio: nextControls.audio });
+      },
+    );
+  };
+
+  toggleMyVideo = () => {
+    const { controls } = this.state;
+
+    this.setState(
+      {
+        controls: { ...controls, video: !controls.video },
+      },
+      () => {
+        const { controls: nextControls } = this.state;
+        const videoTrack = this.myStream.getTracks().find((d) => d.kind === 'video');
+        if (videoTrack) {
+          videoTrack.enabled = nextControls.video;
+        }
+        this.sendToAll('VIDEO', { video: nextControls.video });
+      },
+    );
+  };
+
   render() {
     const { history, t, user } = this.props;
-    const {
-      conference,
-      align: { type, order },
-      supportInfo,
-      videoInfo,
-    } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls } = this.state;
 
     const existConference = conference && conference.id;
 
@@ -517,7 +564,7 @@ class Conference extends React.Component {
               onMessage={this.onMessage}
               onConnect={() => {
                 if (user.id) {
-                  this.send('JOIN', user);
+                  this.sendToAll('JOIN', controls);
                 }
               }}
               onDisconnect={() => {}}
@@ -528,174 +575,68 @@ class Conference extends React.Component {
             <PageTitle>{conference?.name}</PageTitle>
             <div className="conference-content">
               <div className="streaming-content" ref={this.streamingContent}>
-                <div>
-                  <div className="videos">
-                    <div
-                      className="video-content"
-                      style={{
-                        width: `${videoInfo.width}px`,
-                        height: `${videoInfo.height}px`,
-                      }}
-                    >
-                      <div className="name">
-                        <span>{user.alias}</span>
-                      </div>
-                      {supportInfo.supportUserMedia !== null && !supportInfo.supportUserMedia && (
-                        <div className="not-supported-user-media">
-                          <div>
-                            <div className="message">
-                              미디어를 사용할 수 없습니다
-                              {supportInfo.retrying && (
-                                <div className="loading">
-                                  <img src={images.spinner} alt="loading" />
-                                </div>
-                              )}
-                            </div>
-                            <Button
-                              size="sm"
-                              color="white"
-                              outline
-                              onClick={() => {
-                                this.setUpUserMedia(true);
-                              }}
-                            >
-                              <i className="fas fa-retweet" /> 다시 시도
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                      <video ref={this.myVideo} autoPlay playsInline muted>
-                        <div className="name">
-                          <span>{user.alias}</span>
-                        </div>
-                      </video>
+                <div className="video-content">
+                  <div>
+                    <div className="videos">
+                      <VideoElement
+                        videoInfo={videoInfo}
+                        onRef={(d) => {
+                          this.myVideo = d;
+                        }}
+                        controls={controls}
+                        supportInfo={supportInfo}
+                        alias={user.alias}
+                        muted
+                      />
+                      {conference.users
+                        .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+                        .filter((userInfo) => userInfo.participant?.connected)
+                        .map((userInfo) => {
+                          return (
+                            <VideoElement
+                              key={userInfo.id}
+                              id={`video-${userInfo.userId}`}
+                              videoInfo={videoInfo}
+                              tracking={userInfo.tracking}
+                              controls={controls}
+                              alias={userInfo.alias}
+                              imageType={userInfo.imageType}
+                              imageData={userInfo.imageData}
+                            />
+                          );
+                        })}
                     </div>
-                    {conference.users
-                      .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
-                      .filter((userInfo) => userInfo.participant?.connected)
-                      .map((userInfo) => {
-                        return (
-                          <div
-                            key={userInfo.id}
-                            style={{
-                              width: `${videoInfo.width}px`,
-                              height: `${videoInfo.height}px`,
-                            }}
-                            className={`video-content ${userInfo.tracking ? 'tracking' : ''}`}
-                          >
-                            <video id={`video-${userInfo.userId}`} playsInline autoPlay />
-                            <div className="name">
-                              <span>{userInfo.alias}</span>
-                            </div>
-                            <div className="no-tracking-info">
-                              <div>
-                                <UserImage border rounded size="60px" iconFontSize="24px" imageType={userInfo.imageType} imageData={userInfo.imageData} />
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
                   </div>
                 </div>
+                <div className="controls">
+                  <Button size="sm" color="white" outline onClick={this.toggleMyAudio}>
+                    {controls.audio && (
+                      <span>
+                        <i className="fas fa-microphone" /> 마이크
+                      </span>
+                    )}
+                    {!controls.audio && (
+                      <span>
+                        <i className="fas fa-microphone-slash" /> 마이크
+                      </span>
+                    )}
+                  </Button>
+                  <Button size="sm" color="white" outline onClick={this.toggleMyVideo}>
+                    {controls.video && (
+                      <span>
+                        <i className="fas fa-video" /> 영상
+                      </span>
+                    )}
+                    {!controls.video && (
+                      <span>
+                        <i className="fas fa-video-slash" /> 영상
+                      </span>
+                    )}
+                  </Button>
+                </div>
               </div>
-              <div className="users">
-                <Block className="p-2 user-list-content">
-                  <BlockTitle size="sm" className="title pt-0">
-                    <div className="title-content">
-                      <div>{t('참석자')}</div>
-                      <div className="user-align-content">
-                        <RadioButton
-                          className="user-align"
-                          size="xs"
-                          items={[
-                            { key: USER_ALIGNS.CONNECT, value: <i className="fas fa-wifi" /> },
-                            {
-                              key: USER_ALIGNS.NAME,
-                              value: <i className={` ${order === USER_ALIGNS_ORDER.ASC ? 'fas fa-sort-alpha-down' : 'fas fa-sort-alpha-up'} `} />,
-                            },
-                          ]}
-                          value={type}
-                          onClick={(val) => {
-                            if (type === USER_ALIGNS.NAME && val === USER_ALIGNS.NAME) {
-                              this.setState({
-                                align: {
-                                  type: val,
-                                  order: order === USER_ALIGNS_ORDER.ASC ? USER_ALIGNS_ORDER.DESC : USER_ALIGNS_ORDER.ASC,
-                                },
-                              });
-                            } else {
-                              this.setState({
-                                align: {
-                                  type: val,
-                                  order,
-                                },
-                              });
-                            }
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </BlockTitle>
-                  <div className="user-list">
-                    <div className="g-scrollbar">
-                      <ul>
-                        {conference?.users
-                          .sort((a, b) => {
-                            if (type === USER_ALIGNS.NAME && order === USER_ALIGNS_ORDER.ASC) {
-                              return a.alias.localeCompare(b.alias);
-                            }
-
-                            if (type === USER_ALIGNS.NAME && order === USER_ALIGNS_ORDER.DESC) {
-                              return b.alias.localeCompare(a.alias);
-                            }
-
-                            const aString = `${a.participant?.connected ? 'A' : 'B'}${a.userId}`;
-                            const bString = `${b.participant?.connected ? 'A' : 'B'}${b.userId}`;
-
-                            return aString.localeCompare(bString);
-                          })
-                          .map((d) => {
-                            return (
-                              <li key={d.id} className={`${d.participant?.connected ? 'connected' : ''} ${d.participant ? 'visited' : ''}`}>
-                                <div className="connect-status">
-                                  <div />
-                                </div>
-                                <div className="user-icon">
-                                  <UserImage border rounded size="30px" iconFontSize="14px" imageType={d.imageType} imageData={d.imageData} />
-                                </div>
-                                <div className="user-info">
-                                  <div className="user-name">{d.alias}</div>
-                                  <div className="user-connect-info">
-                                    {d.participant && (
-                                      <div>
-                                        {d.participant.connected && d.participant.joinTime && (
-                                          <span>
-                                            <span>
-                                              <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getDate(d.participant.joinTime)} />
-                                            </span>
-                                            <span className="attendance-statue">{t('참석')}</span>
-                                          </span>
-                                        )}
-                                        {!d.participant.connected && d.participant.leaveTime && (
-                                          <span>
-                                            <span>
-                                              <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getDate(d.participant.leaveTime)} />
-                                            </span>
-                                            <span className="attendance-statue">{t('나감')}</span>
-                                          </span>
-                                        )}
-                                      </div>
-                                    )}
-                                    {!d.participant && <div>{t('참석안함')}</div>}
-                                  </div>
-                                </div>
-                              </li>
-                            );
-                          })}
-                      </ul>
-                    </div>
-                  </div>
-                </Block>
+              <div className="participants-list">
+                <ParticipantsList conference={conference} align={align} setAlign={this.setAlign} />
               </div>
             </div>
           </>
