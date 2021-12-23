@@ -33,7 +33,13 @@ class Input extends React.Component {
   }
 
   componentDidMount() {
-    const { debounce, onChange, value } = this.props;
+    const { debounce, onChange, value, focus } = this.props;
+
+    if (focus && this.control.current) {
+      setTimeout(() => {
+        this.control.current.focus();
+      }, 200);
+    }
     if (debounce > 0) {
       this.onChangeDebounced = debounceFunc(onChange, debounce);
       this.setInnerValue(value);
@@ -119,17 +125,16 @@ class Input extends React.Component {
       debounce,
       onChange,
       display,
+      focus: exclude,
       ...last
     } = this.props;
     const { focus, valid, message, innerValue } = this.state;
 
     return (
       <div
-        className={`input-wrapper text-${color} ${className} ${focus ? 'focus' : ''} ${value ? 'has-value' : ''} ${
-          valid ? 'valid' : 'in-valid'
-        } ${simple ? 'simple' : ''} ${border ? 'has-border' : ''} ${disabled ? 'disabled' : ''} ${size} ${
-          spinButton ? '' : 'no-spin-button'
-        } ${outline ? 'outline' : ''}`}
+        className={`input-wrapper text-${color} ${className} ${focus ? 'focus' : ''} ${value ? 'has-value' : ''} ${valid ? 'valid' : 'in-valid'} ${
+          simple ? 'simple' : ''
+        } ${border ? 'has-border' : ''} ${disabled ? 'disabled' : ''} ${size} ${spinButton ? '' : 'no-spin-button'} ${outline ? 'outline' : ''}`}
         onClick={() => {
           if (this.control.current) this.control.current.focus();
         }}
@@ -145,9 +150,7 @@ class Input extends React.Component {
         <div className="input-info">
           {label && <div className="label">{label}</div>}
           {placeholderMessage && <div className="placeholder-message">{placeholderMessage}</div>}
-          {(externalValidationMessage || message) && (
-            <div className="invalid-message">{externalValidationMessage || message}</div>
-          )}
+          {(externalValidationMessage || message) && <div className="invalid-message">{externalValidationMessage || message}</div>}
         </div>
         <input
           ref={this.control}
@@ -203,6 +206,7 @@ Input.defaultProps = {
   debounce: 0,
   outline: false,
   display: 'block',
+  focus: false,
 };
 
 Input.propTypes = {
@@ -230,6 +234,7 @@ Input.propTypes = {
   tReady: PropTypes.bool,
   outline: PropTypes.bool,
   display: PropTypes.string,
+  focus: PropTypes.bool,
 };
 
 export default withTranslation()(Input);

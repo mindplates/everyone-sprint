@@ -6,11 +6,17 @@
   }
 
   .starting-line-content {
+    background-color: transparent;
+    border: none;
     display: flex;
     > form {
-      width: 400px;
+      width: 500px;
       align-self: center;
       margin: 0 auto;
+      background-color: $white;
+      padding: 2rem;
+      border: $border;
+      box-shadow: $box-shadow-sm;
 
       .need-auth-message {
         text-align: center;
@@ -31,12 +37,12 @@
       }
 
       .password {
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
       }
 
       .auto-login {
         text-align: center;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
       }
 
       .bottom-button {
@@ -48,7 +54,9 @@
         margin-top: 1rem;
 
         a {
-          text-decoration: none;
+          text-decoration: underline;
+          font-family: pretendard, sans-serif;
+          font-size: 14px;
         }
       }
     }

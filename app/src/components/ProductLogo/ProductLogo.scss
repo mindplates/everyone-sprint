@@ -1,3 +1,9 @@
+$product-logo-color: lighten($header-bg-color, 5%);
+$product-logo-color: #FED900;
+$product-logo-color: $header-bg-color;
+$product-logo--hover-color: #FED400;
+$product-logo--hover-color: $header-hover-bg-color;
+
 .product-logo-wrapper {
   text-align: center;
   width: 100%;
@@ -6,7 +12,7 @@
   line-height: 100%;
   position: relative;
   display: flex;
-  background-color: #1874cd;
+  background-color: $product-logo-color;
   font-family: pretendard, sans-serif;
 
   @media (max-width: 992px) {
@@ -77,10 +83,12 @@
   }
 
   > div.side-left {
-    left: -20px;
+    left: 100%;
+    display: none;
 
     > div.side {
-      border-right: 10px solid #1874cd;
+      _border-right: 10px solid #1874cd;
+      border-left: 10px solid $product-logo-color;
       @media (max-width: 992px) {
         display: none;
       }
@@ -88,10 +96,11 @@
   }
 
   > div.side-right {
-    left: 100%;
+    left: -20px;
+    display: none;
 
     > div.side {
-      border-left: 10px solid #1874cd;
+      border-right: 10px solid $product-logo-color;
       @media (max-width: 992px) {
         display: none;
       }
@@ -99,19 +108,19 @@
   }
 
   &.hover:hover {
-    background-color: $header-hover-bg-color;
+    background-color: $product-logo--hover-color;
     transition: all 0.3s;
 
     > div.side-left {
       > div.side {
-        border-right: 10px solid $header-hover-bg-color;
+        border-right: 10px solid $product-logo--hover-color;
         transition: all 0.3s;
       }
     }
 
     > div.side-right {
       > div.side {
-        border-left: 10px solid $header-hover-bg-color;
+        border-left: 10px solid $product-logo--hover-color;
         transition: all 0.3s;
       }
     }
@@ -162,6 +171,10 @@
           z-index: 1;
           box-shadow: 4px 4px 10px 1px rgba(0, 0, 0, 0.4);
           transition: all 0.3s;
+
+          i {
+            color: $white !important;
+          }
         }
 
         .hexagon:before,

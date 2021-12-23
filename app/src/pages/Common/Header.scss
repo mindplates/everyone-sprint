@@ -10,6 +10,7 @@
   background-color: #1d88ea;
   background-color: $header-bg-color;
   transition: all 0.3s;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
   &.collapsed {
     @media (min-width: 992px) {
@@ -23,20 +24,29 @@
         }
 
         .text {
-          margin-top: 0;
+          margin-top: 0 !important;
           transition: all 0.3s;
           font-size: 13px;
+        }
+
+        li.selected {
+          height: 40px !important;
+          transition: all 0.3s;
         }
       }
     }
   }
 
+  > div.header-content > .product-logo > a {
+    color: $white;
+    color: $black;
+  }
+
   &.header-wrapper,
-  > div.header-content > .product-logo > a,
   > div.header-content > .top-menu ul li > a,
   > div.header-content > .top-button > div > div > button,
   > div.header-content > .top-button > div > div > div > a {
-    color: $white;
+    color: $black;
   }
 
   > div.config-popup {
@@ -226,7 +236,7 @@
         border-radius: 0;
         padding-left: 1rem;
         padding-right: 1rem;
-        color: $white;
+        color: $black;
         display: none;
         border: none;
 
@@ -381,7 +391,9 @@
                   height: 24px;
                   background-color: rgba(0, 0, 0, 0.4);
                   background-color: #104e8b;
+                  background-color: #333;
                   border-radius: 50%;
+                  color: $white;
 
                   > span {
                     width: 100%;
@@ -407,6 +419,10 @@
 
           &.selected {
             background-color: $light;
+            height: 60px;
+            transition: all 0.3s;
+            border-left: 1px solid rgba(0, 0, 0, 0.2);
+            border-right: 1px solid rgba(0, 0, 0, 0.2);
 
             > a {
               > div {
@@ -424,6 +440,8 @@
                 > .icon {
                   > div {
                     background-color: #1d88ea;
+                    background-color: $black;
+                    color: $white;
                   }
                 }
 
