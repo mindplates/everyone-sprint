@@ -18,15 +18,19 @@ import {
   StartingLine,
 } from './pages';
 import './App.scss';
-import { SettingPropTypes } from '@/proptypes';
+import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
 
-function App({ setting }) {
+const NO_MAX_WIDTH_PATTERNS = [/^\/conferences\/[A-Za-z0-9]*/];
+
+function App({ history, setting }) {
+  const noMaxWidth = NO_MAX_WIDTH_PATTERNS.some((pattern) => pattern.test(history.location.pathname));
+
   return (
     <div className="app-wrapper">
       <div className="app-header">
         <Header />
       </div>
-      <div className="app-content">
+      <div className={`app-content ${noMaxWidth ? 'no-max-width' : ''}`}>
         <Switch>
           <Route exact path="/" component={PublicPark} />
           <Route exact path="/public-park" component={PublicPark} />
@@ -67,4 +71,5 @@ App.propTypes = {
     search: PropTypes.string,
   }),
   setting: SettingPropTypes,
+  history: HistoryPropTypes,
 };

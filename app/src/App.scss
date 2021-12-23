@@ -15,6 +15,10 @@
       max-width: $wrapper-width;
       width: 100%;
       margin: 0 auto;
+
+      &.no-max-width {
+        max-width: none;
+      }
     }
   }
 }

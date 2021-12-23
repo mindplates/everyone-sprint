@@ -2,7 +2,6 @@
   width: 100%;
   height: 100%;
   text-transform: uppercase;
-  border: 1px solid rgba(0, 0, 0, 0.3);
   background-color: $white;
 
   .user-list-content {
@@ -11,6 +10,7 @@
     height: 100%;
 
     .title {
+      margin-bottom: 1rem;
       .text {
         flex-grow: 1;
       }
