@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { Button, Page, PageContent, PageTitle, ParticipantsList, SocketClient, VideoElement } from '@/components';
+import { Button, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient, VideoElement } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import './Conference.scss';
@@ -62,6 +62,8 @@ class Conference extends React.Component {
         init: false,
         width: 320,
         height: 240,
+        videoWidth: 320,
+        videoHeight: 240,
       },
       controls: {
         audio: true,
@@ -131,6 +133,8 @@ class Conference extends React.Component {
 
       let width;
       let height;
+      let videoWidth;
+      let videoHeight;
 
       let connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected).length;
       if (connectedUserCount < 3) {
@@ -145,27 +149,37 @@ class Conference extends React.Component {
       if (contentWidth > contentHeight) {
         rows = sqrtNo;
         cols = Math.ceil(connectedUserCount / rows);
-        width = (contentWidth - 16 * rows) / rows;
-        height = (contentHeight - 16 * (cols - 1)) / cols;
+        width = contentWidth / rows;
+        height = contentHeight / cols;
       } else {
         cols = sqrtNo;
         rows = Math.ceil(connectedUserCount / cols);
 
-        width = (contentWidth - 16 * rows) / rows;
-        height = (contentHeight - 16 * (cols - 1)) / cols;
+        width = contentWidth / rows;
+        height = contentHeight / cols;
 
         if (height > width * 2) {
           cols = Math.ceil((connectedUserCount / rows) * 2);
           rows = Math.ceil(connectedUserCount / cols);
-          width = (contentWidth - 16 * rows) / rows;
-          height = (contentHeight - 16 * (cols - 1)) / cols;
+          width = contentWidth / rows;
+          height = contentHeight / cols;
         }
+      }
+
+      if (width * 3 > height * 4) {
+        videoHeight = height - 32;
+        videoWidth = (videoHeight * 4) / 3;
+      } else {
+        videoWidth = width - 32;
+        videoHeight = (videoWidth * 3) / 4;
       }
 
       this.setState({
         videoInfo: {
           width,
           height,
+          videoWidth,
+          videoHeight,
           init: true,
         },
       });
@@ -258,7 +272,8 @@ class Conference extends React.Component {
             },
           });
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           setTimeout(() => {
             this.setState({
               supportInfo: {
@@ -572,73 +587,64 @@ class Conference extends React.Component {
                 this.socket = client;
               }}
             />
-            <PageTitle>{conference?.name}</PageTitle>
-            <div className="conference-content">
-              <div className="streaming-content" ref={this.streamingContent}>
-                <div className="video-content">
-                  <div>
-                    <div className="videos">
-                      <VideoElement
-                        videoInfo={videoInfo}
-                        onRef={(d) => {
-                          this.myVideo = d;
-                        }}
-                        controls={controls}
-                        supportInfo={supportInfo}
-                        alias={user.alias}
-                        muted
-                      />
-                      {conference.users
-                        .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
-                        .filter((userInfo) => userInfo.participant?.connected)
-                        .map((userInfo) => {
-                          return (
-                            <VideoElement
-                              key={userInfo.id}
-                              id={`video-${userInfo.userId}`}
-                              videoInfo={videoInfo}
-                              tracking={userInfo.tracking}
-                              controls={controls}
-                              alias={userInfo.alias}
-                              imageType={userInfo.imageType}
-                              imageData={userInfo.imageData}
-                            />
-                          );
-                        })}
+            <PageTitle className="d-none">{conference?.name}</PageTitle>
+            <PageContent className="conference-content">
+              <div className="streaming-content">
+                <div>
+                  <div className="video-content" ref={this.streamingContent}>
+                    <div>
+                      <div className="videos">
+                        <VideoElement
+                          videoInfo={videoInfo}
+                          onRef={(d) => {
+                            this.myVideo = d;
+                          }}
+                          controls={controls}
+                          supportInfo={supportInfo}
+                          alias={user.alias}
+                          setUpUserMedia={this.setUpUserMedia}
+                          muted
+                        />
+                        {conference.users
+                          .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+                          .filter((userInfo) => userInfo.participant?.connected)
+                          .map((userInfo) => {
+                            return (
+                              <VideoElement
+                                key={userInfo.id}
+                                id={`video-${userInfo.userId}`}
+                                videoInfo={videoInfo}
+                                tracking={userInfo.tracking}
+                                controls={controls}
+                                alias={userInfo.alias}
+                                imageType={userInfo.imageType}
+                                imageData={userInfo.imageData}
+                              />
+                            );
+                          })}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="controls">
-                  <Button size="sm" color="white" outline onClick={this.toggleMyAudio}>
-                    {controls.audio && (
-                      <span>
-                        <i className="fas fa-microphone" /> 마이크
-                      </span>
-                    )}
-                    {!controls.audio && (
-                      <span>
-                        <i className="fas fa-microphone-slash" /> 마이크
-                      </span>
-                    )}
-                  </Button>
-                  <Button size="sm" color="white" outline onClick={this.toggleMyVideo}>
-                    {controls.video && (
-                      <span>
-                        <i className="fas fa-video" /> 영상
-                      </span>
-                    )}
-                    {!controls.video && (
-                      <span>
-                        <i className="fas fa-video-slash" /> 영상
-                      </span>
-                    )}
-                  </Button>
+                  <div className="controls">
+                    <Button className="first" size="md" rounded color="white" outline onClick={this.toggleMyAudio}>
+                      {controls.audio && <i className="fas fa-microphone" />}
+                      {!controls.audio && <i className="fas fa-microphone-slash" />}
+                    </Button>
+                    <Button size="md" rounded color="white" outline onClick={this.toggleMyVideo}>
+                      {controls.video && <i className="fas fa-video" />}
+                      {!controls.video && <i className="fas fa-video-slash" />}
+                    </Button>
+                    <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                    <Button size="md" rounded color="danger" outline onClick={this.toggleMyVideo}>
+                      <i className="fas fa-times" />
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className="participants-list">
                 <ParticipantsList conference={conference} align={align} setAlign={this.setAlign} />
               </div>
-            </div>
+            </PageContent>
           </>
         )}
         {conference && !existConference && (

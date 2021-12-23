@@ -8,7 +8,7 @@ class VideoElement extends React.Component {
   componentDidMount() {}
 
   render() {
-    const { className, videoInfo, onRef, controls, supportInfo, alias, muted, tracking, id, imageType, imageData } = this.props;
+    const { className, videoInfo, onRef, controls, supportInfo, alias, muted, tracking, id, imageType, imageData, setUpUserMedia } = this.props;
 
     return (
       <div
@@ -18,30 +18,51 @@ class VideoElement extends React.Component {
           height: `${videoInfo.height}px`,
         }}
       >
-        <video
-          id={id}
-          ref={(d) => {
-            if (onRef) {
-              onRef(d);
-            }
+        <div
+          className="video-element"
+          style={{
+            width: `${videoInfo.videoWidth}px`,
+            height: `${videoInfo.videoHeight}px`,
           }}
-          autoPlay
-          playsInline
-          muted={muted}
-        />
-        <div className="control-status">
+        >
+          <video
+            id={id}
+            ref={(d) => {
+              if (onRef) {
+                onRef(d);
+              }
+            }}
+            autoPlay
+            playsInline
+            muted={muted}
+            onLoadedMetadata={(e) => {
+              console.log(e, e.target, e.target.videoWidth);
+              console.log(e, e.target, e.target.videoHeight);
+            }}
+            onLoadedData={(e) => {
+              console.log(e);
+            }}
+          />
+          <div className="control-status">
           <span className="audio-status">
-            {controls.audio && <i className="fas fa-microphone" />}
-            {!controls.audio && <i className="fas fa-microphone-slash" />}
+            <span>
+              {controls.audio && <i className="fas fa-microphone" />}
+              {!controls.audio && <i className="fas fa-microphone-slash" />}
+            </span>
           </span>
-          <span className="video-status">
-            {controls.video && <i className="fas fa-video" />}
-            {!controls.video && <i className="fas fa-video-slash" />}
+            <span className="video-status">
+            <span>
+              {controls.video && <i className="fas fa-video" />}
+              {!controls.video && <i className="fas fa-video-slash" />}
+            </span>
           </span>
+          </div>
+          <div className="user-info">
+            <span className="alias">{alias}</span>
+          </div>
         </div>
-        <div className="user-info">
-          <span className="alias">{alias}</span>
-        </div>
+
+
         {supportInfo && supportInfo.supportUserMedia !== null && !supportInfo.supportUserMedia && (
           <div className="not-supported-user-media">
             <div>
@@ -58,7 +79,7 @@ class VideoElement extends React.Component {
                 color="white"
                 outline
                 onClick={() => {
-                  this.setUpUserMedia(true);
+                  setUpUserMedia(true);
                 }}
               >
                 <i className="fas fa-retweet" /> 다시 시도
@@ -90,6 +111,8 @@ VideoElement.propTypes = {
   videoInfo: PropTypes.shape({
     width: PropTypes.number,
     height: PropTypes.number,
+    videoWidth: PropTypes.number,
+    videoHeight: PropTypes.number,
   }),
   controls: PropTypes.shape({
     audio: PropTypes.bool,
@@ -105,4 +128,5 @@ VideoElement.propTypes = {
   id: PropTypes.string,
   imageType: PropTypes.string,
   imageData: PropTypes.string,
+  setUpUserMedia: PropTypes.func,
 };

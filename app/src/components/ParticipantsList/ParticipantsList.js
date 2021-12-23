@@ -32,7 +32,7 @@ class ParticipantsList extends React.PureComponent {
 
     return (
       <div className={`participants-list-wrapper ${className}`}>
-        <Block className="p-2 user-list-content">
+        <Block className="p-3 user-list-content">
           <BlockTitle size="sm" className="title pt-0">
             <div className="title-content">
               <div>{t('참석자')}</div>
