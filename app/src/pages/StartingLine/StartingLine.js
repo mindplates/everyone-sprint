@@ -4,7 +4,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import qs from 'qs';
-import { Button, CheckBox, Form, Input } from '@/components';
+import { Button, CheckBox, Form, Input, Liner, Page, PageContent, ProductLogo } from '@/components';
 import { setUserInfo } from '@/store/actions';
 import request from '@/utils/request';
 import storage from '@/utils/storage';
@@ -30,27 +30,37 @@ const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer })
   const onSubmit = (e) => {
     e.preventDefault();
 
-    request.post('/api/users/login', info, (data) => {
-      const { autoLogin } = data;
-      if (autoLogin) {
-        storage.setItem('auth', 'token', data.loginToken);
-      } else {
-        storage.setItem('auth', 'token', null);
-      }
+    request.post(
+      '/api/users/login',
+      info,
+      (data) => {
+        const { autoLogin } = data;
+        if (autoLogin) {
+          storage.setItem('auth', 'token', data.loginToken);
+        } else {
+          storage.setItem('auth', 'token', null);
+        }
 
-      setUserInfoReducer(data);
-      if (url) {
-        history.push(url);
-      } else {
-        history.push('/');
-      }
-    });
+        setUserInfoReducer(data);
+        if (url) {
+          history.push(url);
+        } else {
+          history.push('/');
+        }
+      },
+      null,
+      t('인증 정보를 확인하고 있습니다.'),
+    );
   };
 
   return (
-    <div className="starting-line-wrapper g-content">
-      <div className="starting-line-content g-page-content">
+    <Page className="starting-line-wrapper">
+      <PageContent className="starting-line-content">
         <Form onSubmit={onSubmit}>
+          <div className="mb-2">
+            <ProductLogo className="bg-white" />
+          </div>
+          <Liner width="100%" height="1px" color="light" margin="1rem 0" />
           {url && (
             <div className="need-auth-message">
               <span>{t('로그인이 필요합니다.')}</span>
@@ -65,6 +75,7 @@ const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer })
               placeholderMessage="EMAIL"
               required
               minLength={1}
+              focus
             />
           </div>
           <div className="password">
@@ -79,13 +90,7 @@ const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer })
             />
           </div>
           <div className="auto-login">
-            <CheckBox
-              size="sm"
-              type="checkbox"
-              value={info.autoLogin}
-              onChange={(val) => changeInfo('autoLogin', val)}
-              label={t('자동 로그인')}
-            />
+            <CheckBox size="sm" type="checkbox" value={info.autoLogin} onChange={(val) => changeInfo('autoLogin', val)} label={t('자동 로그인')} />
           </div>
           <div className="bottom-button">
             <Button type="submit" size="md" color="white" outline>
@@ -96,8 +101,8 @@ const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer })
             <Link to="/entry">새로운 사용자를 등록합니다.</Link>
           </div>
         </Form>
-      </div>
-    </div>
+      </PageContent>
+    </Page>
   );
 };
 

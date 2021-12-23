@@ -163,7 +163,7 @@ const Header = (props) => {
               </div>
             )}
             <div className="liner">
-              <Liner height="10px" />
+              <Liner height="10px" color="black" />
             </div>
             <div>
               <Button
