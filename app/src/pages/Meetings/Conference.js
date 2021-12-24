@@ -120,10 +120,21 @@ class Conference extends React.Component {
   }
 
   componentWillUnmount() {
-    this.myStream = null;
+    if (this.myStream) {
+      this.myStream.getTracks().forEach(function (track) {
+        track.stop();
+      });
+      this.myStream = null;
+    }
+
     this.stopStreamAndVideo(this.myVideo.current);
 
-    this.myScreenStream = null;
+    if (this.myScreenStream) {
+      this.myScreenStream.getTracks().forEach(function (track) {
+        track.stop();
+      });
+      this.myScreenStream = null;
+    }
     this.stopStreamAndVideo(this.myScreenStreamVideo.current);
 
     if (this.setVideoInfoDebounced) {
@@ -524,6 +535,7 @@ class Conference extends React.Component {
   };
 
   stopStreamAndVideo = (video) => {
+    console.log(video);
     if (video && video.srcObject) {
       video.srcObject.getTracks().forEach((track) => track.stop());
       video.srcObject = null;
