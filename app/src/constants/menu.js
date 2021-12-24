@@ -14,7 +14,7 @@ const MENU = {
     submenus: [],
   },
   meetings: {
-    icon: <i className="fas fa-circle-notch" />,
+    icon: <i className="fas fa-comment-dots" />,
     name: '미팅',
     enabled: true,
     submenus: [],

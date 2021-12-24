@@ -117,6 +117,8 @@ const JOIN_POLICIES = [
   },
 ];
 
+const COLORS = ['#FFAEBC', '#A0E7E5', '#B4F8C8', '#FBE7C6', '#F8EA8C', '#4CD7D0', '#A49393', '#E8B4B8'];
+
 export {
   PORTS,
   USER_STUB,
@@ -131,4 +133,5 @@ export {
   JOIN_POLICIES,
   COUNTRIES,
   DATE_FORMATS_TYPES,
+  COLORS,
 };

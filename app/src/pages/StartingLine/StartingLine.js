@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
+import { debounce as debounceFunc } from 'lodash';
 import PropTypes from 'prop-types';
 import qs from 'qs';
 import { Button, CheckBox, Form, Input, Liner, Page, PageContent, ProductLogo } from '@/components';
@@ -9,23 +10,68 @@ import { setUserInfo } from '@/store/actions';
 import request from '@/utils/request';
 import storage from '@/utils/storage';
 import { HistoryPropTypes, LocationPropTypes } from '@/proptypes';
+import { COLORS } from '@/constants/constants';
 import './StartingLine.scss';
 
+const enableTypingEffect = true;
+
 const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer }) => {
+  const bgRef = useRef(null);
+
   const [info, setInfo] = useState({ email: '', password: '', autoLogin: false });
   const [url, setUrl] = useState('');
-
-  const changeInfo = (key, value) => {
-    const next = { ...info };
-    next[key] = value;
-    setInfo(next);
-  };
+  const [dots, setDots] = useState([]);
+  const [typing, setTyping] = useState(false);
 
   useEffect(() => {
     const search = qs.parse(location.search, { ignoreQueryPrefix: true });
     const { url: searchUrl } = search;
     setUrl(searchUrl);
   }, [location.search]);
+
+  useEffect(() => {
+    const count = 3 + Math.round(Math.random() * 6);
+    const nextDots = [];
+    let targetWidth = 1000;
+    if (bgRef.current) {
+      targetWidth = bgRef.current.offsetWidth;
+    }
+
+    for (let i = 0; i < count; i += 1) {
+      const size = targetWidth / 6 + (targetWidth / 2) * Math.random();
+      const dir1 = Math.floor(Math.random() * 10) % 2 === 1 ? 1 : -1;
+      const dir2 = Math.floor(Math.random() * 10) % 2 === 1 ? 1 : -1;
+      const colorIndex = Math.floor(Math.random() * COLORS.length);
+      const animationDuration = 4 + Math.random() * 5;
+
+      nextDots.push({
+        width: size,
+        height: size,
+        left: (10 + Math.random() * 60) * dir1,
+        top: (10 + Math.random() * 60) * dir2,
+        color: COLORS[colorIndex],
+        opacity: 0.1 + Math.random() * 0.2,
+        animationDuration,
+      });
+    }
+    setDots(nextDots);
+  }, []);
+
+  const setTypingEffect = (value) => {
+    setTyping(value);
+  };
+
+  const setTypingEffectDebounce = useRef(debounceFunc(setTyping, 300)).current;
+
+  const changeInfo = (key, value) => {
+    if (enableTypingEffect) {
+      setTypingEffect(true);
+      setTypingEffectDebounce(false);
+    }
+    const next = { ...info };
+    next[key] = value;
+    setInfo(next);
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -55,8 +101,27 @@ const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer })
 
   return (
     <Page className="starting-line-wrapper">
+      <div className="bg" ref={bgRef}>
+        {dots.map((dot, inx) => {
+          return (
+            <div
+              key={inx}
+              className="dot"
+              style={{
+                width: `${dot.width}px`,
+                height: `${dot.height}px`,
+                top: `${dot.top}%`,
+                left: `${dot.left}%`,
+                backgroundColor: dot.color,
+                opacity: dot.opacity,
+                animationDuration: `${dot.animationDuration}s`,
+              }}
+            />
+          );
+        })}
+      </div>
       <PageContent className="starting-line-content">
-        <Form onSubmit={onSubmit}>
+        <Form onSubmit={onSubmit} className={typing ? 'typing' : ''}>
           <div className="mb-2">
             <ProductLogo className="bg-white" />
           </div>
