@@ -20,7 +20,7 @@ import {
 import './App.scss';
 import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
 
-const NO_MAX_WIDTH_PATTERNS = [/^\/conferences\/[A-Za-z0-9]*/];
+const NO_MAX_WIDTH_PATTERNS = [/^\/conferences\/[A-Za-z0-9]*/, /^\/starting-line[A-Za-z0-9]*/];
 
 function App({ history, setting }) {
   const noMaxWidth = NO_MAX_WIDTH_PATTERNS.some((pattern) => pattern.test(history.location.pathname));

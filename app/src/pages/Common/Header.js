@@ -155,7 +155,10 @@ const Header = (props) => {
 
             {!(user && user.id) && (
               <div className="login">
-                <div>
+                <div className={currentTopMenu === 'starting-line' ? 'selected' : ''}>
+                  <div className="arrow">
+                    <div />
+                  </div>
                   <Link to="/starting-line">
                     <span>{t('로그인')}</span>
                   </Link>

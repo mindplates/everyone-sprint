@@ -1,5 +1,38 @@
+@keyframes floating1 {
+  from {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
 .starting-line-wrapper {
   padding-top: 2rem !important;
+  position: relative;
+
+  .bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: hidden;
+
+    > div {
+      position: absolute;
+      border-radius: 50%;
+      animation-duration: 10s;
+      animation-name: floating1;
+      animation-iteration-count: infinite;
+      animation-timing-function: ease-in-out;
+    }
+  }
 
   @media (max-width: 992px) {
     padding-top: 1rem !important;
@@ -17,6 +50,13 @@
       padding: 2rem;
       border: $border;
       box-shadow: $box-shadow-sm;
+      transition: all 0.3s;
+
+      &.typing {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        transition: all 0.3s;
+        box-shadow: $box-shadow;
+      }
 
       .need-auth-message {
         text-align: center;
