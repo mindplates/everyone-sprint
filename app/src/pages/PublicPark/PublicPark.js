@@ -140,8 +140,8 @@ const PublicPark = ({ user, t }) => {
       senderInfo,
       data: { type, data },
     } = info;
-    console.log(info);
-    console.log(type, data, senderInfo);
+    // console.log(info);
+    // console.log(type, data, senderInfo);
 
     switch (type) {
       case 'PUBLIC-PARK-ENTER': {
@@ -190,7 +190,6 @@ const PublicPark = ({ user, t }) => {
 
   const getAllWalkers = () => {
     request.get('/api/park/walkers/all', null, (list) => {
-      console.log(list);
       const nextUsers = users.slice(0);
       list.forEach((u) => {
         const exist = nextUsers.find((currentUser) => currentUser.userId === u.id);
@@ -260,8 +259,6 @@ const PublicPark = ({ user, t }) => {
       send('PUBLIC-PARK-USER-MOVE', position);
     }
   };
-
-  console.log(users);
 
   return (
     <div className="public-park-wrapper g-content">

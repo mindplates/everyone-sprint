@@ -24,6 +24,16 @@
 }
 
 .common-wrapper {
+  .__react_component_tooltip {
+    background-color: $header-bg-color;
+    background-color: #B4F8C8;
+    color: $black;
+
+    &::after {
+      border-top-color: $header-bg-color !important;
+      border-top-color: #B4F8C8 !important;
+    }
+  }
   .common-message {
     padding: 2rem 0;
     background-color: $white;

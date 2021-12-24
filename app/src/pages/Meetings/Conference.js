@@ -34,6 +34,10 @@ const logging = true;
 class Conference extends React.Component {
   myStream = null;
 
+  myScreenStream = null;
+
+  myScreenStreamVideo = createRef();
+
   socket = createRef();
 
   myVideo = createRef();
@@ -68,6 +72,11 @@ class Conference extends React.Component {
       controls: {
         audio: true,
         video: true,
+        participants: true,
+        sharing: false,
+      },
+      screenShare: {
+        sharing: false,
       },
     };
   }
@@ -111,11 +120,11 @@ class Conference extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.myStream) {
-      this.myStream.getTracks().forEach(function (track) {
-        track.stop();
-      });
-    }
+    this.myStream = null;
+    this.stopStreamAndVideo(this.myVideo.current);
+
+    this.myScreenStream = null;
+    this.stopStreamAndVideo(this.myScreenStreamVideo.current);
 
     if (this.setVideoInfoDebounced) {
       this.setVideoInfoDebounced.cancel();
@@ -363,17 +372,19 @@ class Conference extends React.Component {
     };
 
     userInfo.peerConnection.oniceconnectionstatechange = (event) => {
-      const state = userInfo.peerConnection.iceConnectionState;
-      if (logging) {
-        console.log(`CONNECTED WITH ${userInfo.userId} ${state}`);
-      }
-      if (state === 'failed' || state === 'closed' || state === 'disconnected') {
+      if (userInfo.peerConnection) {
+        const state = userInfo.peerConnection.iceConnectionState;
         if (logging) {
-          userInfo.tracking = false;
-          console.log(`DISCONNECTED WITH ${userInfo.userId}`, event);
-          this.setState({
-            conference: nextConference,
-          });
+          console.log(`CONNECTED WITH ${userInfo.userId} ${state}`);
+        }
+        if (state === 'failed' || state === 'closed' || state === 'disconnected') {
+          if (logging) {
+            userInfo.tracking = false;
+            console.log(`DISCONNECTED WITH ${userInfo.userId}`, event);
+            this.setState({
+              conference: nextConference,
+            });
+          }
         }
       }
     };
@@ -403,6 +414,207 @@ class Conference extends React.Component {
     this.setState({
       conference: nextConference,
     });
+  };
+
+  startScreenShare = () => {
+    const { controls } = this.state;
+    const { user } = this.props;
+
+    const displayMediaOptions = {
+      video: {
+        cursor: 'always',
+      },
+      audio: false,
+    };
+
+    navigator.mediaDevices
+      .getDisplayMedia(displayMediaOptions)
+      .then((stream) => {
+        console.log(stream);
+        this.myScreenStream = stream;
+
+        this.setState(
+          {
+            screenShare: {
+              sharing: false,
+              userId: user.id,
+            },
+            controls: {
+              ...controls,
+              sharing: true,
+            },
+          },
+          () => {
+            setTimeout(() => {
+              this.myScreenStreamVideo.current.srcObject = this.myScreenStream;
+              this.sendToAll('START_SCREEN_SHARING');
+              const { conference } = this.state;
+
+              const otherUsers = conference.users.filter((d) => d.userId !== user.id && d.participant && d.participant.connected);
+              console.log(otherUsers);
+              otherUsers.forEach((userInfo) => {
+                this.setUpScreenSharing(userInfo.userId, true);
+              });
+            }, 1000);
+          },
+        );
+      })
+      .catch((err) => {
+        console.error(err);
+        return null;
+      });
+  };
+
+  stopScreenShare = () => {
+    this.sendToAll('STOP_SCREEN_SHARING');
+    this.stopStreamAndVideo(this.myScreenStreamVideo.current);
+    this.myScreenStream = null;
+    this.setControls('sharing', false);
+  };
+
+  clearOtherUserStreamAndVideo = (userId) => {
+    const { conference } = this.state;
+
+    if (!userId) return;
+
+    const nextConference = { ...conference };
+    const nextUsers = nextConference.users.slice(0);
+    const userInfo = nextUsers.find((d) => d.userId === userId);
+
+    if (!userInfo) {
+      return;
+    }
+
+    console.log(userInfo.peerConnection);
+
+    // TODO 나간 사용자가 화면 공유 중인 경우
+    // this.myScreenStream = null;
+    // this.stopStreamAndVideo(this.myScreenStreamVideo.current);
+
+    const video = document.querySelector(`#video-${userInfo.userId}`);
+    console.log(video);
+    if (video) {
+      this.stopStreamAndVideo(video);
+    }
+
+    this.setState({
+      conference: nextConference,
+    });
+  };
+
+  clearUpScreenSharing = (userId) => {
+    const { conference } = this.state;
+    const nextConference = { ...conference };
+    const nextUsers = nextConference.users.slice(0);
+    const userInfo = nextUsers.find((d) => d.userId === userId);
+
+    if (!userInfo) {
+      return;
+    }
+
+    if (userInfo.screenSharePeerConnection) {
+      userInfo.screenSharePeerConnection = null;
+      this.setState({
+        conference: nextConference,
+      });
+    }
+
+    this.stopStreamAndVideo(this.myScreenStreamVideo.current);
+    this.myScreenStream = null;
+  };
+
+  stopStreamAndVideo = (video) => {
+    if (video && video.srcObject) {
+      video.srcObject.getTracks().forEach((track) => track.stop());
+      video.srcObject = null;
+    }
+  };
+
+  setUpScreenSharing = (userId, isSender) => {
+    console.log('setUpScreenSharing', userId, isSender);
+    const { conference } = this.state;
+
+    if (!userId) return;
+
+    const nextConference = { ...conference };
+    const nextUsers = nextConference.users.slice(0);
+    const userInfo = nextUsers.find((d) => d.userId === userId);
+
+    if (!userInfo) {
+      return;
+    }
+
+    if (userInfo.screenSharePeerConnection) {
+      // TODO 초기화 코드 처리 필요
+    }
+
+    userInfo.screenSharePeerConnection = new RTCPeerConnection(peerConnectionConfig);
+    if (logging) {
+      console.log('SET UP Screen Share Peer Connection');
+    }
+
+    userInfo.screenSharePeerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        if (logging) {
+          console.log('SEND Screen Share ICE', userInfo.userId);
+        }
+        this.sendToUser('SCREEN_SHARE_ICE', userId, event.candidate);
+      }
+    };
+
+    userInfo.screenSharePeerConnection.ontrack = (event) => {
+      if (logging) {
+        console.log('ON SCREEN SHARE TRACT');
+      }
+      const [first] = event.streams;
+      if (this.myScreenStreamVideo.current) {
+        this.myScreenStream = first;
+        this.myScreenStreamVideo.current.srcObject = first;
+        // userInfo.tracking = true;
+
+        this.setState({
+          conference: nextConference,
+        });
+      }
+    };
+
+    userInfo.screenSharePeerConnection.oniceconnectionstatechange = (event) => {
+      const state = userInfo.screenSharePeerConnection.iceConnectionState;
+      if (logging) {
+        console.log(`CONNECTED SCREEN SHARE WITH ${userInfo.userId} ${state}`);
+      }
+      if (state === 'failed' || state === 'closed' || state === 'disconnected') {
+        if (logging) {
+          // userInfo.tracking = false;
+          console.log(`DISCONNECTED SCREEN SHARE WITH ${userInfo.userId}`, event);
+          this.setState({
+            conference: nextConference,
+          });
+        }
+      }
+    };
+
+    if (this.myScreenStream) {
+      if (userInfo.screenSharePeerConnection && userInfo.screenSharePeerConnection.addStream) {
+        userInfo.screenSharePeerConnection.addStream(this.myScreenStream);
+      }
+    }
+
+    if (isSender) {
+      userInfo.screenSharePeerConnection.createOffer().then(
+        (description) => {
+          userInfo.screenSharePeerConnection.setLocalDescription(description).then(() => {
+            if (logging) {
+              console.log(`SEND SCREEN SHARE OFFER TO ${userInfo.userId}`);
+            }
+            this.sendToUser('SCREEN_SHARE_SDP', userId, userInfo.screenSharePeerConnection.localDescription);
+          });
+        },
+        (e) => {
+          console.log(e);
+        },
+      );
+    }
   };
 
   onMessage = (info) => {
@@ -437,7 +649,38 @@ class Conference extends React.Component {
         break;
       }
 
+      case 'START_SCREEN_SHARING': {
+        if (!isMe) {
+          console.log(type, data);
+          this.setState({
+            screenShare: {
+              sharing: true,
+              userId: senderInfo.id,
+            },
+          });
+        }
+
+        break;
+      }
+
+      case 'STOP_SCREEN_SHARING': {
+        this.setState({
+          screenShare: {
+            sharing: false,
+            userId: null,
+          },
+        });
+        if (!isMe) {
+          this.clearUpScreenSharing(senderInfo.id);
+        }
+
+        break;
+      }
+
       case 'LEAVE': {
+        if (!isMe) {
+          this.clearOtherUserStreamAndVideo(senderInfo.id);
+        }
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
         this.setState(
           {
@@ -468,6 +711,51 @@ class Conference extends React.Component {
             }
           },
         );
+
+        break;
+      }
+
+      case 'SCREEN_SHARE_ICE': {
+        if (!isMe) {
+          const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
+          if (!targetUser.screenSharePeerConnection) {
+            this.setUpScreenSharing(senderInfo.id, false);
+          }
+          targetUser.screenSharePeerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
+            console.log(e);
+          });
+        }
+
+        break;
+      }
+
+      case 'SCREEN_SHARE_SDP': {
+        if (!isMe) {
+          const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
+          if (!targetUser.screenSharePeerConnection) {
+            this.setUpScreenSharing(senderInfo.id, false);
+          }
+          if (logging) {
+            console.log(`RECEIVE SCREEN SHARE SDP FROM ${senderInfo.id}`, data.type);
+          }
+          targetUser.screenSharePeerConnection.setRemoteDescription(new RTCSessionDescription(data)).then(() => {
+            if (data.type === 'offer') {
+              targetUser.screenSharePeerConnection
+                .createAnswer()
+                .then((description) => {
+                  targetUser.screenSharePeerConnection.setLocalDescription(description).then(() => {
+                    if (logging) {
+                      console.log(`SEND SCREEN SHARE  ANSWER TO ${senderInfo.id}`);
+                    }
+                    this.sendToUser('SCREEN_SHARE_SDP', senderInfo.id, targetUser.screenSharePeerConnection.localDescription);
+                  });
+                })
+                .catch((e) => {
+                  console.log(e);
+                });
+            }
+          });
+        }
 
         break;
       }
@@ -528,47 +816,33 @@ class Conference extends React.Component {
     });
   };
 
-  toggleMyAudio = () => {
+  setControls = (field, value) => {
     const { controls } = this.state;
 
     this.setState(
       {
-        controls: { ...controls, audio: !controls.audio },
+        controls: { ...controls, [field]: value },
       },
       () => {
-        const { controls: nextControls } = this.state;
-        const audioTrack = this.myStream.getTracks().find((d) => d.kind === 'audio');
-        if (audioTrack) {
-          audioTrack.enabled = nextControls.audio;
+        if (field === 'audio' || field === 'video') {
+          const { controls: nextControls } = this.state;
+          const audioTrack = this.myStream.getTracks().find((d) => d.kind === field);
+          if (audioTrack) {
+            audioTrack.enabled = nextControls[field];
+          }
+          this.sendToAll(field.toUpperCase(), { [field]: nextControls[field] });
         }
-        this.sendToAll('AUDIO', { audio: nextControls.audio });
-      },
-    );
-  };
-
-  toggleMyVideo = () => {
-    const { controls } = this.state;
-
-    this.setState(
-      {
-        controls: { ...controls, video: !controls.video },
-      },
-      () => {
-        const { controls: nextControls } = this.state;
-        const videoTrack = this.myStream.getTracks().find((d) => d.kind === 'video');
-        if (videoTrack) {
-          videoTrack.enabled = nextControls.video;
-        }
-        this.sendToAll('VIDEO', { video: nextControls.video });
       },
     );
   };
 
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare } = this.state;
 
     const existConference = conference && conference.id;
+
+    const isSharing = screenShare.sharing || controls.sharing;
 
     return (
       <Page className="conference-wrapper">
@@ -591,59 +865,119 @@ class Conference extends React.Component {
             <PageContent className="conference-content">
               <div className="streaming-content">
                 <div>
-                  <div className="video-content" ref={this.streamingContent}>
-                    <div>
-                      <div className="videos">
-                        <VideoElement
-                          videoInfo={videoInfo}
-                          onRef={(d) => {
-                            this.myVideo = d;
-                          }}
-                          controls={controls}
-                          supportInfo={supportInfo}
-                          alias={user.alias}
-                          setUpUserMedia={this.setUpUserMedia}
-                          muted
-                        />
-                        {conference.users
-                          .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
-                          .filter((userInfo) => userInfo.participant?.connected)
-                          .map((userInfo) => {
-                            return (
-                              <VideoElement
-                                key={userInfo.id}
-                                id={`video-${userInfo.userId}`}
-                                videoInfo={videoInfo}
-                                tracking={userInfo.tracking}
-                                controls={controls}
-                                alias={userInfo.alias}
-                                imageType={userInfo.imageType}
-                                imageData={userInfo.imageData}
-                              />
-                            );
-                          })}
+                  <div className={`video-content ${isSharing ? 'sharing' : ''}`} ref={this.streamingContent}>
+                    {isSharing && (
+                      <div className="screen-sharing-content">
+                        <div>
+                          <video ref={this.myScreenStreamVideo} autoPlay playsInline />
+                        </div>
+                      </div>
+                    )}
+                    <div className="video-list-content">
+                      <div>
+                        <div className="videos">
+                          <VideoElement
+                            useVideoInfo={!isSharing}
+                            videoInfo={videoInfo}
+                            onRef={(d) => {
+                              this.myVideo = d;
+                            }}
+                            controls={controls}
+                            supportInfo={supportInfo}
+                            alias={user.alias}
+                            setUpUserMedia={this.setUpUserMedia}
+                            muted
+                          />
+                          {conference.users
+                            .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+                            .filter((userInfo) => userInfo.participant?.connected)
+                            .map((userInfo) => {
+                              return (
+                                <VideoElement
+                                  useVideoInfo={!isSharing}
+                                  key={userInfo.id}
+                                  id={`video-${userInfo.userId}`}
+                                  videoInfo={videoInfo}
+                                  tracking={userInfo.tracking}
+                                  controls={controls}
+                                  alias={userInfo.alias}
+                                  imageType={userInfo.imageType}
+                                  imageData={userInfo.imageData}
+                                />
+                              );
+                            })}
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div className="controls">
-                    <Button className="first" size="md" rounded color="white" outline onClick={this.toggleMyAudio}>
+                    <Button
+                      className="first"
+                      size="md"
+                      rounded
+                      color="white"
+                      outline
+                      onClick={() => {
+                        this.setControls('audio', !controls.audio);
+                      }}
+                    >
                       {controls.audio && <i className="fas fa-microphone" />}
                       {!controls.audio && <i className="fas fa-microphone-slash" />}
                     </Button>
-                    <Button size="md" rounded color="white" outline onClick={this.toggleMyVideo}>
+                    <Button
+                      size="md"
+                      rounded
+                      color="white"
+                      outline
+                      onClick={() => {
+                        this.setControls('video', !controls.video);
+                      }}
+                    >
                       {controls.video && <i className="fas fa-video" />}
                       {!controls.video && <i className="fas fa-video-slash" />}
                     </Button>
                     <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
-                    <Button size="md" rounded color="danger" outline onClick={this.toggleMyVideo}>
+                    {!screenShare.sharing && !controls.sharing && (
+                      <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" outline onClick={this.startScreenShare}>
+                        <i className="fas fa-desktop" />
+                      </Button>
+                    )}
+                    {!screenShare.sharing && controls.sharing && (
+                      <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
+                        <i className="fas fa-desktop" />
+                      </Button>
+                    )}
+                    {screenShare.sharing && (
+                      <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
+                        공유 중지 요청
+                      </Button>
+                    )}
+                    <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                    <Button size="md" rounded color="danger" outline onClick={() => {}}>
                       <i className="fas fa-times" />
                     </Button>
+                    <div className="participants-button">
+                      <Button
+                        size="md"
+                        rounded
+                        color="white"
+                        outline
+                        onClick={() => {
+                          this.setControls('participants', !controls.participants);
+                        }}
+                      >
+                        {controls.participants && <i className="fas fa-toggle-on" />}
+                        {!controls.participants && <i className="fas fa-toggle-off" />}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="participants-list">
-                <ParticipantsList conference={conference} align={align} setAlign={this.setAlign} />
-              </div>
+              {controls.participants && (
+                <div className="participants-list">
+                  <ParticipantsList conference={conference} align={align} setAlign={this.setAlign} sharingUserId={screenShare.userId} />
+                </div>
+              )}
             </PageContent>
           </>
         )}

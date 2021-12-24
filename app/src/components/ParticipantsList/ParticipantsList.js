@@ -28,6 +28,7 @@ class ParticipantsList extends React.PureComponent {
       align: { type, order },
       setAlign,
       user,
+      sharingUserId,
     } = this.props;
 
     return (
@@ -117,6 +118,11 @@ class ParticipantsList extends React.PureComponent {
                             )}
                             {d.participant && (
                               <div>
+                                {sharingUserId === d.userId && (
+                                  <span className="screen-sharing">
+                                    <i className="fas fa-desktop" />
+                                  </span>
+                                )}
                                 <span className="audio-status">
                                   {d.participant.audio && <i className="fas fa-microphone" />}
                                   {!d.participant.audio && <i className="fas fa-microphone-slash" />}
@@ -164,4 +170,5 @@ ParticipantsList.propTypes = {
   }),
   setAlign: PropTypes.func,
   user: UserPropTypes,
+  sharingUserId: PropTypes.number,
 };
