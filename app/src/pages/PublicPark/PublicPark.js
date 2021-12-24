@@ -38,12 +38,7 @@ const PublicPark = ({ user, t }) => {
         .attr('width', userIconRadius * 2)
         .attr('height', userIconRadius * 2);
 
-      defs
-        .append('circle')
-        .attr('id', 'circle-shape')
-        .attr('cx', userIconRadius)
-        .attr('cy', userIconRadius)
-        .attr('r', userIconRadius);
+      defs.append('circle').attr('id', 'circle-shape').attr('cx', userIconRadius).attr('cy', userIconRadius).attr('r', userIconRadius);
 
       const rectClip = defs.append('clipPath').attr('id', 'rect-clip');
       rectClip.append('use').attr('xlink:href', '#rect-shape');
@@ -62,13 +57,13 @@ const PublicPark = ({ user, t }) => {
       const node = group.selectAll(`#user-${u.userId}`);
 
       if (node.size() > 0) {
-        node.attr('dateUtil.js.js', `time-${now}`).attr('transform', `translate(${u.x}, ${u.y})`);
+        node.attr('time', `time-${now}`).attr('transform', `translate(${u.x}, ${u.y})`);
       } else if (u.imageType === 'image') {
         group
           .append('g')
           .attr('id', `user-${u.userId}`)
           .attr('transform', `translate(${u.x}, ${u.y})`)
-          .attr('dateUtil.js.js', `time-${now}`)
+          .attr('time', `time-${now}`)
           .append('svg:image')
           .style('border-radius', '50%')
           .attr('width', userIconRadius * 2)
@@ -80,7 +75,7 @@ const PublicPark = ({ user, t }) => {
           .append('g')
           .attr('id', `user-${u.userId}`)
           .attr('transform', `translate(${u.x}, ${u.y})`)
-          .attr('dateUtil.js.js', `time-${now}`)
+          .attr('time', `time-${now}`)
           .append('circle')
           .attr('r', userIconRadius);
       }
