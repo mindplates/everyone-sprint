@@ -8,21 +8,21 @@ class VideoElement extends React.Component {
   componentDidMount() {}
 
   render() {
-    const { className, videoInfo, onRef, controls, supportInfo, alias, muted, tracking, id, imageType, imageData, setUpUserMedia } = this.props;
+    const { className, videoInfo, onRef, controls, supportInfo, alias, muted, tracking, id, imageType, imageData, setUpUserMedia, useVideoInfo } = this.props;
 
     return (
       <div
-        className={`video-element-wrapper ${className} ${tracking ? 'tracking' : ''}`}
+        className={`video-element-wrapper ${className} ${useVideoInfo ? '' : 'disable-video-info'} ${tracking ? 'tracking' : ''}`}
         style={{
-          width: `${videoInfo.width}px`,
-          height: `${videoInfo.height}px`,
+          width: useVideoInfo ? `${videoInfo.width}px` : null,
+          height: useVideoInfo ? `${videoInfo.height}px` : null,
         }}
       >
         <div
           className="video-element"
           style={{
-            width: `${videoInfo.videoWidth}px`,
-            height: `${videoInfo.videoHeight}px`,
+            width: useVideoInfo ? `${videoInfo.videoWidth}px` : null,
+            height: useVideoInfo ? `${videoInfo.videoHeight}px` : null,
           }}
         >
           <video
@@ -35,6 +35,7 @@ class VideoElement extends React.Component {
             autoPlay
             playsInline
             muted={muted}
+            /*
             onLoadedMetadata={(e) => {
               console.log(e, e.target, e.target.videoWidth);
               console.log(e, e.target, e.target.videoHeight);
@@ -42,26 +43,26 @@ class VideoElement extends React.Component {
             onLoadedData={(e) => {
               console.log(e);
             }}
+             */
           />
           <div className="control-status">
-          <span className="audio-status">
-            <span>
-              {controls.audio && <i className="fas fa-microphone" />}
-              {!controls.audio && <i className="fas fa-microphone-slash" />}
+            <span className="audio-status">
+              <span>
+                {controls.audio && <i className="fas fa-microphone" />}
+                {!controls.audio && <i className="fas fa-microphone-slash" />}
+              </span>
             </span>
-          </span>
             <span className="video-status">
-            <span>
-              {controls.video && <i className="fas fa-video" />}
-              {!controls.video && <i className="fas fa-video-slash" />}
+              <span>
+                {controls.video && <i className="fas fa-video" />}
+                {!controls.video && <i className="fas fa-video-slash" />}
+              </span>
             </span>
-          </span>
           </div>
           <div className="user-info">
             <span className="alias">{alias}</span>
           </div>
         </div>
-
 
         {supportInfo && supportInfo.supportUserMedia !== null && !supportInfo.supportUserMedia && (
           <div className="not-supported-user-media">
@@ -129,4 +130,5 @@ VideoElement.propTypes = {
   imageType: PropTypes.string,
   imageData: PropTypes.string,
   setUpUserMedia: PropTypes.func,
+  useVideoInfo: PropTypes.bool,
 };

@@ -6,6 +6,13 @@ div.video-element-wrapper {
   display: inline-flex;
   justify-content: center;
 
+  &.disable-video-info {
+    width: auto;
+    height: auto;
+    line-height: 0%;
+
+  }
+
   .video-element {
     align-self: center;
     display: inline-block;
@@ -50,6 +57,7 @@ div.video-element-wrapper {
       text-align: center;
       font-size: 14px;
       z-index: 3;
+      line-height: 100%;
 
       .alias {
         text-transform: uppercase;
