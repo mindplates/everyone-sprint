@@ -2,6 +2,11 @@
   display: flex;
   border: $input-border;
   padding: 0 0.5rem;
+  background-color: $white;
+
+  .react-datepicker-popper {
+    z-index: 3;
+  }
 
   @media (max-width: 576px) {
     display: block;

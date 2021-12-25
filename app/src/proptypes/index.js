@@ -30,15 +30,45 @@ const UserPropTypes = PropTypes.shape({
   tel: PropTypes.string,
 });
 
+const SprintDailyMeetingQuestionPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  question: PropTypes.string,
+  sortOrder: PropTypes.number,
+});
+
+const SprintDailyMeetingPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+  startTime: PropTypes.string,
+  endTime: PropTypes.string,
+  sprintDailyMeetingQuestions: PropTypes.arrayOf(SprintDailyMeetingQuestionPropTypes),
+});
+
 const SprintPropTypes = PropTypes.shape({
   id: PropTypes.number,
   name: PropTypes.string,
   startDate: PropTypes.string,
   endDate: PropTypes.string,
-  userCount: PropTypes.number,
+  realEndDate: PropTypes.string,
   isJiraSprint: PropTypes.bool,
-  allowAutoJoin: PropTypes.bool,
+  jiraSprintUrl: PropTypes.string,
+  jiraAuthKey: PropTypes.string,
   allowSearch: PropTypes.bool,
+  allowAutoJoin: PropTypes.bool,
+  activated: PropTypes.bool,
+  doDailyScrumMeeting: PropTypes.bool,
+  users: PropTypes.arrayOf(UserPropTypes),
+  sprintDailyMeetings: PropTypes.arrayOf(SprintDailyMeetingPropTypes),
+  isMember: PropTypes.bool,
+  userCount: PropTypes.number,
 });
 
-export { HistoryPropTypes, SettingPropTypes, UserPropTypes, LocationPropTypes, SprintPropTypes };
+export {
+  HistoryPropTypes,
+  SettingPropTypes,
+  UserPropTypes,
+  LocationPropTypes,
+  SprintDailyMeetingQuestionPropTypes,
+  SprintDailyMeetingPropTypes,
+  SprintPropTypes,
+};

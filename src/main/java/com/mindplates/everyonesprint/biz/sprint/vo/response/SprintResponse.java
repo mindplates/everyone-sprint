@@ -5,6 +5,7 @@ import com.mindplates.everyonesprint.common.code.RoleCode;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,23 +18,30 @@ public class SprintResponse {
     private String name;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private LocalDateTime realEndDate;
     private Boolean isJiraSprint;
     private String jiraSprintUrl;
     private String jiraAuthKey;
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
+    private Boolean activated;
+    private Boolean doDailyScrumMeeting;
     private List<User> users;
+    private List<SprintDailyMeeting> sprintDailyMeetings;
 
     public SprintResponse(Sprint sprint) {
         this.id = sprint.getId();
         this.name = sprint.getName();
         this.startDate = sprint.getStartDate();
         this.endDate = sprint.getEndDate();
+        this.realEndDate = sprint.getRealEndDate();
         this.isJiraSprint = sprint.getIsJiraSprint();
         this.jiraSprintUrl = sprint.getJiraSprintUrl();
         this.jiraAuthKey = sprint.getJiraAuthKey();
         this.allowSearch = sprint.getAllowSearch();
         this.allowAutoJoin = sprint.getAllowAutoJoin();
+        this.activated = sprint.getActivated();
+        this.doDailyScrumMeeting = sprint.getDoDailyScrumMeeting();
         this.users = sprint.getUsers().stream().map(
                 (sprintUser) -> User.builder()
                         .id(sprintUser.getId())
@@ -45,6 +53,24 @@ public class SprintResponse {
                         .imageType(sprintUser.getUser().getImageType())
                         .imageData(sprintUser.getUser().getImageData())
                         .build()).collect(Collectors.toList());
+        this.sprintDailyMeetings = sprint.getSprintDailyMeetings()
+                .stream()
+                .map(
+                        (sprintDailyMeeting) -> SprintDailyMeeting.builder()
+                                .id(sprintDailyMeeting.getId())
+                                .name(sprintDailyMeeting.getName())
+                                .startTime(sprintDailyMeeting.getStartTime())
+                                .endTime(sprintDailyMeeting.getEndTime())
+                                .useQuestion(sprintDailyMeeting.getUseQuestion())
+                                .sprintDailyMeetingQuestions((sprintDailyMeeting.getSprintDailyMeetingQuestions().stream()
+                                        .map((sprintDailyMeetingQuestion -> SprintDailyMeetingQuestion.builder()
+                                                .id(sprintDailyMeetingQuestion.getId())
+                                                .question(sprintDailyMeetingQuestion.getQuestion())
+                                                .sortOrder(sprintDailyMeetingQuestion.getSortOrder())
+                                                .build()))
+                                        .collect(Collectors.toList())))
+                                .build()
+                ).collect(Collectors.toList());
     }
 
     @Data
@@ -58,5 +84,25 @@ public class SprintResponse {
         private String alias;
         private String imageType;
         private String imageData;
+    }
+
+    @Data
+    @Builder
+    public static class SprintDailyMeeting {
+        private Long id;
+        private String name;
+        private LocalTime startTime;
+        private LocalTime endTime;
+        private Boolean useQuestion;
+        private List<SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
+
+    }
+
+    @Data
+    @Builder
+    public static class SprintDailyMeetingQuestion {
+        private Long id;
+        private String question;
+        private Integer sortOrder;
     }
 }

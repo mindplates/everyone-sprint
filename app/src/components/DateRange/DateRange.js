@@ -11,34 +11,36 @@ import './DateRange.scss';
 registerLocale('ko', ko);
 registerLocale('en', en);
 
-const DateRange = ({ className, country, language, startDate, endDate, onChange, size }) => {
+const DateRange = ({ className, country, language, startDate, endDate, onChange, size, showTimeSelect, showTimeSelectOnly, startDateKey, endDateKey }) => {
   return (
     <div className={`date-range-wrapper ${className} size-${size}`}>
       <div>
         <DatePicker
           className="date-picker start-date-picker"
           selected={new Date(startDate)}
-          showTimeSelect
+          showTimeSelect={showTimeSelect}
+          showTimeSelectOnly={showTimeSelectOnly}
           onChange={(date) => {
-            onChange('startDate', date.getTime());
+            onChange(startDateKey, date.getTime());
           }}
           locale={language}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[country || 'KR'].full.picker}
+          dateFormat={DATE_FORMATS[country || 'KR'][showTimeSelectOnly ? 'hours' : 'full'].picker}
         />
       </div>
-      <Liner className='dash' width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
+      <Liner className="dash" width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
       <div>
         <DatePicker
           className="date-picker end-date-picker"
           selected={new Date(endDate)}
-          showTimeSelect
+          showTimeSelect={showTimeSelect}
+          showTimeSelectOnly={showTimeSelectOnly}
           onChange={(date) => {
-            onChange('endDate', date.getTime());
+            onChange(endDateKey, date.getTime());
           }}
           locale={language}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[country || 'KR'].full.picker}
+          dateFormat={DATE_FORMATS[country || 'KR'][showTimeSelectOnly ? 'hours' : 'full'].picker}
         />
       </div>
     </div>
@@ -50,6 +52,10 @@ export default DateRange;
 DateRange.defaultProps = {
   className: '',
   size: 'md',
+  showTimeSelect: true,
+  showTimeSelectOnly: false,
+  startDateKey: 'startDate',
+  endDateKey: 'endDate',
 };
 
 DateRange.propTypes = {
@@ -60,4 +66,8 @@ DateRange.propTypes = {
   endDate: PropTypes.number,
   onChange: PropTypes.func,
   size: PropTypes.string,
+  showTimeSelect: PropTypes.bool,
+  showTimeSelectOnly: PropTypes.bool,
+  startDateKey: PropTypes.string,
+  endDateKey: PropTypes.string,
 };

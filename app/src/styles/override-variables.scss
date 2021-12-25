@@ -2,22 +2,23 @@ $min-contrast-ratio: 2.5;
 $wrapper-width: 1600px;
 $logo-bg-color: #ff030d;
 $header-bg-color: #1d88ea;
-$header-bg-color: #FEE500;
+$header-bg-color: #fee500;
 $header-hover-bg-color: #104e8b;
-$header-hover-bg-color: #FED900;
+$header-hover-bg-color: #fed900;
 $primary: rgb(11, 154, 223);
 $primary: rgb(247, 52, 94);
-$danger: #FA1D2F;
+$danger: #fa1d2f;
+$warning: #ff5721;
 
 $border: 1px solid rgba(0, 0, 0, 0.2);
 $input-border: 1px solid rgba(0, 0, 0, 0.4);
 $input-focus-border: 1px solid rgba(0, 0, 0, 0.6);
 $input-radius: 2px;
 
-$control-xs-height : 26px;
-$control-sm-height : 31px;
-$control-md-height : 38px;
-$control-lg-height : 48px;
+$control-xs-height: 26px;
+$control-sm-height: 31px;
+$control-md-height: 38px;
+$control-lg-height: 48px;
 
 @import '~bootstrap/scss/functions';
 @import '~bootstrap/scss/variables';

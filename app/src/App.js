@@ -14,6 +14,8 @@ import {
   Meetings,
   PublicPark,
   Sprint,
+  SprintBoard,
+  SprintDeactivate,
   Sprints,
   StartingLine,
 } from './pages';
@@ -36,6 +38,8 @@ function App({ history, setting }) {
           <Route exact path="/public-park" component={PublicPark} />
           <Route exact path="/groups" component={Groups} />
           <Route exact path="/sprints/new" render={() => <EditSprint type="new" />} />
+          <Route exact path="/sprints/:id/deactivate" component={SprintDeactivate} />
+          <Route exact path="/sprints/:id/board" component={SprintBoard} />
           <Route exact path="/sprints/:id/edit" render={() => <EditSprint type="edit" />} />
           <Route exact path="/sprints/:id" component={Sprint} />
           <Route exact path="/sprints" component={Sprints} />

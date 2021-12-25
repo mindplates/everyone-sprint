@@ -1,5 +1,7 @@
 package com.mindplates.everyonesprint.biz.sprint.service;
 
+import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
+import com.mindplates.everyonesprint.biz.meeting.repository.MeetingRepository;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.repository.SprintRepository;
 import com.mindplates.everyonesprint.common.vo.UserSession;
@@ -16,6 +18,9 @@ public class SprintService {
 
     @Autowired
     private SprintRepository sprintRepository;
+
+    @Autowired
+    private MeetingRepository meetingRepository;
 
     public Sprint selectByName(String name) {
         return sprintRepository.findByName(name).orElse(null);
@@ -38,6 +43,8 @@ public class SprintService {
     }
 
     public void deleteSprintInfo(Sprint sprint) {
+        List<Meeting> sprintMeetings = meetingRepository.findAllBySprintId(sprint.getId());
+        meetingRepository.deleteAll(sprintMeetings);
         sprintRepository.delete(sprint);
     }
 

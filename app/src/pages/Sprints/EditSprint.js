@@ -8,6 +8,7 @@ import {
   BlockRow,
   BlockTitle,
   BottomButtons,
+  Button,
   CheckBox,
   DateRange,
   Form,
@@ -24,6 +25,7 @@ import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
+import './EditSprint.scss';
 
 const start = new Date();
 start.setHours(9);
@@ -58,7 +60,10 @@ const EditSprint = ({
     jiraAuthKey: '',
     allowSearch: true,
     allowAutoJoin: true,
+    activated: true,
+    doDailyScrumMeeting: false,
     users: [],
+    sprintDailyMeetings: [],
   });
 
   useEffect(() => {
@@ -107,9 +112,114 @@ const EditSprint = ({
     setInfo(next);
   };
 
+  const changeSprintDailyMeeting = (inx, key, value) => {
+    const next = { ...info };
+    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+    nextSprintDailyMeetings[inx] = { ...nextSprintDailyMeetings[inx], [key]: value };
+    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    setInfo(next);
+  };
+
+  const removeSprintDailyMeeting = (inx) => {
+    const next = { ...info };
+    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+    nextSprintDailyMeetings.splice(inx, 1);
+    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    setInfo(next);
+  };
+
+  const changeSprintDailyMeetingQuestions = (meetingIndex, questionIndex, key, value) => {
+    const next = { ...info };
+    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions.slice(0);
+
+    nextSprintDailyMeetingQuestions[questionIndex] = { ...nextSprintDailyMeetingQuestions[questionIndex], [key]: value };
+
+    nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions = nextSprintDailyMeetingQuestions;
+    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    setInfo(next);
+  };
+
+  const changeOrderSprintDailyMeetingQuestions = (dir, meetingIndex, questionIndex) => {
+    const next = { ...info };
+    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions.slice(0);
+
+    const target = nextSprintDailyMeetingQuestions[questionIndex];
+
+    if (dir === 'up' && questionIndex > 0) {
+      nextSprintDailyMeetingQuestions.splice(questionIndex, 1);
+      nextSprintDailyMeetingQuestions.splice(questionIndex - 1, 0, target);
+    }
+
+    if (dir === 'down' && questionIndex < nextSprintDailyMeetingQuestions.length - 1) {
+      nextSprintDailyMeetingQuestions.splice(questionIndex, 1);
+      nextSprintDailyMeetingQuestions.splice(questionIndex + 1, 0, target);
+    }
+
+    if (dir === 'remove') {
+      nextSprintDailyMeetingQuestions.splice(questionIndex, 1);
+    }
+
+    if (dir === 'add') {
+      nextSprintDailyMeetingQuestions.push({
+        question: t('새 질문'),
+        sortOrder: nextSprintDailyMeetingQuestions.length + 1,
+      });
+    }
+
+    nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions = nextSprintDailyMeetingQuestions;
+    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    setInfo(next);
+  };
+
   const changeUsers = (users) => {
     const next = { ...info };
     next.users = users;
+    setInfo(next);
+  };
+
+  const addSprintDailyMeeting = () => {
+    const next = { ...info };
+    const sprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+
+    const sprintDailyMeetingQuestions = [];
+    sprintDailyMeetingQuestions.push({
+      question: t('지난 데일리 스크럼부터 지금까지 내가 완수한 것이 무엇인가'),
+      sortOrder: 1,
+    });
+
+    sprintDailyMeetingQuestions.push({
+      question: t('다음 데일리 스크럼까지 내가 하기로 한 것이 무엇인가'),
+      sortOrder: 2,
+    });
+
+    sprintDailyMeetingQuestions.push({
+      question: t('현재 장애가 되고 있는 것(곤란하고 어려운 것)이 무엇인가'),
+      sortOrder: 3,
+    });
+
+    const startTime = new Date();
+    startTime.setHours(11);
+    startTime.setMinutes(0);
+    startTime.setSeconds(0);
+    startTime.setMilliseconds(0);
+
+    const endTime = new Date();
+    endTime.setHours(12);
+    endTime.setMinutes(0);
+    endTime.setSeconds(0);
+    endTime.setMilliseconds(0);
+
+    sprintDailyMeetings.push({
+      name: '데일리 스크럼',
+      startTime: startTime.getTime(),
+      endTime: endTime.getTime(),
+      useQuestion: true,
+      sprintDailyMeetingQuestions,
+    });
+
+    next.sprintDailyMeetings = sprintDailyMeetings;
     setInfo(next);
   };
 
@@ -149,26 +259,17 @@ const EditSprint = ({
   };
 
   return (
-    <Page className="sprint-wrapper">
+    <Page className="edit-sprint-wrapper">
       <PageTitle>{type === 'edit' ? t('스프린트 변경') : t('새로운 스프린트')}</PageTitle>
       <PageContent>
         <Form className="new-sprint-content" onSubmit={onSubmit}>
-          <Block className='pt-0'>
+          <Block className="pt-0">
             <BlockTitle className="mb-2 mb-sm-3">{t('스프린트 정보')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
                 {t('이름')}
               </Label>
-              <Input
-                type="name"
-                size="md"
-                value={info.name}
-                onChange={(val) => changeInfo('name', val)}
-                outline
-                simple
-                required
-                minLength={1}
-              />
+              <Input type="name" size="md" value={info.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
@@ -187,18 +288,173 @@ const EditSprint = ({
               />
             </BlockRow>
           </Block>
-          <Block>
-            <BlockTitle className="mb-2 mb-sm-3">{t('멤버')}</BlockTitle>
-            <UserList
-              users={info.users}
-              onChange={(val) => changeInfo('users', val)}
-              onChangeUsers={changeUsers}
-              editable={{
-                role: true,
-                member: true,
-              }}
-            />
+          <Block className="pb-0">
+            <BlockTitle className="mb-2 mb-sm-3">{t('데일리 스크럼')}</BlockTitle>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
+              <CheckBox
+                size="md"
+                type="checkbox"
+                value={info.doDailyScrumMeeting}
+                onChange={(val) => changeInfo('doDailyScrumMeeting', val)}
+                label={t('스프린트 기간 데일리 스크럼 미팅을 진행합니다.')}
+              />
+            </BlockRow>
           </Block>
+          {info.doDailyScrumMeeting && (
+            <Block className="sprint-daily-meetings">
+              {info.sprintDailyMeetings.map((sprintDailyMeeting, inx) => {
+                return (
+                  <div key={inx} className="sprint-daily-meeting">
+                    <div className="meeting-index">
+                      <span>
+                        <span>{inx + 1}</span>
+                      </span>
+                    </div>
+                    <div className="meeting-remove-button">
+                      <Button
+                        size="sm"
+                        color="warning"
+                        outline
+                        rounded
+                        onClick={() => {
+                          removeSprintDailyMeeting(inx);
+                        }}
+                      >
+                        <i className="fas fa-times" />
+                      </Button>
+                    </div>
+                    <BlockRow>
+                      <Label minWidth={labelMinWidth}>{t('미팅 이름')}</Label>
+                      <Input
+                        type="name"
+                        size="md"
+                        value={sprintDailyMeeting.name}
+                        onChange={(val) => changeSprintDailyMeeting(inx, 'name', val)}
+                        outline
+                        simple
+                        required
+                        minLength={1}
+                      />
+                    </BlockRow>
+                    <BlockRow>
+                      <Label minWidth={labelMinWidth}>{t('시간')}</Label>
+                      <DateRange
+                        country={user.country}
+                        language={user.language}
+                        startDate={sprintDailyMeeting.startTime}
+                        endDate={sprintDailyMeeting.endTime}
+                        showTimeSelectOnly
+                        startDateKey="startTime"
+                        endDateKey="endTime"
+                        onChange={(key, value) => {
+                          changeSprintDailyMeeting(inx, key, value);
+                        }}
+                      />
+                    </BlockRow>
+                    <BlockRow>
+                      <Label minWidth={labelMinWidth}>{t('스크럼 양식 사용')}</Label>
+                      <CheckBox
+                        size="md"
+                        type="checkbox"
+                        value={sprintDailyMeeting.useQuestion}
+                        onChange={(val) => changeSprintDailyMeeting(inx, 'useQuestion', val)}
+                        label={t('정해진 스크럼 미팅 양식을 사용합니다.')}
+                      />
+                    </BlockRow>
+                    {sprintDailyMeeting.useQuestion && (
+                      <BlockRow>
+                        <Label className="align-self-baseline" minWidth={labelMinWidth}>
+                          {t('스크럼 질문')}
+                        </Label>
+                        <div className="flex-grow-1">
+                          {sprintDailyMeeting.sprintDailyMeetingQuestions.map((sprintDailyMeetingQuestion, jnx) => {
+                            return (
+                              <div key={jnx} className="question-item">
+                                <div className="dir-button up">
+                                  <Button
+                                    size="sm"
+                                    color="white"
+                                    outline
+                                    rounded
+                                    disabled={jnx < 1}
+                                    onClick={() => {
+                                      changeOrderSprintDailyMeetingQuestions('up', inx, jnx);
+                                    }}
+                                  >
+                                    <i className="fas fa-arrow-up" />
+                                  </Button>
+                                </div>
+                                <div className="dir-button down">
+                                  <Button
+                                    size="sm"
+                                    color="white"
+                                    outline
+                                    rounded
+                                    disabled={sprintDailyMeeting.sprintDailyMeetingQuestions.length - 2 < jnx}
+                                    onClick={() => {
+                                      changeOrderSprintDailyMeetingQuestions('down', inx, jnx);
+                                    }}
+                                  >
+                                    <i className="fas fa-arrow-down" />
+                                  </Button>
+                                </div>
+                                <div className="question">
+                                  <Input
+                                    type="name"
+                                    size="md"
+                                    value={sprintDailyMeetingQuestion.question}
+                                    onChange={(val) => changeSprintDailyMeetingQuestions(inx, jnx, 'question', val)}
+                                    outline
+                                    simple
+                                    required
+                                    minLength={1}
+                                  />
+                                </div>
+                                <div className="dir-button delete">
+                                  <Button
+                                    size="sm"
+                                    color="warning"
+                                    outline
+                                    rounded
+                                    onClick={() => {
+                                      changeOrderSprintDailyMeetingQuestions('remove', inx, jnx);
+                                    }}
+                                  >
+                                    <i className="fas fa-times" />
+                                  </Button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          <div className="add-button">
+                            <Button
+                              size="sm"
+                              color="white"
+                              outline
+                              rounded
+                              onClick={() => {
+                                changeOrderSprintDailyMeetingQuestions('add', inx, null);
+                              }}
+                            >
+                              <i className="fas fa-plus" />
+                            </Button>
+                          </div>
+                        </div>
+                      </BlockRow>
+                    )}
+                  </div>
+                );
+              })}
+              <BlockRow>
+                <div className="flex-grow-1 text-center">
+                  <Button size="sm" color="white" outline onClick={addSprintDailyMeeting}>
+                    미팅 추가
+                  </Button>
+                </div>
+              </BlockRow>
+            </Block>
+          )}
           <Block>
             <BlockTitle className="mb-2 mb-sm-3">{t('지라 연동')}</BlockTitle>
             <BlockRow>
@@ -211,32 +467,36 @@ const EditSprint = ({
                 label={t('이 스프린트를 지라 스프린트와 연결합니다.')}
               />
             </BlockRow>
-            <BlockRow expand>
-              <Label minWidth={labelMinWidth}>{t('지라 스트린트 URL')}</Label>
-              <Input
-                type="name"
-                size="md"
-                value={info.jiraSprintUrl}
-                onChange={(val) => changeInfo('jiraSprintUrl', val)}
-                outline
-                simple
-                display="block"
-                disabled={!info.isJiraSprint}
-              />
-            </BlockRow>
-            <BlockRow expand>
-              <Label minWidth={labelMinWidth}>{t('지라 인증 키')}</Label>
-              <Input
-                type="name"
-                size="md"
-                value={info.jiraAuthKey}
-                onChange={(val) => changeInfo('jiraAuthKey', val)}
-                outline
-                simple
-                display="block"
-                disabled={!info.isJiraSprint}
-              />
-            </BlockRow>
+            {info.isJiraSprint && (
+              <>
+                <BlockRow expand>
+                  <Label minWidth={labelMinWidth}>{t('지라 스트린트 URL')}</Label>
+                  <Input
+                    type="name"
+                    size="md"
+                    value={info.jiraSprintUrl}
+                    onChange={(val) => changeInfo('jiraSprintUrl', val)}
+                    outline
+                    simple
+                    display="block"
+                    disabled={!info.isJiraSprint}
+                  />
+                </BlockRow>
+                <BlockRow expand>
+                  <Label minWidth={labelMinWidth}>{t('지라 인증 키')}</Label>
+                  <Input
+                    type="name"
+                    size="md"
+                    value={info.jiraAuthKey}
+                    onChange={(val) => changeInfo('jiraAuthKey', val)}
+                    outline
+                    simple
+                    display="block"
+                    disabled={!info.isJiraSprint}
+                  />
+                </BlockRow>
+              </>
+            )}
           </Block>
           <Block className="mb-2">
             <BlockTitle className="mb-2 mb-sm-3">{t('검색 및 참여 설정')}</BlockTitle>
@@ -262,6 +522,18 @@ const EditSprint = ({
                 }}
               />
             </BlockRow>
+          </Block>
+          <Block>
+            <BlockTitle className="mb-2 mb-sm-3">{t('멤버')}</BlockTitle>
+            <UserList
+              users={info.users}
+              onChange={(val) => changeInfo('users', val)}
+              onChangeUsers={changeUsers}
+              editable={{
+                role: true,
+                member: true,
+              }}
+            />
           </Block>
           <BottomButtons
             onCancel={() => {

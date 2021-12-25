@@ -74,7 +74,11 @@ public class SprintController {
     @GetMapping("")
     public List<SprintListResponse> selectUserSprintList(UserSession userSession) {
         List<Sprint> sprints = sprintService.selectUserSprintList(userSession);
-        return sprints.stream().map(SprintListResponse::new).collect(Collectors.toList());
+        return sprints.stream().map((sprint -> {
+            SprintListResponse item = new SprintListResponse(sprint);
+            item.setIsMember(sprint.getUsers().stream().anyMatch((sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))));
+            return item;
+        })).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
