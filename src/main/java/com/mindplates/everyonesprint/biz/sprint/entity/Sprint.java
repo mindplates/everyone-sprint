@@ -35,6 +35,9 @@ public class Sprint extends CommonEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
+    @Column(name = "real_end_date")
+    private LocalDateTime realEndDate;
+
     @Column(name = "is_jira_sprint")
     private Boolean isJiraSprint;
 
@@ -52,8 +55,18 @@ public class Sprint extends CommonEntity {
     @Column(name = "allow_auto_join")
     private Boolean allowAutoJoin;
 
+    @Column(name = "activated")
+    private Boolean activated;
+
+    @Column(name = "do_daily_scrum_meeting")
+    private Boolean doDailyScrumMeeting;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<SprintUser> users;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<SprintDailyMeeting> sprintDailyMeetings;
 
 }

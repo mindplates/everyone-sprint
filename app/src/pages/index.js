@@ -11,5 +11,23 @@ import Conference from './Meetings/Conference';
 import Common from './Common/Common';
 import Header from './Common/Header';
 import Footer from './Common/Footer';
+import SprintBoard from './Sprints/SprintBoard';
+import SprintDeactivate from './Sprints/SprintDeactivate';
 
-export { PublicPark, Common, Header, Footer, Groups, Sprints, EditSprint, Sprint, Meetings, EditMeeting, StartingLine, Entry, Conference};
+export {
+  PublicPark,
+  Common,
+  Header,
+  Footer,
+  Groups,
+  Sprints,
+  EditSprint,
+  Sprint,
+  Meetings,
+  EditMeeting,
+  StartingLine,
+  Entry,
+  Conference,
+  SprintBoard,
+  SprintDeactivate,
+};

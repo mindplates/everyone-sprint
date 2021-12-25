@@ -15,6 +15,8 @@ public class SprintListResponse {
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Integer userCount;
+    private Boolean activated;
+    private Boolean isMember;
 
     public SprintListResponse(Sprint sprint) {
         this.id = sprint.getId();
@@ -25,7 +27,6 @@ public class SprintListResponse {
         this.allowSearch = sprint.getAllowSearch();
         this.allowAutoJoin = sprint.getAllowAutoJoin();
         this.userCount = sprint.getUsers().size();
-
-
+        this.activated = sprint.getActivated();
     }
 }
