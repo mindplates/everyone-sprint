@@ -78,12 +78,12 @@ const EditSprint = ({
             const ends = sprintDailyMeeting.endTime.split(':');
 
             const startTime = new Date();
-            startTime.setHours(Number(starts[0]));
-            startTime.setMinutes(Number(starts[1]));
+            startTime.setHours(Number(starts[0]) + dateUtil.getUserOffsetHours());
+            startTime.setMinutes(Number(starts[1]) + dateUtil.getUserOffsetMinutes());
 
             const endTime = new Date();
-            endTime.setHours(Number(ends[0]));
-            endTime.setMinutes(Number(ends[1]));
+            endTime.setHours(Number(ends[0]) + dateUtil.getUserOffsetHours());
+            endTime.setMinutes(Number(ends[1]) + dateUtil.getUserOffsetMinutes());
 
             sprintDailyMeeting.startTime = startTime.getTime();
             sprintDailyMeeting.endTime = endTime.getTime();
@@ -260,7 +260,12 @@ const EditSprint = ({
     const next = JSON.parse(JSON.stringify(info));
     next.sprintDailyMeetings.forEach((sprintDailyMeeting) => {
       const startTime = new Date(sprintDailyMeeting.startTime);
+      startTime.setHours(startTime.getHours() -  dateUtil.getUserOffsetHours());
+      startTime.setMinutes(startTime.getMinutes() -  dateUtil.getUserOffsetMinutes());
+
       const endTime = new Date(sprintDailyMeeting.endTime);
+      endTime.setHours(endTime.getHours() -  dateUtil.getUserOffsetHours());
+      endTime.setMinutes(endTime.getMinutes() -  dateUtil.getUserOffsetMinutes());
 
       sprintDailyMeeting.startTime = `${`0${startTime.getHours()}`.slice(-2)}:${`0${startTime.getMinutes()}`.slice(-2)}:00`;
       sprintDailyMeeting.endTime = `${`0${endTime.getHours()}`.slice(-2)}:${`0${endTime.getMinutes()}`.slice(-2)}:00`;
@@ -308,7 +313,7 @@ const EditSprint = ({
       <PageContent>
         <Form className="new-sprint-content" onSubmit={onSubmit}>
           <Block className="pt-0">
-            <BlockTitle className="mb-2 mb-sm-4">{t('스프린트 정보')}</BlockTitle>
+            <BlockTitle>{t('스프린트 정보')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
                 {t('이름')}
@@ -333,7 +338,7 @@ const EditSprint = ({
             </BlockRow>
           </Block>
           <Block className="pb-0">
-            <BlockTitle className="mb-2 mb-sm-4">{t('데일리 스크럼')}</BlockTitle>
+            <BlockTitle>{t('데일리 스크럼')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
               <CheckBox
@@ -532,7 +537,7 @@ const EditSprint = ({
             </Block>
           )}
           <Block>
-            <BlockTitle className="mb-2 mb-sm-4">{t('지라 연동')}</BlockTitle>
+            <BlockTitle>{t('지라 연동')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('지라 연동')}</Label>
               <CheckBox
@@ -575,7 +580,7 @@ const EditSprint = ({
             )}
           </Block>
           <Block>
-            <BlockTitle className="mb-2 mb-sm-4">{t('검색 및 참여 설정')}</BlockTitle>
+            <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
               <RadioButton
@@ -600,7 +605,7 @@ const EditSprint = ({
             </BlockRow>
           </Block>
           <Block>
-            <BlockTitle className="mb-3 mb-sm-4">{t('멤버')}</BlockTitle>
+            <BlockTitle>{t('멤버')}</BlockTitle>
             <UserList
               users={info.users}
               onChange={(val) => changeInfo('users', val)}

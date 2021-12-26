@@ -1,6 +1,6 @@
 import moment from 'moment';
 import store from '@/store';
-import { DATE_FORMATS, DATE_FORMATS_TYPES } from '@/constants/constants';
+import { DATE_FORMATS, DATE_FORMATS_TYPES, TIMEZONES } from '@/constants/constants';
 
 function getDateString(val, format) {
   const state = store.getState();
@@ -20,11 +20,7 @@ function getTime(val) {
 }
 
 function isSameDay(val1, val2) {
-  return (
-    val1.getFullYear() === val2.getFullYear() &&
-    val1.getMonth() === val2.getMonth() &&
-    val1.getDate() === val2.getDate()
-  );
+  return val1.getFullYear() === val2.getFullYear() && val1.getMonth() === val2.getMonth() && val1.getDate() === val2.getDate();
 }
 
 function getToday() {
@@ -59,6 +55,25 @@ function addDays(val, days) {
   return val;
 }
 
+function getUserTimeInfo() {
+  const state = store.getState();
+  if (!TIMEZONES[state.user.timezone]) {
+    return TIMEZONES['Asia/Seoul'];
+  }
+
+  return TIMEZONES[state.user.timezone];
+}
+
+function getUserOffsetHours() {
+  const timezone = getUserTimeInfo();
+  return timezone.dir * timezone.hours;
+}
+
+function getUserOffsetMinutes() {
+  const timezone = getUserTimeInfo();
+  return timezone.dir * timezone.minutes;
+}
+
 const dateUtil = {
   getDateString,
   getDate,
@@ -68,6 +83,9 @@ const dateUtil = {
   getTomorrow,
   getTruncateDate,
   addDays,
+  getUserTimeInfo,
+  getUserOffsetHours,
+  getUserOffsetMinutes,
 };
 
 export default dateUtil;

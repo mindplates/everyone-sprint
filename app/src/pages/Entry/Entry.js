@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button, CheckBox, ExitButton, Form, Input, PageTitle, Popup, BlockTitle } from '@/components';
+import { BlockTitle, Button, CheckBox, ExitButton, Form, Input, PageTitle, Popup, Selector } from '@/components';
 import storage from '@/utils/storage';
 import dialog from '@/utils/dialog';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { MESSAGE_CATEGORY, TIMEZONES, USER_STUB } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes } from '@/proptypes';
@@ -19,19 +19,11 @@ import './Entry.scss';
 
 const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
   const [info, setInfo] = useState({
-    email: '',
+    ...USER_STUB,
     password: '',
     password2: '',
-    alias: '',
-    name: '',
-    tel: '',
-    imageType: '',
-    imageData: '',
     isNameOpened: true,
     isTelOpened: true,
-    autoLogin: true,
-    language: 'ko',
-    country: 'KR',
   });
 
   const [popup, setPopup] = useState({
@@ -179,15 +171,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   </span>
                 </div>
                 <div>
-                  <Input
-                    type="email"
-                    size="md"
-                    value={info.email}
-                    onChange={(val) => changeInfo('email', val)}
-                    required
-                    outline
-                    simple
-                  />
+                  <Input type="email" size="md" value={info.email} onChange={(val) => changeInfo('email', val)} required outline simple />
                 </div>
               </div>
               <div className="row-input">
@@ -200,15 +184,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   </span>
                 </div>
                 <div>
-                  <Input
-                    type="password"
-                    value={info.password}
-                    onChange={(val) => changeInfo('password', val)}
-                    required
-                    minLength={2}
-                    outline
-                    simple
-                  />
+                  <Input type="password" value={info.password} onChange={(val) => changeInfo('password', val)} required minLength={2} outline simple />
                 </div>
               </div>
               <div className="row-input">
@@ -221,15 +197,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   </span>
                 </div>
                 <div>
-                  <Input
-                    type="password"
-                    value={info.password2}
-                    onChange={(val) => changeInfo('password2', val)}
-                    required
-                    minLength={2}
-                    outline
-                    simple
-                  />
+                  <Input type="password" value={info.password2} onChange={(val) => changeInfo('password2', val)} required minLength={2} outline simple />
                 </div>
               </div>
             </div>
@@ -245,16 +213,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   </span>
                 </div>
                 <div>
-                  <Input
-                    required
-                    minLength={1}
-                    type="text"
-                    size="md"
-                    value={info.alias}
-                    onChange={(val) => changeInfo('alias', val)}
-                    outline
-                    simple
-                  />
+                  <Input required minLength={1} type="text" size="md" value={info.alias} onChange={(val) => changeInfo('alias', val)} outline simple />
                 </div>
               </div>
               <div className="row-input">
@@ -262,14 +221,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   <span>이름</span>
                 </div>
                 <div>
-                  <Input
-                    type="name"
-                    size="md"
-                    value={info.name}
-                    onChange={(val) => changeInfo('name', val)}
-                    outline
-                    simple
-                  />
+                  <Input type="name" size="md" value={info.name} onChange={(val) => changeInfo('name', val)} outline simple />
                 </div>
                 <div>
                   <CheckBox
@@ -286,14 +238,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   <span>전화번호</span>
                 </div>
                 <div>
-                  <Input
-                    type="text"
-                    size="md"
-                    value={info.tel}
-                    onChange={(val) => changeInfo('tel', val)}
-                    outline
-                    simple
-                  />
+                  <Input type="text" size="md" value={info.tel} onChange={(val) => changeInfo('tel', val)} outline simple />
                 </div>
                 <div>
                   <CheckBox
@@ -346,12 +291,28 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   <span>자동 로그인</span>
                 </div>
                 <div className="g-line-height-0">
-                  <CheckBox
-                    size="sm"
-                    type="checkbox"
-                    value={info.autoLogin}
-                    onChange={(val) => changeInfo('autoLogin', val)}
-                    label={t('')}
+                  <CheckBox size="sm" type="checkbox" value={info.autoLogin} onChange={(val) => changeInfo('autoLogin', val)} label={t('')} />
+                </div>
+              </div>
+              <div className="row-input">
+                <div>
+                  <span>타임존</span>
+                </div>
+                <div className="g-line-height-0">
+                  <Selector
+                    outline
+                    size="md"
+                    items={Object.keys(TIMEZONES).map((timezone) => {
+                      return {
+                        key: timezone,
+                        value: TIMEZONES[timezone].name,
+                      };
+                    })}
+                    value={info.timezone}
+                    onChange={(val) => {
+                      changeInfo('timezone', val);
+                    }}
+                    minWidth="100px"
                   />
                 </div>
               </div>

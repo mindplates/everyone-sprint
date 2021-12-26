@@ -26,6 +26,7 @@ public class MyInfoResponse {
     private Boolean autoLogin;
     private String loginToken;
     private RoleCode activeRoleCode;
+    private String timezone;
 
     public MyInfoResponse(User user) {
         if (user != null) {
@@ -43,6 +44,7 @@ public class MyInfoResponse {
             this.autoLogin = user.getAutoLogin();
             this.loginToken = user.getLoginToken();
             this.activeRoleCode = user.getActiveRoleCode();
+            this.timezone = user.getTimezone();
         }
 
     }
