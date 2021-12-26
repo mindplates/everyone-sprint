@@ -26,6 +26,20 @@
         }
       }
 
+      .day-of-weeks {
+        button {
+          margin-right: 0.25rem;
+
+          &:last-child {
+            margin-right: 0;
+          }
+
+          &.selected {
+            background-color: $yellow;
+          }
+        }
+      }
+
       .meeting-remove-button {
         position: absolute;
         top: 10px;
