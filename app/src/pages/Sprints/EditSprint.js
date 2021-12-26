@@ -308,7 +308,7 @@ const EditSprint = ({
       <PageContent>
         <Form className="new-sprint-content" onSubmit={onSubmit}>
           <Block className="pt-0">
-            <BlockTitle className="mb-2 mb-sm-3">{t('스프린트 정보')}</BlockTitle>
+            <BlockTitle className="mb-2 mb-sm-4">{t('스프린트 정보')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
                 {t('이름')}
@@ -333,7 +333,7 @@ const EditSprint = ({
             </BlockRow>
           </Block>
           <Block className="pb-0">
-            <BlockTitle className="mb-2 mb-sm-3">{t('데일리 스크럼')}</BlockTitle>
+            <BlockTitle className="mb-2 mb-sm-4">{t('데일리 스크럼')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
               <CheckBox
@@ -532,7 +532,7 @@ const EditSprint = ({
             </Block>
           )}
           <Block>
-            <BlockTitle className="mb-2 mb-sm-3">{t('지라 연동')}</BlockTitle>
+            <BlockTitle className="mb-2 mb-sm-4">{t('지라 연동')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('지라 연동')}</Label>
               <CheckBox
@@ -574,8 +574,8 @@ const EditSprint = ({
               </>
             )}
           </Block>
-          <Block className="mb-2">
-            <BlockTitle className="mb-2 mb-sm-3">{t('검색 및 참여 설정')}</BlockTitle>
+          <Block>
+            <BlockTitle className="mb-2 mb-sm-4">{t('검색 및 참여 설정')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
               <RadioButton
@@ -600,7 +600,7 @@ const EditSprint = ({
             </BlockRow>
           </Block>
           <Block>
-            <BlockTitle className="mb-2 mb-sm-3">{t('멤버')}</BlockTitle>
+            <BlockTitle className="mb-3 mb-sm-4">{t('멤버')}</BlockTitle>
             <UserList
               users={info.users}
               onChange={(val) => changeInfo('users', val)}
@@ -618,6 +618,7 @@ const EditSprint = ({
             onSubmit
             onSubmitIcon={<i className="fas fa-plane" />}
             onSubmitText={type === 'edit' ? t('스프린트 변경') : t('스프린트 등록')}
+            onCancelIcon=""
           />
         </Form>
       </PageContent>

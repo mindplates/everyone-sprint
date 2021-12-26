@@ -46,4 +46,7 @@ public class Meeting extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<MeetingUser> users;
 
+    @Column(name = "sprint_daily_meeting_id")
+    Long sprintDailyMeetingId;
+
 }
