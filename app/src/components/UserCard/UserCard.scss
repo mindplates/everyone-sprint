@@ -1,7 +1,7 @@
 .user-card-wrapper {
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 2px;
-  height: 128px;
+  height: 120px;
   line-height: 100%;
   vertical-align: top;
 
@@ -95,8 +95,8 @@
 
       .email {
         font-family: pretendard, sans-serif;
-        font-size: 14px;
-        font-weight: bold;
+        font-size: 12px;
+        color: $gray-700;
       }
 
       .email,
@@ -106,7 +106,8 @@
 
       .alias {
         > span {
-          font-size: 13px;
+          font-size: 14px;
+          font-weight: bold;
           &.alias-text {
           }
 
@@ -124,7 +125,6 @@
       }
 
       > div {
-        margin-bottom: 0.5rem;
         &:last-child {
           margin-bottom: 0;
         }

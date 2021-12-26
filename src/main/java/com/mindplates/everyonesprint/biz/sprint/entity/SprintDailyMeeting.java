@@ -41,6 +41,12 @@ public class SprintDailyMeeting extends CommonEntity {
     @Column(name = "use_question")
     private Boolean useQuestion;
 
+    @Column(name = "on_holiday")
+    private Boolean onHoliday;
+
+    @Column(name = "days")
+    private String days;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprintDailyMeeting", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;

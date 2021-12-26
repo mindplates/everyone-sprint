@@ -3,9 +3,11 @@ package com.mindplates.everyonesprint.biz.sprint.vo.request;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintUser;
 import com.mindplates.everyonesprint.common.code.RoleCode;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +23,10 @@ public class SprintRequest {
     private String jiraAuthKey;
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
+    private Boolean activated;
+    private Boolean doDailyScrumMeeting;
     private List<SprintRequest.User> users;
+    private List<SprintRequest.SprintDailyMeeting> sprintDailyMeetings;
 
     public Sprint buildEntity() {
 
@@ -35,6 +40,8 @@ public class SprintRequest {
                 .jiraAuthKey(jiraAuthKey)
                 .allowSearch(allowSearch)
                 .allowAutoJoin(allowAutoJoin)
+                .activated(activated)
+                .doDailyScrumMeeting(doDailyScrumMeeting)
                 .build();
 
         List<SprintUser> sprintUsers = users.stream().map(
@@ -45,7 +52,39 @@ public class SprintRequest {
                         .role(user.getRole())
                         .sprint(sprint).build()).collect(Collectors.toList());
 
+        List<com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting> meetings = sprintDailyMeetings
+                .stream()
+                .map((sprintDailyMeeting) -> {
+                            com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting meeting = com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting.builder()
+                                    .id(sprintDailyMeeting.getId())
+                                    .sprint(sprint)
+                                    .name(sprintDailyMeeting.getName())
+                                    .startTime(LocalTime.parse(sprintDailyMeeting.getStartTime()))
+                                    .endTime(LocalTime.parse(sprintDailyMeeting.getEndTime()))
+                                    .useQuestion(sprintDailyMeeting.getUseQuestion())
+                                    .onHoliday(sprintDailyMeeting.getOnHoliday())
+                                    .days(sprintDailyMeeting.getDays())
+                                    .build();
+
+                            meeting.setSprintDailyMeetingQuestions(sprintDailyMeeting.getSprintDailyMeetingQuestions()
+                                    .stream()
+                                    .map((sprintDailyMeetingQuestion -> com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeetingQuestion
+                                            .builder()
+                                            .sprintDailyMeeting(meeting)
+                                            .id(sprintDailyMeetingQuestion.getId())
+                                            .question(sprintDailyMeetingQuestion.getQuestion())
+                                            .sortOrder(sprintDailyMeetingQuestion.getSortOrder())
+                                            .build())).collect(Collectors.toList()));
+
+                            return meeting;
+
+
+                        }
+                ).collect(Collectors.toList());
+
+
         sprint.setUsers(sprintUsers);
+        sprint.setSprintDailyMeetings(meetings);
 
         return sprint;
     }
@@ -55,6 +94,28 @@ public class SprintRequest {
         private Long id;
         private Long userId;
         private RoleCode role;
+    }
+
+    @Data
+    @Builder
+    public static class SprintDailyMeeting {
+        private Long id;
+        private String name;
+        private String startTime;
+        private String endTime;
+        private Boolean useQuestion;
+        private Boolean onHoliday;
+        private String days;
+        private List<SprintRequest.SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
+
+    }
+
+    @Data
+    @Builder
+    public static class SprintDailyMeetingQuestion {
+        private Long id;
+        private String question;
+        private Integer sortOrder;
     }
 
 

@@ -19,6 +19,7 @@ public class UserRequest {
     private String language;
     private String country;
     private Boolean autoLogin;
+    private String timezone;
 
     public User buildEntity() {
         return User.builder()
@@ -35,6 +36,7 @@ public class UserRequest {
                 .language(language)
                 .country(country)
                 .autoLogin(autoLogin)
+                .timezone(timezone)
                 .build();
     }
 

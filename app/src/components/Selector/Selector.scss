@@ -33,6 +33,7 @@
     position: relative;
     z-index: 1;
     height: 100%;
+    line-height: 160%;
 
     &.open {
       border-radius: 2px 2px 0 0 !important;
@@ -72,6 +73,7 @@
         flex: 1;
         align-self: center;
         overflow: hidden;
+        line-height: 160%;
       }
 
       &.liner {

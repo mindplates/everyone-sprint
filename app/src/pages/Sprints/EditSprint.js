@@ -14,6 +14,7 @@ import {
   Form,
   Input,
   Label,
+  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -72,6 +73,25 @@ const EditSprint = ({
         `/api/sprints/${id}`,
         null,
         (data) => {
+          data.sprintDailyMeetings.forEach((sprintDailyMeeting) => {
+            const starts = sprintDailyMeeting.startTime.split(':');
+            const ends = sprintDailyMeeting.endTime.split(':');
+
+            const startTime = new Date();
+            startTime.setHours(Number(starts[0]) + dateUtil.getUserOffsetHours());
+            startTime.setMinutes(Number(starts[1]) + dateUtil.getUserOffsetMinutes());
+
+            const endTime = new Date();
+            endTime.setHours(Number(ends[0]) + dateUtil.getUserOffsetHours());
+            endTime.setMinutes(Number(ends[1]) + dateUtil.getUserOffsetMinutes());
+
+            sprintDailyMeeting.startTime = startTime.getTime();
+            sprintDailyMeeting.endTime = endTime.getTime();
+
+            sprintDailyMeeting.sprintDailyMeetingQuestions.sort((a, b) => {
+              return a.sortOrder - b.sortOrder;
+            });
+          });
           setInfo({
             ...data,
             startDate: dateUtil.getTime(data.startDate),
@@ -120,6 +140,17 @@ const EditSprint = ({
     setInfo(next);
   };
 
+  const changeSprintDailyMeetingDays = (inx, daysIndex, value) => {
+    const next = { ...info };
+    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+    const nextSprintDailyMeeting = nextSprintDailyMeetings[inx];
+    const list = nextSprintDailyMeeting.days.split('');
+    list[daysIndex] = value;
+    nextSprintDailyMeeting.days = list.join('');
+    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    setInfo(next);
+  };
+
   const removeSprintDailyMeeting = (inx) => {
     const next = { ...info };
     const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
@@ -132,9 +163,7 @@ const EditSprint = ({
     const next = { ...info };
     const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
     const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions.slice(0);
-
-    nextSprintDailyMeetingQuestions[questionIndex] = { ...nextSprintDailyMeetingQuestions[questionIndex], [key]: value };
-
+    nextSprintDailyMeetingQuestions[questionIndex][key] = value;
     nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions = nextSprintDailyMeetingQuestions;
     next.sprintDailyMeetings = nextSprintDailyMeetings;
     setInfo(next);
@@ -215,6 +244,8 @@ const EditSprint = ({
       name: '데일리 스크럼',
       startTime: startTime.getTime(),
       endTime: endTime.getTime(),
+      days: '1111100',
+      onHoliday: true,
       useQuestion: true,
       sprintDailyMeetingQuestions,
     });
@@ -226,14 +257,32 @@ const EditSprint = ({
   const onSubmit = (e) => {
     e.preventDefault();
 
+    const next = JSON.parse(JSON.stringify(info));
+    next.sprintDailyMeetings.forEach((sprintDailyMeeting) => {
+      const startTime = new Date(sprintDailyMeeting.startTime);
+      startTime.setHours(startTime.getHours() -  dateUtil.getUserOffsetHours());
+      startTime.setMinutes(startTime.getMinutes() -  dateUtil.getUserOffsetMinutes());
+
+      const endTime = new Date(sprintDailyMeeting.endTime);
+      endTime.setHours(endTime.getHours() -  dateUtil.getUserOffsetHours());
+      endTime.setMinutes(endTime.getMinutes() -  dateUtil.getUserOffsetMinutes());
+
+      sprintDailyMeeting.startTime = `${`0${startTime.getHours()}`.slice(-2)}:${`0${startTime.getMinutes()}`.slice(-2)}:00`;
+      sprintDailyMeeting.endTime = `${`0${endTime.getHours()}`.slice(-2)}:${`0${endTime.getMinutes()}`.slice(-2)}:00`;
+
+      sprintDailyMeeting.sprintDailyMeetingQuestions.forEach((sprintDailyMeetingQuestion, inx) => {
+        sprintDailyMeetingQuestion.sortOrder = inx + 1;
+      });
+    });
+
     if (type === 'edit') {
       request.put(
-        `/api/sprints/${info.id}`,
+        `/api/sprints/${next.id}`,
         {
-          ...info,
-          startDate: new Date(info.startDate),
-          endDate: new Date(info.endDate),
-          users: info.users.filter((u) => u.CRUD !== 'D'),
+          ...next,
+          startDate: new Date(next.startDate),
+          endDate: new Date(next.endDate),
+          users: next.users.filter((u) => u.CRUD !== 'D'),
         },
         (data) => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
@@ -246,7 +295,7 @@ const EditSprint = ({
     } else {
       request.post(
         '/api/sprints',
-        { ...info, startDate: new Date(info.startDate), endDate: new Date(info.endDate) },
+        { ...next, startDate: new Date(next.startDate), endDate: new Date(next.endDate) },
         (data) => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
             history.push(`/sprints/${data.id}`);
@@ -264,7 +313,7 @@ const EditSprint = ({
       <PageContent>
         <Form className="new-sprint-content" onSubmit={onSubmit}>
           <Block className="pt-0">
-            <BlockTitle className="mb-2 mb-sm-3">{t('스프린트 정보')}</BlockTitle>
+            <BlockTitle>{t('스프린트 정보')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
                 {t('이름')}
@@ -289,7 +338,7 @@ const EditSprint = ({
             </BlockRow>
           </Block>
           <Block className="pb-0">
-            <BlockTitle className="mb-2 mb-sm-3">{t('데일리 스크럼')}</BlockTitle>
+            <BlockTitle>{t('데일리 스크럼')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
               <CheckBox
@@ -351,6 +400,38 @@ const EditSprint = ({
                           changeSprintDailyMeeting(inx, key, value);
                         }}
                       />
+                      <div className="day-of-weeks">
+                        <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+                        {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')].map((day, jnx) => {
+                          return (
+                            <Button
+                              key={jnx}
+                              className={sprintDailyMeeting.days[jnx] === '1' ? 'selected' : ''}
+                              size="md"
+                              color="white"
+                              outline
+                              rounded
+                              onClick={() => {
+                                changeSprintDailyMeetingDays(inx, jnx, sprintDailyMeeting.days[jnx] === '1' ? '0' : '1');
+                              }}
+                            >
+                              {day}
+                            </Button>
+                          );
+                        })}
+                        <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+                        <Button
+                          size="sm"
+                          className={sprintDailyMeeting.onHoliday ? 'selected' : ''}
+                          color="white"
+                          outline
+                          onClick={() => {
+                            changeSprintDailyMeeting(inx, 'onHoliday', !sprintDailyMeeting.onHoliday);
+                          }}
+                        >
+                          휴일 제외
+                        </Button>
+                      </div>
                     </BlockRow>
                     <BlockRow>
                       <Label minWidth={labelMinWidth}>{t('스크럼 양식 사용')}</Label>
@@ -456,7 +537,7 @@ const EditSprint = ({
             </Block>
           )}
           <Block>
-            <BlockTitle className="mb-2 mb-sm-3">{t('지라 연동')}</BlockTitle>
+            <BlockTitle>{t('지라 연동')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('지라 연동')}</Label>
               <CheckBox
@@ -498,8 +579,8 @@ const EditSprint = ({
               </>
             )}
           </Block>
-          <Block className="mb-2">
-            <BlockTitle className="mb-2 mb-sm-3">{t('검색 및 참여 설정')}</BlockTitle>
+          <Block>
+            <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
               <RadioButton
@@ -524,7 +605,7 @@ const EditSprint = ({
             </BlockRow>
           </Block>
           <Block>
-            <BlockTitle className="mb-2 mb-sm-3">{t('멤버')}</BlockTitle>
+            <BlockTitle>{t('멤버')}</BlockTitle>
             <UserList
               users={info.users}
               onChange={(val) => changeInfo('users', val)}
@@ -542,6 +623,7 @@ const EditSprint = ({
             onSubmit
             onSubmitIcon={<i className="fas fa-plane" />}
             onSubmitText={type === 'edit' ? t('스프린트 변경') : t('스프린트 등록')}
+            onCancelIcon=""
           />
         </Form>
       </PageContent>

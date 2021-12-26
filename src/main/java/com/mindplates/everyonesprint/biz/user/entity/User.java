@@ -93,4 +93,7 @@ public class User extends CommonEntity {
     @Column(name = "loginToken")
     private String loginToken;
 
+    @Column(name = "timezone")
+    private String timezone;
+
 }

@@ -22,6 +22,7 @@ public class UserResponse {
     private String imageData;
     private String language;
     private String country;
+    private String timezone;
 
     public UserResponse(User user) {
         this.id = user.getId();
@@ -37,5 +38,6 @@ public class UserResponse {
         this.imageData = user.getImageData();
         this.language = user.getLanguage();
         this.country = user.getCountry();
+        this.timezone = user.getTimezone();
     }
 }

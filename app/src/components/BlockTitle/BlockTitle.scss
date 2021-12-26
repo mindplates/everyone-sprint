@@ -1,13 +1,14 @@
 .block-title-wrapper {
   display: flex;
-  margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   padding-top: 0.5rem;
-  margin-bottom: 0.5rem;
   position: relative;
+  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
 
   @media (max-width: 576px) {
-    padding-bottom: 0;
+    _padding-bottom: 0;
+    margin-bottom: 0.5rem;
   }
 
   > div {
@@ -33,7 +34,7 @@
       opacity: 0.4;
 
       @media (max-width: 576px) {
-        display: none;
+        _display: none;
       }
     }
 

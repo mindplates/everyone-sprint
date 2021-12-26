@@ -40,9 +40,11 @@ const BottomButtons = (props) => {
         {onCancel && (
           <Button type="button" size={size} color="white" outline onClick={onCancel}>
             <div>
-              <div className="icon">
-                <span>{onCancelIcon}</span>
-              </div>
+              {onCancelIcon && (
+                <div className="icon">
+                  <span>{onCancelIcon}</span>
+                </div>
+              )}
               <div>{onCancelText}</div>
             </div>
           </Button>
@@ -50,9 +52,11 @@ const BottomButtons = (props) => {
         {onList && (
           <Button type="button" size={size} color="white" outline onClick={onList}>
             <div>
-              <div className="icon">
-                <span>{onListIcon}</span>
-              </div>
+              {onListIcon && (
+                <div className="icon">
+                  <span>{onListIcon}</span>
+                </div>
+              )}
               <div>{onListText}</div>
             </div>
           </Button>
@@ -60,19 +64,23 @@ const BottomButtons = (props) => {
         {onEdit && (
           <Button type="button" size={size} color="blue" onClick={onEdit}>
             <div>
-              <div className="icon">
-                <span>{onEditIcon}</span>
-              </div>
+              {onEditIcon && (
+                <div className="icon">
+                  <span>{onEditIcon}</span>
+                </div>
+              )}
               <div>{onEditText}</div>
             </div>
           </Button>
         )}
         {onSubmit && (
-          <Button type="submit" size={size} color="primary">
+          <Button type="submit" size={size} outline color="black">
             <div>
-              <div className="icon">
-                <span>{onSubmitIcon}</span>
-              </div>
+              {onSubmitIcon && (
+                <div className="icon">
+                  <span>{onSubmitIcon}</span>
+                </div>
+              )}
               <div>{onSubmitText}</div>
             </div>
           </Button>

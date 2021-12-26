@@ -85,11 +85,11 @@ class UserCard extends React.PureComponent {
               <UserImage border rounded size="50px" imageType={user.imageType} imageData={user.imageData} />
             </div>
             <div className="user-card-content">
-              <div className="email">{user.email}</div>
               <div className="alias">
                 <span className="alias-text">{user.alias}</span>
                 {user.name && <span className="name-text">{user.name}</span>}
               </div>
+              <div className="email">{user.email}</div>
             </div>
           </div>
         )}

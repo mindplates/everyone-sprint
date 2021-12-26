@@ -62,6 +62,8 @@ public class SprintResponse {
                                 .startTime(sprintDailyMeeting.getStartTime())
                                 .endTime(sprintDailyMeeting.getEndTime())
                                 .useQuestion(sprintDailyMeeting.getUseQuestion())
+                                .onHoliday(sprintDailyMeeting.getOnHoliday())
+                                .days(sprintDailyMeeting.getDays())
                                 .sprintDailyMeetingQuestions((sprintDailyMeeting.getSprintDailyMeetingQuestions().stream()
                                         .map((sprintDailyMeetingQuestion -> SprintDailyMeetingQuestion.builder()
                                                 .id(sprintDailyMeetingQuestion.getId())
@@ -94,6 +96,8 @@ public class SprintResponse {
         private LocalTime startTime;
         private LocalTime endTime;
         private Boolean useQuestion;
+        private Boolean onHoliday;
+        private String days;
         private List<SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
 
     }

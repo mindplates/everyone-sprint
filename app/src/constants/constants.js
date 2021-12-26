@@ -15,6 +15,7 @@ const USER_STUB = {
   loginToken: '',
   name: '',
   tel: '',
+  timezone : 'Asia/Seoul',
 };
 
 const DATE_FORMATS_TYPES = {
@@ -22,6 +23,51 @@ const DATE_FORMATS_TYPES = {
   days: 'days',
   hours: 'hours',
   dayHours: 'dayHours',
+};
+
+const TIMEZONES = {
+  'Asia/Seoul': {
+    name : 'Asia/Seoul (GMT +9:00)',
+    dir: +1,
+    hours: 9,
+    minutes: 0,
+  },
+  'US/HST': {
+    name : 'US/HST (GMT -10:00)',
+    dir: -1,
+    hours: 10,
+    minutes: 0,
+  },
+  'US/AKST': {
+    name : 'US/AKST (GMT -9:00)',
+    dir: -1,
+    hours: 9,
+    minutes: 0,
+  },
+  'US/PST': {
+    name : 'US/PST (GMT -8:00)',
+    dir: -1,
+    hours: 8,
+    minutes: 0,
+  },
+  'US/MST': {
+    name : 'US/MST(GMT -7:00)',
+    dir: -1,
+    hours: 7,
+    minutes: 0,
+  },
+  'US/CST': {
+    name : 'US/CST(GMT -6:00)',
+    dir: -1,
+    hours: 6,
+    minutes: 0,
+  },
+  'US/EST': {
+    name : 'US/EST(GMT -5:00)',
+    dir: -1,
+    hours: 5,
+    minutes: 0,
+  },
 };
 
 const DATE_FORMATS = {
@@ -134,4 +180,5 @@ export {
   COUNTRIES,
   DATE_FORMATS_TYPES,
   COLORS,
+  TIMEZONES,
 };
