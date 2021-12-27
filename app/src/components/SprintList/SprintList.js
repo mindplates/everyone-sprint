@@ -46,22 +46,24 @@ const SprintList = ({ className, printOld, t, history, sprints }) => {
                 </div>
               </div>
               {printOld && old && (
-                <div className="status">
-                  <Button
-                    size="xs"
-                    color="danger"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      history.push(`/sprints/${sprint.id}/deactivate`);
-                    }}
-                  >
-                    <i className="far fa-stop-circle" /> {t('종료')}
-                  </Button>
-                </div>
+                <>
+                  <div className="status">
+                    <Button
+                      size="xs"
+                      color="danger"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        history.push(`/sprints/${sprint.id}/deactivate`);
+                      }}
+                    >
+                      <i className="far fa-stop-circle" /> {t('종료')}
+                    </Button>
+                  </div>
+                  <div className="liner">
+                    <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 0.5rem" />
+                  </div>
+                </>
               )}
-              <div className="liner">
-                <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 0.5rem" />
-              </div>
               <div className="others">
                 <div className="user-count">
                   <div className="label">

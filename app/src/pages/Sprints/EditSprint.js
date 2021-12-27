@@ -10,11 +10,11 @@ import {
   BottomButtons,
   Button,
   CheckBox,
+  DailyScrumMeeting,
   DateRange,
   Form,
   Input,
   Label,
-  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -26,7 +26,6 @@ import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
-import './EditSprint.scss';
 
 const start = new Date();
 start.setHours(9);
@@ -260,12 +259,12 @@ const EditSprint = ({
     const next = JSON.parse(JSON.stringify(info));
     next.sprintDailyMeetings.forEach((sprintDailyMeeting) => {
       const startTime = new Date(sprintDailyMeeting.startTime);
-      startTime.setHours(startTime.getHours() -  dateUtil.getUserOffsetHours());
-      startTime.setMinutes(startTime.getMinutes() -  dateUtil.getUserOffsetMinutes());
+      startTime.setHours(startTime.getHours() - dateUtil.getUserOffsetHours());
+      startTime.setMinutes(startTime.getMinutes() - dateUtil.getUserOffsetMinutes());
 
       const endTime = new Date(sprintDailyMeeting.endTime);
-      endTime.setHours(endTime.getHours() -  dateUtil.getUserOffsetHours());
-      endTime.setMinutes(endTime.getMinutes() -  dateUtil.getUserOffsetMinutes());
+      endTime.setHours(endTime.getHours() - dateUtil.getUserOffsetHours());
+      endTime.setMinutes(endTime.getMinutes() - dateUtil.getUserOffsetMinutes());
 
       sprintDailyMeeting.startTime = `${`0${startTime.getHours()}`.slice(-2)}:${`0${startTime.getMinutes()}`.slice(-2)}:00`;
       sprintDailyMeeting.endTime = `${`0${endTime.getHours()}`.slice(-2)}:${`0${endTime.getMinutes()}`.slice(-2)}:00`;
@@ -354,177 +353,28 @@ const EditSprint = ({
             <Block className="sprint-daily-meetings">
               {info.sprintDailyMeetings.map((sprintDailyMeeting, inx) => {
                 return (
-                  <div key={inx} className="sprint-daily-meeting">
-                    <div className="meeting-index">
-                      <span>
-                        <span>{inx + 1}</span>
-                      </span>
-                    </div>
-                    <div className="meeting-remove-button">
-                      <Button
-                        size="sm"
-                        color="warning"
-                        outline
-                        rounded
-                        onClick={() => {
-                          removeSprintDailyMeeting(inx);
-                        }}
-                      >
-                        <i className="fas fa-times" />
-                      </Button>
-                    </div>
-                    <BlockRow>
-                      <Label minWidth={labelMinWidth}>{t('미팅 이름')}</Label>
-                      <Input
-                        type="name"
-                        size="md"
-                        value={sprintDailyMeeting.name}
-                        onChange={(val) => changeSprintDailyMeeting(inx, 'name', val)}
-                        outline
-                        simple
-                        required
-                        minLength={1}
-                      />
-                    </BlockRow>
-                    <BlockRow>
-                      <Label minWidth={labelMinWidth}>{t('시간')}</Label>
-                      <DateRange
-                        country={user.country}
-                        language={user.language}
-                        startDate={sprintDailyMeeting.startTime}
-                        endDate={sprintDailyMeeting.endTime}
-                        showTimeSelectOnly
-                        startDateKey="startTime"
-                        endDateKey="endTime"
-                        onChange={(key, value) => {
-                          changeSprintDailyMeeting(inx, key, value);
-                        }}
-                      />
-                      <div className="day-of-weeks">
-                        <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                        {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')].map((day, jnx) => {
-                          return (
-                            <Button
-                              key={jnx}
-                              className={sprintDailyMeeting.days[jnx] === '1' ? 'selected' : ''}
-                              size="md"
-                              color="white"
-                              outline
-                              rounded
-                              onClick={() => {
-                                changeSprintDailyMeetingDays(inx, jnx, sprintDailyMeeting.days[jnx] === '1' ? '0' : '1');
-                              }}
-                            >
-                              {day}
-                            </Button>
-                          );
-                        })}
-                        <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                        <Button
-                          size="sm"
-                          className={sprintDailyMeeting.onHoliday ? 'selected' : ''}
-                          color="white"
-                          outline
-                          onClick={() => {
-                            changeSprintDailyMeeting(inx, 'onHoliday', !sprintDailyMeeting.onHoliday);
-                          }}
-                        >
-                          휴일 제외
-                        </Button>
-                      </div>
-                    </BlockRow>
-                    <BlockRow>
-                      <Label minWidth={labelMinWidth}>{t('스크럼 양식 사용')}</Label>
-                      <CheckBox
-                        size="md"
-                        type="checkbox"
-                        value={sprintDailyMeeting.useQuestion}
-                        onChange={(val) => changeSprintDailyMeeting(inx, 'useQuestion', val)}
-                        label={t('정해진 스크럼 미팅 양식을 사용합니다.')}
-                      />
-                    </BlockRow>
-                    {sprintDailyMeeting.useQuestion && (
-                      <BlockRow>
-                        <Label className="align-self-baseline" minWidth={labelMinWidth}>
-                          {t('스크럼 질문')}
-                        </Label>
-                        <div className="flex-grow-1">
-                          {sprintDailyMeeting.sprintDailyMeetingQuestions.map((sprintDailyMeetingQuestion, jnx) => {
-                            return (
-                              <div key={jnx} className="question-item">
-                                <div className="dir-button up">
-                                  <Button
-                                    size="sm"
-                                    color="white"
-                                    outline
-                                    rounded
-                                    disabled={jnx < 1}
-                                    onClick={() => {
-                                      changeOrderSprintDailyMeetingQuestions('up', inx, jnx);
-                                    }}
-                                  >
-                                    <i className="fas fa-arrow-up" />
-                                  </Button>
-                                </div>
-                                <div className="dir-button down">
-                                  <Button
-                                    size="sm"
-                                    color="white"
-                                    outline
-                                    rounded
-                                    disabled={sprintDailyMeeting.sprintDailyMeetingQuestions.length - 2 < jnx}
-                                    onClick={() => {
-                                      changeOrderSprintDailyMeetingQuestions('down', inx, jnx);
-                                    }}
-                                  >
-                                    <i className="fas fa-arrow-down" />
-                                  </Button>
-                                </div>
-                                <div className="question">
-                                  <Input
-                                    type="name"
-                                    size="md"
-                                    value={sprintDailyMeetingQuestion.question}
-                                    onChange={(val) => changeSprintDailyMeetingQuestions(inx, jnx, 'question', val)}
-                                    outline
-                                    simple
-                                    required
-                                    minLength={1}
-                                  />
-                                </div>
-                                <div className="dir-button delete">
-                                  <Button
-                                    size="sm"
-                                    color="warning"
-                                    outline
-                                    rounded
-                                    onClick={() => {
-                                      changeOrderSprintDailyMeetingQuestions('remove', inx, jnx);
-                                    }}
-                                  >
-                                    <i className="fas fa-times" />
-                                  </Button>
-                                </div>
-                              </div>
-                            );
-                          })}
-                          <div className="add-button">
-                            <Button
-                              size="sm"
-                              color="white"
-                              outline
-                              rounded
-                              onClick={() => {
-                                changeOrderSprintDailyMeetingQuestions('add', inx, null);
-                              }}
-                            >
-                              <i className="fas fa-plus" />
-                            </Button>
-                          </div>
-                        </div>
-                      </BlockRow>
-                    )}
-                  </div>
+                  <DailyScrumMeeting
+                    key={inx}
+                    edit
+                    no={inx + 1}
+                    sprintDailyMeeting={sprintDailyMeeting}
+                    onRemove={() => {
+                      removeSprintDailyMeeting(inx);
+                    }}
+                    onChangeInfo={(key, value) => {
+                      changeSprintDailyMeeting(inx, key, value);
+                    }}
+                    onChangeMeetingDays={(dayIndex) => {
+                      changeSprintDailyMeetingDays(inx, dayIndex, sprintDailyMeeting.days[dayIndex] === '1' ? '0' : '1');
+                    }}
+                    onChangeQuestionOrder={(dayIndex, dir) => {
+                      changeOrderSprintDailyMeetingQuestions(dir, inx, dayIndex);
+                    }}
+                    onChangeQuestion={(questionIndex, key, value) => {
+                      changeSprintDailyMeetingQuestions(inx, questionIndex, key, value);
+                    }}
+                    user={user}
+                  />
                 );
               })}
               <BlockRow>

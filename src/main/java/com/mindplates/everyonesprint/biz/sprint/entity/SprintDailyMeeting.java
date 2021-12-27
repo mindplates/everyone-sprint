@@ -1,10 +1,7 @@
 package com.mindplates.everyonesprint.biz.sprint.entity;
 
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -17,7 +14,9 @@ import java.util.List;
 @Table(name = "sprint_daily_meeting")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@EqualsAndHashCode
+@Getter
+@Setter
 public class SprintDailyMeeting extends CommonEntity {
 
     @Id
@@ -50,6 +49,5 @@ public class SprintDailyMeeting extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprintDailyMeeting", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
-
 
 }

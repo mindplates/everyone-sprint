@@ -1,10 +1,7 @@
 package com.mindplates.everyonesprint.biz.sprint.entity;
 
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,7 +10,8 @@ import javax.persistence.*;
 @Table(name = "sprint_daily_meeting_question")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class SprintDailyMeetingQuestion extends CommonEntity {
 
     @Id
@@ -21,7 +19,7 @@ public class SprintDailyMeetingQuestion extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "sprint_daily_meeting_id")
     private SprintDailyMeeting sprintDailyMeeting;
 

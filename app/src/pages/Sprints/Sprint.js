@@ -8,6 +8,7 @@ import {
   BlockRow,
   BlockTitle,
   BottomButtons,
+  DailyScrumMeeting,
   DateRangeText,
   Label,
   Page,
@@ -20,6 +21,7 @@ import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import dateUtil from '@/utils/dateUtil';
 
 const labelMinWidth = '140px';
 
@@ -38,7 +40,32 @@ const Sprint = ({
       `/api/sprints/${id}`,
       null,
       (data) => {
-        setSprint(data);
+        data.sprintDailyMeetings.forEach((sprintDailyMeeting) => {
+          const starts = sprintDailyMeeting.startTime.split(':');
+          const ends = sprintDailyMeeting.endTime.split(':');
+
+          const startTime = new Date();
+          startTime.setHours(Number(starts[0]) + dateUtil.getUserOffsetHours());
+          startTime.setMinutes(Number(starts[1]) + dateUtil.getUserOffsetMinutes());
+
+          const endTime = new Date();
+          endTime.setHours(Number(ends[0]) + dateUtil.getUserOffsetHours());
+          endTime.setMinutes(Number(ends[1]) + dateUtil.getUserOffsetMinutes());
+
+          sprintDailyMeeting.startTime = startTime.getTime();
+          sprintDailyMeeting.endTime = endTime.getTime();
+
+          sprintDailyMeeting.sprintDailyMeetingQuestions.sort((a, b) => {
+            return a.sortOrder - b.sortOrder;
+          });
+        });
+        setSprint({
+          ...data,
+          startDate: dateUtil.getTime(data.startDate),
+          endDate: dateUtil.getTime(data.endDate),
+        });
+
+        // setSprint(data);
       },
       null,
       t('스프린트 정보를 가져오고 있습니다.'),
@@ -78,24 +105,23 @@ const Sprint = ({
                 country={user.country}
                 startDate={sprint.startDate}
                 endDate={sprint.endDate}
-                onChange={(key, value) => {
-                  const v = {};
-                  v[key] = value;
-                  setSprint({ ...sprint, ...v });
-                }}
               />
             </BlockRow>
           </Block>
-          <Block>
-            <BlockTitle className="mb-2 mb-sm-3">{t('멤버')}</BlockTitle>
-            <UserList
-              users={sprint.users}
-              editable={{
-                role: false,
-                member: false,
-              }}
-            />
+          <Block className="pb-0">
+            <BlockTitle>{t('데일리 스크럼')}</BlockTitle>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
+              <Text>{sprint.doDailyScrumMeeting ? 'Y' : 'M'}</Text>
+            </BlockRow>
           </Block>
+          {sprint.doDailyScrumMeeting && (
+            <Block className="sprint-daily-meetings">
+              {sprint.sprintDailyMeetings.map((sprintDailyMeeting, inx) => {
+                return <DailyScrumMeeting key={inx} no={inx + 1} sprintDailyMeeting={sprintDailyMeeting} user={user} />;
+              })}
+            </Block>
+          )}
           <Block>
             <BlockTitle>{t('지라 연동')}</BlockTitle>
             <BlockRow>
@@ -126,6 +152,16 @@ const Sprint = ({
               <Text>{(JOIN_POLICIES.find((d) => d.key === sprint.allowAutoJoin) || {}).value}</Text>
             </BlockRow>
           </Block>
+          <Block>
+            <BlockTitle>{t('멤버')}</BlockTitle>
+            <UserList
+              users={sprint.users}
+              editable={{
+                role: false,
+                member: false,
+              }}
+            />
+          </Block>
           <BottomButtons
             onList={() => {
               history.push('/sprints');
@@ -133,8 +169,9 @@ const Sprint = ({
             onEdit={() => {
               history.push(`/sprints/${id}/edit`);
             }}
+            onEditText="스프린트 변경"
             onDelete={onDelete}
-            onDeleteText="삭제"
+            onDeleteText="스프린트 삭제"
           />
         </PageContent>
       )}

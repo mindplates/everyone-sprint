@@ -1,11 +1,9 @@
 package com.mindplates.everyonesprint.biz.meeting.entity;
 
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
+import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -18,7 +16,8 @@ import java.util.List;
 @Table(name = "meeting")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class Meeting extends CommonEntity {
 
     @Id
@@ -46,7 +45,8 @@ public class Meeting extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<MeetingUser> users;
 
-    @Column(name = "sprint_daily_meeting_id")
-    Long sprintDailyMeetingId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "sprint_daily_meeting_id")
+    private SprintDailyMeeting sprintDailyMeeting;
 
 }

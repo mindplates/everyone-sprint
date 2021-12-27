@@ -46,9 +46,14 @@
     border-radius: 0;
   }
 
+  .react-datepicker__time-list-item--selected {
+    background-color: $blue !important;
+  }
+
   .react-datepicker__header,
   .react-datepicker__header--time {
     border-radius: 0 !important;
+    background-color: $light;
   }
 
   ul.react-datepicker__time-list {
