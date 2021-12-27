@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.meeting.service;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.repository.MeetingRepository;
+import com.mindplates.everyonesprint.biz.meeting.repository.MeetingUserRepository;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class MeetingService {
 
     @Autowired
     private MeetingRepository meetingRepository;
+
+    @Autowired
+    private MeetingUserRepository meetingUserRepository;
 
     public static String makeShortUUID() {
         UUID uuid = UUID.randomUUID();
@@ -72,6 +76,10 @@ public class MeetingService {
 
     public Optional<Meeting> selectMeetingInfo(String code) {
         return meetingRepository.findByCode(code);
+    }
+
+    public List<Meeting> selectSprintMeetingList(Long sprintId, Long sprintDailyMeetingId) {
+        return meetingRepository.findAllBySprintIdAndSprintDailyMeetingId(sprintId, sprintDailyMeetingId);
     }
 
 
