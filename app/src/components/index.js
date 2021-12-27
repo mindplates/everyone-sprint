@@ -31,6 +31,7 @@ import MeetingList from '@/components/MeetingList/MeetingList';
 import Selector from '@/components/Selector/Selector';
 import ParticipantsList from '@/components/ParticipantsList/ParticipantsList';
 import VideoElement from '@/components/VideoElement/VideoElement';
+import DailyScrumMeeting from '@/components/DailyScrumMeeting/DailyScrumMeeting';
 
 export {
   MessageDialog,
@@ -66,4 +67,5 @@ export {
   MeetingList,
   ParticipantsList,
   VideoElement,
+  DailyScrumMeeting,
 };
