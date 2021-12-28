@@ -22,6 +22,8 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     List<Meeting> findAllBySprintIdAndSprintDailyMeetingId(Long sprintId, Long sprintDailyMeetingId);
 
+    void deleteAllBySprintDailyMeetingId (Long sprintDailyMeetingId);
+
 
 }
 

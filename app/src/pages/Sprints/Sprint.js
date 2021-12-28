@@ -101,11 +101,8 @@ const Sprint = ({
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('기간')}</Label>
-              <DateRangeText
-                country={user.country}
-                startDate={sprint.startDate}
-                endDate={sprint.endDate}
-              />
+              <DateRangeText country={user.country} startDate={sprint.startDate} endDate={sprint.endDate} />
+              <span className="align-self-center mx-2">[{`${Math.floor((sprint.endDate - sprint.startDate) / (1000 * 60 * 60 * 24))}${t('일')}`}]</span>
             </BlockRow>
           </Block>
           <Block className="pb-0">

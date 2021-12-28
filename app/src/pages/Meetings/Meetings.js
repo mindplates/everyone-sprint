@@ -43,7 +43,7 @@ const Meetings = ({ t, user, history }) => {
     sprintId: null,
   });
   const [options, setOptions] = useState({
-    all: false,
+    all: true,
   });
 
   const [sprints, setSprints] = useState([]);
@@ -171,14 +171,7 @@ const Meetings = ({ t, user, history }) => {
                 </div>
               </div>
               <div>
-                <Liner
-                  className="date-quick-control"
-                  display="inline-block"
-                  width="1px"
-                  height="10px"
-                  color="light"
-                  margin="0 1rem"
-                />
+                <Liner className="date-quick-control" display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
               </div>
             </div>
 

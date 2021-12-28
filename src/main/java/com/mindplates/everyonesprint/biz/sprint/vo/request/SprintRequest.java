@@ -57,6 +57,7 @@ public class SprintRequest {
                 .map((sprintDailyMeeting) -> {
                             com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting meeting = com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting.builder()
                                     .id(sprintDailyMeeting.getId())
+                                    .CRUD(sprintDailyMeeting.getCRUD())
                                     .sprint(sprint)
                                     .name(sprintDailyMeeting.getName())
                                     .startTime(LocalTime.parse(sprintDailyMeeting.getStartTime()))
@@ -100,6 +101,7 @@ public class SprintRequest {
     @Builder
     public static class SprintDailyMeeting {
         private Long id;
+        private String CRUD;
         private String name;
         private String startTime;
         private String endTime;

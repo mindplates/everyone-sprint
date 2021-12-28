@@ -248,7 +248,22 @@ DailyScrumMeeting.propTypes = {
   t: PropTypes.func,
   no: PropTypes.number,
   onRemove: PropTypes.func,
-  sprintDailyMeeting: PropTypes.shape(PropTypes.any),
+  sprintDailyMeeting: PropTypes.shape({
+    days: PropTypes.string,
+    endTime: PropTypes.number,
+    id: PropTypes.number,
+    name: PropTypes.string,
+    onHoliday: PropTypes.bool,
+    sprintDailyMeetingQuestions: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        question: PropTypes.string,
+        sortOrder: PropTypes.number,
+      }),
+    ),
+    startTime: PropTypes.number,
+    useQuestion: PropTypes.bool,
+  }),
   onChangeInfo: PropTypes.func,
   onChangeMeetingDays: PropTypes.func,
   onChangeQuestionOrder: PropTypes.func,

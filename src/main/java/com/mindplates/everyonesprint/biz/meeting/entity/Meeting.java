@@ -45,7 +45,7 @@ public class Meeting extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<MeetingUser> users;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sprint_daily_meeting_id")
     private SprintDailyMeeting sprintDailyMeeting;
 
