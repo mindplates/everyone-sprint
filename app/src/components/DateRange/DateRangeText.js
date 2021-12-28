@@ -5,7 +5,6 @@ import './DateRangeText.scss';
 import dateUtil from '@/utils/dateUtil';
 
 const DateRangeText = ({ className, startDate, endDate, size, showTimeOnly }) => {
-  console.log(showTimeOnly);
   return (
     <div className={`date-range-text-wrapper ${className} size-${size}`}>
       <div>

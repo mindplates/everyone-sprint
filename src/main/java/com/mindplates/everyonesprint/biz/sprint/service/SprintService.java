@@ -42,26 +42,19 @@ public class SprintService {
         sprint.setCreatedBy(userSession.getId());
         sprint.setLastUpdatedBy(userSession.getId());
         sprintRepository.save(sprint);
-        sprintRepository.flush();
 
         LocalDateTime startDate = sprint.getStartDate();
         LocalDateTime endDate = sprint.getEndDate();
-        ArrayList meetingList = new ArrayList();
 
-        sprint.getSprintDailyMeetings().stream().forEach((sprintDailyMeeting -> {
-            LocalDateTime date = startDate;
-            while (date.isBefore(endDate)) {
-                final LocalDateTime currentDate = date;
-                Meeting meeting = getMeeting(sprint, userSession, now, currentDate, sprintDailyMeeting, null);
-                meetingList.add(meeting);
-                date = date.plusDays(1);
-            }
-        }));
+        ArrayList meetings = new ArrayList();
 
-        if (meetingList.size() > 0) {
-            meetingRepository.saveAll(meetingList);
+        for (SprintDailyMeeting sprintDailyMeeting : sprint.getSprintDailyMeetings()) {
+            meetings.addAll(makeMeetings(sprintDailyMeeting, startDate, endDate, userSession));
         }
 
+        if (meetings.size() > 0) {
+            meetingRepository.saveAll(meetings);
+        }
 
         return sprint;
     }
@@ -73,58 +66,82 @@ public class SprintService {
 
         LocalDateTime startDate = sprint.getStartDate();
         LocalDateTime endDate = sprint.getEndDate();
-        ArrayList newMeetingList = new ArrayList();
 
-        sprintRepository.save(sprint);
-        sprintRepository.flush();
+        List updateMeetings = new ArrayList();
+        List deleteMeetings = new ArrayList();
 
-        // 새로운 미팅 생성
-        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> sprintDailyMeeting.getId() == null)).forEach((sprintDailyMeeting -> {
-            LocalDateTime date = startDate;
-            while (date.isBefore(endDate)) {
-                final LocalDateTime currentDate = date;
-                Meeting meeting = getMeeting(sprint, userSession, now, currentDate, sprintDailyMeeting, null);
-                newMeetingList.add(meeting);
-                date = date.plusDays(1);
-            }
+        // 스프린트 미팅 및 미팅 삭제
+        List deleteSprintDailyMeetings = new ArrayList();
+        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> sprintDailyMeeting.getCRUD().equals("D"))).forEach((sprintDailyMeeting -> {
+            deleteSprintDailyMeetings.add(sprintDailyMeeting);
+            meetingRepository.deleteAllBySprintDailyMeetingId(sprintDailyMeeting.getId());
         }));
+        sprint.getSprintDailyMeetings().removeAll(deleteSprintDailyMeetings);
 
-        // 기존 미팅 정보 수정 및 삭제
-        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> sprintDailyMeeting.getId() != null)).forEach((sprintDailyMeeting -> {
+        // 새 미팅 정보에 따른 미팅 생성
+        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> sprintDailyMeeting.getCRUD().equals("C"))).forEach(sprintDailyMeeting -> updateMeetings.addAll(makeMeetings(sprintDailyMeeting, startDate, endDate, userSession)));
 
-            List<Meeting> meetings = meetingService.selectSprintMeetingList(sprint.getId(), sprintDailyMeeting.getId());
+        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> sprintDailyMeeting.getCRUD().equals("U"))).forEach((sprintDailyMeeting -> {
+            List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSprintDailyMeetingId(sprint.getId(), sprintDailyMeeting.getId());
 
-            meetings.forEach((meeting -> {
-                LocalDateTime meetingStartDate = meeting.getStartDate().withHour(sprintDailyMeeting.getStartTime().getHour()).withMinute(sprintDailyMeeting.getStartTime().getMinute()).withSecond(0).withNano(0);
-                LocalDateTime meetingEndDate = meeting.getEndDate().withHour(sprintDailyMeeting.getEndTime().getHour()).withMinute(sprintDailyMeeting.getEndTime().getMinute()).withSecond(0).withNano(0);
-
-                if (meetingStartDate.isAfter(sprint.getStartDate()) && meetingEndDate.isBefore(sprint.getEndDate())) {
-                    Meeting updatedMeeting = getMeeting(sprint, userSession, now, meeting.getStartDate(), sprintDailyMeeting, meeting);
-                    meetingService.updateMeetingInfo(updatedMeeting, userSession);
-                } else {
-                    meetingService.deleteMeetingInfo(meeting);
+            // 범위에 포함되지 않는 미팅 삭제
+            meetings.stream().forEach((meeting -> {
+                if (meeting.getStartDate().isBefore(startDate) || meeting.getStartDate().isAfter(endDate)) {
+                    deleteMeetings.add(meeting);
                 }
             }));
 
             LocalDateTime date = startDate;
             while (date.isBefore(endDate)) {
                 final LocalDateTime currentDate = date;
-                if (meetings.stream().noneMatch((meeting -> meeting.getStartDate().getYear() == currentDate.getYear() && meeting.getStartDate().getDayOfYear() == currentDate.getDayOfYear()))) {
-                    Meeting meeting = getMeeting(sprint, userSession, now, currentDate, sprintDailyMeeting, null);
-                    newMeetingList.add(meeting);
+                Meeting currentDateMeeting = meetings.stream().filter((meeting -> meeting.getStartDate().getYear() == currentDate.getYear() && meeting.getStartDate().getDayOfYear() == currentDate.getDayOfYear())).findFirst().orElse(null);
+
+                if (currentDateMeeting == null) {
+                    LocalDateTime meetingStartDate = currentDate.withHour(sprintDailyMeeting.getStartTime().getHour()).withMinute(sprintDailyMeeting.getStartTime().getMinute()).withSecond(0).withNano(0);
+                    if (meetingStartDate.isAfter(startDate) && sprintDailyMeeting.getDays().charAt(currentDate.getDayOfWeek().getValue() - 1) == '1') {
+                        Meeting meeting = getMeeting(sprint, userSession, now, currentDate, sprintDailyMeeting, null);
+                        updateMeetings.add(meeting);
+                    }
+                } else {
+                    if (sprintDailyMeeting.getDays().charAt(currentDate.getDayOfWeek().getValue() - 1) == '1') {
+                        Meeting meeting = getMeeting(sprint, userSession, now, currentDate, sprintDailyMeeting, currentDateMeeting);
+                        updateMeetings.add(meeting);
+                    } else {
+                        deleteMeetings.add(currentDateMeeting);
+                    }
                 }
+
                 date = date.plusDays(1);
             }
-
-
         }));
 
-        if (newMeetingList.size() > 0) {
-            meetingRepository.saveAll(newMeetingList);
-        }
 
+        meetingRepository.deleteAll(deleteMeetings);
+        meetingRepository.saveAll(updateMeetings);
+        sprintRepository.save(sprint);
 
         return sprint;
+    }
+
+    private List<Meeting> makeMeetings(SprintDailyMeeting sprintDailyMeeting, LocalDateTime startDate, LocalDateTime endDate, UserSession userSession) {
+
+        ArrayList meetings = new ArrayList();
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime date = startDate;
+        while (date.isBefore(endDate)) {
+            final LocalDateTime currentDate = date;
+            LocalDateTime meetingStartDate = startDate.withHour(sprintDailyMeeting.getStartTime().getHour()).withMinute(sprintDailyMeeting.getStartTime().getMinute()).withSecond(0).withNano(0);
+            int dayOfWeekIndex = currentDate.getDayOfWeek().getValue() - 1;
+            if (meetingStartDate.isAfter(startDate) && sprintDailyMeeting.getDays().charAt(dayOfWeekIndex) == '1') {
+                Meeting meeting = getMeeting(sprintDailyMeeting.getSprint(), userSession, now, currentDate, sprintDailyMeeting, null);
+                meetings.add(meeting);
+            }
+
+            date = date.plusDays(1);
+        }
+
+        return meetings;
     }
 
     private Meeting getMeeting(Sprint sprint, UserSession userSession, LocalDateTime now, LocalDateTime currentDate, SprintDailyMeeting sprintDailyMeeting, Meeting pMeeting) {
@@ -150,12 +167,10 @@ public class SprintService {
         meeting.setSprintDailyMeeting(sprintDailyMeeting);
         meeting.setCode(code);
         List<MeetingUser> meetingUsers = Optional.ofNullable(meeting.getUsers()).orElse(new ArrayList<>());
+        meetingUsers.clear();
 
         sprint.getUsers()
                 .stream()
-                .filter((sprintUser) -> {
-                    return meetingUsers.stream().noneMatch((meetingUser -> meetingUser.getUser().getId().equals(sprintUser.getUser().getId())));
-                })
                 .forEach((sprintUser) -> {
                     MeetingUser meetingUser = MeetingUser.builder().build();
                     meetingUser.setUser(User.builder().id(sprintUser.getUser().getId()).build());

@@ -50,4 +50,7 @@ public class SprintDailyMeeting extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
 
+    @Transient
+    private String CRUD;
+
 }
