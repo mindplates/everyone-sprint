@@ -21,6 +21,7 @@ import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import sprintUtil from './sprintUtil';
 import dateUtil from '@/utils/dateUtil';
 
 const labelMinWidth = '140px';
@@ -40,32 +41,7 @@ const Sprint = ({
       `/api/sprints/${id}`,
       null,
       (data) => {
-        data.sprintDailyMeetings.forEach((sprintDailyMeeting) => {
-          const starts = sprintDailyMeeting.startTime.split(':');
-          const ends = sprintDailyMeeting.endTime.split(':');
-
-          const startTime = new Date();
-          startTime.setHours(Number(starts[0]) + dateUtil.getUserOffsetHours());
-          startTime.setMinutes(Number(starts[1]) + dateUtil.getUserOffsetMinutes());
-
-          const endTime = new Date();
-          endTime.setHours(Number(ends[0]) + dateUtil.getUserOffsetHours());
-          endTime.setMinutes(Number(ends[1]) + dateUtil.getUserOffsetMinutes());
-
-          sprintDailyMeeting.startTime = startTime.getTime();
-          sprintDailyMeeting.endTime = endTime.getTime();
-
-          sprintDailyMeeting.sprintDailyMeetingQuestions.sort((a, b) => {
-            return a.sortOrder - b.sortOrder;
-          });
-        });
-        setSprint({
-          ...data,
-          startDate: dateUtil.getTime(data.startDate),
-          endDate: dateUtil.getTime(data.endDate),
-        });
-
-        // setSprint(data);
+        setSprint(sprintUtil.getSprint(data));
       },
       null,
       t('스프린트 정보를 가져오고 있습니다.'),
@@ -88,8 +64,10 @@ const Sprint = ({
     });
   };
 
+  const sprintSpan = dateUtil.getSpan(sprint?.startDate, sprint?.endDate);
+
   return (
-    <Page>
+    <Page className='sprint-common'>
       <PageTitle>{t('스프린트 정보')}</PageTitle>
       {sprint && (
         <PageContent>
@@ -102,7 +80,10 @@ const Sprint = ({
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('기간')}</Label>
               <DateRangeText country={user.country} startDate={sprint.startDate} endDate={sprint.endDate} />
-              <span className="align-self-center mx-2">[{`${Math.floor((sprint.endDate - sprint.startDate) / (1000 * 60 * 60 * 24))}${t('일')}`}]</span>
+              <span className="align-self-center sprint-span">
+                <span>{`${sprintSpan.days}${t('일')}`}</span>
+                <span className="ml-2">{`${sprintSpan.hours}${t('시간')}`}</span>
+              </span>
             </BlockRow>
           </Block>
           <Block className="pb-0">

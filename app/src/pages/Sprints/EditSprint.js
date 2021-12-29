@@ -26,6 +26,7 @@ import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
+import sprintUtil from '@/pages/Sprints/sprintUtil';
 
 const start = new Date();
 start.setHours(9);
@@ -72,31 +73,7 @@ const EditSprint = ({
         `/api/sprints/${id}`,
         null,
         (data) => {
-          data.sprintDailyMeetings.forEach((sprintDailyMeeting) => {
-            sprintDailyMeeting.CRUD = 'R';
-            const starts = sprintDailyMeeting.startTime.split(':');
-            const ends = sprintDailyMeeting.endTime.split(':');
-
-            const startTime = new Date();
-            startTime.setHours(Number(starts[0]) + dateUtil.getUserOffsetHours());
-            startTime.setMinutes(Number(starts[1]) + dateUtil.getUserOffsetMinutes());
-
-            const endTime = new Date();
-            endTime.setHours(Number(ends[0]) + dateUtil.getUserOffsetHours());
-            endTime.setMinutes(Number(ends[1]) + dateUtil.getUserOffsetMinutes());
-
-            sprintDailyMeeting.startTime = startTime.getTime();
-            sprintDailyMeeting.endTime = endTime.getTime();
-
-            sprintDailyMeeting.sprintDailyMeetingQuestions.sort((a, b) => {
-              return a.sortOrder - b.sortOrder;
-            });
-          });
-          setSprint({
-            ...data,
-            startDate: dateUtil.getTime(data.startDate),
-            endDate: dateUtil.getTime(data.endDate),
-          });
+          setSprint(sprintUtil.getSprint(data));
         },
         null,
         t('스프린트 정보를 가져오고 있습니다'),

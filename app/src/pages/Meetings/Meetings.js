@@ -150,7 +150,7 @@ const Meetings = ({ t, user, history }) => {
                       }}
                       locale={user.language}
                       customInput={<DateCustomInput />}
-                      dateFormat={DATE_FORMATS[user.country || 'KR'].days.picker}
+                      dateFormat={DATE_FORMATS[dateUtil.getUserLocale()].days.picker}
                     />
                   </div>
                   <div>

@@ -15,7 +15,7 @@ const USER_STUB = {
   loginToken: '',
   name: '',
   tel: '',
-  timezone : 'Asia/Seoul',
+  timezone: 'Asia/Seoul',
 };
 
 const DATE_FORMATS_TYPES = {
@@ -27,43 +27,43 @@ const DATE_FORMATS_TYPES = {
 
 const TIMEZONES = {
   'Asia/Seoul': {
-    name : 'Asia/Seoul (GMT +9:00)',
+    name: 'Asia/Seoul (GMT +9:00)',
     dir: +1,
     hours: 9,
     minutes: 0,
   },
   'US/HST': {
-    name : 'US/HST (GMT -10:00)',
+    name: 'US/HST (GMT -10:00)',
     dir: -1,
     hours: 10,
     minutes: 0,
   },
   'US/AKST': {
-    name : 'US/AKST (GMT -9:00)',
+    name: 'US/AKST (GMT -9:00)',
     dir: -1,
     hours: 9,
     minutes: 0,
   },
   'US/PST': {
-    name : 'US/PST (GMT -8:00)',
+    name: 'US/PST (GMT -8:00)',
     dir: -1,
     hours: 8,
     minutes: 0,
   },
   'US/MST': {
-    name : 'US/MST(GMT -7:00)',
+    name: 'US/MST(GMT -7:00)',
     dir: -1,
     hours: 7,
     minutes: 0,
   },
   'US/CST': {
-    name : 'US/CST(GMT -6:00)',
+    name: 'US/CST(GMT -6:00)',
     dir: -1,
     hours: 6,
     minutes: 0,
   },
   'US/EST': {
-    name : 'US/EST(GMT -5:00)',
+    name: 'US/EST(GMT -5:00)',
     dir: -1,
     hours: 5,
     minutes: 0,
@@ -71,17 +71,29 @@ const TIMEZONES = {
 };
 
 const DATE_FORMATS = {
-  US: {
+  ko_KR: {
+    full: { moment: 'YYYY년 MM월 DD일 HH시 mm분', picker: 'yyyy년 MM월 dd일 HH시 mm분' },
+    days: { moment: 'YYYY년 MM월 DD일', picker: 'yyyy년 MM월 dd일 (eee)' },
+    dayHours: { moment: 'MM월 DD일 HH시 mm분', picker: 'MM월 dd일 HH시 mm분' },
+    hours: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
+  },
+  ko_US: {
+    full: { moment: 'MM월/DD일/YYYY년 HH시 mm분', picker: 'MM월/dd일/yyyy년 HH시 mm분' },
+    days: { moment: 'MM월/DD일/YYYY년', picker: 'MM월/dd일/yyyy년 (eee)' },
+    dayHours: { moment: 'MM월/DD일 HH시 mm분', picker: 'MM월/dd일 HH시 mm분' },
+    hours: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
+  },
+  en_US: {
     full: { moment: 'MM/DD/YYYY HH:mm', picker: 'MM/dd/yyyy HH:mm' },
-    days: { moment: 'MM/DD/YYYY', picker: 'MM/dd/yyyy' },
+    days: { moment: 'MM/DD/YYYY', picker: 'MM/dd/yyyy (eee)' },
     dayHours: { moment: 'MM/DD HH:mm', picker: 'MM/dd HH:mm' },
     hours: { moment: 'HH:mm', picker: 'HH:mm' },
   },
-  KR: {
-    full: { moment: 'YYYY년 MM월 DD일 HH시 mm분', picker: 'yyyy년 MM월 dd일 HH시 mm분' },
-    days: { moment: 'YYYY년 MM월 DD일', picker: 'yyyy년 MM월 dd일' },
-    dayHours: { moment: 'MM월 DD일 HH시 mm분', picker: 'MM월 dd일 HH시 mm분' },
-    hours: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
+  en_KR: {
+    full: { moment: 'YYYY-MM-DD HH:mm', picker: 'yyyy-MM-dd HH:mm' },
+    days: { moment: 'YYYY-MM-DD', picker: 'yyyy-MM-dd (eee)' },
+    dayHours: { moment: 'DD-MM HH:mm', picker: 'dd-MM HH:mm' },
+    hours: { moment: 'HH:mm', picker: 'HH:mm' },
   },
 };
 
