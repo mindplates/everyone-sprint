@@ -1,0 +1,95 @@
+.tabs-wrapper {
+  padding: 1rem;
+
+  .tabs-content {
+    display: flex;
+    > div {
+      align-self: center;
+    }
+    .tab-controls {
+      > span {
+        display: inline-block;
+        padding: 0.25rem 1.5rem;
+        background-color: $gray-200;
+        font-family: pretendard, sans-serif;
+        cursor: pointer;
+
+        &:hover {
+          background-color: $gray-300;
+        }
+
+        &.selected {
+          background-color: $yellow;
+          font-weight: bold;
+
+          &:hover {
+            background-color: darken($yellow, 3%);
+          }
+        }
+      }
+    }
+
+    .tab-side-content {
+      padding: 0 1rem;
+      flex-grow: 1;
+    }
+  }
+
+  &.cornered {
+    .tabs-content {
+      .tab-controls {
+        > span {
+          margin-right: 0.5rem;
+          border-radius: 20px;
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+  }
+
+  &.rounded {
+    .tabs-content {
+      .tab-controls {
+        > span {
+          margin-right: 0.5rem;
+          border-radius: 50%;
+          padding: 0;
+          display: inline-flex;
+          justify-content: center;
+          font-size: 14px;
+
+          > span {
+            align-self: center;
+          }
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
+    &.has-board {
+      .tabs-content {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+
+  .tabs-liner {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(122, 122, 124, 1) 0%,
+      rgba(255, 68, 0, 1) 20%,
+      rgba(111, 205, 17, 1) 40%,
+      rgba(42, 60, 188, 1) 60%,
+      rgba(226, 21, 80, 1) 80%,
+      rgba(238, 251, 10, 1) 100%
+    );
+    opacity: 0.4;
+  }
+}

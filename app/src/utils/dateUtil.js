@@ -2,13 +2,17 @@ import moment from 'moment';
 import store from '@/store';
 import { DATE_FORMATS, DATE_FORMATS_TYPES, TIMEZONES } from '@/constants/constants';
 
-function getDateString(val, format) {
+function getUserLocale() {
   const state = store.getState();
+  return `${state.user.language || 'ko'}_${state.user.country || 'KR'}`;
+}
+
+function getDateString(val, format) {
 
   return moment
     .utc(val)
     .local()
-    .format(DATE_FORMATS[state.user.country || 'KR'][format || DATE_FORMATS_TYPES.full].moment);
+    .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.full].moment);
 }
 
 function getDate(val) {
@@ -74,6 +78,15 @@ function getUserOffsetMinutes() {
   return timezone.dir * timezone.minutes;
 }
 
+function getSpan(startDate, endDate) {
+  const hours = Math.floor((endDate - startDate) / (1000 * 60 * 60));
+  const days = hours > 0 ? Math.floor(hours / 24) : 0;
+  return {
+    days,
+    hours: hours - days * 24,
+  };
+}
+
 const dateUtil = {
   getDateString,
   getDate,
@@ -86,6 +99,8 @@ const dateUtil = {
   getUserTimeInfo,
   getUserOffsetHours,
   getUserOffsetMinutes,
+  getSpan,
+  getUserLocale,
 };
 
 export default dateUtil;

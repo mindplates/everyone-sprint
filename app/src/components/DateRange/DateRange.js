@@ -7,11 +7,12 @@ import { DatePicker, Liner } from '@/components';
 import { DATE_FORMATS } from '@/constants/constants';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
 import './DateRange.scss';
+import dateUtil from '@/utils/dateUtil';
 
 registerLocale('ko', ko);
 registerLocale('en', en);
 
-const DateRange = ({ className, country, language, startDate, endDate, onChange, size, showTimeSelect, showTimeSelectOnly, startDateKey, endDateKey }) => {
+const DateRange = ({ className, language, startDate, endDate, onChange, size, showTimeSelect, showTimeSelectOnly, startDateKey, endDateKey }) => {
   return (
     <div className={`date-range-wrapper ${className} size-${size}`}>
       <div>
@@ -25,7 +26,7 @@ const DateRange = ({ className, country, language, startDate, endDate, onChange,
           }}
           locale={language}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[country || 'KR'][showTimeSelectOnly ? 'hours' : 'full'].picker}
+          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][showTimeSelectOnly ? 'hours' : 'full'].picker}
         />
       </div>
       <Liner className="dash" width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
@@ -40,7 +41,7 @@ const DateRange = ({ className, country, language, startDate, endDate, onChange,
           }}
           locale={language}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[country || 'KR'][showTimeSelectOnly ? 'hours' : 'full'].picker}
+          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][showTimeSelectOnly ? 'hours' : 'full'].picker}
         />
       </div>
     </div>
@@ -60,7 +61,7 @@ DateRange.defaultProps = {
 
 DateRange.propTypes = {
   className: PropTypes.string,
-  country: PropTypes.string,
+  // country: PropTypes.string,
   language: PropTypes.string,
   startDate: PropTypes.number,
   endDate: PropTypes.number,

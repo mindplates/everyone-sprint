@@ -1,0 +1,36 @@
+.sprint-common {
+  .sprint-span {
+    align-self: center;
+    display: inline-block;
+    font-size: 14px;
+    padding: 0.125rem 0.5rem;
+    background-color: $green;
+    color: $white;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+  }
+
+  .sprint-title-with-tag {
+    .text {
+      > span {
+        display: inline-flex;
+        align-self: center;
+
+        > span {
+          &.spring-title-tag {
+            font-size: 12px;
+            display: inline-flex;
+            background-color: #333;
+            color: $white;
+            align-self: center;
+            padding: 0 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+
+
+}
