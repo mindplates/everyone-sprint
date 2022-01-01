@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, Button, DatePicker, DateRangeText, Label, Liner, Page, PageContent, PageTitle, Tabs, Text } from '@/components';
+import { Block, BlockRow, BlockTitle, Button, DatePicker, DateRangeText, Label, Liner, Page, PageContent, PageTitle, Tabs, Text } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
@@ -20,7 +21,7 @@ const SprintBoard = ({
   history,
   user,
   match: {
-    params: { id },
+    params: { id, date },
   },
 }) => {
   const tabs = [
@@ -35,17 +36,10 @@ const SprintBoard = ({
   ];
 
   const [sprint, setSprint] = useState(null);
+  const [meetings, setMeetings] = useState([]);
   const [tab, setTab] = useState('today');
-  const [date, setDate] = useState(
-    (() => {
-      const today = new Date();
-      today.setHours(0);
-      today.setMinutes(0);
-      today.setSeconds(0);
-      today.setMilliseconds(0);
-      return today.getTime();
-    })(),
-  );
+
+  const day = dateUtil.getTimeAtStartOfDay(date || new Date().toLocaleDateString().substring(0, 10));
 
   useEffect(() => {
     request.get(
@@ -59,9 +53,31 @@ const SprintBoard = ({
     );
   }, [id]);
 
-  console.log(history);
+  useEffect(() => {
+    if (day) {
+      const startDate = new Date(day);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+
+      request.get(
+        `/api/sprints/${id}/meetings?start=${startDate.toISOString()}&end=${endDate.toISOString()}`,
+        null,
+        (data) => {
+          setMeetings(data);
+        },
+        null,
+        t('스프린트 정보를 가져오고 있습니다.'),
+      );
+    }
+  }, [id, day]);
 
   const sprintSpan = dateUtil.getSpan(Date.now(), sprint?.endDate);
+
+  const moveDate = (nextData) => {
+    history.push(`/sprints/${id}/board/${nextData.toLocaleDateString('sv').substring(0, 10)}`);
+  };
+
+  const now = new Date();
 
   return (
     <Page className="sprint-board-wrapper sprint-common">
@@ -88,9 +104,9 @@ const SprintBoard = ({
                     outline
                     rounded
                     onClick={() => {
-                      const prevDay = new Date(date);
+                      const prevDay = new Date(day);
                       prevDay.setDate(prevDay.getDate() - 1);
-                      setDate(prevDay.getTime());
+                      moveDate(prevDay);
                     }}
                   >
                     <i className="fas fa-angle-left" />
@@ -99,8 +115,8 @@ const SprintBoard = ({
                 <div className="ml-3">
                   <DatePicker
                     className="date-picker start-date-picker"
-                    selected={date}
-                    onChange={setDate}
+                    selected={day}
+                    onChange={moveDate}
                     locale={user.language}
                     customInput={<DateCustomInput />}
                     dateFormat={DATE_FORMATS[dateUtil.getUserLocale()].days.picker}
@@ -114,9 +130,9 @@ const SprintBoard = ({
                     outline
                     rounded
                     onClick={() => {
-                      const nextDay = new Date(date);
+                      const nextDay = new Date(day);
                       nextDay.setDate(nextDay.getDate() + 1);
-                      setDate(nextDay.getTime());
+                      moveDate(nextDay);
                     }}
                   >
                     <i className="fas fa-angle-right" />
@@ -126,7 +142,57 @@ const SprintBoard = ({
             }
           />
           <div className="board-content">
-            {tab === 'today' && <div className="day-content">TODAY</div>}
+            {tab === 'today' && (
+              <div className="day-content">
+                {meetings.length < 1 && (
+                  <div className="empty-content">
+                    <span>{t('스크럼 미팅이 없습니다')}</span>
+                  </div>
+                )}
+                {meetings.length > 0 && (
+                  <>
+                    <div className="meetings">
+                      <Block className="pt-0 meeting-content">
+                        <BlockTitle className="mb-2 mb-sm-3">{t('스크럼 미팅')}</BlockTitle>
+                        <BlockRow className="meeting-list-content">
+                          <div>
+                            <ul className="meeting-list">
+                              {meetings.map((d) => {
+                                return (
+                                  <li key={d.id}>
+                                    <div>
+                                      <div className="name">
+                                        <span className={`time-ago ${dateUtil.getTime(d.startDate) > now ? 'future' : 'past'}`}>
+                                          <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getTime(d.startDate)} />
+                                        </span>
+                                        <span className="text">{d.name}</span>
+                                      </div>
+                                      <div className="date">
+                                        <div>{dateUtil.getDateString(d.startDate)}</div>
+                                        <Liner className="dash" width="10px" height="1px" display="inline-block" color="black" margin="0 0.5rem 0 0.5rem" />
+                                        <div>{dateUtil.getDateString(d.endDate, 'hours')}</div>
+                                      </div>
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        </BlockRow>
+                      </Block>
+                    </div>
+                    <div className="scrum-info">
+                      <Block className="pt-0">
+                        <BlockTitle className="mb-2 mb-sm-3">{t('스크럼 양식')}</BlockTitle>
+                        <BlockRow>
+                          <span className="d-none">1</span>
+                        </BlockRow>
+                      </Block>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
             {tab === 'summary' && (
               <div className="summary-content">
                 <Block className="">
@@ -166,6 +232,7 @@ SprintBoard.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,
+      date: PropTypes.string,
     }),
   }),
 };

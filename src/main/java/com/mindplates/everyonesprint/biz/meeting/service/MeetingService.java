@@ -82,5 +82,10 @@ public class MeetingService {
         return meetingRepository.findAllBySprintIdAndSprintDailyMeetingId(sprintId, sprintDailyMeetingId);
     }
 
+    public List<Meeting> selectSprintMeetingList(List<Long> springDailyMeetingIds, LocalDateTime startTime, LocalDateTime endTime) {
+        return meetingRepository.findAllBySprintDailyMeetingIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(springDailyMeetingIds, startTime, endTime);
+
+
+    }
 
 }

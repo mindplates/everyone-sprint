@@ -13,6 +13,127 @@
 
   .board-content {
     flex-grow: 1;
-    padding: 0 1rem;
+    padding: 0;
+    display: flex;
+
+    .day-content {
+      display: flex;
+      flex-grow: 1;
+
+      .empty-content {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        > span {
+          align-self: center;
+        }
+      }
+
+      .meetings {
+        flex-grow: 0;
+        max-width: 340px;
+        min-width: 340px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        .meeting-content {
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          .meeting-list-content {
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            > div {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              overflow-y: auto;
+              background-color: $light;
+
+              .meeting-list {
+                margin: 0;
+                list-style: none;
+                padding: 0;
+                width: 100%;
+                position: absolute;
+
+                > li {
+                  padding: 0.75rem;
+                  border-bottom: $border;
+                  background-color: $white;
+                  border: $border;
+                  border-bottom: none;
+
+                  &:last-child {
+                    border-bottom: $border;
+                  }
+
+                  > div {
+                    .name {
+                      display: flex;
+
+                      overflow-x: hidden;
+
+                      > span {
+                        align-self: center;
+
+                        &.time-ago {
+                          display: inline-block;
+                          padding: 0.25rem;
+                          background-color: $green;
+                          color: $white;
+                          line-height: 100%;
+                          border-radius: 5px;
+                          font-weight: bold;
+                          margin-right: 0.25rem;
+                          font-size: 12px;
+                          white-space: nowrap;
+
+                          &.future {
+                            background-color: $green !important;
+                            color: $white;
+                          }
+
+                          &.past {
+                            background-color: $gray-300 !important;
+                            color: $gray-700 !important;
+                          }
+                        }
+                      }
+
+                      .text {
+                        white-space: nowrap;
+                        overflow-x: hidden;
+                        text-overflow: ellipsis;
+                      }
+                    }
+
+                    .date {
+                      white-space: nowrap;
+                      display: flex;
+                      font-size: 14px;
+                      overflow-x: hidden;
+                      text-overflow: ellipsis;
+                      > div {
+                        align-self: center;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .scrum-info {
+        flex-grow: 1;
+      }
+    }
   }
 }

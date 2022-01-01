@@ -8,7 +8,6 @@ function getUserLocale() {
 }
 
 function getDateString(val, format) {
-
   return moment
     .utc(val)
     .local()
@@ -87,6 +86,15 @@ function getSpan(startDate, endDate) {
   };
 }
 
+function getTimeAtStartOfDay(dateString) {
+  const today = new Date(Date.parse(dateString));
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+  return today.getTime();
+}
+
 const dateUtil = {
   getDateString,
   getDate,
@@ -101,6 +109,7 @@ const dateUtil = {
   getUserOffsetMinutes,
   getSpan,
   getUserLocale,
+  getTimeAtStartOfDay,
 };
 
 export default dateUtil;

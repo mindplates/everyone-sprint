@@ -39,6 +39,7 @@ function App({ history, setting }) {
           <Route exact path="/groups" component={Groups} />
           <Route exact path="/sprints/new" render={() => <EditSprint type="new" />} />
           <Route exact path="/sprints/:id/deactivate" component={SprintDeactivate} />
+          <Route exact path="/sprints/:id/board/:date" component={SprintBoard} />
           <Route exact path="/sprints/:id/board" component={SprintBoard} />
           <Route exact path="/sprints/:id/edit" render={() => <EditSprint type="edit" />} />
           <Route exact path="/sprints/:id" component={Sprint} />
