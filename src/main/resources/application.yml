@@ -19,6 +19,7 @@ spring:
       hibernate:
         format_sql: true
         enable_lazy_load_no_trans: true
+        type: trace
   redis:
     host: 127.0.0.1
     port: 6479
