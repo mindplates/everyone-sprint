@@ -1,0 +1,136 @@
+.text-area-wrapper {
+  display: block;
+  position: relative;
+  padding-top: 20px;
+  line-height: 0;
+
+  textarea {
+    border: none;
+    width: 100%;
+    border: $input-border;
+    height: auto;
+    position: relative;
+    z-index: 2;
+    resize: none;
+    line-height: 160%;
+    padding: 7px;
+    border-radius: $input-radius;
+    background-color: $white;
+    -webkit-appearance: none;
+
+    &:focus {
+      box-shadow: none;
+      outline: none;
+    }
+
+    &:invalid {
+      border-bottom: 1px solid $border-color;
+    }
+  }
+
+  .liner {
+    position: absolute;
+    width: 0;
+    left: 0;
+    height: 2px;
+    bottom: 0;
+    background-color: $blue;
+    border-radius: 2px;
+    z-index: 2;
+  }
+
+  .input-info {
+    font-size: 1rem;
+    position: absolute;
+    top: 54px;
+    left: 7px;
+    transition: all 0.3s;
+    color: $gray-700;
+    z-index: 3;
+    width: 100%;
+
+    @media (max-width: 576px) {
+      font-size: 0.9rem;
+    }
+
+    > div {
+      display: inline-block;
+
+      &.placeholder-message {
+        _color: $primary;
+        font-size: 0.9rem;
+        margin-left: 5px;
+        @media (max-width: 576px) {
+          font-size: 0.8rem;
+        }
+        &:before {
+          content: '<';
+        }
+        &:after {
+          content: '>';
+        }
+      }
+
+      &.invalid-message {
+        font-size: 0.7rem;
+        background-color: $danger;
+        color: $white;
+        display: inline-block;
+        padding: 2px 6px 1px;
+        border-radius: 2px;
+        float: right;
+      }
+    }
+  }
+
+  &.focus {
+    .liner {
+      width: 100%;
+    }
+
+    .input-info {
+      font-size: 0.8rem;
+      top: 10px;
+      transition: all 0.3s;
+      color: $gray-600;
+    }
+  }
+
+  &.has-value {
+    .input-info {
+      font-size: 0.8rem;
+      top: 10px;
+      transition: all 0.3s;
+      color: $gray-600;
+    }
+  }
+
+  &.in-valid {
+    input {
+      border-bottom: 1px solid $danger;
+    }
+  }
+
+  @media (min-width: 992px) {
+    &:hover {
+      .liner {
+        width: 100%;
+        transition: all 0.2s ease;
+      }
+
+      a {
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  &.simple {
+    padding-top: 0;
+
+    .input-info {
+      display: none;
+    }
+  }
+}

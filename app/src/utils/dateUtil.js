@@ -14,6 +14,13 @@ function getDateString(val, format) {
     .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.full].moment);
 }
 
+function getLocalDateISOString(val) {
+  return moment
+    .utc(val)
+    .local()
+    .format('YYYY-MM-DD');
+}
+
 function getDate(val) {
   return new Date(`${val}Z`);
 }
@@ -110,6 +117,7 @@ const dateUtil = {
   getSpan,
   getUserLocale,
   getTimeAtStartOfDay,
+  getLocalDateISOString,
 };
 
 export default dateUtil;
