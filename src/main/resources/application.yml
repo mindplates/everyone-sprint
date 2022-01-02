@@ -3,7 +3,7 @@ spring:
     active: default
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3406/everyone_sprint?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10
+    url: jdbc:mysql://localhost:3406/everyone_sprint?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&cacheDefaultTimezone=false
     username: everyone_sprint_app
     password: admin1234
   jpa:

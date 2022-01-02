@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, Button, DatePicker, DateRangeText, Label, Liner, Page, PageContent, PageTitle, Tabs, Text } from '@/components';
+import { Block, BlockRow, BlockTitle, Button, DatePicker, DateRangeText, Label, Liner, Page, PageContent, PageTitle, Tabs, Text, TextArea } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
@@ -35,15 +35,64 @@ const SprintBoard = ({
     },
   ];
 
-  const [sprint, setSprint] = useState(null);
-  const [meetings, setMeetings] = useState([]);
   const [tab, setTab] = useState('today');
 
-  const day = dateUtil.getTimeAtStartOfDay(date || new Date().toLocaleDateString().substring(0, 10));
+  const [sprint, setSprint] = useState(null);
+  const [meetings, setMeetings] = useState([]);
+  const [userDayAnswers, setUserDayAnswers] = useState([]);
 
-  useEffect(() => {
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
+  const [selectedMeetingId, setSelectedMeetingId] = useState(null);
+
+  // 범위 데이터 조회 시
+  const day = dateUtil.getTimeAtStartOfDay(date || new Date().toLocaleDateString().substring(0, 10));
+  const startDate = new Date(day);
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 1);
+
+  // 날짜 데이터 조회 시
+  const localDayString = dateUtil.getLocalDateISOString(day);
+
+  const saveDailyMeetingAnswers = () => {
+    request.post(
+      `/api/sprints/${id}/answers?date=${localDayString}`,
+      selectedAnswers,
+      (data) => {
+        setUserDayAnswers(data);
+      },
+      null,
+      t('입력하신 스크럼 정보를 저장하고 있습니다.'),
+    );
+  };
+
+  const selectMeeting = (meetingId) => {
+    const meeting = meetings.find((d) => d.id === meetingId);
+    setSelectedMeetingId(meetingId);
+
+    const sprintDailyMeeting = sprint?.sprintDailyMeetings.find((d) => d.id === meeting.sprintDailyMeetingId);
+
+    const nextAnswers = sprintDailyMeeting?.sprintDailyMeetingQuestions.map((d) => {
+      const currentAnswer = userDayAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id);
+
+      if (currentAnswer) {
+        return {
+          ...currentAnswer,
+        };
+      }
+      return {
+        sprintId: id,
+        sprintDailyMeetingQuestionId: d.id,
+        answer: '',
+        date: localDayString,
+      };
+    });
+
+    setSelectedAnswers(nextAnswers);
+  };
+
+  const getSprint = (sprintId) => {
     request.get(
-      `/api/sprints/${id}`,
+      `/api/sprints/${sprintId}`,
       null,
       (data) => {
         setSprint(sprintUtil.getSprint(data));
@@ -51,33 +100,56 @@ const SprintBoard = ({
       null,
       t('스프린트 정보를 가져오고 있습니다.'),
     );
+  };
+
+  const getBoardInfo = (start, end, dayString) => {
+    request.get(
+      `/api/sprints/${id}/board?start=${start.toISOString()}&end=${end.toISOString()}&date=${dayString}`,
+      null,
+      (data) => {
+        setMeetings(data.meetings);
+        setUserDayAnswers(data.sprintDailyMeetingAnswers);
+      },
+      null,
+      t('스프린티 보드에 필요한 정보를 모으고 있습니다.'),
+    );
+  };
+
+  useEffect(() => {
+    getSprint(id);
   }, [id]);
 
   useEffect(() => {
     if (day) {
-      const startDate = new Date(day);
-      const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + 1);
-
-      request.get(
-        `/api/sprints/${id}/meetings?start=${startDate.toISOString()}&end=${endDate.toISOString()}`,
-        null,
-        (data) => {
-          setMeetings(data);
-        },
-        null,
-        t('스프린트 정보를 가져오고 있습니다.'),
-      );
+      setSelectedMeetingId(null);
+      getBoardInfo(startDate, endDate, localDayString);
     }
   }, [id, day]);
 
-  const sprintSpan = dateUtil.getSpan(Date.now(), sprint?.endDate);
+  useEffect(() => {
+    if (meetings.length > 0) {
+      if (selectedMeetingId) {
+        selectMeeting(selectedMeetingId);
+      } else {
+        selectMeeting(meetings[0].id);
+      }
+    }
+  }, [meetings, sprint, userDayAnswers]);
+
+  const now = new Date();
+
+  const sprintSpan = dateUtil.getSpan(now.getTime(), sprint?.endDate);
 
   const moveDate = (nextData) => {
     history.push(`/sprints/${id}/board/${nextData.toLocaleDateString('sv').substring(0, 10)}`);
   };
 
-  const now = new Date();
+  const onChangeAnswer = (questionId, value) => {
+    const nextAnswers = selectedAnswers.slice(0);
+    const answer = nextAnswers.find((d) => d.sprintDailyMeetingQuestionId === questionId);
+    answer.answer = value;
+    setSelectedAnswers(nextAnswers);
+  };
 
   return (
     <Page className="sprint-board-wrapper sprint-common">
@@ -88,6 +160,7 @@ const SprintBoard = ({
       {sprint && (
         <PageContent className="page-content">
           <Tabs
+            className="pt-1 pb-0"
             tab={tab}
             tabs={tabs}
             onChange={setTab}
@@ -153,16 +226,24 @@ const SprintBoard = ({
                   <>
                     <div className="meetings">
                       <Block className="pt-0 meeting-content">
-                        <BlockTitle className="mb-2 mb-sm-3">{t('스크럼 미팅')}</BlockTitle>
+                        <BlockTitle className="py-3 mb-2 mb-sm-3">{t('스크럼 미팅')}</BlockTitle>
                         <BlockRow className="meeting-list-content">
                           <div>
                             <ul className="meeting-list">
                               {meetings.map((d) => {
                                 return (
-                                  <li key={d.id}>
+                                  <li
+                                    key={d.id}
+                                    onClick={() => {
+                                      if (selectedMeetingId !== d.id) {
+                                        selectMeeting(d.id);
+                                      }
+                                    }}
+                                    className={d.id === selectedMeetingId ? 'selected' : ''}
+                                  >
                                     <div>
                                       <div className="name">
-                                        <span className={`time-ago ${dateUtil.getTime(d.startDate) > now ? 'future' : 'past'}`}>
+                                        <span className={`time-ago ${dateUtil.getTime(d.startDate) > now.getTime() ? 'future' : 'past'}`}>
                                           <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getTime(d.startDate)} />
                                         </span>
                                         <span className="text">{d.name}</span>
@@ -182,12 +263,50 @@ const SprintBoard = ({
                       </Block>
                     </div>
                     <div className="scrum-info">
-                      <Block className="pt-0">
-                        <BlockTitle className="mb-2 mb-sm-3">{t('스크럼 양식')}</BlockTitle>
-                        <BlockRow>
-                          <span className="d-none">1</span>
-                        </BlockRow>
-                      </Block>
+                      <div className='scrum-forms'>
+                        <Block className="pt-0">
+                          <BlockTitle className="py-3 mb-2 mb-sm-3">{t('스크럼 미팅 양식')}</BlockTitle>
+                          <BlockRow className="scrum-question-answer">
+                            <div className="questions">
+                              <ul>
+                                {sprint.sprintDailyMeetings
+                                  .find((d) => d.id === meetings.find((meeting) => meeting.id === selectedMeetingId)?.sprintDailyMeetingId)
+                                  ?.sprintDailyMeetingQuestions?.sort((a, b) => {
+                                    return a.sortOrder - b.sortOrder;
+                                  })
+                                  .map((d) => {
+                                    return (
+                                      <li key={d.id}>
+                                        <div className="question">{d.question}</div>
+                                        <div className="answer">
+                                          <TextArea
+                                            value={selectedAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id)?.answer}
+                                            onChange={(value) => {
+                                              onChangeAnswer(d.id, value);
+                                            }}
+                                            simple
+                                          />
+                                        </div>
+                                      </li>
+                                    );
+                                  })}
+                              </ul>
+                            </div>
+                            <div className="buttons">
+                              <Button
+                                size="md"
+                                color="white"
+                                outline
+                                onClick={() => {
+                                  saveDailyMeetingAnswers();
+                                }}
+                              >
+                                저장
+                              </Button>
+                            </div>
+                          </BlockRow>
+                        </Block>
+                      </div>
                     </div>
                   </>
                 )}

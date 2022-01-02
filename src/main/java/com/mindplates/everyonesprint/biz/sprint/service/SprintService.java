@@ -6,6 +6,8 @@ import com.mindplates.everyonesprint.biz.meeting.repository.MeetingRepository;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
+import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeetingAnswer;
+import com.mindplates.everyonesprint.biz.sprint.repository.SprintDailyMeetingAnswerRepository;
 import com.mindplates.everyonesprint.biz.sprint.repository.SprintRepository;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.vo.UserSession;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,9 @@ public class SprintService {
 
     @Autowired
     private MeetingRepository meetingRepository;
+
+    @Autowired
+    private SprintDailyMeetingAnswerRepository sprintDailyMeetingAnswerRepository;
 
     @Autowired
     private MeetingService meetingService;
@@ -72,16 +78,16 @@ public class SprintService {
 
         // 스프린트 미팅 및 미팅 삭제
         List deleteSprintDailyMeetings = new ArrayList();
-        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> sprintDailyMeeting.getCRUD().equals("D"))).forEach((sprintDailyMeeting -> {
+        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> "D".equals(sprintDailyMeeting.getCRUD()))).forEach((sprintDailyMeeting -> {
             deleteSprintDailyMeetings.add(sprintDailyMeeting);
             meetingRepository.deleteAllBySprintDailyMeetingId(sprintDailyMeeting.getId());
         }));
         sprint.getSprintDailyMeetings().removeAll(deleteSprintDailyMeetings);
 
         // 새 미팅 정보에 따른 미팅 생성
-        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> sprintDailyMeeting.getCRUD().equals("C"))).forEach(sprintDailyMeeting -> updateMeetings.addAll(makeMeetings(sprintDailyMeeting, startDate, endDate, userSession)));
+        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> "C".equals(sprintDailyMeeting.getCRUD()))).forEach(sprintDailyMeeting -> updateMeetings.addAll(makeMeetings(sprintDailyMeeting, startDate, endDate, userSession)));
 
-        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> sprintDailyMeeting.getCRUD().equals("U"))).forEach((sprintDailyMeeting -> {
+        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> "U".equals(sprintDailyMeeting.getCRUD()))).forEach((sprintDailyMeeting -> {
             List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSprintDailyMeetingId(sprint.getId(), sprintDailyMeeting.getId());
 
             // 범위에 포함되지 않는 미팅 삭제
@@ -204,7 +210,27 @@ public class SprintService {
         return sprintRepository.findById(id).orElse(null);
     }
 
+    public List<SprintDailyMeetingAnswer> createSprintDailyMeetingQuestions(List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers, UserSession userSession) {
+        LocalDateTime now = LocalDateTime.now();
 
+        sprintDailyMeetingAnswers.forEach((sprintDailyMeetingAnswer -> {
+            if (sprintDailyMeetingAnswer.getId() == null) {
+                sprintDailyMeetingAnswer.setCreationDate(now);
+                sprintDailyMeetingAnswer.setCreatedBy(userSession.getId());
+            }
+
+            sprintDailyMeetingAnswer.setLastUpdateDate(now);
+            sprintDailyMeetingAnswer.setLastUpdatedBy(userSession.getId());
+        }));
+
+        sprintDailyMeetingAnswerRepository.saveAll(sprintDailyMeetingAnswers);
+
+        return sprintDailyMeetingAnswers;
+    }
+
+    public List<SprintDailyMeetingAnswer> selectUserSprintDailMeetingAnswerList(Long sprintId, Long userId, LocalDate date) {
+        return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndUserIdAndDateEquals(sprintId, userId, date);
+    }
 
 
 }

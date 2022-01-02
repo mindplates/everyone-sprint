@@ -68,6 +68,11 @@
                   background-color: $white;
                   border: $border;
                   border-bottom: none;
+                  cursor: pointer;
+
+                  &.selected {
+                    background-color: $yellow;
+                  }
 
                   &:last-child {
                     border-bottom: $border;
@@ -133,6 +138,46 @@
 
       .scrum-info {
         flex-grow: 1;
+        display: flex;
+        padding: 1rem 1rem 1rem 0;
+
+        .scrum-forms {
+          border: $border;
+          flex-grow: 1;
+        }
+
+        .scrum-question-answer {
+          flex-direction: column;
+          padding: 0 0.5rem;
+          .questions {
+            width: 100%;
+
+            ul {
+              padding: 0;
+              margin: 0;
+              list-style: none;
+
+              li {
+                margin-bottom: 1rem;
+
+                .question {
+                  margin-bottom: 0.25rem;
+                  font-family: pretendard, sans-serif;
+                }
+
+                &:last-child {
+                  margin-bottom: 0;
+                }
+              }
+            }
+          }
+
+          .buttons {
+            margin-top: 1rem;
+            width: 100%;
+            text-align: right;
+          }
+        }
       }
     }
   }

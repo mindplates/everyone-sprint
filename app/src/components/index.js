@@ -33,6 +33,7 @@ import ParticipantsList from '@/components/ParticipantsList/ParticipantsList';
 import VideoElement from '@/components/VideoElement/VideoElement';
 import DailyScrumMeeting from '@/components/DailyScrumMeeting/DailyScrumMeeting';
 import Tabs from '@/components/Tabs/Tabs';
+import TextArea from '@/components/TextArea/TextArea';
 
 export {
   MessageDialog,
@@ -70,4 +71,5 @@ export {
   VideoElement,
   DailyScrumMeeting,
   Tabs,
+  TextArea,
 };
