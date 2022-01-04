@@ -27,11 +27,11 @@ public class UserResponse {
     public UserResponse(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
-        if (user.getIsNameOpened()) {
+        if (user != null && user.getIsNameOpened() != null && user.getIsNameOpened()) {
             this.name = user.getName();
         }
         this.alias = user.getAlias();
-        if (user.getIsTelOpened()) {
+        if (user != null && user.getIsTelOpened() != null && user.getIsTelOpened()) {
             this.tel = user.getTel();
         }
         this.imageType = user.getImageType();

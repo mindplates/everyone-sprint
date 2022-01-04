@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @Builder
 public class SprintBoardResponse {
+    private List<MeetingResponse> dailyMeetings;
     private List<MeetingResponse> meetings;
     private List<SprintDailyMeetingAnswerResponse> sprintDailyMeetingAnswers;
 
