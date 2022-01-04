@@ -24,7 +24,11 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     void deleteAllBySprintDailyMeetingId(Long sprintDailyMeetingId);
 
-    List<Meeting> findAllBySprintDailyMeetingIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(List<Long> sprintDailyMeetingIds, LocalDateTime startTime, LocalDateTime endTime);
+    List<Meeting> findAllByUsersUserIdAndSprintDailyMeetingIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(Long userId, List<Long> sprintDailyMeetingIds, LocalDateTime startTime, LocalDateTime endTime);
+
+    List<Meeting> findAllByUsersUserIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNull(Long userId, LocalDateTime date, LocalDateTime nextDay);
+
+
 
 
 }

@@ -198,6 +198,7 @@ public class SprintService {
 
     public void deleteSprintInfo(Sprint sprint) {
         List<Meeting> sprintMeetings = meetingRepository.findAllBySprintId(sprint.getId());
+        sprintDailyMeetingAnswerRepository.deleteAllBySprintId(sprint.getId());
         meetingRepository.deleteAll(sprintMeetings);
         sprintRepository.delete(sprint);
     }
@@ -210,7 +211,7 @@ public class SprintService {
         return sprintRepository.findById(id).orElse(null);
     }
 
-    public List<SprintDailyMeetingAnswer> createSprintDailyMeetingQuestions(List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers, UserSession userSession) {
+    public List<SprintDailyMeetingAnswer> createSprintDailyMeetingAnswers(List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
 
         sprintDailyMeetingAnswers.forEach((sprintDailyMeetingAnswer -> {
@@ -223,13 +224,11 @@ public class SprintService {
             sprintDailyMeetingAnswer.setLastUpdatedBy(userSession.getId());
         }));
 
-        sprintDailyMeetingAnswerRepository.saveAll(sprintDailyMeetingAnswers);
-
-        return sprintDailyMeetingAnswers;
+        return sprintDailyMeetingAnswerRepository.saveAll(sprintDailyMeetingAnswers);
     }
 
-    public List<SprintDailyMeetingAnswer> selectUserSprintDailMeetingAnswerList(Long sprintId, Long userId, LocalDate date) {
-        return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndUserIdAndDateEquals(sprintId, userId, date);
+    public List<SprintDailyMeetingAnswer> selectSprintDailyMeetingAnswerList(Long sprintId, LocalDate date) {
+        return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndDateEquals(sprintId, date);
     }
 
 

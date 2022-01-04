@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './BlockTitle.scss';
 
-const BlockTitle = ({ className, children, size, bold }) => {
+const BlockTitle = ({ className, children, size, bold, liner }) => {
   return (
     <div className={`block-title-wrapper ${className} size-${size} ${bold ? 'is-bold' : ''}`}>
       <div className="bullet bullet-1">
@@ -17,7 +17,7 @@ const BlockTitle = ({ className, children, size, bold }) => {
       <div className="text">
         <span>{children}</span>
       </div>
-      <div className='liner' />
+      {liner && <div className="liner" />}
     </div>
   );
 };
@@ -28,6 +28,7 @@ BlockTitle.defaultProps = {
   className: '',
   size: 'md',
   bold: true,
+  liner: true,
 };
 
 BlockTitle.propTypes = {
@@ -35,4 +36,5 @@ BlockTitle.propTypes = {
   children: PropTypes.node,
   size: PropTypes.string,
   bold: PropTypes.bool,
+  liner: PropTypes.bool,
 };

@@ -8,7 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface SprintDailyMeetingAnswerRepository extends JpaRepository<SprintDailyMeetingAnswer, Long> {
-    List<SprintDailyMeetingAnswer> findAllBySprintIdAndUserIdAndDateEquals(Long sprintId, Long userId, LocalDate date);
+    List<SprintDailyMeetingAnswer> findAllBySprintIdAndDateEquals(Long sprintId, LocalDate date);
+    void deleteAllBySprintId(Long sprintId);
 
 }
 

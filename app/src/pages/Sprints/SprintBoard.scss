@@ -1,8 +1,14 @@
+$answer-color: lighten($blue, 43%);
+$answer-color: $light;
+$answer-color: #F9F9F9;
+$answer-border: 1px solid rgba(0, 0, 0, 0.3);
+
+
 .sprint-board-wrapper {
-  .sprint-board-day-selector {
+  .sub-view-type {
     display: flex;
+
     > div {
-      align-self: center;
     }
   }
 
@@ -29,7 +35,7 @@
         }
       }
 
-      .meetings {
+      .daily-meeting-list {
         flex-grow: 0;
         max-width: 340px;
         min-width: 340px;
@@ -42,6 +48,15 @@
           flex-grow: 1;
           display: flex;
           flex-direction: column;
+
+          .sprint-board-day-selector {
+            display: flex;
+            justify-content: center;
+            > div {
+              align-self: center;
+            }
+          }
+
           .meeting-list-content {
             flex-grow: 1;
             height: 100%;
@@ -55,7 +70,7 @@
               overflow-y: auto;
               background-color: $light;
 
-              .meeting-list {
+              > ul {
                 margin: 0;
                 list-style: none;
                 padding: 0;
@@ -78,55 +93,53 @@
                     border-bottom: $border;
                   }
 
-                  > div {
-                    .name {
-                      display: flex;
+                  .name {
+                    display: flex;
 
-                      overflow-x: hidden;
+                    overflow-x: hidden;
 
-                      > span {
-                        align-self: center;
+                    > span {
+                      align-self: center;
 
-                        &.time-ago {
-                          display: inline-block;
-                          padding: 0.25rem;
-                          background-color: $green;
-                          color: $white;
-                          line-height: 100%;
-                          border-radius: 5px;
-                          font-weight: bold;
-                          margin-right: 0.25rem;
-                          font-size: 12px;
-                          white-space: nowrap;
-
-                          &.future {
-                            background-color: $green !important;
-                            color: $white;
-                          }
-
-                          &.past {
-                            background-color: $gray-300 !important;
-                            color: $gray-700 !important;
-                          }
-                        }
-                      }
-
-                      .text {
+                      &.time-ago {
+                        display: inline-block;
+                        padding: 0.25rem;
+                        background-color: $green;
+                        color: $white;
+                        line-height: 100%;
+                        border-radius: 5px;
+                        font-weight: bold;
+                        margin-right: 0.25rem;
+                        font-size: 12px;
                         white-space: nowrap;
-                        overflow-x: hidden;
-                        text-overflow: ellipsis;
+
+                        &.future {
+                          background-color: $green !important;
+                          color: $white;
+                        }
+
+                        &.past {
+                          background-color: $gray-300 !important;
+                          color: $gray-700 !important;
+                        }
                       }
                     }
 
-                    .date {
+                    .text {
                       white-space: nowrap;
-                      display: flex;
-                      font-size: 14px;
                       overflow-x: hidden;
                       text-overflow: ellipsis;
-                      > div {
-                        align-self: center;
-                      }
+                    }
+                  }
+
+                  .date {
+                    white-space: nowrap;
+                    display: flex;
+                    font-size: 14px;
+                    overflow-x: hidden;
+                    text-overflow: ellipsis;
+                    > div {
+                      align-self: center;
                     }
                   }
                 }
@@ -136,46 +149,366 @@
         }
       }
 
-      .scrum-info {
+      .team-daily-meeting-list {
         flex-grow: 1;
         display: flex;
-        padding: 1rem 1rem 1rem 0;
+        margin: 1rem 1rem 1rem 0;
 
-        .scrum-forms {
+        .team-daily-meeting-list-content {
           border: $border;
           flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          padding: 1rem;
+
+          .view-type-tabs {
+            padding: 0 0.5rem;
+          }
         }
 
-        .scrum-question-answer {
+        .my-daily-meeting-form {
           flex-direction: column;
-          padding: 0 0.5rem;
-          .questions {
-            width: 100%;
+          padding: 1rem;
 
-            ul {
-              padding: 0;
-              margin: 0;
-              list-style: none;
+          ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
 
-              li {
-                margin-bottom: 1rem;
+            li {
+              margin-bottom: 1rem;
 
-                .question {
-                  margin-bottom: 0.25rem;
-                  font-family: pretendard, sans-serif;
-                }
+              .question {
+                margin-bottom: 0.25rem;
+                font-family: pretendard, sans-serif;
+              }
 
-                &:last-child {
-                  margin-bottom: 0;
-                }
+              &:last-child {
+                margin-bottom: 0;
               }
             }
           }
 
-          .buttons {
+          > div {
             margin-top: 1rem;
             width: 100%;
             text-align: right;
+          }
+        }
+
+        .team-user-daily-meeting-content {
+          ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            vertical-align: top;
+          }
+
+          .icon {
+            font-family: righteous, sans-serif;
+            border: 1px solid rgba(0, 0, 0, 0.4);
+
+            display: inline-flex;
+            justify-content: center;
+            margin-right: 0.5rem;
+
+            > span {
+              align-self: center;
+            }
+          }
+
+          .question {
+            margin-bottom: 0.25rem;
+            .text {
+              font-size: 13px;
+              color: $gray-700;
+            }
+          }
+
+          .answer {
+            font-weight: bold;
+
+            .text {
+              font-size: 15px;
+              color: $gray-900;
+              background-color: $answer-color;
+              border: $answer-border;
+              padding: 0.5rem;
+              white-space: pre-wrap;
+              flex-grow: 1;
+
+              &:empty {
+                background-color: transparent;
+                display: none;
+              }
+            }
+          }
+        }
+
+        .team-user-daily-meeting-content.view-type-list {
+          width: 100%;
+          flex-grow: 1;
+          position: relative;
+
+          > div {
+            position: absolute;
+            top: 0;
+            left: 1rem;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            padding-right: 1rem;
+            padding-top: 1rem;
+            > ul {
+              > li {
+                padding-bottom: 0.5rem;
+                margin-bottom: 1rem;
+                border-bottom: 1px solid $gray-200;
+
+                &:last-child {
+                  margin-bottom: 0;
+                }
+
+                &:last-child {
+                  border-bottom: none;
+                }
+                > div {
+                  display: flex;
+                  flex-direction: row;
+
+                  .user-icon {
+                    margin-right: 1rem;
+                  }
+
+                  .user-meeting-content {
+                    flex-grow: 1;
+                    .user-name {
+                      margin-bottom: 0.5rem;
+                      > span {
+                        font-size: 1.2rem;
+                        font-weight: bold;
+                        padding: 0.25rem 0 0.25rem 0;
+                        line-height: 100%;
+                        display: inline-block;
+                        _border-bottom: 1px solid #333;
+                        text-transform: uppercase;
+
+                        .user-alias {
+                          margin-right: 0.25rem;
+                        }
+
+                        .name-text {
+                          &:before {
+                            content: '[';
+                          }
+                          &:after {
+                            content: ']';
+                          }
+                        }
+                      }
+                    }
+                    .question-answer {
+                      ul {
+                        li {
+                          margin-bottom: 0.5rem;
+                          > div {
+                            display: flex;
+                            width: 100%;
+
+                            .icon {
+                              width: 24px;
+                              height: 24px;
+                              font-size: 14px;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .team-user-daily-meeting-content.view-type-grid {
+          width: 100%;
+          flex-grow: 1;
+          position: relative;
+          > div {
+            position: absolute;
+            top: 0;
+            left: 0.5rem;
+            right: 0.5rem;
+            bottom: 0;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+
+            > ul {
+              > li {
+                vertical-align: top;
+                display: inline-block;
+                width: calc((100% - 1rem) / 2);
+                padding: 1rem;
+                border: $border;
+                margin-right: 1rem;
+                margin-top: 1rem;
+                border-radius: 2px;
+
+                &:nth-child(2n) {
+                  margin-right: 0;
+                }
+
+                .user-name {
+                  text-align: center;
+                  font-size: 16px;
+                  text-transform: uppercase;
+                  font-weight: bold;
+                }
+
+                .question-answer {
+                  > ul {
+                    > li {
+                      margin-bottom: 0.25rem;
+                      &:last-child {
+                        margin-bottom: 0;
+                      }
+                      .icon {
+                        width: 20px;
+                        height: 20px;
+                        font-size: 13px;
+                      }
+
+                      .answer {
+                        white-space: pre-wrap;
+                        border: $answer-border;
+                        padding: 0.5rem 1rem;
+                        background-color: $answer-color;
+                        font-size: 14px;
+                        height: 70px;
+                        max-height: 70px;
+                        min-height: 70px;
+                        display: flex;
+
+                        > div {
+                          max-height: 100%;
+                          width: 100%;
+                          overflow-y: auto;
+                          align-self: center;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .team-user-daily-meeting-content.view-type-card {
+          width: 100%;
+          flex-grow: 1;
+          display: flex;
+          flex-direction: row;
+
+          > .card-move-button {
+            flex-grow: 0;
+            align-self: center;
+
+            &.left {
+              padding-right: 1rem;
+            }
+
+            &.right {
+              padding-left: 1rem;
+            }
+          }
+
+          > div.card-content {
+            flex-grow: 1;
+            position: relative;
+
+            > div {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              overflow: hidden;
+              display: flex;
+              width: 100%;
+
+              > ul {
+                align-self: center;
+                white-space: nowrap;
+                width: 100%;
+
+                > li {
+                  vertical-align: top;
+                  display: inline-block;
+                  width: 100%;
+                  position: relative;
+                  transition: right 0.3s ease-in-out;
+
+                  > div {
+                    width: 100%;
+                    border: 2px solid rgba(0, 0, 0, 0.2);
+                    border-radius: 6px;
+                    box-shadow: $box-shadow-sm;
+                    padding: 2rem;
+                    max-width: 640px;
+                    margin: 0 auto;
+
+                    .user-icon {
+                      text-align: center;
+                    }
+
+                    .user-name {
+                      text-align: center;
+                      font-size: 16px;
+                      text-transform: uppercase;
+                      font-weight: bold;
+                    }
+
+                    .question-answer {
+                      > ul {
+                        > li {
+                          margin-bottom: 1rem;
+                          &:last-child {
+                            margin-bottom: 0;
+                          }
+                          .icon {
+                            width: 20px;
+                            height: 20px;
+                            font-size: 13px;
+                          }
+
+                          .answer {
+                            white-space: pre-wrap;
+                            border: $answer-border;
+                            padding: 0.5rem 1rem;
+                            background-color: $answer-color;
+                            font-size: 14px;
+
+                            display: flex;
+                            &:empty {
+                              display: none;
+                            }
+                            > div {
+                              max-height: 100px;
+                              min-height: 20px;
+                              width: 100%;
+                              overflow-y: auto;
+                              align-self: center;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
