@@ -1,5 +1,8 @@
 $answer-color: lighten($blue, 43%);
 $answer-color: $light;
+$answer-color: #F9F9F9;
+$answer-border: 1px solid rgba(0, 0, 0, 0.3);
+
 
 .sprint-board-wrapper {
   .sub-view-type {
@@ -229,7 +232,7 @@ $answer-color: $light;
               font-size: 15px;
               color: $gray-900;
               background-color: $answer-color;
-              border: 1px solid rgba(0, 0, 0, 0.1);
+              border: $answer-border;
               padding: 0.5rem;
               white-space: pre-wrap;
               flex-grow: 1;
@@ -378,7 +381,7 @@ $answer-color: $light;
 
                       .answer {
                         white-space: pre-wrap;
-                        border: 1px solid rgba(0, 0, 0, 0.1);
+                        border: $answer-border;
                         padding: 0.5rem 1rem;
                         background-color: $answer-color;
                         font-size: 14px;
@@ -449,7 +452,9 @@ $answer-color: $light;
 
                   > div {
                     width: 100%;
-                    border: $border;
+                    border: 2px solid rgba(0, 0, 0, 0.2);
+                    border-radius: 6px;
+                    box-shadow: $box-shadow-sm;
                     padding: 2rem;
                     max-width: 640px;
                     margin: 0 auto;
@@ -480,7 +485,7 @@ $answer-color: $light;
 
                           .answer {
                             white-space: pre-wrap;
-                            border: 1px solid rgba(0, 0, 0, 0.1);
+                            border: $answer-border;
                             padding: 0.5rem 1rem;
                             background-color: $answer-color;
                             font-size: 14px;
