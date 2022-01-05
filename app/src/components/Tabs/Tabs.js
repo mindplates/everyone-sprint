@@ -4,7 +4,7 @@ import './Tabs.scss';
 
 const Tabs = ({ className, tabs, tab, rounded, onChange, border, size, cornered, content }) => {
   return (
-    <div className={`tabs-wrapper no-selected ${className} ${cornered ? 'cornered' : ''} ${rounded ? 'rounded' : ''} ${border ? 'has-board' : ''}`}>
+    <div className={`tabs-wrapper g-no-select ${className} ${cornered ? 'cornered' : ''} ${rounded ? 'rounded' : ''} ${border ? 'has-board' : ''}`}>
       <div className="tabs-content">
         <div className="tab-controls">
           {tabs.map((d) => {

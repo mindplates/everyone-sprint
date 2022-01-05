@@ -231,5 +231,15 @@ public class SprintService {
         return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndDateEquals(sprintId, date);
     }
 
+    public List<SprintDailyMeetingAnswer> selectLastUserSprintDailyMeetingAnswerList(Long sprintId, Long meetingId, Long userId, LocalDate date) {
+        SprintDailyMeetingAnswer lastAnswer = sprintDailyMeetingAnswerRepository.findTop1BySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndUserIdAndDateLessThanOrderByDateDesc(sprintId, meetingId, userId, date);
+        if (lastAnswer != null) {
+            return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndUserIdAndDateEquals(sprintId, meetingId, userId, lastAnswer.getDate());
+        }
+
+        return new ArrayList<>();
+
+    }
+
 
 }

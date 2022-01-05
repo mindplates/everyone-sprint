@@ -53,9 +53,9 @@
       bottom: -1px;
       border: 1px solid rgba(0, 0, 0, 0.7);
       opacity: 0;
-
       transition: 0.3s opacity;
       width: calc(100% + 2px) !important;
+      z-index: 2;
     }
 
     &.rounded {
@@ -65,8 +65,6 @@
     }
 
     &:hover {
-      border-color: $white !important;
-
       .liner {
         opacity: 1;
         transition: 0.3s opacity;
@@ -81,7 +79,6 @@
       background-color: $yellow !important;
       color: $black !important;
       &:hover {
-        border-color: transparent !important;
         @media (min-width: 992px) {
           background-color: lighten($yellow, 5%) !important;
         }

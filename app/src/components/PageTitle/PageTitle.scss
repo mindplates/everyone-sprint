@@ -23,4 +23,63 @@
       }
     }
   }
+
+  .page-title-tab {
+    display: flex;
+
+    > div.page-tabs {
+      _border: 1px solid rgba(0, 0, 0, 0.2);
+      height: 30px;
+      > div {
+        display: inline-flex;
+        margin-right: 0;
+        height: 100%;
+        background-color: $light;
+        padding: 0 1rem;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+
+        position: relative;
+
+        &:last-child {
+          border-right: none;
+        }
+
+        .line {
+          position: absolute;
+          top: -1px;
+          left: -1px;
+          bottom: -3px;
+          right: -1px;
+          border: 1px solid #777;
+          opacity: 0;
+        }
+
+        &:hover {
+          transition: all 0.3s;
+          .line {
+            border: 1px solid #888;
+            transition: all 0.3s;
+            opacity: 1;
+          }
+          background-color: $white;
+        }
+
+        &.selected {
+          border-bottom: 2px solid $blue;
+          background-color: $white;
+          z-index: 2;
+          transition: all 0.3s;
+
+          .line {
+            opacity: 1;
+            transition: all 0.3s;
+          }
+        }
+        > span {
+          align-self: center;
+        }
+      }
+    }
+  }
 }
