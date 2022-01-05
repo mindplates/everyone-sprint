@@ -149,6 +149,21 @@ public class SprintController {
         return sprintDailyMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
     }
 
+    @GetMapping("/{sprintId}/meetings/{meetingId}/answers/latest")
+    public List<SprintDailyMeetingAnswerResponse> selectSprintDailyMeetingAnswers(@PathVariable Long sprintId,
+                                                                                  @PathVariable Long meetingId,
+                                                                                  @RequestParam("date") LocalDate date,
+                                                                                  @ApiIgnore UserSession userSession) {
+        Sprint sprint = sprintService.selectSprintInfo(sprintId);
+        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
+            throw new ServiceException("common.not.authorized");
+        }
+
+        List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers = sprintService.selectLastUserSprintDailyMeetingAnswerList(sprintId, meetingId, userSession.getId(), date);
+
+        return sprintDailyMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+    }
+
     @PostMapping("/{id}/answers")
     public List<SprintDailyMeetingAnswerResponse> createSprintDailyMeetingAnswers(
             @Valid @RequestBody List<SprintDailyMeetingAnswerRequest> sprintDailyMeetingAnswerRequests,

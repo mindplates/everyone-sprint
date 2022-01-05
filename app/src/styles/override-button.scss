@@ -2,6 +2,10 @@ button.btn {
   border-radius: 2px;
   font-family: pretendard, sans-serif;
 
+  &:focus {
+    box-shadow: none;
+  }
+
   &.btn-xs {
     height: 26px;
     padding: 0 0.5rem;
