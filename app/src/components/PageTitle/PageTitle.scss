@@ -36,7 +36,7 @@
         height: 100%;
         background-color: $light;
         padding: 0 1rem;
-        border-bottom: 2px solid transparent;
+        border-bottom: 3px solid transparent;
         cursor: pointer;
 
         position: relative;
@@ -53,6 +53,7 @@
           right: -1px;
           border: 1px solid #777;
           opacity: 0;
+          display: none;
         }
 
         &:hover {
@@ -62,12 +63,13 @@
             transition: all 0.3s;
             opacity: 1;
           }
-          background-color: $white;
+          border-bottom: 3px solid lighten($blue, 30%);
         }
 
         &.selected {
-          border-bottom: 2px solid $blue;
-          background-color: $white;
+          border-bottom: 3px solid $blue;
+
+          font-weight: bold;
           z-index: 2;
           transition: all 0.3s;
 

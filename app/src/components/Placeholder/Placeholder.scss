@@ -1,0 +1,23 @@
+.placeholder-wrapper {
+  background-color: $light;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  > div.content {
+    align-self: center;
+  }
+
+  > div.mover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0) 100%);
+    animation-duration: 0.8s;
+    animation-name: leftToRight;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in;
+  }
+}
