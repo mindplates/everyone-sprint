@@ -543,32 +543,42 @@ const SprintBoard = ({
                                         </span>
                                       </div>
                                     </div>
-                                    <div className="question-answer-info question-answer">
-                                      <ul>
-                                        {dailyMeetingList &&
-                                          dailyMeetingList.slice(0, 2).map((d) => {
-                                            return (
-                                              <li key={d.id}>
-                                                <div className="liner" />
-                                                <div className="content">
-                                                  <div className="question">
-                                                    <span className="icon">
-                                                      <span>Q</span>
-                                                    </span>
-                                                    <span className="text">{d.question}</span>
+                                    {(!dailyMeetingList || dailyMeetingList.length < 1) && (
+                                      <>
+                                        <Placeholder className="mb-3" height="110px" />
+                                        <Placeholder height="106px" />
+                                      </>
+                                    )}
+                                    {dailyMeetingList && dailyMeetingList.length > 0 && (
+                                      <div className="question-answer-info question-answer">
+                                        <ul>
+                                          {dailyMeetingList &&
+                                            dailyMeetingList.slice(0, 2).map((d) => {
+                                              return (
+                                                <li key={d.id}>
+                                                  <div className="liner" />
+                                                  <div className="content">
+                                                    <div className="question">
+                                                      <span className="icon">
+                                                        <span>Q</span>
+                                                      </span>
+                                                      <span className="text">{d.question}</span>
+                                                    </div>
+                                                    <div className="answer">
+                                                      {
+                                                        dailyAnswers.find(
+                                                          (answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId,
+                                                        )?.answer
+                                                      }
+                                                    </div>
                                                   </div>
-                                                  <div className="answer">
-                                                    {
-                                                      dailyAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId)
-                                                        ?.answer
-                                                    }
-                                                  </div>
-                                                </div>
-                                              </li>
-                                            );
-                                          })}
-                                      </ul>
-                                    </div>
+                                                </li>
+                                              );
+                                            })}
+                                        </ul>
+                                      </div>
+                                    )}
+
                                     {dailyMeetingList && dailyMeetingList.length > 2 && (
                                       <div className="question-answer-info others">
                                         <ul>

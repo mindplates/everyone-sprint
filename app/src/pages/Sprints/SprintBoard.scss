@@ -467,6 +467,7 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
                           right: 0.5rem;
                           bottom: 0;
                           border: 1px solid rgba(0, 0, 0, 0.4);
+                          z-index: 0;
                         }
 
                         &:first-child {
@@ -487,11 +488,13 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
 
                         > div.content {
                           height: 100%;
+                          position: relative;
+                          z-index: 1;
 
                           .question {
-                            line-height: 100%;
-                            margin-bottom: 0;
+
                             padding: 1rem;
+                            margin: 1px 1px 0;
                             background-color: $light;
                             display: flex;
                             > span {
