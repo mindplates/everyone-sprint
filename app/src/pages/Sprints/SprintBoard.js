@@ -16,6 +16,7 @@ import {
   Page,
   PageContent,
   PageTitle,
+  Placeholder,
   Tabs,
   Text,
   TextArea,
@@ -92,6 +93,7 @@ const SprintBoard = ({
 
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [selectedMeetingId, setSelectedMeetingId] = useState(null);
+  const [selectedDailyMeetingId, setSelectedDailyMeetingId] = useState(null);
 
   // 범위 데이터 조회 시
   const day = dateUtil.getTimeAtStartOfDay(date || new Date().toLocaleDateString().substring(0, 10));
@@ -107,6 +109,7 @@ const SprintBoard = ({
     setSelectedMeetingId(meetingId);
 
     const sprintDailyMeeting = sprint?.sprintDailyMeetings.find((d) => d.id === meeting.sprintDailyMeetingId);
+    setSelectedDailyMeetingId(sprintDailyMeeting?.id);
 
     const nextAnswers = sprintDailyMeeting?.sprintDailyMeetingQuestions.map((d) => {
       const currentAnswer = dailyAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === user.id);
@@ -148,7 +151,7 @@ const SprintBoard = ({
         setDailyAnswers(data.sprintDailyMeetingAnswers);
       },
       null,
-      t('스프린티 보드에 필요한 정보를 모으고 있습니다.'),
+      t('스프린트 보드에 필요한 정보를 모으고 있습니다.'),
     );
   };
 
@@ -170,17 +173,23 @@ const SprintBoard = ({
 
   useEffect(() => {
     if (day) {
-      setSelectedMeetingId(null);
+      // setSelectedMeetingId(null);
       getBoardInfo(startDate, endDate, localDayString);
     }
   }, [id, day]);
 
   useEffect(() => {
     if (meetings.length > 0) {
-      if (selectedMeetingId) {
-        selectMeeting(selectedMeetingId);
+      const meetingId = meetings.find((d) => d.sprintDailyMeetingId === selectedDailyMeetingId)?.id;
+
+      if (meetingId) {
+        setTimeout(() => {
+          selectMeeting(meetingId);
+        }, 500);
       } else {
-        selectMeeting(meetings[0].id);
+        setTimeout(() => {
+          selectMeeting(meetings[0].id);
+        }, 500);
       }
     }
   }, [meetings, sprint, dailyAnswers]);
@@ -200,12 +209,6 @@ const SprintBoard = ({
     setSelectedAnswers(nextAnswers);
   };
 
-  const dailyMeetingList = sprint?.sprintDailyMeetings
-    .find((d) => d.id === meetings.find((meeting) => meeting.id === selectedMeetingId)?.sprintDailyMeetingId)
-    ?.sprintDailyMeetingQuestions?.sort((a, b) => {
-      return a.sortOrder - b.sortOrder;
-    });
-
   const getLastMeetingAnswer = () => {
     const meeting = meetings.find((d) => d.id === selectedMeetingId);
     const { sprintDailyMeetingId } = meeting;
@@ -224,8 +227,6 @@ const SprintBoard = ({
         }
 
         const nextSelectedAnswers = selectedAnswers.slice(0);
-        console.log(nextSelectedAnswers);
-        console.log(answers);
         answers.forEach((answer) => {
           const info = nextSelectedAnswers.find(
             (d) => d.sprintDailyMeetingQuestionId === answer.sprintDailyMeetingQuestionId && d.sprintId === answer.sprintId,
@@ -239,6 +240,12 @@ const SprintBoard = ({
       t('지난 마지막 스크럼 정보를 불러오고 있습니다.'),
     );
   };
+
+  const dailyMeetingList = sprint?.sprintDailyMeetings
+    .find((d) => d.id === meetings.find((meeting) => meeting.id === selectedMeetingId)?.sprintDailyMeetingId)
+    ?.sprintDailyMeetingQuestions?.sort((a, b) => {
+      return a.sortOrder - b.sortOrder;
+    });
 
   return (
     <Page className="sprint-board-wrapper sprint-common">
@@ -308,7 +315,7 @@ const SprintBoard = ({
                           </div>
                         )}
                         {meetings.length > 0 && (
-                          <ul>
+                          <ul className="g-no-select">
                             {meetings.map((d) => {
                               return (
                                 <li
@@ -399,9 +406,10 @@ const SprintBoard = ({
                       />
                       {viewType === 'my' && (
                         <div className="my-daily-meeting-form">
-                          <ul>
-                            {dailyMeetingList &&
-                              dailyMeetingList.map((d, inx) => {
+                          {(!dailyMeetingList || dailyMeetingList.length < 1) && <Placeholder height="300px" />}
+                          {dailyMeetingList && dailyMeetingList.length > 0 && (
+                            <ul>
+                              {dailyMeetingList.map((d, inx) => {
                                 const currentAnswer = selectedAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id)?.answer;
                                 return (
                                   <li key={d.id}>
@@ -414,6 +422,8 @@ const SprintBoard = ({
                                             onChangeAnswer(d.id, value);
                                           }}
                                           simple
+                                          showLength
+                                          maxLength={1000}
                                         />
                                       </div>
                                       <div className="controls">
@@ -465,7 +475,8 @@ const SprintBoard = ({
                                   </li>
                                 );
                               })}
-                          </ul>
+                            </ul>
+                          )}
                           <div>
                             <Button size="md" color="white" outline onClick={getLastMeetingAnswer}>
                               <i className="fas fa-retweet" /> 지난 마지막 스크럼 정보 불러오기

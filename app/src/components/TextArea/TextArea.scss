@@ -28,17 +28,6 @@
     }
   }
 
-  .liner {
-    position: absolute;
-    width: 0;
-    left: 0;
-    height: 2px;
-    bottom: 0;
-    background-color: $blue;
-    border-radius: 2px;
-    z-index: 2;
-  }
-
   .input-info {
     font-size: 1rem;
     position: absolute;
@@ -83,16 +72,40 @@
     }
   }
 
-  &.focus {
-    .liner {
-      width: 100%;
-    }
+  .length-info {
+    position: absolute;
+    top: -22px;
+    right: 0;
+    display: inline-flex;
 
+    > div {
+      align-self: center;
+      line-height: 100%;
+      font-size: 13px;
+
+      &.icon {
+        margin-right: 0.25rem;
+      }
+
+      span {
+        display: inline-block;
+        &.slash {
+          margin: 0 0.25rem;
+        }
+      }
+    }
+  }
+
+  &.focus {
     .input-info {
       font-size: 0.8rem;
       top: 10px;
       transition: all 0.3s;
       color: $gray-600;
+    }
+
+    textarea {
+      border: $input-focus-border;
     }
   }
 
@@ -113,11 +126,6 @@
 
   @media (min-width: 992px) {
     &:hover {
-      .liner {
-        width: 100%;
-        transition: all 0.2s ease;
-      }
-
       a {
         &:hover {
           text-decoration: none;

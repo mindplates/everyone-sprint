@@ -1,0 +1,108 @@
+.conference-wrapper {
+  padding: 1rem;
+  padding: 0;
+
+  .conference-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    border: none;
+    background-color: transparent;
+    padding: 0.5rem 0 0;
+    padding: 0 0 0;
+
+    .streaming-content {
+      flex-grow: 1;
+      display: flex;
+      position: relative;
+      flex-direction: column;
+      padding: 1rem;
+
+      > div {
+        display: flex;
+        flex-grow: 1;
+        flex-direction: column;
+        background-color: $white;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+        position: relative;
+
+        .video-content {
+          display: flex;
+          flex-grow: 1;
+          > div.video-list-content {
+            flex-grow: 1;
+            position: relative;
+            > div {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+
+              > div.videos {
+                vertical-align: middle;
+              }
+            }
+          }
+
+          &.sharing {
+            flex-direction: row;
+
+            > div.screen-sharing-content {
+              flex-grow: 1;
+              position: relative;
+
+              > div {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                video {
+                  background-color: $black;
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+            }
+
+            > div.video-list-content {
+              min-width: 200px;
+              flex-grow: 0;
+              position: relative;
+
+              > div {
+                div.videos {
+                  padding: 1rem;
+                }
+              }
+            }
+          }
+        }
+
+        > .controls {
+          text-align: center;
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
+          padding: 1rem;
+          position: relative;
+
+          .first {
+            margin-right: 0.5rem;
+          }
+
+          .participants-button {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+          }
+        }
+      }
+    }
+
+    .participants-list {
+      width: 300px;
+      border-left: 1px solid rgba(0, 0, 0, 0.3);
+    }
+  }
+}

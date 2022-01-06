@@ -57,7 +57,6 @@ class TextArea extends React.Component {
       onChange,
       value,
       required,
-      type,
       t,
       height,
       // eslint-disable-next-line react/prop-types
@@ -66,15 +65,17 @@ class TextArea extends React.Component {
       customInputValidationMessage,
       externalValidationMessage,
       rows,
+      showLength,
+      maxLength,
       ...last
     } = this.props;
     const { focus, valid, message } = this.state;
 
     return (
       <div
-        className={`text-area-wrapper text-${color} ${className} ${focus ? 'focus' : ''} ${value ? 'has-value' : ''} ${
-          valid ? 'valid' : 'in-valid'
-        } ${simple ? 'simple' : ''}`}
+        className={`text-area-wrapper text-${color} ${className} ${focus ? 'focus' : ''} ${value ? 'has-value' : ''} ${valid ? 'valid' : 'in-valid'} ${
+          simple ? 'simple' : ''
+        }`}
         onClick={() => {
           if (this.control.current) this.control.current.focus();
         }}
@@ -85,13 +86,28 @@ class TextArea extends React.Component {
         <div className="input-info">
           {label && <div className="label">{label}</div>}
           {placeholderMessage && <div className="placeholder-message">{placeholderMessage}</div>}
-          {(externalValidationMessage || message) && (
-            <div className="invalid-message">{externalValidationMessage || message}</div>
-          )}
+          {(externalValidationMessage || message) && <div className="invalid-message">{externalValidationMessage || message}</div>}
         </div>
+        {showLength && (
+          <div className="length-info">
+            <div className="icon">
+              <span>
+                <i className="fas fa-calculator" />
+              </span>
+            </div>
+            <div>
+              <span>{value.length}</span>
+            </div>
+            {maxLength && (
+              <div>
+                <span className="slash">/</span>
+                <span>{maxLength}</span>
+              </div>
+            )}
+          </div>
+        )}
         <textarea
           ref={this.control}
-          type={type}
           rows={rows}
           className={`${componentClassName} scrollbar`}
           {...last}
@@ -102,7 +118,10 @@ class TextArea extends React.Component {
             this.setFocus(false);
           }}
           onChange={(e) => {
-            onChange(e.target.value);
+            if (!maxLength || (maxLength && maxLength >= e.target.value.length)) {
+              onChange(e.target.value);
+            }
+
             this.setValid(this.control.current.validity);
           }}
           value={value}
@@ -113,7 +132,6 @@ class TextArea extends React.Component {
         >
           {value}
         </textarea>
-        <div className="liner" />
       </div>
     );
   }
@@ -128,10 +146,10 @@ TextArea.defaultProps = {
   onChange: null,
   value: '',
   required: false,
-  type: 'text',
   simple: false,
   height: '',
   rows: 2,
+  showLength: false,
 };
 
 TextArea.propTypes = {
@@ -144,12 +162,13 @@ TextArea.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.string,
   required: PropTypes.bool,
-  type: PropTypes.string,
   customInputValidationMessage: PropTypes.objectOf(PropTypes.any),
   externalValidationMessage: PropTypes.string,
   simple: PropTypes.bool,
   height: PropTypes.string,
   rows: PropTypes.number,
+  showLength: PropTypes.bool,
+  maxLength: PropTypes.number,
 };
 
 export default withTranslation()(TextArea);

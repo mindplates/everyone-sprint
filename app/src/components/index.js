@@ -34,6 +34,7 @@ import VideoElement from '@/components/VideoElement/VideoElement';
 import DailyScrumMeeting from '@/components/DailyScrumMeeting/DailyScrumMeeting';
 import Tabs from '@/components/Tabs/Tabs';
 import TextArea from '@/components/TextArea/TextArea';
+import Placeholder from '@/components/Placeholder/Placeholder';
 
 export {
   MessageDialog,
@@ -72,4 +73,5 @@ export {
   DailyScrumMeeting,
   Tabs,
   TextArea,
+  Placeholder,
 };
