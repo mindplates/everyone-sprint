@@ -54,7 +54,7 @@
     top: 62px;
     left: 0;
     right: 0;
-    z-index: 2;
+    z-index: 4;
     border-radius: 0;
 
     &.logged-in {
@@ -86,7 +86,7 @@
       margin: 0 auto;
       text-align: right;
       position: relative;
-      z-index: 2;
+      z-index: 4;
       padding-right: 2px;
 
       > div {

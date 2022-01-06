@@ -43,10 +43,26 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
         flex-direction: column;
         width: 100%;
 
+        &.collapsed {
+          max-width: none;
+          min-width: auto;
+          width: auto;
+          padding-right: 1rem;
+          padding-top: 0.5rem;
+        }
+
         .meeting-content {
           flex-grow: 1;
           display: flex;
           flex-direction: column;
+
+          .meeting-list-title {
+            position: relative;
+            .collapsed-button {
+              position: absolute;
+              right: 0;
+            }
+          }
 
           .sprint-board-day-selector {
             display: flex;
@@ -223,12 +239,17 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
         display: flex;
         margin: 1rem 1rem 1rem 0;
 
-        .team-daily-meeting-list-content {
-          _border: $border;
-          border-left: 1px solid rgba(0, 0, 0, 0.2);
-          _padding: 1rem;
-          padding: 0 0 0 1rem;
+        &.collapsed {
+          margin: -1rem 0 -1rem 0;
+        }
 
+        .team-daily-meeting-list-content {
+          border-left: 1px solid rgba(0, 0, 0, 0.2);
+
+          &.collapsed {
+            padding: 1rem 0 1rem 1rem;
+          }
+          padding: 0 0 0 1rem;
           flex-grow: 1;
           display: flex;
           flex-direction: column;
@@ -241,8 +262,6 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
         .my-daily-meeting-form {
           flex-direction: column;
           padding: 1.5rem 0 1.5rem 1.5rem;
-
-
 
           ul {
             padding: 0;
@@ -363,23 +382,166 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
             padding-top: 1rem;
             > ul {
               > li {
-                padding-bottom: 0.5rem;
                 margin-bottom: 1rem;
-                border-bottom: 1px solid $gray-200;
 
-                &:last-child {
-                  margin-bottom: 0;
-                }
-
-                &:last-child {
-                  border-bottom: none;
-                }
                 > div {
                   display: flex;
                   flex-direction: row;
 
-                  .user-icon {
-                    margin-right: 1rem;
+                  &.user-info {
+                    padding: 0.5rem 0;
+                    line-height: 100%;
+
+                    > div {
+                      align-self: center;
+
+                      &.bullet {
+                        display: inline-flex;
+                        font-size: 14px;
+                        margin-right: 0.4rem;
+
+                        i {
+                          position: relative;
+                          top: -1px;
+                        }
+
+                        > div {
+                          align-self: center;
+                          display: inline-block;
+                          width: 6px;
+                          background-color: #333;
+                          height: 16px;
+
+                          border-radius: 2px;
+                        }
+                      }
+                      &.user-image {
+                        margin-right: 0.5rem;
+                        display: none;
+                      }
+
+                      &.user-name {
+                        font-size: 14px;
+                        text-transform: uppercase;
+                        font-weight: bold;
+
+                        .name-text {
+                          margin-left: 0.5rem;
+                          &:before {
+                            content: '(';
+                            margin-right: 0.125rem;
+                          }
+                          &:after {
+                            content: ')';
+                            margin-left: 0.125rem;
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  &.question-answer-info {
+                    padding: 0;
+                    margin-bottom: 1rem;
+
+                    .icon {
+                      width: 22px;
+                      height: 22px;
+                      font-size: 14px;
+                      background-color: $white;
+                    }
+
+                    ul {
+                      width: 100%;
+                      display: table;
+                      > li {
+                        display: table-cell;
+                        width: 50%;
+                        padding: 0 0.5rem;
+                        position: relative;
+
+                        > div.liner {
+                          position: absolute;
+                          top: 0;
+                          left: 0.5rem;
+                          right: 0.5rem;
+                          bottom: 0;
+                          border: 1px solid rgba(0, 0, 0, 0.4);
+                        }
+
+                        &:first-child {
+                          padding-left: 0;
+
+                          > div.liner {
+                            left: 0;
+                          }
+                        }
+
+                        &:last-child {
+                          padding-right: 0;
+
+                          > div.liner {
+                            right: 0;
+                          }
+                        }
+
+                        > div.content {
+                          height: 100%;
+
+                          .question {
+                            line-height: 100%;
+                            margin-bottom: 0;
+                            padding: 1rem;
+                            background-color: $light;
+                            display: flex;
+                            > span {
+                              align-self: center;
+                              line-height: 100%;
+                            }
+                          }
+                          .answer {
+                            padding: 1rem;
+                            border-left: none;
+                            border-right: none;
+
+                            font-size: 14px;
+                            white-space: pre-wrap;
+
+                            &:empty:before {
+                              content: 'NONE';
+                              color: $gray-500;
+                              text-align: center;
+                              width: 100%;
+                              display: inline-block;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  &.others {
+                    ul {
+                      width: 100%;
+                      display: block;
+
+                      > li {
+                        display: block;
+                        width: auto;
+                        padding: 0;
+                        margin-bottom: 1rem;
+
+                        &:last-child {
+                          margin-bottom: 0;
+                        }
+                        .content {
+                          border: 1px solid rgba(0, 0, 0, 0.4);
+                        }
+                        div.liner {
+                          display: none;
+                        }
+                      }
+                    }
                   }
 
                   .user-meeting-content {

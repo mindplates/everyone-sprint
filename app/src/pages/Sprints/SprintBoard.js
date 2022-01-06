@@ -83,9 +83,10 @@ const SprintBoard = ({
   const id = Number(idString);
 
   const [tab, setTab] = useState('today');
-  const [viewType, setViewType] = useState('my');
+  const [viewType, setViewType] = useState('team');
   const [subViewType, setSubViewType] = useState('list');
   const [currentSubViewIndex, setCurrentSubViewIndex] = useState(0);
+  const [meetingListCollapsed, setMeetingListCollapsed] = useState(false);
 
   const [sprint, setSprint] = useState(null);
   const [meetings, setMeetings] = useState([]);
@@ -259,134 +260,161 @@ const SprintBoard = ({
           <div className="board-content">
             {tab === 'today' && (
               <div className="day-content">
-                <div className="daily-meeting-list">
-                  <Block className="pt-0 meeting-content">
-                    <BlockTitle className="pb-0 mb-2" liner={false}>
-                      {t('스크럼 미팅')}
-                    </BlockTitle>
-                    <div className="sprint-board-day-selector">
-                      <div>
+                <div className={`daily-meeting-list ${meetingListCollapsed ? 'collapsed' : ''}`}>
+                  {meetingListCollapsed && (
+                    <Button
+                      size="sm"
+                      color="white"
+                      outline
+                      rounded
+                      onClick={() => {
+                        setMeetingListCollapsed(!meetingListCollapsed);
+                      }}
+                    >
+                      <i className="fas fa-plus" />
+                    </Button>
+                  )}
+                  {!meetingListCollapsed && (
+                    <Block className="pt-0 meeting-content">
+                      <BlockTitle className="meeting-list-title pb-0 mb-2" liner={false}>
+                        {t('스크럼 미팅')}
                         <Button
+                          className="collapsed-button"
                           size="sm"
                           color="white"
                           outline
                           rounded
                           onClick={() => {
-                            const prevDay = new Date(day);
-                            prevDay.setDate(prevDay.getDate() - 1);
-                            moveDate(prevDay);
+                            setMeetingListCollapsed(!meetingListCollapsed);
                           }}
                         >
-                          <i className="fas fa-angle-left" />
+                          <i className="fas fa-minus" />
                         </Button>
+                      </BlockTitle>
+                      <div className="sprint-board-day-selector">
+                        <div>
+                          <Button
+                            size="sm"
+                            color="white"
+                            outline
+                            rounded
+                            onClick={() => {
+                              const prevDay = new Date(day);
+                              prevDay.setDate(prevDay.getDate() - 1);
+                              moveDate(prevDay);
+                            }}
+                          >
+                            <i className="fas fa-angle-left" />
+                          </Button>
+                        </div>
+                        <div className="ml-3">
+                          <DatePicker
+                            className="date-picker start-date-picker"
+                            selected={day}
+                            onChange={moveDate}
+                            locale={user.language}
+                            customInput={<DateCustomInput />}
+                            dateFormat={DATE_FORMATS[dateUtil.getUserLocale()].days.picker}
+                          />
+                        </div>
+                        <div>
+                          <Button
+                            className="ml-1"
+                            size="sm"
+                            color="white"
+                            outline
+                            rounded
+                            onClick={() => {
+                              const nextDay = new Date(day);
+                              nextDay.setDate(nextDay.getDate() + 1);
+                              moveDate(nextDay);
+                            }}
+                          >
+                            <i className="fas fa-angle-right" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="ml-3">
-                        <DatePicker
-                          className="date-picker start-date-picker"
-                          selected={day}
-                          onChange={moveDate}
-                          locale={user.language}
-                          customInput={<DateCustomInput />}
-                          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()].days.picker}
-                        />
-                      </div>
-                      <div>
-                        <Button
-                          className="ml-1"
-                          size="sm"
-                          color="white"
-                          outline
-                          rounded
-                          onClick={() => {
-                            const nextDay = new Date(day);
-                            nextDay.setDate(nextDay.getDate() + 1);
-                            moveDate(nextDay);
-                          }}
-                        >
-                          <i className="fas fa-angle-right" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="meeting-list-content">
-                      <div>
-                        {meetings.length < 1 && (
-                          <div className="empty-content h-100">
-                            <span>{t('스크럼 미팅이 없습니다')}</span>
-                          </div>
-                        )}
-                        {meetings.length > 0 && (
-                          <ul className="g-no-select">
-                            {meetings.map((d) => {
-                              return (
-                                <li
-                                  key={d.id}
-                                  onClick={() => {
-                                    if (selectedMeetingId !== d.id) {
-                                      selectMeeting(d.id);
-                                    }
-                                  }}
-                                  className={d.id === selectedMeetingId ? 'selected' : ''}
-                                >
-                                  <div className="line" />
-                                  <div className="bar" />
-                                  <div className="meeting-list-item">
-                                    <div className="list-content">
-                                      <div className="name">
-                                        <span className={`time-ago ${dateUtil.getTime(d.startDate) > now.getTime() ? 'future' : 'past'}`}>
-                                          <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getTime(d.startDate)} />
-                                        </span>
-                                        <span className="text">{d.name}</span>
+                      <div className="meeting-list-content">
+                        <div>
+                          {meetings.length < 1 && (
+                            <div className="empty-content h-100">
+                              <span>{t('스크럼 미팅이 없습니다')}</span>
+                            </div>
+                          )}
+                          {meetings.length > 0 && (
+                            <ul className="g-no-select">
+                              {meetings.map((d) => {
+                                return (
+                                  <li
+                                    key={d.id}
+                                    onClick={() => {
+                                      if (selectedMeetingId !== d.id) {
+                                        selectMeeting(d.id);
+                                      }
+                                    }}
+                                    className={d.id === selectedMeetingId ? 'selected' : ''}
+                                  >
+                                    <div className="line" />
+                                    <div className="bar" />
+                                    <div className="meeting-list-item">
+                                      <div className="list-content">
+                                        <div className="name">
+                                          <span className={`time-ago ${dateUtil.getTime(d.startDate) > now.getTime() ? 'future' : 'past'}`}>
+                                            <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getTime(d.startDate)} />
+                                          </span>
+                                          <span className="text">{d.name}</span>
+                                        </div>
+                                        <div className="date">
+                                          <div>{dateUtil.getDateString(d.startDate)}</div>
+                                          <Liner className="dash" width="10px" height="1px" display="inline-block" color="black" margin="0 0.5rem 0 0.5rem" />
+                                          <div>{dateUtil.getDateString(d.endDate, 'hours')}</div>
+                                        </div>
                                       </div>
-                                      <div className="date">
-                                        <div>{dateUtil.getDateString(d.startDate)}</div>
-                                        <Liner className="dash" width="10px" height="1px" display="inline-block" color="black" margin="0 0.5rem 0 0.5rem" />
-                                        <div>{dateUtil.getDateString(d.endDate, 'hours')}</div>
+                                      <div className="list-button">
+                                        <Button
+                                          size="md"
+                                          color="white"
+                                          rounded
+                                          outline
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                          }}
+                                        >
+                                          <i className="fas fa-ellipsis-h" />
+                                        </Button>
+                                        <Button
+                                          size="md"
+                                          color="white"
+                                          rounded
+                                          outline
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                          }}
+                                        >
+                                          <i className="fas fa-podcast" />
+                                        </Button>
                                       </div>
                                     </div>
-                                    <div className="list-button">
-                                      <Button
-                                        size="md"
-                                        color="white"
-                                        rounded
-                                        outline
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                        }}
-                                      >
-                                        <i className="fas fa-ellipsis-h" />
-                                      </Button>
-                                      <Button
-                                        size="md"
-                                        color="white"
-                                        rounded
-                                        outline
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                        }}
-                                      >
-                                        <i className="fas fa-podcast" />
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        )}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </Block>
+                    </Block>
+                  )}
                 </div>
-                <div className="team-daily-meeting-list">
+                <div className={`team-daily-meeting-list ${meetingListCollapsed ? 'collapsed' : ''}`}>
                   {meetings.length < 1 && (
-                    <div className="team-daily-meeting-list-content">
+                    <div className={`team-daily-meeting-list-content ${meetingListCollapsed ? 'collapsed' : ''}`}>
                       <div className="empty-content h-100 w-100">
                         <span>{t('선택된 스크림 미팅이 없습니다.')}</span>
                       </div>
                     </div>
                   )}
                   {meetings.length > 0 && (
-                    <div className="team-daily-meeting-list-content">
+                    <div className={`team-daily-meeting-list-content ${meetingListCollapsed ? 'collapsed' : ''}`}>
                       <Tabs
                         className="view-type-tabs"
                         tab={viewType}
@@ -501,23 +529,55 @@ const SprintBoard = ({
                               {sprint.users.map((u) => {
                                 return (
                                   <li key={u.userId}>
-                                    <div>
-                                      <div className="user-icon">
-                                        <UserImage border rounded size="50px" iconFontSize="140%" imageType={user.imageType} imageData={user.imageData} />
+                                    <div className="user-info">
+                                      <div className="bullet">
+                                        <i className="fas fa-child" />
                                       </div>
-                                      <div className="user-meeting-content">
-                                        <div className="user-name">
-                                          <span>
-                                            <span className="user-alias">{u.alias}</span>
-                                            {user.name && <span className="name-text">{user.name}</span>}
-                                          </span>
-                                        </div>
-                                        <div className="question-answer">
-                                          <ul>
-                                            {dailyMeetingList &&
-                                              dailyMeetingList.map((d) => {
-                                                return (
-                                                  <li key={d.id}>
+                                      <div className="user-image">
+                                        <UserImage border rounded size="30px" iconFontSize="15px" imageType={user.imageType} imageData={user.imageData} />
+                                      </div>
+                                      <div className="user-name">
+                                        <span>
+                                          <span className="user-alias">{u.alias}</span>
+                                          {user.name && <span className="name-text">{user.name}</span>}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="question-answer-info question-answer">
+                                      <ul>
+                                        {dailyMeetingList &&
+                                          dailyMeetingList.slice(0, 2).map((d) => {
+                                            return (
+                                              <li key={d.id}>
+                                                <div className="liner" />
+                                                <div className="content">
+                                                  <div className="question">
+                                                    <span className="icon">
+                                                      <span>Q</span>
+                                                    </span>
+                                                    <span className="text">{d.question}</span>
+                                                  </div>
+                                                  <div className="answer">
+                                                    {
+                                                      dailyAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId)
+                                                        ?.answer
+                                                    }
+                                                  </div>
+                                                </div>
+                                              </li>
+                                            );
+                                          })}
+                                      </ul>
+                                    </div>
+                                    {dailyMeetingList && dailyMeetingList.length > 2 && (
+                                      <div className="question-answer-info others">
+                                        <ul>
+                                          {dailyMeetingList &&
+                                            dailyMeetingList.slice(2).map((d) => {
+                                              return (
+                                                <li key={d.id}>
+                                                  <div className="liner" />
+                                                  <div className="content">
                                                     <div className="question">
                                                       <span className="icon">
                                                         <span>Q</span>
@@ -525,24 +585,19 @@ const SprintBoard = ({
                                                       <span className="text">{d.question}</span>
                                                     </div>
                                                     <div className="answer">
-                                                      <span className="icon">
-                                                        <span>A</span>
-                                                      </span>
-                                                      <span className="text">
-                                                        {
-                                                          dailyAnswers.find(
-                                                            (answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId,
-                                                          )?.answer
-                                                        }
-                                                      </span>
+                                                      {
+                                                        dailyAnswers.find(
+                                                          (answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId,
+                                                        )?.answer
+                                                      }
                                                     </div>
-                                                  </li>
-                                                );
-                                              })}
-                                          </ul>
-                                        </div>
+                                                  </div>
+                                                </li>
+                                              );
+                                            })}
+                                        </ul>
                                       </div>
-                                    </div>
+                                    )}
                                   </li>
                                 );
                               })}
