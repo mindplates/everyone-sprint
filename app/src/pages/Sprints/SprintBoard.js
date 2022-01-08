@@ -434,7 +434,7 @@ const SprintBoard = ({
                       />
                       {viewType === 'my' && (
                         <div className="my-daily-meeting-form">
-                          {(!dailyMeetingList || dailyMeetingList.length < 1) && <Placeholder height="300px" />}
+                          {(!dailyMeetingList || dailyMeetingList.length < 1) && <Placeholder height="376px" />}
                           {dailyMeetingList && dailyMeetingList.length > 0 && (
                             <ul>
                               {dailyMeetingList.map((d, inx) => {
@@ -452,6 +452,7 @@ const SprintBoard = ({
                                           simple
                                           showLength
                                           maxLength={1000}
+                                          rows={3}
                                         />
                                       </div>
                                       <div className="controls">
@@ -531,7 +532,9 @@ const SprintBoard = ({
                                   <li key={u.userId}>
                                     <div className="user-info">
                                       <div className="bullet">
-                                        <i className="fas fa-child" />
+                                        <span>
+                                          <i className="fas fa-child" />
+                                        </span>
                                       </div>
                                       <div className="user-image">
                                         <UserImage border rounded size="30px" iconFontSize="15px" imageType={user.imageType} imageData={user.imageData} />
@@ -543,32 +546,42 @@ const SprintBoard = ({
                                         </span>
                                       </div>
                                     </div>
-                                    <div className="question-answer-info question-answer">
-                                      <ul>
-                                        {dailyMeetingList &&
-                                          dailyMeetingList.slice(0, 2).map((d) => {
-                                            return (
-                                              <li key={d.id}>
-                                                <div className="liner" />
-                                                <div className="content">
-                                                  <div className="question">
-                                                    <span className="icon">
-                                                      <span>Q</span>
-                                                    </span>
-                                                    <span className="text">{d.question}</span>
+                                    {(!dailyMeetingList || dailyMeetingList.length < 1) && (
+                                      <>
+                                        <Placeholder className="mb-3" height="110px" />
+                                        <Placeholder height="106px" />
+                                      </>
+                                    )}
+                                    {dailyMeetingList && dailyMeetingList.length > 0 && (
+                                      <div className="question-answer-info question-answer">
+                                        <ul>
+                                          {dailyMeetingList &&
+                                            dailyMeetingList.slice(0, 2).map((d) => {
+                                              return (
+                                                <li key={d.id}>
+                                                  <div className="liner" />
+                                                  <div className="content">
+                                                    <div className="question">
+                                                      <span className="icon">
+                                                        <span>Q</span>
+                                                      </span>
+                                                      <span className="text">{d.question}</span>
+                                                    </div>
+                                                    <div className="answer">
+                                                      {
+                                                        dailyAnswers.find(
+                                                          (answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId,
+                                                        )?.answer
+                                                      }
+                                                    </div>
                                                   </div>
-                                                  <div className="answer">
-                                                    {
-                                                      dailyAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId)
-                                                        ?.answer
-                                                    }
-                                                  </div>
-                                                </div>
-                                              </li>
-                                            );
-                                          })}
-                                      </ul>
-                                    </div>
+                                                </li>
+                                              );
+                                            })}
+                                        </ul>
+                                      </div>
+                                    )}
+
                                     {dailyMeetingList && dailyMeetingList.length > 2 && (
                                       <div className="question-answer-info others">
                                         <ul>
@@ -655,6 +668,11 @@ const SprintBoard = ({
                       )}
                       {viewType === 'team' && subViewType === 'card' && (
                         <div className="team-user-daily-meeting-content view-type-card">
+                          <div className="current-meeting-index">
+                            <span>
+                              {currentSubViewIndex + 1} / {sprint.users.length}
+                            </span>
+                          </div>
                           <div className="card-move-button left">
                             <Button
                               size="lg"
