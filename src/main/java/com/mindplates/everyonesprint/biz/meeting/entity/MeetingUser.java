@@ -5,6 +5,7 @@ import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Builder
@@ -27,4 +28,16 @@ public class MeetingUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id")
     private Meeting meeting;
+
+    @Column(name = "first_join_date")
+    private LocalDateTime firstJoinDate;
+
+    @Column(name = "last_out_date")
+    private LocalDateTime lastOutDate;
+
+    @Column(name = "join_duration_seconds")
+    private Integer joinDurationSeconds;
+
+    @Column(name = "talked_seconds")
+    private Integer talkedSeconds;
 }

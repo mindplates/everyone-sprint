@@ -3,15 +3,13 @@ package com.mindplates.everyonesprint.biz.sprint.controller;
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingResponse;
+import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingSummaryResponse;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeetingAnswer;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.sprint.vo.request.SprintDailyMeetingAnswerRequest;
 import com.mindplates.everyonesprint.biz.sprint.vo.request.SprintRequest;
-import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintBoardResponse;
-import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintDailyMeetingAnswerResponse;
-import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintListResponse;
-import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintResponse;
+import com.mindplates.everyonesprint.biz.sprint.vo.response.*;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
@@ -181,6 +179,24 @@ public class SprintController {
         sprintService.createSprintDailyMeetingAnswers(sprintDailyMeetingUserAnswers, userSession);
 
         return sprintDailyMeetingUserAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}/summary")
+    public SprintSummaryResponse selectSprintSummary(@PathVariable Long id, @ApiIgnore UserSession userSession) {
+
+        Sprint sprint = sprintService.selectSprintInfo(id);
+        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
+            throw new ServiceException("common.not.authorized");
+        }
+
+        List<Meeting> meetings = meetingService.selectSprintMeetingList(id);
+
+        SprintSummaryResponse response = new SprintSummaryResponse();
+        response.meetings = meetings.stream()
+                .map((meeting) -> new MeetingSummaryResponse(meeting))
+                .collect(Collectors.toList());
+
+        return response;
     }
 
 

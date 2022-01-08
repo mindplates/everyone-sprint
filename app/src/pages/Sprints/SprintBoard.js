@@ -4,49 +4,31 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
-import {
-  Block,
-  BlockRow,
-  BlockTitle,
-  Button,
-  DatePicker,
-  DateRangeText,
-  Label,
-  Liner,
-  Page,
-  PageContent,
-  PageTitle,
-  Placeholder,
-  Tabs,
-  Text,
-  TextArea,
-  UserImage,
-} from '@/components';
+import { Block, BlockTitle, Button, DatePicker, Liner, Page, PageContent, PageTitle, Placeholder, Tabs, TextArea, UserImage } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 import dateUtil from '@/utils/dateUtil';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
 import { DATE_FORMATS, MESSAGE_CATEGORY } from '@/constants/constants';
-import './SprintCommon.scss';
-import './SprintBoard.scss';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import dialog from '@/utils/dialog';
-
-const labelMinWidth = '140px';
+import SprintBoardSummary from './SprintBoardSummary';
+import './SprintCommon.scss';
+import './SprintBoard.scss';
 
 const SprintBoard = ({
   t,
   history,
   user,
   match: {
-    params: { id: idString, date },
+    params: { id: idString, tab: tabString, date },
   },
 }) => {
   const tabs = [
     {
-      key: 'today',
-      value: t('오늘'),
+      key: 'daily',
+      value: t('데일리'),
     },
     {
       key: 'summary',
@@ -82,13 +64,14 @@ const SprintBoard = ({
 
   const id = Number(idString);
 
-  const [tab, setTab] = useState('today');
+  const [tab, setTab] = useState(tabString);
   const [viewType, setViewType] = useState('team');
   const [subViewType, setSubViewType] = useState('list');
   const [currentSubViewIndex, setCurrentSubViewIndex] = useState(0);
   const [meetingListCollapsed, setMeetingListCollapsed] = useState(false);
 
   const [sprint, setSprint] = useState(null);
+  const [sprintSummary, setSprintSummary] = useState(null);
   const [meetings, setMeetings] = useState([]);
   const [dailyAnswers, setDailyAnswers] = useState([]);
 
@@ -156,6 +139,18 @@ const SprintBoard = ({
     );
   };
 
+  const getSprintSummary = () => {
+    request.get(
+      `/api/sprints/${id}/summary`,
+      null,
+      (data) => {
+        setSprintSummary(data);
+      },
+      null,
+      t('스프린트에 관련된 모든 정보를 가져오고 있습니다.'),
+    );
+  };
+
   const saveDailyMeetingAnswers = () => {
     request.post(
       `/api/sprints/${id}/answers?date=${localDayString}`,
@@ -175,9 +170,15 @@ const SprintBoard = ({
   useEffect(() => {
     if (day) {
       // setSelectedMeetingId(null);
-      getBoardInfo(startDate, endDate, localDayString);
+      if (tab === tabs[0].key) {
+        getBoardInfo(startDate, endDate, localDayString);
+      }
+
+      if (tab === tabs[1].key) {
+        getSprintSummary();
+      }
     }
-  }, [id, day]);
+  }, [id, day, tab]);
 
   useEffect(() => {
     if (meetings.length > 0) {
@@ -197,10 +198,13 @@ const SprintBoard = ({
 
   const now = new Date();
 
-  const sprintSpan = dateUtil.getSpan(now.getTime(), sprint?.endDate);
-
   const moveDate = (nextData) => {
-    history.push(`/sprints/${id}/board/${nextData.toLocaleDateString('sv').substring(0, 10)}`);
+    history.push(`/sprints/${id}/board/daily/${nextData.toLocaleDateString('sv').substring(0, 10)}`);
+  };
+
+  const moveTab = (nextTab) => {
+    setTab(nextTab);
+    history.push(`/sprints/${id}/board/${nextTab}`);
   };
 
   const onChangeAnswer = (questionId, value) => {
@@ -250,15 +254,21 @@ const SprintBoard = ({
 
   return (
     <Page className="sprint-board-wrapper sprint-common">
-      <PageTitle className="sprint-title-with-tag" tabs={tabs} tab={tab} onChangeTab={setTab}>
+      <PageTitle
+        className="sprint-title-with-tag"
+        tabs={tabs}
+        tab={tab}
+        onChangeTab={(value) => {
+          moveTab(value);
+        }}
+      >
         <span>{sprint?.name}</span>
         <span className="spring-title-tag">BOARD</span>
       </PageTitle>
       {sprint && (
         <PageContent className="page-content">
-          <Tabs className="pt-1 pb-0 d-none" tab={tab} tabs={tabs} onChange={setTab} rounded size="45px" border />
           <div className="board-content">
-            {tab === 'today' && (
+            {tab === 'daily' && (
               <div className="day-content">
                 <div className={`daily-meeting-list ${meetingListCollapsed ? 'collapsed' : ''}`}>
                   {meetingListCollapsed && (
@@ -766,23 +776,7 @@ const SprintBoard = ({
                 </div>
               </div>
             )}
-            {tab === 'summary' && (
-              <div className="summary-content">
-                <Block className="">
-                  <BlockRow>
-                    <Label minWidth={labelMinWidth}>{t('남은 기간')}</Label>
-                    <Text>
-                      <span className="sprint-span ml-0">
-                        <span>{`${sprintSpan.days}${t('일')}`}</span>
-                        <span className="ml-2">{`${sprintSpan.hours}${t('시간')}`}</span>
-                        <span className="ml-2">{t('후 종료')}</span>
-                      </span>
-                    </Text>
-                    <DateRangeText className="ml-2" country={user.country} startDate={sprint.startDate} endDate={sprint.endDate} />
-                  </BlockRow>
-                </Block>
-              </div>
-            )}
+            {tab === 'summary' && <SprintBoardSummary sprint={sprint} sprintSummary={sprintSummary} />}
           </div>
         </PageContent>
       )}
@@ -804,6 +798,7 @@ SprintBoard.propTypes = {
   history: HistoryPropTypes,
   match: PropTypes.shape({
     params: PropTypes.shape({
+      tab: PropTypes.string,
       id: PropTypes.string,
       date: PropTypes.string,
     }),

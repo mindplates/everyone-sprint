@@ -1,0 +1,50 @@
+.sprint-board-summary-wrapper {
+  .meeting-summary {
+    > span {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .user-list {
+    flex-grow: 1;
+
+    .user-table {
+      width: 100%;
+
+    }
+    table {
+      font-size: 14px;
+      .user-info {
+        text-transform: uppercase;
+
+        .user-image {
+          margin-right: 0.5rem;
+        }
+      }
+
+      th,
+      td {
+        vertical-align: middle;
+      }
+
+      th {
+        font-weight: normal;
+        background-color: $light;
+      }
+
+      tbody {
+        border-top-color: rgba(0, 0, 0, 0.2);
+      }
+
+      .number {
+        text-align: right;
+        width: 130px;
+        min-width: 130px;
+      }
+
+      .user-info {
+        min-width: 200px;
+      }
+    }
+  }
+}

@@ -39,16 +39,16 @@ const SprintDailyMeetingQuestionPropTypes = PropTypes.shape({
 const SprintDailyMeetingPropTypes = PropTypes.shape({
   id: PropTypes.number,
   name: PropTypes.string,
-  startTime: PropTypes.string,
-  endTime: PropTypes.string,
+  startTime: PropTypes.number,
+  endTime: PropTypes.number,
   sprintDailyMeetingQuestions: PropTypes.arrayOf(SprintDailyMeetingQuestionPropTypes),
 });
 
 const SprintPropTypes = PropTypes.shape({
   id: PropTypes.number,
   name: PropTypes.string,
-  startDate: PropTypes.string,
-  endDate: PropTypes.string,
+  startDate: PropTypes.number,
+  endDate: PropTypes.number,
   realEndDate: PropTypes.string,
   isJiraSprint: PropTypes.bool,
   jiraSprintUrl: PropTypes.string,
@@ -63,6 +63,30 @@ const SprintPropTypes = PropTypes.shape({
   userCount: PropTypes.number,
 });
 
+const SprintSummaryPropTypes = PropTypes.shape({
+  meetings: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      durationSeconds: PropTypes.number,
+      startDate: PropTypes.string,
+      endDate: PropTypes.string,
+      realEndDate: PropTypes.number,
+      realStartDate: PropTypes.number,
+      sprintDailyMeetingId: PropTypes.number,
+      users: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.number,
+          firstJoinDate: PropTypes.string,
+          lastOutDate: PropTypes.string,
+          joinDurationSeconds: PropTypes.number,
+          talkedSeconds: PropTypes.number,
+          userId: PropTypes.number,
+        }),
+      ),
+    }),
+  ),
+});
+
 export {
   HistoryPropTypes,
   SettingPropTypes,
@@ -71,4 +95,5 @@ export {
   SprintDailyMeetingQuestionPropTypes,
   SprintDailyMeetingPropTypes,
   SprintPropTypes,
+  SprintSummaryPropTypes,
 };

@@ -21,6 +21,8 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
     padding: 0;
     display: flex;
 
+    flex-direction: column;
+
     .day-content {
       display: flex;
       flex-grow: 1;
