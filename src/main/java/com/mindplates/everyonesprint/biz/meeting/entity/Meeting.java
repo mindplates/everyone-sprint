@@ -41,6 +41,15 @@ public class Meeting extends CommonEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
+    @Column(name = "real_start_date")
+    private LocalDateTime realStartDate;
+
+    @Column(name = "real_end_date")
+    private LocalDateTime realEndDate;
+
+    @Column(name = "duration_seconds")
+    private Integer durationSeconds;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<MeetingUser> users;

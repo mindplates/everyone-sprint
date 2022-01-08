@@ -1,4 +1,4 @@
-import { Form } from 'reactstrap';
+import { Form, Table } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import MessageDialog from '@/components/MessageDialog/MessageDialog';
 import SocketClient from '@/components/SocketClient/SocketClient';
@@ -35,6 +35,7 @@ import DailyScrumMeeting from '@/components/DailyScrumMeeting/DailyScrumMeeting'
 import Tabs from '@/components/Tabs/Tabs';
 import TextArea from '@/components/TextArea/TextArea';
 import Placeholder from '@/components/Placeholder/Placeholder';
+
 
 export {
   MessageDialog,
@@ -74,4 +75,5 @@ export {
   Tabs,
   TextArea,
   Placeholder,
+  Table
 };

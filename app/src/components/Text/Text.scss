@@ -19,23 +19,23 @@
   }
 
   &.size-xs {
-    height: 26px;
+    min-height: 26px;
     .text {
     }
   }
 
   &.size-sm {
-    height: 31px;
+    min-height: 31px;
     .text {
     }
   }
 
   &.size-md {
-    height: 38px;
+    min-height: 38px;
   }
 
   &.size-lg {
-    height: 48px;
+    min-height: 48px;
   }
 
   &.is-bold {

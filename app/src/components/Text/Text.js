@@ -2,10 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Text.scss';
 
-const Text = ({ className, children, size, bold }) => {
+const Text = ({ className, children, size, bold, verticalAlign }) => {
   return (
-    <div className={`text-wrapper ${className} size-${size} ${bold ? 'is-bold' : ''}`}>
-      <div className="text">
+    <div
+      className={`text-wrapper ${className} size-${size} ${bold ? 'is-bold' : ''}`}
+      style={{
+        alignSelf: verticalAlign,
+      }}
+    >
+      <div
+        className="text"
+        style={{
+          alignSelf: verticalAlign,
+        }}
+      >
         <span>{children}</span>
       </div>
     </div>
@@ -18,6 +28,7 @@ Text.defaultProps = {
   className: '',
   size: 'md',
   bold: false,
+  verticalAlign: 'center',
 };
 
 Text.propTypes = {
@@ -25,4 +36,5 @@ Text.propTypes = {
   children: PropTypes.node,
   size: PropTypes.string,
   bold: PropTypes.bool,
+  verticalAlign: PropTypes.string,
 };

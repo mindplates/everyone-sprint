@@ -20,7 +20,7 @@ const SprintList = ({ className, printOld, t, history, sprints }) => {
           <li
             key={sprint.id}
             onClick={() => {
-              history.push(`/sprints/${sprint.id}/board`);
+              history.push(`/sprints/${sprint.id}/board/daily`);
             }}
           >
             <div>
