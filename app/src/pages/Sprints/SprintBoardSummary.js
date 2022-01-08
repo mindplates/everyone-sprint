@@ -107,14 +107,37 @@ const SprintBoardSummary = ({ t, user, sprint, sprintSummary }) => {
                   return (
                     <tr key={u.id}>
                       <td className="user-info">
-                        <UserImage border rounded size="30px" iconFontSize="15px" imageType={u.imageType} imageData={u.imageData} className="user-image" />
+                        <UserImage
+                          border={false}
+                          rounded
+                          size="30px"
+                          iconFontSize="15px"
+                          imageType={u.imageType}
+                          imageData={u.imageData}
+                          className="user-image"
+                        />
                         <span>{u.alias}</span>
                       </td>
-                      <td className="number">0{t('회')}</td>
-                      <td className="number">0{t('분')}</td>
-                      <td className="number">0{t('분')}</td>
-                      <td className="number">0{t('회')}</td>
-                      <td className="number">0{t('회')}</td>
+                      <td className="number">
+                        <span className="up">0</span>
+                        {t('회')}
+                      </td>
+                      <td className="number">
+                        <span className="down">0</span>
+                        {t('분')}
+                      </td>
+                      <td className="number">
+                        <span className="up">0</span>
+                        {t('분')}
+                      </td>
+                      <td className="number">
+                        <span className="up">0</span>
+                        {t('회')}
+                      </td>
+                      <td className="number">
+                        <span className="up">0</span>
+                        {t('회')}
+                      </td>
                     </tr>
                   );
                 })}

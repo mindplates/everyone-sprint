@@ -120,13 +120,13 @@ Common.propTypes = {
   message: PropTypes.shape({
     category: PropTypes.string,
     title: PropTypes.string,
-    content: PropTypes.string,
+    content: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     okHandler: PropTypes.func,
   }),
   confirm: PropTypes.shape({
     category: PropTypes.string,
     title: PropTypes.string,
-    content: PropTypes.string,
+    content: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     okHandler: PropTypes.func,
     noHandler: PropTypes.func,
   }),

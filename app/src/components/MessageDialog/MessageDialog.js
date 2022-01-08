@@ -129,7 +129,7 @@ MessageDialog.propTypes = {
   t: PropTypes.func,
   category: PropTypes.string,
   title: PropTypes.string,
-  message: PropTypes.string,
+  message: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   okHandler: PropTypes.func,
   noHandler: PropTypes.func,
 };

@@ -80,6 +80,9 @@ div.video-element-wrapper {
     height: 100%;
     _border: 1px solid rgba(0, 0, 0, 0.4);
     border-radius: 2px;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
   }
 
   .not-supported-user-media {

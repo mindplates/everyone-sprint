@@ -8,6 +8,9 @@ import { Button, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketCl
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import './Conference.scss';
+import dialog from '@/utils/dialog';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
+import images from '@/images';
 
 /*
 const constraints = {
@@ -42,14 +45,25 @@ class Conference extends React.Component {
 
   myVideo = createRef();
 
+  myConfigVideo = createRef();
+
   streamingContent = createRef();
 
   setVideoInfoDebounced;
+
+  isAddedPermissionEvent = false;
+
+  permissions = {
+    microphone: null,
+    camera: null,
+  };
 
   constructor(props) {
     super(props);
 
     this.setVideoInfoDebounced = debounce(this.setVideoInfo, 100);
+
+    this.setConfigDebounced = debounce(this.setConfig, 100);
 
     this.state = {
       conference: null,
@@ -57,10 +71,6 @@ class Conference extends React.Component {
       align: {
         type: 'CONNECT',
         order: 'ASC',
-      },
-      supportInfo: {
-        supportUserMedia: null,
-        retrying: false,
       },
       videoInfo: {
         init: false,
@@ -77,6 +87,23 @@ class Conference extends React.Component {
       },
       screenShare: {
         sharing: false,
+      },
+      supportInfo: {
+        status: 'NONE', // NONE, READY, COMPLETE, ERROR
+        supportUserMedia: null,
+        retrying: false,
+        permissions: {
+          microphone: null,
+          camera: null,
+        },
+        deviceInfo: {
+          supported: true,
+          errorName: '',
+          errorMessage: '',
+          devices: [],
+        },
+        enabledAudio: true,
+        enabledVideo: true,
       },
     };
   }
@@ -98,9 +125,18 @@ class Conference extends React.Component {
   }
 
   componentDidMount() {
-    const { code } = this.state;
+    const { code, supportInfo } = this.state;
     window.addEventListener('resize', this.setVideoInfoDebounced);
     this.setVideoInfoDebounced();
+
+    if (!this.isAddedPermissionEvent) {
+      this.isAddedPermissionEvent = true;
+      this.checkPermissions();
+    }
+
+    if (supportInfo.status === 'NONE') {
+      this.setConfigDebounced();
+    }
 
     if (code) {
       this.getConference(code);
@@ -108,7 +144,15 @@ class Conference extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { code, videoInfo } = this.state;
+    const { code, videoInfo, supportInfo } = this.state;
+
+    if (!this.isAddedPermissionEvent) {
+      this.isAddedPermissionEvent = true;
+      this.checkPermissions();
+    }
+    if (supportInfo.status === 'NONE') {
+      this.setConfigDebounced();
+    }
 
     if (!videoInfo.init) {
       this.setVideoInfo();
@@ -143,6 +187,273 @@ class Conference extends React.Component {
 
     window.removeEventListener('resize', this.setVideoInfoDebounced);
   }
+
+  showPermissionMessage = (permissionObj) => {
+    const { t } = this.props;
+    const { supportInfo } = this.state;
+
+    this.setState({
+      supportInfo: {
+        ...supportInfo,
+        permissions: {
+          ...this.permissions,
+        },
+      },
+    });
+
+    if (permissionObj.state === 'prompt') {
+      dialog.setMessage(
+        MESSAGE_CATEGORY.WARNING,
+        t('카메라와 마이크가 사용하도록 허용'),
+        <div>
+          <span>
+            {t(
+              '다른 참가자들과 회의를 진행하기 위해서는 카메라와 마이크에 엑세스할 수 있어야 합니다. 사용하는 각 브라우저와 컴퓨터에서 이 사용 권한을 확인할 것을 요청하는 메세지가 표시됩니다.',
+            )}
+          </span>
+        </div>,
+      );
+    }
+
+    if (permissionObj.state === 'denied') {
+      dialog.setMessage(
+        MESSAGE_CATEGORY.WARNING,
+        t('카메라와 마이크가 차단됨'),
+        <div>
+          <span>{t('카메라와 마이크에 엑세스가 필요합니다. 브라우저 주소 표시줄에서 차단된 카메라 아이콘')}</span>
+          <span>
+            <img src={images.cameraPermission} alt="camera" />
+          </span>
+          <span>{t('을 클릭해주세요.')}</span>
+        </div>,
+      );
+    }
+  };
+
+  onChangePermission = () => {
+    const { supportInfo } = this.state;
+
+    this.setState(
+      {
+        supportInfo: {
+          ...supportInfo,
+          permissions: {
+            ...this.permissions,
+          },
+        },
+      },
+      () => {
+        dialog.clearMessage();
+        this.setConfigDebounced();
+      },
+    );
+  };
+
+  checkPermissions = () => {
+    navigator.permissions
+      .query({ name: 'microphone' })
+      .then((permissionObj) => {
+        this.permissions.microphone = permissionObj.state;
+        this.showPermissionMessage(permissionObj);
+
+        permissionObj.onchange = () => {
+          this.permissions.microphone = permissionObj.state;
+          this.onChangePermission(permissionObj);
+        };
+      })
+      .catch(() => {
+        // console.log(error);
+      });
+
+    navigator.permissions
+      .query({ name: 'camera' })
+      .then((permissionObj) => {
+        this.permissions.camera = permissionObj.state;
+        this.showPermissionMessage(permissionObj);
+        permissionObj.onchange = () => {
+          this.permissions.camera = permissionObj.state;
+          this.onChangePermission(permissionObj);
+        };
+      })
+      .catch(() => {
+        // console.log(error);
+      });
+  };
+
+  setConfig = () => {
+    const { t } = this.props;
+    const { supportInfo } = this.state;
+
+    const nextSupportInfo = { ...supportInfo };
+    nextSupportInfo.status = 'READY';
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+      nextSupportInfo.supportUserMedia = false;
+      nextSupportInfo.deviceInfo = {
+        supported: false,
+        errorName: t('미디어 API 오류'),
+        errorMessage: t('디바이스 목록을 가져올 수 없습니다.'),
+        devices: [],
+      };
+    } else {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((list) => {
+          const { supportInfo: currentSupportedInfo } = this.state;
+
+          const nextCurrentSupportedInfo = {
+            ...currentSupportedInfo,
+          };
+
+          nextCurrentSupportedInfo.supportUserMedia = false;
+          nextCurrentSupportedInfo.deviceInfo = {
+            supported: true,
+            errorName: '',
+            errorMessage: '',
+            devices: list.slice(0),
+          };
+
+          this.setState({
+            supportInfo: nextCurrentSupportedInfo,
+          });
+        })
+        .catch((e) => {
+          const { supportInfo: currentSupportedInfo } = this.state;
+
+          const nextCurrentSupportedInfo = {
+            ...currentSupportedInfo,
+          };
+
+          nextCurrentSupportedInfo.supportUserMedia = false;
+          nextCurrentSupportedInfo.deviceInfo = {
+            supported: false,
+            errorName: e.name,
+            errorMessage: e.message,
+            devices: [],
+          };
+
+          this.setState({
+            supportInfo: nextCurrentSupportedInfo,
+          });
+        });
+    }
+
+    this.setState({
+      supportInfo: nextSupportInfo,
+    });
+
+    if (!nextSupportInfo.deviceInfo.supported) {
+      return;
+    }
+
+    console.log(supportInfo);
+
+    navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then((stream) => {
+        this.myStream = stream;
+        this.myConfigVideo.srcObject = stream;
+
+        const { supportInfo: currentSupportedInfo } = this.state;
+
+        const nextCurrentSupportedInfo = {
+          ...currentSupportedInfo,
+        };
+
+        nextCurrentSupportedInfo.supportUserMedia = true;
+        nextCurrentSupportedInfo.enabledAudio = true;
+        nextCurrentSupportedInfo.enabledVideo = true;
+
+        this.setState({
+          supportInfo: nextCurrentSupportedInfo,
+        });
+      })
+      .catch((e) => {
+        // 일부 허용된 경우, 허용된 것만 보여주도록
+        if (supportInfo.permissions.microphone === 'granted' || supportInfo.permissions.camera === 'granted') {
+          navigator.mediaDevices
+            .getUserMedia({
+              ...constraints,
+              video: supportInfo.permissions.camera === 'granted',
+              audio: supportInfo.permissions.microphone === 'granted',
+            })
+            .then((stream) => {
+              this.myStream = stream;
+              this.myConfigVideo.srcObject = stream;
+
+              const { supportInfo: currentSupportedInfo } = this.state;
+
+              const nextCurrentSupportedInfo = {
+                ...currentSupportedInfo,
+              };
+
+              nextCurrentSupportedInfo.supportUserMedia = true;
+              nextCurrentSupportedInfo.enabledAudio = supportInfo.permissions.microphone === 'granted';
+              nextCurrentSupportedInfo.enabledVideo = supportInfo.permissions.camera === 'granted';
+
+              this.setState({
+                supportInfo: nextCurrentSupportedInfo,
+              });
+            })
+            .catch(() => {
+              //
+            });
+
+          // 일부 허용된 것만 보여주고, 다시 권한 요청이 발생하도록 재요청
+          navigator.mediaDevices.getUserMedia(constraints).catch(() => {
+            //
+          });
+        }
+
+        // 하나라도 차단된 경우, 메세지 표시
+        if (supportInfo.permissions.microphone === 'denied' || supportInfo.permissions.camera === 'denied') {
+          dialog.setMessage(
+            MESSAGE_CATEGORY.WARNING,
+            t('카메라와 마이크가 차단됨'),
+            <div>
+              <span>{t('카메라와 마이크에 엑세스가 필요합니다. 브라우저 주소 표시줄에서 차단된 카메라 아이콘')}</span>
+              <span>
+                <img src={images.cameraPermission} alt="camera" />
+              </span>
+              <span>{t('을 클릭해주세요.')}</span>
+            </div>,
+          );
+        } else {
+          // 권한 이외의 에러 표시
+          const errorString = String(e);
+
+          const { supportInfo: currentSupportedInfo } = this.state;
+
+          let errorName = '';
+          let errorMessage = '';
+
+          const errs = errorString.split(':');
+          if (errs.length > 1) {
+            const [first, second] = errs;
+            errorName = first.trim();
+            errorMessage = second.trim();
+          } else {
+            errorName = errs.trim();
+            errorMessage = '';
+          }
+
+          const nextCurrentSupportedInfo = {
+            ...currentSupportedInfo,
+          };
+
+          nextCurrentSupportedInfo.supportUserMedia = false;
+          nextCurrentSupportedInfo.deviceInfo = {
+            ...nextCurrentSupportedInfo.deviceInfo,
+            errorName,
+            errorMessage,
+          };
+
+          this.setState({
+            supportInfo: nextCurrentSupportedInfo,
+          });
+        }
+      });
+  };
 
   setVideoInfo = () => {
     if (this.streamingContent && this.streamingContent.current) {
@@ -217,13 +528,13 @@ class Conference extends React.Component {
             conference,
           },
           () => {
-            this.setUpUserMedia(false);
+            // this.setUpUserMedia(false); // TODO
             this.getUsers(code);
           },
         );
       },
       (error, response) => {
-        if (response.status === 403) {
+        if (response && response.status === 403) {
           // TODO 권한이 없는 경우, 요청 및 승인 처리
         }
 
@@ -856,9 +1167,47 @@ class Conference extends React.Component {
 
     const isSharing = screenShare.sharing || controls.sharing;
 
+    console.log(supportInfo);
+
     return (
       <Page className="conference-wrapper">
-        {existConference && (
+        {existConference && supportInfo.status !== 'COMPLETE' && (
+          <div className="user-media-config">
+            <div>
+              <div>
+                <VideoElement
+                  useVideoInfo={!isSharing}
+                  videoInfo={videoInfo}
+                  onRef={(d) => {
+                    this.myConfigVideo = d;
+                  }}
+                  controls={controls}
+                  supportInfo={supportInfo}
+                  alias={user.alias}
+                  setUpUserMedia={this.setConfig}
+                  muted
+                />
+              </div>
+              <div className="user-media-config-buttons">
+                <Button size="lg" rounded color="white" outline onClick={() => {}} className={supportInfo.enabledAudio ? '' : ''}>
+                  {supportInfo.enabledVideo && <i className="fas fa-video" />}
+                  {!supportInfo.enabledVideo && <i className="fas fa-video-slash" />}
+                </Button>
+                <Button size="lg" rounded color="white" outline onClick={() => {}} className={supportInfo.enabledAudio ? '' : ''}>
+                  {supportInfo.enabledAudio && <i className="fas fa-microphone" />}
+                  {!supportInfo.enabledAudio && <i className="fas fa-microphone-slash" />}
+                </Button>
+              </div>
+              {(!supportInfo.deviceInfo.supported || !supportInfo.supportUserMedia) && (
+                <div className="device-error-info">
+                  <div className="error-name">{supportInfo.deviceInfo.errorName}</div>
+                  <div className="error-message">{supportInfo.deviceInfo.errorMessage}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {existConference && supportInfo.status === 'COMPLETE' && (
           <>
             <SocketClient
               topics={[`/sub/conferences/${conference.code}`, `/sub/conferences/${conference.code}/${user.id}`]}
