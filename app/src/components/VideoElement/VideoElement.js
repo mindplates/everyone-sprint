@@ -1,14 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './VideoElement.scss';
+import { withTranslation } from 'react-i18next';
 import { Button, UserImage } from '@/components';
 import images from '@/images';
+import './VideoElement.scss';
 
 class VideoElement extends React.Component {
   componentDidMount() {}
 
   render() {
-    const { className, videoInfo, onRef, controls, supportInfo, alias, muted, tracking, id, imageType, imageData, setUpUserMedia, useVideoInfo } = this.props;
+    const {
+      t,
+      className,
+      videoInfo,
+      onRef,
+      controls,
+      supportInfo,
+      alias,
+      muted,
+      tracking,
+      id,
+      imageType,
+      imageData,
+      setUpUserMedia,
+      useVideoInfo,
+      isPrompt,
+      isDenied,
+    } = this.props;
 
     return (
       <div
@@ -45,25 +63,28 @@ class VideoElement extends React.Component {
             }}
              */
           />
-          <div className="control-status">
-            <span className="audio-status">
-              <span>
-                {controls.audio && <i className="fas fa-microphone" />}
-                {!controls.audio && <i className="fas fa-microphone-slash" />}
+          {controls && (
+            <div className="control-status">
+              <span className="audio-status">
+                <span>
+                  {controls.audio && <i className="fas fa-microphone" />}
+                  {!controls.audio && <i className="fas fa-microphone-slash" />}
+                </span>
               </span>
-            </span>
-            <span className="video-status">
-              <span>
-                {controls.video && <i className="fas fa-video" />}
-                {!controls.video && <i className="fas fa-video-slash" />}
+              <span className="video-status">
+                <span>
+                  {controls.video && <i className="fas fa-video" />}
+                  {!controls.video && <i className="fas fa-video-slash" />}
+                </span>
               </span>
-            </span>
-          </div>
-          <div className="user-info">
-            <span className="alias">{alias}</span>
-          </div>
+            </div>
+          )}
+          {alias && (
+            <div className="user-info">
+              <span className="alias">{alias}</span>
+            </div>
+          )}
         </div>
-
         {supportInfo && supportInfo.supportUserMedia !== null && !supportInfo.supportUserMedia && (
           <div className="not-supported-user-media">
             <div>
@@ -88,6 +109,12 @@ class VideoElement extends React.Component {
             </div>
           </div>
         )}
+        {isPrompt && (
+          <div className="need-prompt">
+            <div>{t('카메라 및 마이크를 허용해주세요.')}</div>
+          </div>
+        )}
+        {isDenied && <div className="need-permission">{t('카메라 또는 마이크가 차단되었습니다')}</div>}
         <div className="no-tracking-info">
           <div>
             <UserImage border rounded size="60px" iconFontSize="24px" imageType={imageType} imageData={imageData} />
@@ -98,15 +125,18 @@ class VideoElement extends React.Component {
   }
 }
 
-export default VideoElement;
+export default withTranslation()(VideoElement);
 
 VideoElement.defaultProps = {
   className: '',
   muted: false,
   tracking: true,
+  isPrompt: false,
+  isDenied: false,
 };
 
 VideoElement.propTypes = {
+  t: PropTypes.func,
   className: PropTypes.string,
   onRef: PropTypes.func,
   videoInfo: PropTypes.shape({
@@ -131,4 +161,6 @@ VideoElement.propTypes = {
   imageData: PropTypes.string,
   setUpUserMedia: PropTypes.func,
   useVideoInfo: PropTypes.bool,
+  isPrompt: PropTypes.bool,
+  isDenied: PropTypes.bool,
 };

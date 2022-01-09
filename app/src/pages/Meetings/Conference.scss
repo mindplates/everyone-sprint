@@ -2,37 +2,6 @@
   padding: 1rem;
   padding: 0;
 
-  .user-media-config {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    > div {
-      align-self: center;
-
-      .device-error-info {
-        margin-top: 1rem;
-        text-align: center;
-        color: $danger;
-
-        .error-name {
-          font-weight: bold;
-        }
-      }
-
-      .user-media-config-buttons {
-        margin-top: 1rem;
-        text-align: center;
-        > button {
-          margin-right: 0.5rem;
-
-          &:last-child {
-            margin-right: 0;
-          }
-        }
-      }
-    }
-  }
-
   .conference-content {
     flex-grow: 1;
     display: flex;
