@@ -1,0 +1,36 @@
+.conference-device-config-wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+
+  > div {
+    align-self: center;
+
+    .config-button {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .device-error-info {
+      margin-top: 1rem;
+      text-align: center;
+      color: $danger;
+
+      .error-name {
+        font-weight: bold;
+      }
+    }
+
+    .user-media-config-buttons {
+      margin-top: 1rem;
+      text-align: center;
+      > button {
+        margin-right: 0.5rem;
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}

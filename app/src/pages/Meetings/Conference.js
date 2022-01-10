@@ -8,6 +8,7 @@ import { Button, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketCl
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import './Conference.scss';
+import ConferenceDeviceConfig from '@/pages/Meetings/ConferenceDeviceConfig';
 
 /*
 const constraints = {
@@ -58,10 +59,6 @@ class Conference extends React.Component {
         type: 'CONNECT',
         order: 'ASC',
       },
-      supportInfo: {
-        supportUserMedia: null,
-        retrying: false,
-      },
       videoInfo: {
         init: false,
         width: 320,
@@ -78,6 +75,31 @@ class Conference extends React.Component {
       screenShare: {
         sharing: false,
       },
+      supportInfo: {
+        status: 'NONE', // NONE, READY, SUCCESS, ERROR, DONE
+        supportUserMedia: null,
+        retrying: false,
+        permissions: {
+          microphone: null,
+          camera: null,
+        },
+        deviceInfo: {
+          supported: true,
+          errorName: '',
+          errorMessage: '',
+          devices: [],
+        },
+        enabledAudio: null,
+        enabledVideo: null,
+        mediaConfig: {
+          audiooutput: '',
+          audioinput : '',
+          videoinput: '',
+          sendResolution: 720,
+          receiveResolution: 720,
+        },
+      },
+
     };
   }
 
@@ -217,13 +239,13 @@ class Conference extends React.Component {
             conference,
           },
           () => {
-            this.setUpUserMedia(false);
+            // this.setUpUserMedia(false); // TODO
             this.getUsers(code);
           },
         );
       },
       (error, response) => {
-        if (response.status === 403) {
+        if (response && response.status === 403) {
           // TODO 권한이 없는 경우, 요청 및 승인 처리
         }
 
@@ -858,7 +880,27 @@ class Conference extends React.Component {
 
     return (
       <Page className="conference-wrapper">
-        {existConference && (
+        {existConference && supportInfo.status !== 'DONE' && (
+          <ConferenceDeviceConfig
+            setMyStream={(stream) => {
+              this.myStream = stream;
+            }}
+            supportInfo={supportInfo}
+            setSupportInfo={(next, callback) => {
+              this.setState(
+                {
+                  supportInfo: next,
+                },
+                () => {
+                  if (callback) {
+                    callback();
+                  }
+                },
+              );
+            }}
+          />
+        )}
+        {existConference && supportInfo.status === 'DONE' && (
           <>
             <SocketClient
               topics={[`/sub/conferences/${conference.code}`, `/sub/conferences/${conference.code}/${user.id}`]}

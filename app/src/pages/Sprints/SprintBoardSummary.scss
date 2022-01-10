@@ -10,7 +10,6 @@
 
     .user-table {
       width: 100%;
-
     }
     table {
       font-size: 14px;
@@ -28,7 +27,8 @@
       }
 
       th {
-        font-weight: normal;
+        font-family: pretendard, sans-serif;
+        font-weight: bold;
         background-color: $light;
       }
 
@@ -38,12 +38,31 @@
 
       .number {
         text-align: right;
-        width: 130px;
-        min-width: 130px;
+      }
+
+      td {
+        &.number {
+          width: 130px;
+          min-width: 130px;
+          font-family: righteous, plex, pretendard, sans-serif !important;
+
+          > span {
+            margin-right: 0.25rem;
+            &.up {
+              color: $danger;
+            }
+
+            &.down {
+              color: $blue;
+            }
+          }
+        }
       }
 
       .user-info {
         min-width: 200px;
+        font-family: pretendard, sans-serif;
+        font-weight: bold;
       }
     }
   }

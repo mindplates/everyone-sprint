@@ -1,0 +1,28 @@
+.device-config-popup-wrapper {
+  .device-config-popup {
+    > div {
+      display: flex;
+      flex-direction: row;
+
+      .tabs {
+        width: 120px;
+        padding: 1rem 0 1rem 1rem;
+        > div {
+          text-align: left;
+          padding: 0.5rem 1rem;
+          border-bottom: 2px solid transparent;
+          cursor: pointer;
+
+          &.selected {
+            border-bottom: 2px solid $blue;
+          }
+        }
+      }
+
+      .config-content {
+        min-height: 400px;
+        flex-grow: 1;
+      }
+    }
+  }
+}
