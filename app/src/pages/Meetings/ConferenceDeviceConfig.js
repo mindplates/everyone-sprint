@@ -7,6 +7,7 @@ import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
 import './ConferenceDeviceConfig.scss';
+import MediaDeviceConfigPopup from '@/pages/Meetings/MediaDeviceConfigPopup';
 
 const constraints = {
   video: true,
@@ -25,7 +26,12 @@ class ConferenceDeviceConfig extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.setConfigDebounced = debounce(this.setConfig, 100);
+
+    this.state = {
+      openConfigPopup: false,
+    };
   }
 
   componentDidMount() {
@@ -126,6 +132,35 @@ class ConferenceDeviceConfig extends React.Component {
     }
   };
 
+  getDeviceIds = (stream, devices) => {
+    const result = {
+      audioinput: null,
+      videoinput: null,
+      audiooutput: null,
+    };
+
+    stream.getTracks().forEach((track) => {
+      const { kind } = track;
+      const settings = track.getSettings();
+      const { deviceId } = settings || {};
+
+      if (kind === 'audio') {
+        result.audioinput = deviceId;
+      }
+
+      if (kind === 'video') {
+        result.videoinput = deviceId;
+      }
+    });
+
+    const defaultAudioOut = devices?.find((d) => d.kind === 'audiooutput' && d.deviceId === 'default');
+    if (defaultAudioOut) {
+      result.audiooutput = defaultAudioOut.deviceId;
+    }
+
+    return result;
+  };
+
   setConfig = () => {
     const { t } = this.props;
     const { setSupportInfo, setMyStream } = this.props;
@@ -182,17 +217,38 @@ class ConferenceDeviceConfig extends React.Component {
         });
     }
 
+    // https://stackoverflow.com/questions/33761770/what-constraints-should-i-pass-to-getusermedia-in-order-to-get-two-video-media
+    /*
+    * navigator.mediaDevices.enumerateDevices()
+.then(devices => {
+  var camera = devices.find(device => device.kind == "videoinput");
+  if (camera) {
+    var constraints = { deviceId: { exact: camera.deviceId } };
+    return navigator.mediaDevices.getUserMedia({ video: constraints });
+  }
+})
+.then(stream => video.srcObject = stream)
+.catch(e => console.error(e));
+* */
+
     navigator.mediaDevices
       .getUserMedia(constraints)
       .then((stream) => {
-        setMyStream(stream);
-        this.myConfigVideo.srcObject = stream;
-
         const { supportInfo } = this.props;
 
         const nextSupportInfo = {
           ...supportInfo,
         };
+
+        const deviceIds = this.getDeviceIds(stream, supportInfo.deviceInfo.devices);
+
+        nextSupportInfo.mediaConfig = {
+          ...nextSupportInfo.mediaConfig,
+          ...deviceIds,
+        };
+
+        setMyStream(stream);
+        this.myConfigVideo.srcObject = stream;
 
         nextSupportInfo.status = 'SUCCESS';
         nextSupportInfo.supportUserMedia = true;
@@ -200,6 +256,19 @@ class ConferenceDeviceConfig extends React.Component {
         nextSupportInfo.enabledVideo = true;
 
         setSupportInfo(nextSupportInfo);
+
+        /*
+        https://pretagteam.com/question/javascript-select-audio-device
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const outputs = devices.filter(({
+           kind
+        }) => kind === 'audiooutput');
+        const output = outputs[1]; // Choose a device
+
+        const audio = new Audio();
+        audio.setSinkId(output.deviceId);
+        audio.play();
+         */
       })
       .catch((e) => {
         // 일부 허용된 경우, 허용된 것만 보여주도록
@@ -219,6 +288,13 @@ class ConferenceDeviceConfig extends React.Component {
 
               const nextCurrentSupportedInfo = {
                 ...currentSupportedInfo,
+              };
+
+              const deviceIds = this.getDeviceIds(stream, nextCurrentSupportedInfo.deviceInfo.devices);
+
+              nextCurrentSupportedInfo.mediaConfig = {
+                ...nextCurrentSupportedInfo.mediaConfig,
+                ...deviceIds,
               };
 
               nextCurrentSupportedInfo.status = 'ERROR';
@@ -300,13 +376,45 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   render() {
-    const { supportInfo, t } = this.props;
-
-    console.log(supportInfo);
+    const { supportInfo, setSupportInfo, t } = this.props;
+    const { mediaConfig } = supportInfo;
+    const { openConfigPopup } = this.state;
 
     return (
       <div className="conference-device-config-wrapper">
+        {openConfigPopup && (
+          <MediaDeviceConfigPopup
+            setOpen={() => {
+              this.setState({
+                openConfigPopup: false,
+              });
+            }}
+            devices={supportInfo.deviceInfo.devices}
+            mediaConfig={mediaConfig}
+            setMediaConfig={(nextMediaConfig) => {
+              setSupportInfo({
+                ...supportInfo,
+                mediaConfig: nextMediaConfig,
+              });
+            }}
+          />
+        )}
         <div>
+          <div className="config-button">
+            <Button
+              size="lg"
+              rounded
+              color="white"
+              outline
+              onClick={() => {
+                this.setState({
+                  openConfigPopup: !openConfigPopup,
+                });
+              }}
+            >
+              <i className="fas fa-cog" />
+            </Button>
+          </div>
           <div>
             <VideoElement
               useVideoInfo
@@ -377,7 +485,13 @@ ConferenceDeviceConfig.propTypes = {
         }),
       ),
     }),
-    resolution: PropTypes.number,
+    mediaConfig: PropTypes.shape({
+      audiooutput: PropTypes.string,
+      audioinput: PropTypes.string,
+      videoinput: PropTypes.string,
+      sendResolution: PropTypes.number,
+      receiveResolution: PropTypes.number,
+    }),
     enabledAudio: PropTypes.bool,
     enabledVideo: PropTypes.bool,
   }),

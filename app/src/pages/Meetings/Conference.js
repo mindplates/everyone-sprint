@@ -89,10 +89,17 @@ class Conference extends React.Component {
           errorMessage: '',
           devices: [],
         },
-        resolution: 360,
         enabledAudio: null,
         enabledVideo: null,
+        mediaConfig: {
+          audiooutput: '',
+          audioinput : '',
+          videoinput: '',
+          sendResolution: 720,
+          receiveResolution: 720,
+        },
       },
+
     };
   }
 
