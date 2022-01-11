@@ -1,18 +1,91 @@
 import React, { createRef } from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { debounce } from 'lodash';
-import { Button, VideoElement } from '@/components';
+import _ from 'lodash';
+import { Button, CapabilitiesEditor, VideoElement } from '@/components';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
 import './ConferenceDeviceConfig.scss';
 import MediaDeviceConfigPopup from '@/pages/Meetings/MediaDeviceConfigPopup';
 
-const constraints = {
-  video: true,
-  audio: true,
-};
+const CAPABILITIES = [
+  {
+    key: 'brightness',
+    name: '밝기',
+    enabled: true,
+  },
+  {
+    key: 'saturation',
+    name: '채도',
+    enabled: true,
+  },
+  {
+    key: 'contrast',
+    name: '대조',
+    enabled: true,
+  },
+  {
+    key: 'colorTemperature',
+    name: '색 온도',
+    enabled: true,
+  },
+  {
+    key: 'sharpness',
+    name: '예리함',
+    enabled: true,
+  },
+  {
+    key: 'aspectRatio',
+    name: '화면 비율',
+    enabled: false,
+  },
+  {
+    key: 'frameRate',
+    name: '초당 프레임',
+    enabled: false,
+  },
+  {
+    key: 'exposureCompensation',
+    name: '노출 보정',
+    enabled: true,
+  },
+  {
+    key: 'exposureMode',
+    name: '노출 모드',
+    enabled: true,
+  },
+  {
+    key: 'exposureTime',
+    name: '노출 시간',
+    enabled: true,
+  },
+  {
+    key: 'facingMode',
+    name: '마주 보기',
+    enabled: false,
+  },
+  {
+    key: 'focusDistance',
+    name: '포커스 거리',
+    enabled: true,
+  },
+  {
+    key: 'focusMode',
+    name: '포커스 모드',
+    enabled: true,
+  },
+  {
+    key: 'resizeMode',
+    name: '리사이즈 모드',
+    enabled: false,
+  },
+  {
+    key: 'whiteBalanceMode',
+    name: '화이트밸런스 모드',
+    enabled: true,
+  },
+];
 
 class ConferenceDeviceConfig extends React.Component {
   myConfigVideo = createRef();
@@ -27,10 +100,12 @@ class ConferenceDeviceConfig extends React.Component {
   constructor(props) {
     super(props);
 
-    this.setConfigDebounced = debounce(this.setConfig, 100);
+    this.setConfigDebounced = _.debounce(this.setConfig, 100);
 
     this.state = {
       openConfigPopup: false,
+      openCapabilities: false,
+      capabilities: [],
     };
   }
 
@@ -162,8 +237,9 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   setConfig = () => {
+    console.log('setConfig');
     const { t } = this.props;
-    const { setSupportInfo, setMyStream } = this.props;
+    const { setSupportInfo, setMyStream, myStream } = this.props;
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       const { supportInfo } = this.props;
@@ -217,23 +293,44 @@ class ConferenceDeviceConfig extends React.Component {
         });
     }
 
-    // https://stackoverflow.com/questions/33761770/what-constraints-should-i-pass-to-getusermedia-in-order-to-get-two-video-media
-    /*
-    * navigator.mediaDevices.enumerateDevices()
-.then(devices => {
-  var camera = devices.find(device => device.kind == "videoinput");
-  if (camera) {
-    var constraints = { deviceId: { exact: camera.deviceId } };
-    return navigator.mediaDevices.getUserMedia({ video: constraints });
-  }
-})
-.then(stream => video.srcObject = stream)
-.catch(e => console.error(e));
-* */
+    const { supportInfo: currentSupportInfo } = this.props;
+
+    const constraints = {
+      video: {},
+      audio: {},
+    };
+
+    if (currentSupportInfo.enabledVideo && currentSupportInfo.mediaConfig.video.deviceId) {
+      constraints.video.deviceId = { exact: currentSupportInfo.mediaConfig.video.deviceId };
+    }
+
+    if (currentSupportInfo.enabledVideo && currentSupportInfo.mediaConfig.sendResolution) {
+      constraints.video.width = currentSupportInfo.mediaConfig.sendResolution;
+      constraints.video.height = (currentSupportInfo.mediaConfig.sendResolution / 4) * 3;
+    }
+
+    if (currentSupportInfo.enabledAudio && currentSupportInfo.mediaConfig.audio.deviceId) {
+      constraints.audio.deviceId = { exact: currentSupportInfo.mediaConfig.audio.deviceId };
+    }
+
+    if (myStream) {
+      myStream.getTracks().forEach(function (track) {
+        track.stop();
+      });
+      setMyStream(null);
+    }
 
     navigator.mediaDevices
       .getUserMedia(constraints)
       .then((stream) => {
+        let videoWidth = 720;
+        let videoHeight = 540;
+        stream.getVideoTracks().forEach((track) => {
+          const settings = track.getSettings();
+          videoWidth = settings.width;
+          videoHeight = settings.height;
+        });
+
         const { supportInfo } = this.props;
 
         const nextSupportInfo = {
@@ -242,10 +339,11 @@ class ConferenceDeviceConfig extends React.Component {
 
         const deviceIds = this.getDeviceIds(stream, supportInfo.deviceInfo.devices);
 
-        nextSupportInfo.mediaConfig = {
-          ...nextSupportInfo.mediaConfig,
-          ...deviceIds,
-        };
+        nextSupportInfo.mediaConfig.audio.deviceId = deviceIds.audioinput;
+        nextSupportInfo.mediaConfig.video.deviceId = deviceIds.videoinput;
+        nextSupportInfo.mediaConfig.video.settings.width = videoWidth;
+        nextSupportInfo.mediaConfig.video.settings.height = videoHeight;
+        nextSupportInfo.mediaConfig.speaker.deviceId = deviceIds.audiooutput;
 
         setMyStream(stream);
         this.myConfigVideo.srcObject = stream;
@@ -276,7 +374,6 @@ class ConferenceDeviceConfig extends React.Component {
         if (supportInfo.permissions.microphone === 'granted' || supportInfo.permissions.camera === 'granted') {
           navigator.mediaDevices
             .getUserMedia({
-              ...constraints,
               video: supportInfo.permissions.camera === 'granted',
               audio: supportInfo.permissions.microphone === 'granted',
             })
@@ -292,10 +389,9 @@ class ConferenceDeviceConfig extends React.Component {
 
               const deviceIds = this.getDeviceIds(stream, nextCurrentSupportedInfo.deviceInfo.devices);
 
-              nextCurrentSupportedInfo.mediaConfig = {
-                ...nextCurrentSupportedInfo.mediaConfig,
-                ...deviceIds,
-              };
+              nextCurrentSupportedInfo.mediaConfig.audio.deviceId = deviceIds.audioinput;
+              nextCurrentSupportedInfo.mediaConfig.video.deviceId = deviceIds.videoinput;
+              nextCurrentSupportedInfo.mediaConfig.speaker.deviceId = deviceIds.audiooutput;
 
               nextCurrentSupportedInfo.status = 'ERROR';
               nextCurrentSupportedInfo.supportUserMedia = false;
@@ -309,9 +405,14 @@ class ConferenceDeviceConfig extends React.Component {
             });
 
           // 일부 허용된 것만 보여주고, 다시 권한 요청이 발생하도록 재요청
-          navigator.mediaDevices.getUserMedia(constraints).catch(() => {
-            //
-          });
+          navigator.mediaDevices
+            .getUserMedia({
+              video: true,
+              audio: true,
+            })
+            .catch(() => {
+              //
+            });
         } else {
           const { supportInfo: currentSupportedInfo } = this.props;
 
@@ -375,10 +476,83 @@ class ConferenceDeviceConfig extends React.Component {
       });
   };
 
+  setOpenCapabilities = (value) => {
+    const { myStream, supportInfo, setSupportInfo } = this.props;
+    const metas = [];
+    const capabilities = [];
+    if (value && myStream) {
+      myStream.getVideoTracks().forEach((track) => {
+        const settings = track.getSettings();
+        const deviceCapabilities = track.getCapabilities();
+
+        CAPABILITIES.filter((d) => d.enabled).forEach((info) => {
+          if (deviceCapabilities[info.key]) {
+            if (!_.isEmpty(deviceCapabilities[info.key])) {
+              metas.push({
+                key: info.key,
+                name: info.name,
+                options: deviceCapabilities[info.key],
+              });
+            }
+          }
+
+          if (settings[info.key]) {
+            capabilities.push({
+              key: info.key,
+              value: settings[info.key],
+            });
+          }
+        });
+      });
+    }
+
+    const nextSupportInfo = { ...supportInfo };
+    nextSupportInfo.mediaConfig.video.capabilities = capabilities;
+    setSupportInfo(nextSupportInfo);
+
+    this.setState({
+      openCapabilities: value,
+      capabilities: metas,
+    });
+  };
+
+  onChangeCapability = (type, key, value) => {
+    const { myStream, supportInfo, setSupportInfo } = this.props;
+    const nextSupportInfo = { ...supportInfo };
+    const capability = nextSupportInfo.mediaConfig[type].capabilities.find((d) => d.key === key);
+    if (capability) {
+      capability.value = value;
+    } else {
+      nextSupportInfo.mediaConfig[type].capabilities.push({
+        key,
+        value,
+      });
+    }
+
+    myStream.getVideoTracks().forEach((track) => {
+      const values = { advanced: [] };
+      const options = {};
+      const capabilities = track.getCapabilities();
+
+      nextSupportInfo.mediaConfig[type].capabilities.forEach((info) => {
+        if (capabilities[info.key] && info.value) {
+          options[info.key] = info.value;
+        }
+      });
+      values.advanced.push(options);
+
+      track.applyConstraints(values);
+
+      // track.applyConstraints({ advanced: [{ brightness: 255 }] });
+    });
+
+    setSupportInfo(nextSupportInfo);
+  };
+
   render() {
     const { supportInfo, setSupportInfo, t } = this.props;
     const { mediaConfig } = supportInfo;
-    const { openConfigPopup } = this.state;
+    const { openConfigPopup, openCapabilities, capabilities } = this.state;
 
     return (
       <div className="conference-device-config-wrapper">
@@ -388,6 +562,7 @@ class ConferenceDeviceConfig extends React.Component {
               this.setState({
                 openConfigPopup: false,
               });
+              this.setConfig();
             }}
             devices={supportInfo.deviceInfo.devices}
             mediaConfig={mediaConfig}
@@ -414,25 +589,55 @@ class ConferenceDeviceConfig extends React.Component {
             >
               <i className="fas fa-cog" />
             </Button>
+            <Button
+              size="lg"
+              rounded
+              color="white"
+              outline
+              onClick={() => {
+                this.setOpenCapabilities(!openCapabilities);
+              }}
+            >
+              <i className="fas fa-sliders-h" />
+            </Button>
           </div>
-          <div>
-            <VideoElement
-              useVideoInfo
-              videoInfo={{
-                width: 320,
-                height: 240,
-                videoWidth: 320,
-                videoHeight: 240,
-              }}
-              onRef={(d) => {
-                this.myConfigVideo = d;
-              }}
-              supportInfo={supportInfo}
-              setUpUserMedia={this.setConfig}
-              muted
-              isPrompt={supportInfo.permissions.microphone === 'prompt' || supportInfo.permissions.camera === 'prompt'}
-              isDenied={supportInfo.permissions.microphone === 'denied' || supportInfo.permissions.camera === 'denied'}
-            />
+          <div className="video-content">
+            <div>
+              <VideoElement
+                useVideoInfo
+                videoInfo={{
+                  width: mediaConfig.video.settings.width,
+                  height: mediaConfig.video.settings.height,
+                  videoWidth: mediaConfig.video.settings.width,
+                  videoHeight: mediaConfig.video.settings.height,
+                }}
+                onRef={(d) => {
+                  this.myConfigVideo = d;
+                }}
+                supportInfo={supportInfo}
+                setUpUserMedia={this.setConfig}
+                muted
+                isPrompt={supportInfo.permissions.microphone === 'prompt' || supportInfo.permissions.camera === 'prompt'}
+                isDenied={supportInfo.permissions.microphone === 'denied' || supportInfo.permissions.camera === 'denied'}
+              />
+            </div>
+            {openCapabilities && (
+              <div
+                className="capabilities-editor"
+                style={{
+                  height: mediaConfig.video.settings.height,
+                }}
+              >
+                <CapabilitiesEditor
+                  metas={capabilities}
+                  capabilities={mediaConfig.video.capabilities}
+                  onChange={(key, value) => {
+                    this.onChangeCapability('video', key, value);
+                  }}
+                  setOpened={this.setOpenCapabilities}
+                />
+              </div>
+            )}
           </div>
           <div className="user-media-config-buttons">
             {supportInfo.permissions.camera === 'prompt' && <span>권한 요청 중</span>}
@@ -486,9 +691,19 @@ ConferenceDeviceConfig.propTypes = {
       ),
     }),
     mediaConfig: PropTypes.shape({
-      audiooutput: PropTypes.string,
-      audioinput: PropTypes.string,
-      videoinput: PropTypes.string,
+      speaker: PropTypes.shape({
+        deviceId: PropTypes.string,
+      }),
+      audio: PropTypes.shape({
+        deviceId: PropTypes.string,
+        settings: PropTypes.objectOf(PropTypes.any),
+        capabilities: PropTypes.arrayOf(PropTypes.any),
+      }),
+      video: PropTypes.shape({
+        deviceId: PropTypes.string,
+        settings: PropTypes.objectOf(PropTypes.any),
+        capabilities: PropTypes.arrayOf(PropTypes.any),
+      }),
       sendResolution: PropTypes.number,
       receiveResolution: PropTypes.number,
     }),
@@ -496,5 +711,6 @@ ConferenceDeviceConfig.propTypes = {
     enabledVideo: PropTypes.bool,
   }),
   setSupportInfo: PropTypes.func,
+  myStream: PropTypes.objectOf(PropTypes.any),
   setMyStream: PropTypes.func,
 };

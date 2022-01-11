@@ -9,6 +9,18 @@
     .config-button {
       text-align: center;
       margin-bottom: 1rem;
+
+      > button {
+        margin-right: 0.5rem;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+
+    .video-content {
+      display: flex;
+      flex-direction: row;
     }
 
     .device-error-info {

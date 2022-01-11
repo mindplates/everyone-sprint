@@ -92,14 +92,25 @@ class Conference extends React.Component {
         enabledAudio: null,
         enabledVideo: null,
         mediaConfig: {
-          audiooutput: '',
-          audioinput : '',
-          videoinput: '',
+          speaker : {
+            deviceId: null,
+          },
+          audio: {
+            deviceId: null,
+            capabilities: [],
+          },
+          video: {
+            deviceId: null,
+            settings: {
+              width: 720,
+              height: 540,
+            },
+            capabilities: [],
+          },
           sendResolution: 720,
           receiveResolution: 720,
         },
       },
-
     };
   }
 
@@ -885,6 +896,7 @@ class Conference extends React.Component {
             setMyStream={(stream) => {
               this.myStream = stream;
             }}
+            myStream={this.myStream}
             supportInfo={supportInfo}
             setSupportInfo={(next, callback) => {
               this.setState(

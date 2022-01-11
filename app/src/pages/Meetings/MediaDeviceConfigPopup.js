@@ -1,6 +1,7 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { Block, BlockRow, Label, Popup, Selector } from '@/components';
 import './MediaDeviceConfigPopup.scss';
 
@@ -44,8 +45,8 @@ class MediaDeviceConfigPopup extends React.Component {
   onChangeMediaConfig = (key, value) => {
     const { mediaConfig, setMediaConfig } = this.props;
     const next = { ...mediaConfig };
-    next[key] = value;
-
+    _.set(next, key, value);
+    console.log(next);
     setMediaConfig(next);
   };
 
@@ -111,22 +112,22 @@ class MediaDeviceConfigPopup extends React.Component {
                       outline
                       size="md"
                       items={this.getDeviceList(devices, 'audioinput')}
-                      value={mediaConfig.audioinput}
+                      value={mediaConfig.audio.deviceId}
                       onChange={(val) => {
-                        this.onChangeMediaConfig('audioinput', val);
+                        this.onChangeMediaConfig('audio.deviceId', val);
                       }}
                       minWidth="200px"
                     />
                   </BlockRow>
-                  <BlockRow>
+                  <BlockRow className="d-none">
                     <Label minWidth={labelMinWidth}>{t('스피커')}</Label>
                     <Selector
                       outline
                       size="md"
                       items={this.getDeviceList(devices, 'audiooutput')}
-                      value={mediaConfig.audiooutput}
+                      value={mediaConfig.speaker.deviceId}
                       onChange={(val) => {
-                        this.onChangeMediaConfig('audiooutput', val);
+                        this.onChangeMediaConfig('speaker.deviceId', val);
                       }}
                       minWidth="200px"
                     />
@@ -141,9 +142,9 @@ class MediaDeviceConfigPopup extends React.Component {
                       outline
                       size="md"
                       items={this.getDeviceList(devices, 'videoinput')}
-                      value={mediaConfig.videoinput}
+                      value={mediaConfig.video.deviceId}
                       onChange={(val) => {
-                        this.onChangeMediaConfig('videoinput', val);
+                        this.onChangeMediaConfig('video.deviceId', val);
                       }}
                       minWidth="200px"
                     />
@@ -197,9 +198,19 @@ MediaDeviceConfigPopup.propTypes = {
     }),
   ),
   mediaConfig: PropTypes.shape({
-    audiooutput: PropTypes.string,
-    audioinput: PropTypes.string,
-    videoinput: PropTypes.string,
+    speaker: PropTypes.shape({
+      deviceId: PropTypes.string,
+    }),
+    audio: PropTypes.shape({
+      deviceId: PropTypes.string,
+      settings: PropTypes.objectOf(PropTypes.any),
+      capabilities: PropTypes.arrayOf(PropTypes.any),
+    }),
+    video: PropTypes.shape({
+      deviceId: PropTypes.string,
+      settings: PropTypes.objectOf(PropTypes.any),
+      capabilities: PropTypes.arrayOf(PropTypes.any),
+    }),
     sendResolution: PropTypes.number,
     receiveResolution: PropTypes.number,
   }),

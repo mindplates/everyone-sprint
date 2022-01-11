@@ -28,5 +28,10 @@
   "validation.valid": "올바른 입력 값입니다.",
   "validation.invalidEmail": "올바른 이메일 형식이 아닙니다.",
   "validation.notEqualPassword": "입력하신 패스워드가 일치하지 않습니다.",
-  "validation.alreadyJoinedEmail": "이미 가입된 이메일입니다"
+  "validation.alreadyJoinedEmail": "이미 가입된 이메일입니다",
+
+  "continuous": "자동",
+  "manual": "수동",
+  "none": "없음",
+  "crop-and-scale": "자르기"
 }
