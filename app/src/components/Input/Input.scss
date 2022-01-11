@@ -46,6 +46,10 @@
     &:invalid {
       border-bottom: $input-border;
     }
+
+    &[type='range'] {
+      padding: 0;
+    }
   }
 
   &.no-spin-button {
@@ -278,6 +282,14 @@
 
     &.md {
       height: 38px;
+      input {
+        padding: 0 8px !important;
+        height: 100%;
+      }
+
+      input[type='range'] {
+        padding: 0 !important;
+      }
     }
 
     &.lg {
