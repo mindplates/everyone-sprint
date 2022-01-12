@@ -2,9 +2,12 @@
   height: 100%;
   background-color: $white;
   border: $border;
-  border-left: none;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 992px) {
+    width: 100%;
+  }
   > .title {
     flex-grow: 0;
     padding: 0.75rem 1rem;
@@ -24,7 +27,6 @@
 
       align-self: center;
       > div {
-
       }
     }
   }
@@ -41,6 +43,17 @@
       li {
         margin-bottom: 0.25rem;
         width: 200px;
+
+        @media (max-width: 992px) {
+          width: 50%;
+          display: inline-block;
+          padding: 0 1rem;
+        }
+
+        @media (max-width: 576px) {
+          width: auto !important;
+          display: block;
+        }
         .name {
           font-size: 14px;
           font-family: pretendard, sans-serif;

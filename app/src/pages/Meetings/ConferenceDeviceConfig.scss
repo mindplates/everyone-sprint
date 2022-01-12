@@ -59,6 +59,19 @@
       flex-direction: row;
       max-width: 100%;
 
+      .capabilities-editor {
+        @media (max-width: 992px) {
+          position: absolute;
+          left: 0;
+          top: 2rem;
+          bottom: 2rem;
+          height: auto !important;
+          width: calc(100% - 4rem);
+          margin: 0 2rem;
+          z-index: 3;
+        }
+      }
+
       .config-video {
         max-width: 100%;
         background-color: transparent;
