@@ -4,14 +4,32 @@
       display: flex;
       flex-direction: row;
 
+      @media (max-width: 576px) {
+        flex-direction: column;
+      }
+
       .tabs {
         width: 120px;
-        padding: 1rem 0 1rem 1rem;
+        padding: 1rem;
+        background-color: $light;
+
+        @media (max-width: 576px) {
+          text-align: left;
+          width: auto;
+          padding: 0.5rem 0.5rem 0;
+        }
+
         > div {
           text-align: left;
           padding: 0.5rem 1rem;
           border-bottom: 2px solid transparent;
           cursor: pointer;
+
+          @media (max-width: 576px) {
+            display: inline-block;
+            width: 80px;
+            text-align: center;
+          }
 
           &.selected {
             border-bottom: 2px solid $blue;
@@ -22,6 +40,24 @@
       .config-content {
         min-height: 400px;
         flex-grow: 1;
+        padding: 0.5rem;
+        text-align: left;
+
+        @media (max-width: 992px) {
+          padding: 1rem 0.5rem 0.5rem;
+        }
+
+        @media (max-width: 576px) {
+          padding: 1rem;
+        }
+
+        .selector {
+          min-width: 200px !important;
+          @media (max-width: 576px) {
+            min-width: 100% !important;
+            max-width: 100% !important;
+          }
+        }
       }
     }
   }

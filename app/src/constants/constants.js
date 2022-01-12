@@ -177,6 +177,85 @@ const JOIN_POLICIES = [
 
 const COLORS = ['#FFAEBC', '#A0E7E5', '#B4F8C8', '#FBE7C6', '#F8EA8C', '#4CD7D0', '#A49393', '#E8B4B8'];
 
+
+const CAPABILITIES = [
+  {
+    key: 'brightness',
+    name: '밝기',
+    enabled: true,
+  },
+  {
+    key: 'saturation',
+    name: '채도',
+    enabled: true,
+  },
+  {
+    key: 'contrast',
+    name: '대조',
+    enabled: true,
+  },
+  {
+    key: 'colorTemperature',
+    name: '색 온도',
+    enabled: true,
+  },
+  {
+    key: 'sharpness',
+    name: '예리함',
+    enabled: true,
+  },
+  {
+    key: 'aspectRatio',
+    name: '화면 비율',
+    enabled: false,
+  },
+  {
+    key: 'frameRate',
+    name: '초당 프레임',
+    enabled: false,
+  },
+  {
+    key: 'exposureCompensation',
+    name: '노출 보정',
+    enabled: true,
+  },
+  {
+    key: 'exposureMode',
+    name: '노출 모드',
+    enabled: true,
+  },
+  {
+    key: 'exposureTime',
+    name: '노출 시간',
+    enabled: true,
+  },
+  {
+    key: 'facingMode',
+    name: '마주 보기',
+    enabled: false,
+  },
+  {
+    key: 'focusDistance',
+    name: '포커스 거리',
+    enabled: true,
+  },
+  {
+    key: 'focusMode',
+    name: '포커스 모드',
+    enabled: true,
+  },
+  {
+    key: 'resizeMode',
+    name: '리사이즈 모드',
+    enabled: false,
+  },
+  {
+    key: 'whiteBalanceMode',
+    name: '화이트밸런스 모드',
+    enabled: true,
+  },
+];
+
 export {
   PORTS,
   USER_STUB,
@@ -193,4 +272,5 @@ export {
   DATE_FORMATS_TYPES,
   COLORS,
   TIMEZONES,
+  CAPABILITIES,
 };

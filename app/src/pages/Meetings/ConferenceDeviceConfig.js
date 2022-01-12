@@ -1,96 +1,19 @@
 import React, { createRef } from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import { Button, CapabilitiesEditor, VideoElement } from '@/components';
+import _, { debounce } from 'lodash';
 import dialog from '@/utils/dialog';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { Button, CapabilitiesEditor, Liner, VideoElement } from '@/components';
+import { CAPABILITIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
-import './ConferenceDeviceConfig.scss';
 import MediaDeviceConfigPopup from '@/pages/Meetings/MediaDeviceConfigPopup';
-
-const CAPABILITIES = [
-  {
-    key: 'brightness',
-    name: '밝기',
-    enabled: true,
-  },
-  {
-    key: 'saturation',
-    name: '채도',
-    enabled: true,
-  },
-  {
-    key: 'contrast',
-    name: '대조',
-    enabled: true,
-  },
-  {
-    key: 'colorTemperature',
-    name: '색 온도',
-    enabled: true,
-  },
-  {
-    key: 'sharpness',
-    name: '예리함',
-    enabled: true,
-  },
-  {
-    key: 'aspectRatio',
-    name: '화면 비율',
-    enabled: false,
-  },
-  {
-    key: 'frameRate',
-    name: '초당 프레임',
-    enabled: false,
-  },
-  {
-    key: 'exposureCompensation',
-    name: '노출 보정',
-    enabled: true,
-  },
-  {
-    key: 'exposureMode',
-    name: '노출 모드',
-    enabled: true,
-  },
-  {
-    key: 'exposureTime',
-    name: '노출 시간',
-    enabled: true,
-  },
-  {
-    key: 'facingMode',
-    name: '마주 보기',
-    enabled: false,
-  },
-  {
-    key: 'focusDistance',
-    name: '포커스 거리',
-    enabled: true,
-  },
-  {
-    key: 'focusMode',
-    name: '포커스 모드',
-    enabled: true,
-  },
-  {
-    key: 'resizeMode',
-    name: '리사이즈 모드',
-    enabled: false,
-  },
-  {
-    key: 'whiteBalanceMode',
-    name: '화이트밸런스 모드',
-    enabled: true,
-  },
-];
+import { UserPropTypes } from '@/proptypes';
+import './ConferenceDeviceConfig.scss';
 
 class ConferenceDeviceConfig extends React.Component {
   myConfigVideo = createRef();
 
-  isAddedPermissionEvent = false;
+  resizeDebounced;
 
   permissions = {
     microphone: null,
@@ -100,34 +23,44 @@ class ConferenceDeviceConfig extends React.Component {
   constructor(props) {
     super(props);
 
-    this.setConfigDebounced = _.debounce(this.setConfig, 100);
-
     this.state = {
       openConfigPopup: false,
       openCapabilities: false,
       capabilities: [],
+      size: {
+        width: '100%',
+        height: '100%',
+      },
     };
+
+    this.setDeviceInfoDebounced = _.debounce(this.setDeviceInfo, 100);
+    this.resizeDebounced = debounce(this.resize, 500);
   }
 
   componentDidMount() {
-    this.startConfig();
+    this.checkPermissions();
+    this.setDeviceInfoDebounced();
+    window.addEventListener('resize', this.resizeDebounced);
+    this.resizeDebounced();
   }
 
   componentWillUnmount() {
-    if (this.setConfigDebounced) {
-      this.setConfigDebounced.cancel();
+    if (this.setDeviceInfoDebounced) {
+      this.setDeviceInfoDebounced.cancel();
+    }
+
+    if (this.resizeDebounced) {
+      this.resizeDebounced.cancel();
     }
   }
 
-  startConfig = () => {
-    const { supportInfo } = this.props;
-    if (!this.isAddedPermissionEvent) {
-      this.isAddedPermissionEvent = true;
-      this.checkPermissions();
-    }
-    if (supportInfo.status === 'NONE') {
-      this.setConfigDebounced();
-    }
+  resize = () => {
+    this.setState({
+      size: {
+        width: window.innerWidth - 32,
+        height: window.innerHeight - 32,
+      },
+    });
   };
 
   checkPermissions = () => {
@@ -163,7 +96,7 @@ class ConferenceDeviceConfig extends React.Component {
       },
       () => {
         dialog.clearMessage();
-        this.setConfigDebounced();
+        this.setDeviceInfoDebounced();
       },
     );
   };
@@ -236,15 +169,14 @@ class ConferenceDeviceConfig extends React.Component {
     return result;
   };
 
-  setConfig = () => {
-    console.log('setConfig');
+  setDeviceInfo = () => {
     const { t } = this.props;
     const { setSupportInfo, setMyStream, myStream } = this.props;
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       const { supportInfo } = this.props;
       const nextSupportInfo = { ...supportInfo };
-      nextSupportInfo.status = 'READY';
+
       nextSupportInfo.supportUserMedia = false;
       nextSupportInfo.deviceInfo = {
         supported: false,
@@ -263,7 +195,6 @@ class ConferenceDeviceConfig extends React.Component {
             ...supportInfo,
           };
 
-          nextSupportInfo.status = 'READY';
           nextSupportInfo.deviceInfo = {
             supported: true,
             errorName: '',
@@ -280,7 +211,6 @@ class ConferenceDeviceConfig extends React.Component {
             ...supportInfo,
           };
 
-          nextSupportInfo.status = 'ERROR';
           nextSupportInfo.supportUserMedia = false;
           nextSupportInfo.deviceInfo = {
             supported: false,
@@ -314,7 +244,7 @@ class ConferenceDeviceConfig extends React.Component {
     }
 
     if (myStream) {
-      myStream.getTracks().forEach(function (track) {
+      myStream.getTracks().forEach((track) => {
         track.stop();
       });
       setMyStream(null);
@@ -348,7 +278,6 @@ class ConferenceDeviceConfig extends React.Component {
         setMyStream(stream);
         this.myConfigVideo.srcObject = stream;
 
-        nextSupportInfo.status = 'SUCCESS';
         nextSupportInfo.supportUserMedia = true;
         nextSupportInfo.enabledAudio = true;
         nextSupportInfo.enabledVideo = true;
@@ -393,7 +322,6 @@ class ConferenceDeviceConfig extends React.Component {
               nextCurrentSupportedInfo.mediaConfig.video.deviceId = deviceIds.videoinput;
               nextCurrentSupportedInfo.mediaConfig.speaker.deviceId = deviceIds.audiooutput;
 
-              nextCurrentSupportedInfo.status = 'ERROR';
               nextCurrentSupportedInfo.supportUserMedia = false;
               nextCurrentSupportedInfo.enabledAudio = supportInfo.permissions.microphone === 'granted';
               nextCurrentSupportedInfo.enabledVideo = supportInfo.permissions.camera === 'granted';
@@ -420,7 +348,6 @@ class ConferenceDeviceConfig extends React.Component {
             ...currentSupportedInfo,
           };
 
-          nextCurrentSupportedInfo.status = 'ERROR';
           nextCurrentSupportedInfo.supportUserMedia = false;
           nextCurrentSupportedInfo.enabledAudio = false;
           nextCurrentSupportedInfo.enabledVideo = false;
@@ -463,7 +390,6 @@ class ConferenceDeviceConfig extends React.Component {
             ...currentSupportedInfo,
           };
 
-          nextCurrentSupportedInfo.status = 'ERROR';
           nextCurrentSupportedInfo.supportUserMedia = false;
           nextCurrentSupportedInfo.deviceInfo = {
             ...nextCurrentSupportedInfo.deviceInfo,
@@ -542,29 +468,67 @@ class ConferenceDeviceConfig extends React.Component {
       values.advanced.push(options);
 
       track.applyConstraints(values);
-
-      // track.applyConstraints({ advanced: [{ brightness: 255 }] });
     });
 
     setSupportInfo(nextSupportInfo);
   };
 
+  disableControl = (field, value) => {
+    const { setControls, myStream } = this.props;
+    const audioTrack = myStream.getTracks().find((d) => d.kind === field);
+    if (audioTrack) {
+      audioTrack.enabled = value;
+    }
+
+    setControls(field, value);
+  };
+
+  getButtonColor = (enabled, on) => {
+    if (!enabled) {
+      return 'gray';
+    }
+
+    if (enabled && !on) {
+      return 'danger';
+    }
+
+    return 'white';
+  };
+
+  getButtonOutline = (enabled, on) => {
+    if (!enabled) {
+      return true;
+    }
+
+    if (enabled && on) {
+      return true;
+    }
+
+    if (enabled && !on) {
+      return false;
+    }
+
+    return false;
+  };
+
   render() {
-    const { supportInfo, setSupportInfo, t } = this.props;
-    const { mediaConfig } = supportInfo;
-    const { openConfigPopup, openCapabilities, capabilities } = this.state;
+    const { supportInfo, setSupportInfo, t, conference, user, sendJoin, controls } = this.props;
+    const { mediaConfig, enabledAudio, enabledVideo } = supportInfo;
+    const { openConfigPopup, openCapabilities, capabilities, size } = this.state;
+
+    const connectedUser = (conference?.users || []).filter((u) => u.participant?.connected && u.userId !== user.id);
 
     return (
       <div className="conference-device-config-wrapper">
         {openConfigPopup && (
           <MediaDeviceConfigPopup
+            devices={supportInfo.deviceInfo.devices}
             setOpen={() => {
               this.setState({
                 openConfigPopup: false,
               });
-              this.setConfig();
+              this.setDeviceInfo();
             }}
-            devices={supportInfo.deviceInfo.devices}
             mediaConfig={mediaConfig}
             setMediaConfig={(nextMediaConfig) => {
               setSupportInfo({
@@ -575,6 +539,21 @@ class ConferenceDeviceConfig extends React.Component {
           />
         )}
         <div>
+          <div className="current-user-info">
+            {connectedUser.length < 1 && <div className="text">{t('아직 참가자가 없습니다.')}</div>}
+            {connectedUser.length > 0 && (
+              <>
+                <div className="user-count">
+                  {connectedUser.length}/{(conference?.users || []).length}명 참석중
+                </div>
+                <div className="user-list">
+                  {connectedUser.map((u) => {
+                    return <span key={u.userId}>{u.alias}</span>;
+                  })}
+                </div>
+              </>
+            )}
+          </div>
           <div className="config-button">
             <Button
               size="lg"
@@ -594,6 +573,7 @@ class ConferenceDeviceConfig extends React.Component {
               rounded
               color="white"
               outline
+              disabled={!enabledVideo}
               onClick={() => {
                 this.setOpenCapabilities(!openCapabilities);
               }}
@@ -604,9 +584,10 @@ class ConferenceDeviceConfig extends React.Component {
           <div className="video-content">
             <div>
               <VideoElement
+                className="config-video"
                 useVideoInfo
                 videoInfo={{
-                  width: mediaConfig.video.settings.width,
+                  width: size.width < mediaConfig.video.settings.width ? size.width : mediaConfig.video.settings.width,
                   height: mediaConfig.video.settings.height,
                   videoWidth: mediaConfig.video.settings.width,
                   videoHeight: mediaConfig.video.settings.height,
@@ -615,7 +596,7 @@ class ConferenceDeviceConfig extends React.Component {
                   this.myConfigVideo = d;
                 }}
                 supportInfo={supportInfo}
-                setUpUserMedia={this.setConfig}
+                setUpUserMedia={this.setDeviceInfo}
                 muted
                 isPrompt={supportInfo.permissions.microphone === 'prompt' || supportInfo.permissions.camera === 'prompt'}
                 isDenied={supportInfo.permissions.microphone === 'denied' || supportInfo.permissions.camera === 'denied'}
@@ -642,18 +623,58 @@ class ConferenceDeviceConfig extends React.Component {
           <div className="user-media-config-buttons">
             {supportInfo.permissions.camera === 'prompt' && <span>권한 요청 중</span>}
             {supportInfo.permissions.camera !== 'prompt' && (
-              <Button size="lg" rounded color="white" outline onClick={() => {}} className={supportInfo.enabledAudio ? '' : ''}>
-                {supportInfo.enabledVideo && <i className="fas fa-video" />}
-                {!supportInfo.enabledVideo && <i className="fas fa-video-slash" />}
+              <Button
+                size="lg"
+                disabled={!enabledVideo}
+                rounded
+                color={this.getButtonColor(enabledVideo, controls.video)}
+                outline={this.getButtonOutline(enabledVideo, controls.video)}
+                onClick={() => {
+                  this.disableControl('video', !controls.video);
+                }}
+              >
+                {!enabledVideo && (
+                  <span className="icon">
+                    <i className="fas fa-exclamation-triangle" />
+                  </span>
+                )}
+                {enabledVideo && controls.video && <i className="fas fa-video" />}
+                {enabledVideo && !controls.video && <i className="fas fa-video-slash" />}
+                {!enabledVideo && <i className="fas fa-video-slash" />}
               </Button>
             )}
             {supportInfo.permissions.camera !== 'prompt' && supportInfo.permissions.microphone === 'prompt' && <span>권한 요청 중</span>}
             {supportInfo.permissions.microphone !== 'prompt' && (
-              <Button size="lg" rounded color="white" outline onClick={() => {}} data-tip={t('마이크 꺼짐')} className={supportInfo.enabledAudio ? '' : ''}>
-                {supportInfo.enabledAudio && <i className="fas fa-microphone" />}
-                {!supportInfo.enabledAudio && <i className="fas fa-microphone-slash" />}
+              <Button
+                size="lg"
+                disabled={!enabledAudio}
+                rounded
+                color={this.getButtonColor(enabledAudio, controls.audio)}
+                outline={this.getButtonOutline(enabledAudio, controls.audio)}
+                onClick={() => {
+                  this.disableControl('audio', !controls.audio);
+                }}
+                className={supportInfo.enabledAudio ? '' : ''}
+              >
+                {!enabledAudio && (
+                  <span className="icon">
+                    <i className="fas fa-exclamation-triangle" />
+                  </span>
+                )}
+                {enabledAudio && <i className="fas fa-microphone" />}
+                {!enabledAudio && <i className="fas fa-microphone-slash" />}
               </Button>
             )}
+            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem 0 0.5rem" />
+            <Button
+              size="lg"
+              color="primary"
+              onClick={() => {
+                sendJoin();
+              }}
+            >
+              {t('참가하기')}
+            </Button>
           </div>
           {(!supportInfo.deviceInfo.supported || !supportInfo.supportUserMedia) && (
             <div className="device-error-info">
@@ -672,7 +693,6 @@ export default withTranslation()(ConferenceDeviceConfig);
 ConferenceDeviceConfig.propTypes = {
   t: PropTypes.func,
   supportInfo: PropTypes.shape({
-    status: PropTypes.string,
     supportUserMedia: PropTypes.bool,
     retrying: PropTypes.bool,
     permissions: PropTypes.shape({
@@ -713,4 +733,50 @@ ConferenceDeviceConfig.propTypes = {
   setSupportInfo: PropTypes.func,
   myStream: PropTypes.objectOf(PropTypes.any),
   setMyStream: PropTypes.func,
+  user: UserPropTypes,
+  conference: PropTypes.shape({
+    code: PropTypes.string,
+    endDate: PropTypes.string,
+    id: PropTypes.number,
+    name: PropTypes.string,
+    sprintDailyMeetingId: PropTypes.number,
+    sprintId: PropTypes.number,
+    sprintName: PropTypes.string,
+    startDate: PropTypes.string,
+    users: PropTypes.arrayOf(
+      PropTypes.shape({
+        alias: PropTypes.string,
+        email: PropTypes.string,
+        id: PropTypes.number,
+        imageData: PropTypes.string,
+        imageType: PropTypes.string,
+        name: PropTypes.string,
+        participant: PropTypes.shape({
+          alias: PropTypes.string,
+          audio: PropTypes.bool,
+          code: PropTypes.string,
+          connected: PropTypes.bool,
+          email: PropTypes.string,
+          id: PropTypes.string,
+          imageData: PropTypes.string,
+          imageType: PropTypes.string,
+          ip: PropTypes.string,
+          joinTime: PropTypes.string,
+          key: PropTypes.string,
+          leaveTime: PropTypes.string,
+          name: PropTypes.string,
+          socketId: PropTypes.string,
+          video: PropTypes.bool,
+        }),
+      }),
+    ),
+  }),
+  sendJoin: PropTypes.func,
+  controls: PropTypes.shape({
+    audio: PropTypes.bool,
+    video: PropTypes.bool,
+    participants: PropTypes.bool,
+    sharing: PropTypes.bool,
+  }),
+  setControls: PropTypes.func,
 };

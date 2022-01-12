@@ -16,6 +16,11 @@ button.btn {
     _font-size: 15px;
   }
 
+  &.btn-lg {
+    height: 44px;
+    font-size: 1.1rem;
+  }
+
   &.rounded {
     border-radius: 50% !important;
     padding-left: 0;
@@ -135,7 +140,6 @@ button.btn {
       }
     }
   }
-
 
   &.btn-gray {
     background-color: $gray-400;

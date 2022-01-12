@@ -5,14 +5,9 @@ import _ from 'lodash';
 import { Block, BlockRow, Label, Popup, Selector } from '@/components';
 import './MediaDeviceConfigPopup.scss';
 
-const labelMinWidth = '140px';
+const labelMinWidth = '150px';
 
 class MediaDeviceConfigPopup extends React.Component {
-  permissions = {
-    microphone: null,
-    camera: null,
-  };
-
   constructor(props) {
     super(props);
     const { t } = props;
@@ -46,14 +41,16 @@ class MediaDeviceConfigPopup extends React.Component {
     const { mediaConfig, setMediaConfig } = this.props;
     const next = { ...mediaConfig };
     _.set(next, key, value);
-    console.log(next);
     setMediaConfig(next);
   };
 
   getDeviceList = (devices, kind) => {
-    if (devices.filter((device) => device.deviceId && device.kind === kind).length > 0) {
+    const { t } = this.props;
+    const list = devices.filter((device) => device.deviceId && device.kind === kind && device.deviceId);
+
+    if (list.length > 0) {
       return devices
-        .filter((device) => device.deviceId && device.kind === kind)
+        .filter((device) => device.deviceId && device.kind === kind && device.deviceId)
         .map((device) => {
           return {
             key: device.deviceId,
@@ -64,8 +61,8 @@ class MediaDeviceConfigPopup extends React.Component {
 
     return [
       {
-        deviceId: null,
-        label: '디바이스 없음',
+        key: null,
+        value: t('디바이스 없음'),
       },
     ];
   };
@@ -76,7 +73,7 @@ class MediaDeviceConfigPopup extends React.Component {
 
     return (
       <Popup
-        title="설정"
+        title={t('설정')}
         className="device-config-popup-wrapper"
         size="md"
         open
@@ -106,9 +103,10 @@ class MediaDeviceConfigPopup extends React.Component {
             <div className="config-content">
               {tab === 'audio' && (
                 <Block>
-                  <BlockRow className="mb-3">
+                  <BlockRow className="mb-1 mb-md-3">
                     <Label minWidth={labelMinWidth}>{t('마이크')}</Label>
                     <Selector
+                      className="selector"
                       outline
                       size="md"
                       items={this.getDeviceList(devices, 'audioinput')}
@@ -116,12 +114,12 @@ class MediaDeviceConfigPopup extends React.Component {
                       onChange={(val) => {
                         this.onChangeMediaConfig('audio.deviceId', val);
                       }}
-                      minWidth="200px"
                     />
                   </BlockRow>
                   <BlockRow className="d-none">
                     <Label minWidth={labelMinWidth}>{t('스피커')}</Label>
                     <Selector
+                      className="selector"
                       outline
                       size="md"
                       items={this.getDeviceList(devices, 'audiooutput')}
@@ -129,16 +127,16 @@ class MediaDeviceConfigPopup extends React.Component {
                       onChange={(val) => {
                         this.onChangeMediaConfig('speaker.deviceId', val);
                       }}
-                      minWidth="200px"
                     />
                   </BlockRow>
                 </Block>
               )}
               {tab === 'video' && (
                 <Block>
-                  <BlockRow className="mb-3">
+                  <BlockRow className="mb-1 mb-md-3">
                     <Label minWidth={labelMinWidth}>{t('카메라')}</Label>
                     <Selector
+                      className="selector"
                       outline
                       size="md"
                       items={this.getDeviceList(devices, 'videoinput')}
@@ -146,12 +144,12 @@ class MediaDeviceConfigPopup extends React.Component {
                       onChange={(val) => {
                         this.onChangeMediaConfig('video.deviceId', val);
                       }}
-                      minWidth="200px"
                     />
                   </BlockRow>
-                  <BlockRow className="mb-3">
+                  <BlockRow className="mb-1 mb-md-3">
                     <Label minWidth={labelMinWidth}>{t('전송 시 해상도 (최대)')}</Label>
                     <Selector
+                      className="selector"
                       outline
                       size="md"
                       items={resolutions}
@@ -159,12 +157,12 @@ class MediaDeviceConfigPopup extends React.Component {
                       onChange={(val) => {
                         this.onChangeMediaConfig('sendResolution', val);
                       }}
-                      minWidth="200px"
                     />
                   </BlockRow>
                   <BlockRow>
                     <Label minWidth={labelMinWidth}>{t('수신 시 해상도 (최대)')}</Label>
                     <Selector
+                      className="selector"
                       outline
                       size="md"
                       items={resolutions}
@@ -172,7 +170,6 @@ class MediaDeviceConfigPopup extends React.Component {
                       onChange={(val) => {
                         this.onChangeMediaConfig('receiveResolution', val);
                       }}
-                      minWidth="200px"
                     />
                   </BlockRow>
                 </Block>
@@ -189,6 +186,8 @@ export default withTranslation()(MediaDeviceConfigPopup);
 
 MediaDeviceConfigPopup.propTypes = {
   t: PropTypes.func,
+  setMediaConfig: PropTypes.func,
+  setOpen: PropTypes.func,
   devices: PropTypes.arrayOf(
     PropTypes.shape({
       deviceId: PropTypes.string,
@@ -214,6 +213,4 @@ MediaDeviceConfigPopup.propTypes = {
     sendResolution: PropTypes.number,
     receiveResolution: PropTypes.number,
   }),
-  setMediaConfig: PropTypes.func,
-  setOpen: PropTypes.func,
 };

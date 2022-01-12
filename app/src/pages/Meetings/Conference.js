@@ -75,8 +75,8 @@ class Conference extends React.Component {
       screenShare: {
         sharing: false,
       },
+      isSetting: true,
       supportInfo: {
-        status: 'NONE', // NONE, READY, SUCCESS, ERROR, DONE
         supportUserMedia: null,
         retrying: false,
         permissions: {
@@ -92,7 +92,7 @@ class Conference extends React.Component {
         enabledAudio: null,
         enabledVideo: null,
         mediaConfig: {
-          speaker : {
+          speaker: {
             deviceId: null,
           },
           audio: {
@@ -102,8 +102,8 @@ class Conference extends React.Component {
           video: {
             deviceId: null,
             settings: {
-              width: 720,
-              height: 540,
+              width: null,
+              height: null,
             },
             capabilities: [],
           },
@@ -672,14 +672,54 @@ class Conference extends React.Component {
     const {
       conference,
       conference: { users },
+
+      isSetting,
     } = this.state;
 
-    console.log(info);
-    // console.log(type, data, senderInfo);
+    console.log(type, data, senderInfo);
 
     const isMe = Number(senderInfo.id) === Number(user.id);
 
     switch (type) {
+      case 'LEAVE': {
+        if (!isMe) {
+          this.clearOtherUserStreamAndVideo(senderInfo.id);
+        }
+        const nextConference = this.getMergeUsersWithParticipants([data.participant]);
+        this.setState(
+          {
+            conference: nextConference,
+          },
+          () => {
+            this.setVideoInfo();
+          },
+        );
+        break;
+      }
+
+      case 'JOIN': {
+        const nextConference = this.getMergeUsersWithParticipants([data.participant]);
+
+        this.setState(
+          {
+            conference: nextConference,
+          },
+          () => {
+            if (!isSetting) {
+              this.setVideoInfo();
+              if (!isMe) {
+                // 다른 사람이 조인한 경우,
+                setTimeout(() => {
+                  this.setUpPeerConnection(senderInfo.id, true);
+                }, 3000);
+              }
+            }
+          },
+        );
+
+        break;
+      }
+
       case 'AUDIO':
       case 'VIDEO': {
         const nextConference = { ...conference };
@@ -718,44 +758,6 @@ class Conference extends React.Component {
         if (!isMe) {
           this.clearUpScreenSharing(senderInfo.id);
         }
-
-        break;
-      }
-
-      case 'LEAVE': {
-        if (!isMe) {
-          this.clearOtherUserStreamAndVideo(senderInfo.id);
-        }
-        const nextConference = this.getMergeUsersWithParticipants([data.participant]);
-        this.setState(
-          {
-            conference: nextConference,
-          },
-          () => {
-            this.setVideoInfo();
-          },
-        );
-        break;
-      }
-
-      case 'JOIN': {
-        const nextConference = this.getMergeUsersWithParticipants([data.participant]);
-
-        this.setState(
-          {
-            conference: nextConference,
-          },
-          () => {
-            this.setVideoInfo();
-            if (!isMe) {
-              // 다른 사람이 조인한 경우,
-              setTimeout(() => {
-                // const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
-                this.setUpPeerConnection(senderInfo.id, true);
-              }, 3000);
-            }
-          },
-        );
 
         break;
       }
@@ -862,28 +864,38 @@ class Conference extends React.Component {
   };
 
   setControls = (field, value) => {
-    const { controls } = this.state;
+    const { controls, isSetting } = this.state;
 
     this.setState(
       {
         controls: { ...controls, [field]: value },
       },
       () => {
-        if (field === 'audio' || field === 'video') {
-          const { controls: nextControls } = this.state;
-          const audioTrack = this.myStream.getTracks().find((d) => d.kind === field);
-          if (audioTrack) {
-            audioTrack.enabled = nextControls[field];
+        if (!isSetting) {
+          if (field === 'audio' || field === 'video') {
+            const { controls: nextControls } = this.state;
+            const audioTrack = this.myStream.getTracks().find((d) => d.kind === field);
+            if (audioTrack) {
+              audioTrack.enabled = nextControls[field];
+            }
+            this.sendToAll(field.toUpperCase(), { [field]: nextControls[field] });
           }
-          this.sendToAll(field.toUpperCase(), { [field]: nextControls[field] });
         }
       },
     );
   };
 
+  sendJoin = () => {
+    const { user } = this.props;
+    const { controls } = this.state;
+    if (user.id) {
+      this.sendToAll('JOIN', controls);
+    }
+  };
+
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting } = this.state;
 
     const existConference = conference && conference.id;
 
@@ -891,12 +903,27 @@ class Conference extends React.Component {
 
     return (
       <Page className="conference-wrapper">
-        {existConference && supportInfo.status !== 'DONE' && (
+        {existConference && (
+          <SocketClient
+            topics={[`/sub/conferences/${conference.code}`, `/sub/conferences/${conference.code}/${user.id}`]}
+            onMessage={this.onMessage}
+            onConnect={() => {}}
+            onDisconnect={() => {}}
+            setRef={(client) => {
+              this.socket = client;
+            }}
+          />
+        )}
+        {existConference && isSetting && (
           <ConferenceDeviceConfig
+            user={user}
+            conference={conference}
+            myStream={this.myStream}
             setMyStream={(stream) => {
               this.myStream = stream;
             }}
-            myStream={this.myStream}
+            controls={controls}
+            setControls={this.setControls}
             supportInfo={supportInfo}
             setSupportInfo={(next, callback) => {
               this.setState(
@@ -910,23 +937,11 @@ class Conference extends React.Component {
                 },
               );
             }}
+            sendJoin={this.sendJoin}
           />
         )}
-        {existConference && supportInfo.status === 'DONE' && (
+        {existConference && !isSetting && (
           <>
-            <SocketClient
-              topics={[`/sub/conferences/${conference.code}`, `/sub/conferences/${conference.code}/${user.id}`]}
-              onMessage={this.onMessage}
-              onConnect={() => {
-                if (user.id) {
-                  this.sendToAll('JOIN', controls);
-                }
-              }}
-              onDisconnect={() => {}}
-              setRef={(client) => {
-                this.socket = client;
-              }}
-            />
             <PageTitle className="d-none">{conference?.name}</PageTitle>
             <PageContent className="conference-content">
               <div className="streaming-content">

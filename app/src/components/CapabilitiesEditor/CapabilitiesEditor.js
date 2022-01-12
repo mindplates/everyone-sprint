@@ -135,7 +135,7 @@ CapabilitiesEditor.propTypes = {
   capabilities: PropTypes.arrayOf(
     PropTypes.shape({
       key: PropTypes.string,
-      value: PropTypes.oneOfType(PropTypes.string, PropTypes.number),
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }),
   ),
   onChange: PropTypes.func,
