@@ -6,6 +6,42 @@
   > div {
     align-self: center;
 
+    @media (max-width: 576px) {
+      align-self: flex-start;
+      padding-top: 2rem;
+    }
+
+    .current-user-info {
+      text-align: center;
+      margin-bottom: 1rem;
+
+      .text {
+        font-weight: bold;
+      }
+
+      .user-count {
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .user-list {
+        > span {
+          display: inline-block;
+          text-transform: uppercase;
+          border-bottom: 2px solid #333;
+          padding: 0.4rem 0.5rem;
+          line-height: 100%;
+          font-weight: bold;
+          font-family: flex, sans-serif;
+          margin-right: 1rem;
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
     .config-button {
       text-align: center;
       margin-bottom: 1rem;
@@ -21,6 +57,26 @@
     .video-content {
       display: flex;
       flex-direction: row;
+      max-width: 100%;
+
+      .config-video {
+        max-width: 100%;
+        background-color: transparent;
+        height: auto !important;
+
+        .not-supported-user-media {
+          border: 1px solid rgba(0, 0, 0, 0.4);
+          background-color: $white;
+        }
+
+        .video-element {
+          max-width: 100%;
+          background-color: transparent;
+          border: none;
+          height: auto !important;
+          min-height: 240px;
+        }
+      }
     }
 
     .device-error-info {
@@ -38,6 +94,20 @@
       text-align: center;
       > button {
         margin-right: 0.5rem;
+        position: relative;
+        z-index: 2;
+
+        &[disabled] {
+        }
+
+        .icon {
+          color: $danger;
+          position: absolute;
+          top: -6px;
+          left: -6px;
+          display: inline-block;
+          font-size: 18px;
+        }
 
         &:last-child {
           margin-right: 0;
