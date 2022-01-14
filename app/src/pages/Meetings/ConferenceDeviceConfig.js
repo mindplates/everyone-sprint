@@ -8,6 +8,7 @@ import { CAPABILITIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
 import MediaDeviceConfigPopup from '@/pages/Meetings/MediaDeviceConfigPopup';
 import { UserPropTypes } from '@/proptypes';
+import mediaUtil from '@/utils/mediaUtil';
 import './ConferenceDeviceConfig.scss';
 
 class ConferenceDeviceConfig extends React.Component {
@@ -39,7 +40,6 @@ class ConferenceDeviceConfig extends React.Component {
 
   componentDidMount() {
     this.checkPermissions();
-    this.setDeviceInfoDebounced();
     window.addEventListener('resize', this.resizeDebounced);
     this.resizeDebounced();
   }
@@ -63,49 +63,61 @@ class ConferenceDeviceConfig extends React.Component {
     });
   };
 
-  checkPermissions = () => {
-    navigator.permissions.query({ name: 'microphone' }).then((permissionObj) => {
-      this.permissions.microphone = permissionObj.state;
-      this.showPermissionMessage(permissionObj);
+  checkPermissions = async () => {
+    const { setSupportInfo, t } = this.props;
 
-      permissionObj.onchange = () => {
-        this.permissions.microphone = permissionObj.state;
-        this.onChangePermission(permissionObj);
+    if (!mediaUtil.getIsSupportMedia()) {
+      const nextSupportInfo = {
+        enabledAudio: false,
+        enabledVideo: false,
+        deviceInfo: {
+          supported: false,
+          errorName: t('미디어 API 오류'),
+          errorMessage: t('디바이스 목록을 가져올 수 없습니다.'),
+          devices: [],
+        },
+      };
+      setSupportInfo(nextSupportInfo);
+      return;
+    }
+
+    const connectedDevices = await mediaUtil.getConnectedDevices();
+    const hasAudio = connectedDevices.filter((device) => device.kind === 'audioinput').length > 0;
+    const hasVideo = connectedDevices.filter((device) => device.kind === 'videoinput').length > 0;
+
+    const names = mediaUtil.getPermissionNames(hasAudio, hasVideo);
+    const permissions = await mediaUtil.getPermissions(names);
+
+    permissions.forEach((permission, inx) => {
+      this.permissions[names[inx]] = permission.state;
+      this.showPermissionMessage(permission);
+      permission.onchange = () => {
+        this.permissions[names[inx]] = permission.state;
+        this.onChangePermission(permission);
       };
     });
 
-    navigator.permissions.query({ name: 'camera' }).then((permissionObj) => {
-      this.permissions.camera = permissionObj.state;
-      this.showPermissionMessage(permissionObj);
-      permissionObj.onchange = () => {
-        this.permissions.camera = permissionObj.state;
-        this.onChangePermission(permissionObj);
-      };
-    });
+    this.setDeviceInfoDebounced();
   };
 
   onChangePermission = () => {
-    const { supportInfo, setSupportInfo } = this.props;
+    const { setSupportInfo } = this.props;
+    const nextSupportInfo = {
+      permissions: {
+        ...this.permissions,
+      },
+    };
 
-    setSupportInfo(
-      {
-        ...supportInfo,
-        permissions: {
-          ...this.permissions,
-        },
-      },
-      () => {
-        dialog.clearMessage();
-        this.setDeviceInfoDebounced();
-      },
-    );
+    setSupportInfo(nextSupportInfo, () => {
+      dialog.clearMessage();
+      this.setDeviceInfoDebounced();
+    });
   };
 
   showPermissionMessage = (permissionObj) => {
-    const { t, supportInfo, setSupportInfo } = this.props;
+    const { t, setSupportInfo } = this.props;
 
     setSupportInfo({
-      ...supportInfo,
       permissions: {
         ...this.permissions,
       },
@@ -140,266 +152,124 @@ class ConferenceDeviceConfig extends React.Component {
     }
   };
 
-  getDeviceIds = (stream, devices) => {
-    const result = {
-      audioinput: null,
-      videoinput: null,
-      audiooutput: null,
-    };
+  getCurrentConstraints = () => {
+    const { supportInfo } = this.props;
+    let constraints = null;
 
-    stream.getTracks().forEach((track) => {
-      const { kind } = track;
-      const settings = track.getSettings();
-      const { deviceId } = settings || {};
-
-      if (kind === 'audio') {
-        result.audioinput = deviceId;
+    if (supportInfo.enabledVideo && supportInfo.mediaConfig.video.deviceId) {
+      if (!constraints) {
+        constraints = {};
       }
 
-      if (kind === 'video') {
-        result.videoinput = deviceId;
+      if (constraints && !constraints.video) {
+        constraints.video = {};
       }
-    });
 
-    const defaultAudioOut = devices?.find((d) => d.kind === 'audiooutput' && d.deviceId === 'default');
-    if (defaultAudioOut) {
-      result.audiooutput = defaultAudioOut.deviceId;
+      constraints.video.deviceId = { exact: supportInfo.mediaConfig.video.deviceId };
+
+      if (supportInfo.mediaConfig.sendResolution) {
+        constraints.video.width = supportInfo.mediaConfig.sendResolution;
+        constraints.video.height = (supportInfo.mediaConfig.sendResolution / 4) * 3;
+      }
     }
 
-    return result;
+    if (supportInfo.enabledAudio && supportInfo.mediaConfig.audio.deviceId) {
+      if (!constraints) {
+        constraints = {
+          audio: {},
+        };
+      }
+
+      if (!constraints.audio) {
+        constraints.audio = {};
+      }
+
+      constraints.audio.deviceId = { exact: supportInfo.mediaConfig.audio.deviceId };
+    }
+
+    return constraints;
   };
 
-  setDeviceInfo = () => {
-    const { t } = this.props;
+  setDeviceInfo = async () => {
     const { setSupportInfo, setMyStream, myStream } = this.props;
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-      const { supportInfo } = this.props;
-      const nextSupportInfo = { ...supportInfo };
+    // 관련 API가 없는 경우, 관련된 메세지는 checkPermissions()에서 처리됨
+    if (!mediaUtil.getIsSupportMedia()) {
+      return;
+    }
 
-      nextSupportInfo.supportUserMedia = false;
-      nextSupportInfo.deviceInfo = {
-        supported: false,
-        errorName: t('미디어 API 오류'),
-        errorMessage: t('디바이스 목록을 가져올 수 없습니다.'),
-        devices: [],
+    const constraints = this.getCurrentConstraints();
+    // denied가 아닌 상태만 먼저 요청 (denied를 요청하는 경우 권한 오류로 가능한 디바이스도 요청 안됨)
+    const basicConstraint = await mediaUtil.getBasicConstraint(this.permissions);
+    if (constraints) {
+      if (!constraints.audio && basicConstraint.audio) {
+        constraints.audio = true;
+      }
+
+      if (!constraints.video && basicConstraint.video) {
+        constraints.video = true;
+      }
+    }
+
+    const currentStream = await mediaUtil.getUserMedia(constraints || basicConstraint);
+
+    if (currentStream) {
+      // 현재 동작중인 스트림이 있다면 중지
+      if (myStream) {
+        myStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+        setMyStream(null);
+      }
+
+      // 반환된 스트림 지정
+      setMyStream(currentStream);
+      this.myConfigVideo.srcObject = currentStream;
+
+      // 현재 세팅된 내용을 저장
+      let vw;
+      let vh;
+      currentStream.getVideoTracks().forEach((track) => {
+        const settings = track.getSettings();
+        vw = settings.width;
+        vh = settings.height;
+      });
+
+      const deviceIdMap = await mediaUtil.getDeviceIds(currentStream);
+
+      const next = {
+        mediaConfig: {
+          audio: {
+            deviceId: deviceIdMap.audioinput,
+          },
+          video: {
+            deviceId: deviceIdMap.videoinput,
+            settings: {
+              width: vw,
+              height: vh,
+            },
+          },
+          speaker: {
+            deviceId: deviceIdMap.audiooutput,
+          },
+        },
+        enabledAudio: basicConstraint.audio,
+        enabledVideo: basicConstraint.video,
       };
-      setSupportInfo(nextSupportInfo);
-    } else {
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then((devices) => {
-          const { supportInfo } = this.props;
 
-          const nextSupportInfo = {
-            ...supportInfo,
-          };
-
-          nextSupportInfo.deviceInfo = {
-            supported: true,
-            errorName: '',
-            errorMessage: '',
-            devices,
-          };
-
-          setSupportInfo(nextSupportInfo);
-        })
-        .catch((e) => {
-          const { supportInfo } = this.props;
-
-          const nextSupportInfo = {
-            ...supportInfo,
-          };
-
-          nextSupportInfo.supportUserMedia = false;
-          nextSupportInfo.deviceInfo = {
-            supported: false,
-            errorName: e.name,
-            errorMessage: e.message,
-            devices: [],
-          };
-
-          setSupportInfo(nextSupportInfo);
-        });
+      setSupportInfo(next);
     }
 
-    const { supportInfo: currentSupportInfo } = this.props;
-
-    const constraints = {
-      video: {},
-      audio: {},
-    };
-
-    if (currentSupportInfo.enabledVideo && currentSupportInfo.mediaConfig.video.deviceId) {
-      constraints.video.deviceId = { exact: currentSupportInfo.mediaConfig.video.deviceId };
-    }
-
-    if (currentSupportInfo.enabledVideo && currentSupportInfo.mediaConfig.sendResolution) {
-      constraints.video.width = currentSupportInfo.mediaConfig.sendResolution;
-      constraints.video.height = (currentSupportInfo.mediaConfig.sendResolution / 4) * 3;
-    }
-
-    if (currentSupportInfo.enabledAudio && currentSupportInfo.mediaConfig.audio.deviceId) {
-      constraints.audio.deviceId = { exact: currentSupportInfo.mediaConfig.audio.deviceId };
-    }
-
-    if (myStream) {
-      myStream.getTracks().forEach((track) => {
-        track.stop();
+    // 디바이스가 존재(not null)하는데, 권한이 없는 경우가 있다면, 브라우저 상단에 존재하는 기계에 대한 허용 아이콘이 뜨도록 존재하는 기계에 대해 미디어 요청
+    if (
+      (this.permissions.microphone !== null && this.permissions.microphone !== 'granted') ||
+      (this.permissions.camera !== null && this.permissions.camera !== 'granted')
+    ) {
+      await mediaUtil.getUserMedia({
+        video: this.permissions.camera !== null,
+        audio: this.permissions.microphone !== null,
       });
-      setMyStream(null);
     }
-
-    navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then((stream) => {
-        let videoWidth = 720;
-        let videoHeight = 540;
-        stream.getVideoTracks().forEach((track) => {
-          const settings = track.getSettings();
-          videoWidth = settings.width;
-          videoHeight = settings.height;
-        });
-
-        const { supportInfo } = this.props;
-
-        const nextSupportInfo = {
-          ...supportInfo,
-        };
-
-        const deviceIds = this.getDeviceIds(stream, supportInfo.deviceInfo.devices);
-
-        nextSupportInfo.mediaConfig.audio.deviceId = deviceIds.audioinput;
-        nextSupportInfo.mediaConfig.video.deviceId = deviceIds.videoinput;
-        nextSupportInfo.mediaConfig.video.settings.width = videoWidth;
-        nextSupportInfo.mediaConfig.video.settings.height = videoHeight;
-        nextSupportInfo.mediaConfig.speaker.deviceId = deviceIds.audiooutput;
-
-        setMyStream(stream);
-        this.myConfigVideo.srcObject = stream;
-
-        nextSupportInfo.supportUserMedia = true;
-        nextSupportInfo.enabledAudio = true;
-        nextSupportInfo.enabledVideo = true;
-
-        setSupportInfo(nextSupportInfo);
-
-        /*
-        https://pretagteam.com/question/javascript-select-audio-device
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const outputs = devices.filter(({
-           kind
-        }) => kind === 'audiooutput');
-        const output = outputs[1]; // Choose a device
-
-        const audio = new Audio();
-        audio.setSinkId(output.deviceId);
-        audio.play();
-         */
-      })
-      .catch((e) => {
-        // 일부 허용된 경우, 허용된 것만 보여주도록
-        const { supportInfo } = this.props;
-        if (supportInfo.permissions.microphone === 'granted' || supportInfo.permissions.camera === 'granted') {
-          navigator.mediaDevices
-            .getUserMedia({
-              video: supportInfo.permissions.camera === 'granted',
-              audio: supportInfo.permissions.microphone === 'granted',
-            })
-            .then((stream) => {
-              setMyStream(stream);
-              this.myConfigVideo.srcObject = stream;
-
-              const { supportInfo: currentSupportedInfo } = this.props;
-
-              const nextCurrentSupportedInfo = {
-                ...currentSupportedInfo,
-              };
-
-              const deviceIds = this.getDeviceIds(stream, nextCurrentSupportedInfo.deviceInfo.devices);
-
-              nextCurrentSupportedInfo.mediaConfig.audio.deviceId = deviceIds.audioinput;
-              nextCurrentSupportedInfo.mediaConfig.video.deviceId = deviceIds.videoinput;
-              nextCurrentSupportedInfo.mediaConfig.speaker.deviceId = deviceIds.audiooutput;
-
-              nextCurrentSupportedInfo.supportUserMedia = false;
-              nextCurrentSupportedInfo.enabledAudio = supportInfo.permissions.microphone === 'granted';
-              nextCurrentSupportedInfo.enabledVideo = supportInfo.permissions.camera === 'granted';
-
-              setSupportInfo(nextCurrentSupportedInfo);
-            })
-            .catch(() => {
-              //
-            });
-
-          // 일부 허용된 것만 보여주고, 다시 권한 요청이 발생하도록 재요청
-          navigator.mediaDevices
-            .getUserMedia({
-              video: true,
-              audio: true,
-            })
-            .catch(() => {
-              //
-            });
-        } else {
-          const { supportInfo: currentSupportedInfo } = this.props;
-
-          const nextCurrentSupportedInfo = {
-            ...currentSupportedInfo,
-          };
-
-          nextCurrentSupportedInfo.supportUserMedia = false;
-          nextCurrentSupportedInfo.enabledAudio = false;
-          nextCurrentSupportedInfo.enabledVideo = false;
-          setSupportInfo(nextCurrentSupportedInfo);
-        }
-
-        // 하나라도 차단된 경우, 메세지 표시
-        if (supportInfo.permissions.microphone === 'denied' || supportInfo.permissions.camera === 'denied') {
-          dialog.setMessage(
-            MESSAGE_CATEGORY.WARNING,
-            t('카메라와 마이크가 차단됨'),
-            <div>
-              <span>{t('카메라와 마이크에 엑세스가 필요합니다. 브라우저 주소 표시줄에서 차단된 카메라 아이콘')}</span>
-              <span>
-                <img src={images.cameraPermission} alt="camera" />
-              </span>
-              <span>{t('을 클릭해주세요.')}</span>
-            </div>,
-          );
-        } else {
-          // 권한 이외의 에러 표시
-          const errorString = String(e);
-
-          const { supportInfo: currentSupportedInfo } = this.props;
-
-          let errorName = '';
-          let errorMessage = '';
-
-          const errs = errorString.split(':');
-          if (errs.length > 1) {
-            const [first, second] = errs;
-            errorName = first.trim();
-            errorMessage = second.trim();
-          } else {
-            errorName = errs.trim();
-            errorMessage = '';
-          }
-
-          const nextCurrentSupportedInfo = {
-            ...currentSupportedInfo,
-          };
-
-          nextCurrentSupportedInfo.supportUserMedia = false;
-          nextCurrentSupportedInfo.deviceInfo = {
-            ...nextCurrentSupportedInfo.deviceInfo,
-            errorName,
-            errorMessage,
-          };
-
-          setSupportInfo(nextCurrentSupportedInfo);
-        }
-      });
   };
 
   setOpenCapabilities = (value) => {
@@ -599,7 +469,8 @@ class ConferenceDeviceConfig extends React.Component {
                 setUpUserMedia={this.setDeviceInfo}
                 muted
                 isPrompt={supportInfo.permissions.microphone === 'prompt' || supportInfo.permissions.camera === 'prompt'}
-                isDenied={supportInfo.permissions.microphone === 'denied' || supportInfo.permissions.camera === 'denied'}
+                isMicrophoneDenied={supportInfo.permissions.microphone === 'denied'}
+                isCameraDenied={supportInfo.permissions.camera === 'denied'}
               />
             </div>
             {openCapabilities && (
@@ -676,7 +547,7 @@ class ConferenceDeviceConfig extends React.Component {
               {t('참가하기')}
             </Button>
           </div>
-          {(!supportInfo.deviceInfo.supported || !supportInfo.supportUserMedia) && (
+          {!supportInfo.deviceInfo.supported && (
             <div className="device-error-info">
               <div className="error-name">{supportInfo.deviceInfo.errorName}</div>
               <div className="error-message">{supportInfo.deviceInfo.errorMessage}</div>
@@ -693,8 +564,6 @@ export default withTranslation()(ConferenceDeviceConfig);
 ConferenceDeviceConfig.propTypes = {
   t: PropTypes.func,
   supportInfo: PropTypes.shape({
-    supportUserMedia: PropTypes.bool,
-    retrying: PropTypes.bool,
     permissions: PropTypes.shape({
       microphone: PropTypes.string,
       camera: PropTypes.string,

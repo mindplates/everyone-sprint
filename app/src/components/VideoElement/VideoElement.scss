@@ -18,6 +18,9 @@ div.video-element-wrapper {
     position: relative;
     border: 1px solid rgba(0, 0, 0, 0.2);
     background-color: $gray-200;
+    &.is-camera-denied {
+      background-color: #333;
+    }
 
     .control-status {
       position: absolute;
@@ -106,6 +109,7 @@ div.video-element-wrapper {
         color: $danger;
         font-weight: bold;
         text-shadow: 1px 1px 1px $white;
+        padding: 0 2rem;
 
         .loading {
           position: absolute;

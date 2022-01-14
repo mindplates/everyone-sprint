@@ -2,13 +2,14 @@ import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import { Button, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient, VideoElement } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import './Conference.scss';
 import ConferenceDeviceConfig from '@/pages/Meetings/ConferenceDeviceConfig';
+import mediaUtil from '@/utils/mediaUtil';
 
 /*
 const constraints = {
@@ -77,8 +78,6 @@ class Conference extends React.Component {
       },
       isSetting: true,
       supportInfo: {
-        supportUserMedia: null,
-        retrying: false,
         permissions: {
           microphone: null,
           camera: null,
@@ -302,36 +301,71 @@ class Conference extends React.Component {
     );
   };
 
-  setUpUserMedia = (retrying) => {
+  setSupportInfo = (nextSupportInfo, callback) => {
     const { supportInfo } = this.state;
 
+    this.setState(
+      {
+        supportInfo: _.merge(supportInfo, nextSupportInfo),
+      },
+      () => {
+        if (callback) {
+          callback();
+        }
+      },
+    );
+  };
+
+  setUpUserMedia = () => {
+    console.log(3);
+    const { t } = this.props;
+
+    if (!mediaUtil.getIsSupportMedia()) {
+      const nextSupportInfo = {};
+      nextSupportInfo.enabledAudio = false;
+      nextSupportInfo.enabledVideo = false;
+      nextSupportInfo.deviceInfo = {
+        supported: false,
+        errorName: t('미디어 API 오류'),
+        errorMessage: t('디바이스 목록을 가져올 수 없습니다.'),
+        devices: [],
+      };
+
+      this.setSupportInfo(nextSupportInfo);
+
+      return;
+    }
+
     if (navigator.mediaDevices.getUserMedia) {
+      const { supportInfo } = this.state;
+      const nextSupportInfo = { ...supportInfo };
+
       this.setState({
         supportInfo: {
-          ...supportInfo,
-          retrying,
+          ...nextSupportInfo,
         },
       });
 
       navigator.mediaDevices
         .getUserMedia(constraints)
         .then((stream) => {
+          const { supportInfo: currentSupportInfo } = this.state;
+
           this.myStream = stream;
           this.myVideo.srcObject = stream;
           this.setState({
             supportInfo: {
-              supportUserMedia: true,
-              retrying: false,
+              ...currentSupportInfo,
             },
           });
         })
         .catch((e) => {
           console.log(e);
           setTimeout(() => {
+            const { supportInfo: currentSupportInfo } = this.state;
             this.setState({
               supportInfo: {
-                supportUserMedia: false,
-                retrying: false,
+                ...currentSupportInfo,
               },
             });
           }, 500);
@@ -340,8 +374,7 @@ class Conference extends React.Component {
       setTimeout(() => {
         this.setState({
           supportInfo: {
-            supportUserMedia: false,
-            retrying: false,
+            // supportUserMedia: false,
           },
         });
       }, 500);
@@ -901,6 +934,8 @@ class Conference extends React.Component {
 
     const isSharing = screenShare.sharing || controls.sharing;
 
+    console.log(supportInfo);
+
     return (
       <Page className="conference-wrapper">
         {existConference && (
@@ -926,16 +961,8 @@ class Conference extends React.Component {
             setControls={this.setControls}
             supportInfo={supportInfo}
             setSupportInfo={(next, callback) => {
-              this.setState(
-                {
-                  supportInfo: next,
-                },
-                () => {
-                  if (callback) {
-                    callback();
-                  }
-                },
-              );
+              console.log(next);
+              this.setSupportInfo(next, callback);
             }}
             sendJoin={this.sendJoin}
           />

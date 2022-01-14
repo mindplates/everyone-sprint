@@ -6,6 +6,14 @@ import images from '@/images';
 import './VideoElement.scss';
 
 class VideoElement extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      retrying: false,
+    };
+  }
+
   componentDidMount() {}
 
   render() {
@@ -25,8 +33,11 @@ class VideoElement extends React.Component {
       setUpUserMedia,
       useVideoInfo,
       isPrompt,
-      isDenied,
+      isCameraDenied,
+      isMicrophoneDenied,
     } = this.props;
+
+    const { retrying } = this.state;
 
     return (
       <div
@@ -37,7 +48,7 @@ class VideoElement extends React.Component {
         }}
       >
         <div
-          className="video-element"
+          className={`video-element ${isCameraDenied ? 'is-camera-denied' : ''}`}
           style={{
             width: useVideoInfo ? `${videoInfo.videoWidth}px` : null,
             height: useVideoInfo ? `${videoInfo.videoHeight}px` : null,
@@ -85,12 +96,13 @@ class VideoElement extends React.Component {
             </div>
           )}
         </div>
-        {supportInfo && supportInfo.supportUserMedia !== null && !supportInfo.supportUserMedia && (
+        {(!supportInfo || !supportInfo.deviceInfo.supported) && (
           <div className="not-supported-user-media">
             <div>
               <div className="message">
-                미디어를 사용할 수 없습니다
-                {supportInfo.retrying && (
+                <div>{t('카메라 및 오디오를 찾을 수 없거나, 지원하지 않는 브라우저입니다.')}</div>
+                {supportInfo.deviceInfo.errorName && <div className="small">({supportInfo.deviceInfo.errorName})</div>}
+                {retrying && (
                   <div className="loading">
                     <img src={images.spinner} alt="loading" />
                   </div>
@@ -101,6 +113,18 @@ class VideoElement extends React.Component {
                 color="white"
                 outline
                 onClick={() => {
+                  this.setState(
+                    {
+                      retrying: true,
+                    },
+                    () => {
+                      setTimeout(() => {
+                        this.setState({
+                          retrying: false,
+                        });
+                      }, 500);
+                    },
+                  );
                   setUpUserMedia(true);
                 }}
               >
@@ -114,7 +138,13 @@ class VideoElement extends React.Component {
             <div>{t('카메라 및 마이크를 허용해주세요.')}</div>
           </div>
         )}
-        {isDenied && <div className="need-permission">{t('카메라 또는 마이크가 차단되었습니다')}</div>}
+        {(isMicrophoneDenied || isCameraDenied) && (
+          <>
+            {isMicrophoneDenied && isCameraDenied && <div className="need-permission">{t('카메라와 마이크가 차단되었습니다')}</div>}
+            {isMicrophoneDenied && !isCameraDenied && <div className="need-permission">{t('마이크가 차단되었습니다')}</div>}
+            {!isMicrophoneDenied && isCameraDenied && <div className="need-permission">{t('카메라가 차단되었습니다')}</div>}
+          </>
+        )}
         <div className="no-tracking-info">
           <div>
             <UserImage border rounded size="60px" iconFontSize="24px" imageType={imageType} imageData={imageData} />
@@ -132,7 +162,8 @@ VideoElement.defaultProps = {
   muted: false,
   tracking: true,
   isPrompt: false,
-  isDenied: false,
+  isMicrophoneDenied: false,
+  isCameraDenied: false,
 };
 
 VideoElement.propTypes = {
@@ -150,8 +181,17 @@ VideoElement.propTypes = {
     video: PropTypes.bool,
   }),
   supportInfo: PropTypes.shape({
-    supportUserMedia: PropTypes.bool,
-    retrying: PropTypes.bool,
+    deviceInfo: PropTypes.shape({
+      supported: PropTypes.bool,
+      errorName: PropTypes.string,
+      errorMessage: PropTypes.string,
+      devices: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+          name: PropTypes.name,
+        }),
+      ),
+    }),
   }),
   alias: PropTypes.string,
   muted: PropTypes.bool,
@@ -162,5 +202,6 @@ VideoElement.propTypes = {
   setUpUserMedia: PropTypes.func,
   useVideoInfo: PropTypes.bool,
   isPrompt: PropTypes.bool,
-  isDenied: PropTypes.bool,
+  isMicrophoneDenied: PropTypes.bool,
+  isCameraDenied: PropTypes.bool,
 };
