@@ -212,6 +212,7 @@ class ConferenceDeviceConfig extends React.Component {
     }
 
     const currentStream = await mediaUtil.getUserMedia(constraints || basicConstraint);
+    const devices = await mediaUtil.getConnectedDevices();
 
     if (currentStream) {
       // 현재 동작중인 스트림이 있다면 중지
@@ -253,11 +254,20 @@ class ConferenceDeviceConfig extends React.Component {
             deviceId: deviceIdMap.audiooutput,
           },
         },
+        deviceInfo: {
+          devices,
+        },
         enabledAudio: basicConstraint.audio,
         enabledVideo: basicConstraint.video,
       };
 
       setSupportInfo(next);
+    } else {
+      setSupportInfo({
+        deviceInfo: {
+          devices,
+        },
+      });
     }
 
     // 디바이스가 존재(not null)하는데, 권한이 없는 경우가 있다면, 브라우저 상단에 존재하는 기계에 대한 허용 아이콘이 뜨도록 존재하는 기계에 대해 미디어 요청

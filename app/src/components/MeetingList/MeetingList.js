@@ -6,7 +6,7 @@ import ReactTimeAgo from 'react-time-ago';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button, Liner } from '@/components';
-import { SprintPropTypes, UserPropTypes } from '@/proptypes';
+import { MeetingPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './MeetingList.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
@@ -101,7 +101,7 @@ export default compose(withRouter, withTranslation(), connect(mapStateToProps, u
 
 MeetingList.propTypes = {
   t: PropTypes.func,
-  meetings: PropTypes.arrayOf(SprintPropTypes),
+  meetings: PropTypes.arrayOf(MeetingPropTypes),
   user: UserPropTypes,
   onJoin: PropTypes.func,
 };

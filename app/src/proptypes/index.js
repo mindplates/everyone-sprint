@@ -63,6 +63,28 @@ const SprintPropTypes = PropTypes.shape({
   userCount: PropTypes.number,
 });
 
+const MeetingPropTypes = PropTypes.shape({
+  code: PropTypes.string,
+  endDate: PropTypes.string,
+  id: PropTypes.number,
+  name: PropTypes.string,
+  sprintDailyMeetingId: PropTypes.number,
+  sprintId: PropTypes.number,
+  sprintName: PropTypes.string,
+  startDate: PropTypes.string,
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      alias: PropTypes.string,
+      email: PropTypes.string,
+      id: PropTypes.number,
+      imageData: PropTypes.string,
+      imageType: PropTypes.string,
+      name: PropTypes.string,
+      userId: PropTypes.number,
+    }),
+  ),
+});
+
 const SprintSummaryPropTypes = PropTypes.shape({
   meetings: PropTypes.arrayOf(
     PropTypes.shape({
@@ -96,4 +118,5 @@ export {
   SprintDailyMeetingPropTypes,
   SprintPropTypes,
   SprintSummaryPropTypes,
+  MeetingPropTypes,
 };
