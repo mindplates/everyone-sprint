@@ -6,7 +6,7 @@ import dialog from '@/utils/dialog';
 import { Button, CapabilitiesEditor, Liner, VideoElement } from '@/components';
 import { CAPABILITIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
-import MediaDeviceConfigPopup from '@/pages/Meetings/MediaDeviceConfigPopup';
+import MediaDeviceConfigPopup from '@/pages/Meetings/Conference/MediaDeviceConfigPopup';
 import { UserPropTypes } from '@/proptypes';
 import mediaUtil from '@/utils/mediaUtil';
 import './ConferenceDeviceConfig.scss';
@@ -152,53 +152,15 @@ class ConferenceDeviceConfig extends React.Component {
     }
   };
 
-  getCurrentConstraints = () => {
-    const { supportInfo } = this.props;
-    let constraints = null;
-
-    if (supportInfo.enabledVideo && supportInfo.mediaConfig.video.deviceId) {
-      if (!constraints) {
-        constraints = {};
-      }
-
-      if (constraints && !constraints.video) {
-        constraints.video = {};
-      }
-
-      constraints.video.deviceId = { exact: supportInfo.mediaConfig.video.deviceId };
-
-      if (supportInfo.mediaConfig.sendResolution) {
-        constraints.video.width = supportInfo.mediaConfig.sendResolution;
-        constraints.video.height = (supportInfo.mediaConfig.sendResolution / 4) * 3;
-      }
-    }
-
-    if (supportInfo.enabledAudio && supportInfo.mediaConfig.audio.deviceId) {
-      if (!constraints) {
-        constraints = {
-          audio: {},
-        };
-      }
-
-      if (!constraints.audio) {
-        constraints.audio = {};
-      }
-
-      constraints.audio.deviceId = { exact: supportInfo.mediaConfig.audio.deviceId };
-    }
-
-    return constraints;
-  };
-
   setDeviceInfo = async () => {
-    const { setSupportInfo, setMyStream, myStream } = this.props;
+    const { supportInfo, setSupportInfo, setStream, stream } = this.props;
 
     // 관련 API가 없는 경우, 관련된 메세지는 checkPermissions()에서 처리됨
     if (!mediaUtil.getIsSupportMedia()) {
       return;
     }
 
-    const constraints = this.getCurrentConstraints();
+    const constraints = mediaUtil.getCurrentConstraints(supportInfo);
     // denied가 아닌 상태만 먼저 요청 (denied를 요청하는 경우 권한 오류로 가능한 디바이스도 요청 안됨)
     const basicConstraint = await mediaUtil.getBasicConstraint(this.permissions);
     if (constraints) {
@@ -216,20 +178,20 @@ class ConferenceDeviceConfig extends React.Component {
 
     if (currentStream) {
       // 현재 동작중인 스트림이 있다면 중지
-      if (myStream) {
-        myStream.getTracks().forEach((track) => {
+      if (stream) {
+        stream.getTracks().forEach((track) => {
           track.stop();
         });
-        setMyStream(null);
+        setStream(null);
       }
 
       // 반환된 스트림 지정
-      setMyStream(currentStream);
+      setStream(currentStream);
       this.myConfigVideo.srcObject = currentStream;
 
       // 현재 세팅된 내용을 저장
-      let vw;
-      let vh;
+      let vw = null;
+      let vh = null;
       currentStream.getVideoTracks().forEach((track) => {
         const settings = track.getSettings();
         vw = settings.width;
@@ -283,11 +245,11 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   setOpenCapabilities = (value) => {
-    const { myStream, supportInfo, setSupportInfo } = this.props;
+    const { stream, supportInfo, setSupportInfo } = this.props;
     const metas = [];
     const capabilities = [];
-    if (value && myStream) {
-      myStream.getVideoTracks().forEach((track) => {
+    if (value && stream) {
+      stream.getVideoTracks().forEach((track) => {
         const settings = track.getSettings();
         const deviceCapabilities = track.getCapabilities();
 
@@ -323,7 +285,7 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   onChangeCapability = (type, key, value) => {
-    const { myStream, supportInfo, setSupportInfo } = this.props;
+    const { stream, supportInfo, setSupportInfo } = this.props;
     const nextSupportInfo = { ...supportInfo };
     const capability = nextSupportInfo.mediaConfig[type].capabilities.find((d) => d.key === key);
     if (capability) {
@@ -335,7 +297,7 @@ class ConferenceDeviceConfig extends React.Component {
       });
     }
 
-    myStream.getVideoTracks().forEach((track) => {
+    stream.getVideoTracks().forEach((track) => {
       const values = { advanced: [] };
       const options = {};
       const capabilities = track.getCapabilities();
@@ -354,8 +316,8 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   disableControl = (field, value) => {
-    const { setControls, myStream } = this.props;
-    const audioTrack = myStream.getTracks().find((d) => d.kind === field);
+    const { setControls, stream } = this.props;
+    const audioTrack = stream.getTracks().find((d) => d.kind === field);
     if (audioTrack) {
       audioTrack.enabled = value;
     }
@@ -392,7 +354,7 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   render() {
-    const { supportInfo, setSupportInfo, t, conference, user, sendJoin, controls } = this.props;
+    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls } = this.props;
     const { mediaConfig, enabledAudio, enabledVideo } = supportInfo;
     const { openConfigPopup, openCapabilities, capabilities, size } = this.state;
 
@@ -551,7 +513,7 @@ class ConferenceDeviceConfig extends React.Component {
               size="lg"
               color="primary"
               onClick={() => {
-                sendJoin();
+                onJoinClick();
               }}
             >
               {t('참가하기')}
@@ -610,8 +572,8 @@ ConferenceDeviceConfig.propTypes = {
     enabledVideo: PropTypes.bool,
   }),
   setSupportInfo: PropTypes.func,
-  myStream: PropTypes.objectOf(PropTypes.any),
-  setMyStream: PropTypes.func,
+  stream: PropTypes.objectOf(PropTypes.any),
+  setStream: PropTypes.func,
   user: UserPropTypes,
   conference: PropTypes.shape({
     code: PropTypes.string,
@@ -650,7 +612,7 @@ ConferenceDeviceConfig.propTypes = {
       }),
     ),
   }),
-  sendJoin: PropTypes.func,
+  onJoinClick: PropTypes.func,
   controls: PropTypes.shape({
     audio: PropTypes.bool,
     video: PropTypes.bool,

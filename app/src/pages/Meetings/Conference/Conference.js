@@ -4,28 +4,13 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { Button, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient, VideoElement } from '@/components';
+import { Button, ConferenceVideoItem, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import './Conference.scss';
-import ConferenceDeviceConfig from '@/pages/Meetings/ConferenceDeviceConfig';
+import ConferenceDeviceConfig from '@/pages/Meetings/Conference/ConferenceDeviceConfig';
+import EmptyConference from './EmptyConference';
 import mediaUtil from '@/utils/mediaUtil';
-
-/*
-const constraints = {
-  video: {
-    width: { max: 320 },
-    height: { max: 240 },
-    frameRate: { max: 30 },
-  },
-  audio: true,
-};
- */
-
-const constraints = {
-  video: true,
-  audio: true,
-};
+import './Conference.scss';
 
 const peerConnectionConfig = {
   iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
@@ -70,7 +55,7 @@ class Conference extends React.Component {
       controls: {
         audio: true,
         video: true,
-        participants: true,
+        participants: false,
         sharing: false,
       },
       screenShare: {
@@ -153,7 +138,7 @@ class Conference extends React.Component {
 
   componentWillUnmount() {
     if (this.myStream) {
-      this.myStream.getTracks().forEach(function (track) {
+      this.myStream.getTracks().forEach((track) => {
         track.stop();
       });
       this.myStream = null;
@@ -162,7 +147,7 @@ class Conference extends React.Component {
     this.stopStreamAndVideo(this.myVideo.current);
 
     if (this.myScreenStream) {
-      this.myScreenStream.getTracks().forEach(function (track) {
+      this.myScreenStream.getTracks().forEach((track) => {
         track.stop();
       });
       this.myScreenStream = null;
@@ -176,7 +161,7 @@ class Conference extends React.Component {
     window.removeEventListener('resize', this.setVideoInfoDebounced);
   }
 
-  setVideoInfo = () => {
+  setVideoInfo1 = () => {
     if (this.streamingContent && this.streamingContent.current) {
       const { conference } = this.state;
 
@@ -235,6 +220,52 @@ class Conference extends React.Component {
           init: true,
         },
       });
+    }
+  };
+
+  setVideoInfo = () => {
+    if (this.streamingContent && this.streamingContent.current) {
+      const { conference, videoInfo } = this.state;
+
+      const contentWidth = this.streamingContent.current.offsetWidth;
+      const contentHeight = this.streamingContent.current.offsetHeight;
+
+      const rate = contentWidth / contentHeight;
+      const connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected).length;
+      /*
+      if (connectedUserCount < 3) {
+        connectedUserCount = 3;
+      }
+       */
+
+      let rows;
+      let cols;
+
+      if (rate >= 1) {
+        const rate1 = contentWidth / contentHeight;
+        rows = Math.ceil(connectedUserCount / (rate1 + 1));
+        if (rows < 1) {
+          rows = 1;
+        }
+        cols = Math.ceil(connectedUserCount / rows);
+      } else {
+        const rate1 = contentHeight / contentWidth;
+        cols = Math.floor(connectedUserCount / (rate1 + 1));
+        if (cols < 1) {
+          cols = 1;
+        }
+        rows = Math.ceil(connectedUserCount / cols);
+      }
+
+      if (!videoInfo.init || videoInfo.rows !== rows || videoInfo.cols !== cols) {
+        this.setState({
+          videoInfo: {
+            rows,
+            cols,
+            init: true,
+          },
+        });
+      }
     }
   };
 
@@ -316,8 +347,19 @@ class Conference extends React.Component {
     );
   };
 
+  setDeviceInfoSupported = (value) => {
+    const { supportInfo } = this.state;
+
+    if (supportInfo.deviceInfo.supported !== value) {
+      this.setSupportInfo({
+        deviceInfo: {
+          supported: value,
+        },
+      });
+    }
+  };
+
   setUpUserMedia = () => {
-    console.log(3);
     const { t } = this.props;
 
     if (!mediaUtil.getIsSupportMedia()) {
@@ -347,7 +389,10 @@ class Conference extends React.Component {
       });
 
       navigator.mediaDevices
-        .getUserMedia(constraints)
+        .getUserMedia({
+          video: true,
+          audio: true,
+        })
         .then((stream) => {
           const { supportInfo: currentSupportInfo } = this.state;
 
@@ -359,8 +404,7 @@ class Conference extends React.Component {
             },
           });
         })
-        .catch((e) => {
-          console.log(e);
+        .catch(() => {
           setTimeout(() => {
             const { supportInfo: currentSupportInfo } = this.state;
             this.setState({
@@ -569,7 +613,7 @@ class Conference extends React.Component {
     // this.stopStreamAndVideo(this.myScreenStreamVideo.current);
 
     const video = document.querySelector(`#video-${userInfo.userId}`);
-    console.log(video);
+
     if (video) {
       this.stopStreamAndVideo(video);
     }
@@ -601,7 +645,6 @@ class Conference extends React.Component {
   };
 
   stopStreamAndVideo = (video) => {
-    console.log(video);
     if (video && video.srcObject) {
       video.srcObject.getTracks().forEach((track) => track.stop());
       video.srcObject = null;
@@ -701,13 +744,13 @@ class Conference extends React.Component {
       data: { type, data },
     } = info;
 
-    const { user } = this.props;
     const {
       conference,
       conference: { users },
-
       isSetting,
     } = this.state;
+
+    const { user } = this.props;
 
     console.log(type, data, senderInfo);
 
@@ -743,7 +786,7 @@ class Conference extends React.Component {
               if (!isMe) {
                 // 다른 사람이 조인한 경우,
                 setTimeout(() => {
-                  this.setUpPeerConnection(senderInfo.id, true);
+                  // this.setUpPeerConnection(senderInfo.id, true);
                 }, 3000);
               }
             }
@@ -918,202 +961,231 @@ class Conference extends React.Component {
     );
   };
 
-  sendJoin = () => {
+  setMyMedia = () => {
+    if (!mediaUtil.getIsSupportMedia()) {
+      return;
+    }
+
+    const { supportInfo } = this.state;
+
+    if (this.myStream) {
+      this.myVideo.srcObject = this.myStream;
+    } else {
+      const constraints = mediaUtil.getCurrentConstraints(supportInfo) || {
+        video: true,
+        audio: true,
+      };
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then((stream) => {
+          this.myStream = stream;
+          this.myVideo.srcObject = stream;
+          this.setDeviceInfoSupported(true);
+        })
+        .catch(() => {
+          this.setDeviceInfoSupported(false);
+        });
+    }
+  };
+
+  onJoin = () => {
     const { user } = this.props;
     const { controls } = this.state;
-    if (user.id) {
-      this.sendToAll('JOIN', controls);
+    if (user?.id) {
+      this.setState(
+        {
+          isSetting: false,
+        },
+        () => {
+          this.setMyMedia();
+          this.sendToAll('JOIN', controls);
+        },
+      );
     }
   };
 
   render() {
     const { history, t, user } = this.props;
     const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting } = this.state;
-
-    const existConference = conference && conference.id;
-
+    const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
-    console.log(supportInfo);
-
     return (
-      <Page className="conference-wrapper">
+      <>
+        {conference && !existConference && <EmptyConference />}
         {existConference && (
-          <SocketClient
-            topics={[`/sub/conferences/${conference.code}`, `/sub/conferences/${conference.code}/${user.id}`]}
-            onMessage={this.onMessage}
-            onConnect={() => {}}
-            onDisconnect={() => {}}
-            setRef={(client) => {
-              this.socket = client;
-            }}
-          />
-        )}
-        {existConference && isSetting && (
-          <ConferenceDeviceConfig
-            user={user}
-            conference={conference}
-            myStream={this.myStream}
-            setMyStream={(stream) => {
-              this.myStream = stream;
-            }}
-            controls={controls}
-            setControls={this.setControls}
-            supportInfo={supportInfo}
-            setSupportInfo={(next, callback) => {
-              console.log(next);
-              this.setSupportInfo(next, callback);
-            }}
-            sendJoin={this.sendJoin}
-          />
-        )}
-        {existConference && !isSetting && (
-          <>
-            <PageTitle className="d-none">{conference?.name}</PageTitle>
-            <PageContent className="conference-content">
-              <div className="streaming-content">
-                <div>
-                  <div className={`video-content ${isSharing ? 'sharing' : ''}`} ref={this.streamingContent}>
-                    {isSharing && (
-                      <div className="screen-sharing-content">
+          <Page className="conference-wrapper">
+            {existConference && (
+              <>
+                <SocketClient
+                  topics={[`/sub/conferences/${conference.code}`, `/sub/conferences/${conference.code}/${user.id}`]}
+                  onMessage={this.onMessage}
+                  onConnect={() => {}}
+                  onDisconnect={() => {}}
+                  setRef={(client) => {
+                    this.socket = client;
+                  }}
+                />
+                {isSetting && (
+                  <ConferenceDeviceConfig
+                    user={user}
+                    conference={conference}
+                    stream={this.myStream}
+                    setStream={(stream) => {
+                      this.myStream = stream;
+                    }}
+                    controls={controls}
+                    setControls={this.setControls}
+                    supportInfo={supportInfo}
+                    setSupportInfo={this.setSupportInfo}
+                    onJoinClick={this.onJoin}
+                  />
+                )}
+                {!isSetting && (
+                  <>
+                    <PageTitle className="d-none">{conference?.name}</PageTitle>
+                    <PageContent className="conference-content">
+                      <div className="streaming-content">
                         <div>
-                          <video ref={this.myScreenStreamVideo} autoPlay playsInline />
-                        </div>
-                      </div>
-                    )}
-                    <div className="video-list-content">
-                      <div>
-                        <div className="videos">
-                          <VideoElement
-                            useVideoInfo={!isSharing}
-                            videoInfo={videoInfo}
-                            onRef={(d) => {
-                              this.myVideo = d;
-                            }}
-                            controls={controls}
-                            supportInfo={supportInfo}
-                            alias={user.alias}
-                            setUpUserMedia={this.setUpUserMedia}
-                            muted
-                          />
-                          {conference.users
-                            .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
-                            .filter((userInfo) => userInfo.participant?.connected)
-                            .map((userInfo) => {
-                              return (
-                                <VideoElement
+                          <div className={`video-content ${isSharing ? 'sharing' : ''}`}>
+                            {isSharing && (
+                              <div className="screen-sharing-content">
+                                <div>
+                                  <video ref={this.myScreenStreamVideo} autoPlay playsInline />
+                                </div>
+                              </div>
+                            )}
+                            <div className="video-list-content" ref={this.streamingContent}>
+                              <div
+                                style={{
+                                  height: `${100 / videoInfo.rows}%`,
+                                  width: `${100 / videoInfo.cols}%`,
+                                }}
+                              >
+                                <ConferenceVideoItem
                                   useVideoInfo={!isSharing}
-                                  key={userInfo.id}
-                                  id={`video-${userInfo.userId}`}
                                   videoInfo={videoInfo}
-                                  tracking={userInfo.tracking}
+                                  onRef={(d) => {
+                                    this.myVideo = d;
+                                  }}
                                   controls={controls}
-                                  alias={userInfo.alias}
-                                  imageType={userInfo.imageType}
-                                  imageData={userInfo.imageData}
+                                  supportInfo={supportInfo}
+                                  alias={user.alias}
+                                  setUpUserMedia={this.setUpUserMedia}
+                                  muted
                                 />
-                              );
-                            })}
+                              </div>
+                              {conference.users
+                                .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+                                .filter((userInfo) => userInfo.participant?.connected)
+                                .map((userInfo) => {
+                                  return (
+                                    <div
+                                      key={userInfo.id}
+                                      style={{
+                                        height: `${100 / videoInfo.rows}%`,
+                                        width: `${100 / videoInfo.cols}%`,
+                                      }}
+                                    >
+                                      <ConferenceVideoItem
+                                        useVideoInfo={!isSharing}
+                                        id={`video-${userInfo.userId}`}
+                                        videoInfo={videoInfo}
+                                        tracking={userInfo.tracking}
+                                        controls={controls}
+                                        alias={userInfo.alias}
+                                        imageType={userInfo.imageType}
+                                        imageData={userInfo.imageData}
+                                      />
+                                    </div>
+                                  );
+                                })}
+                            </div>
+                          </div>
+                          <div className="controls">
+                            <Button
+                              className="first"
+                              size="md"
+                              rounded
+                              color="white"
+                              outline
+                              onClick={() => {
+                                this.setControls('audio', !controls.audio);
+                              }}
+                            >
+                              {controls.audio && <i className="fas fa-microphone" />}
+                              {!controls.audio && <i className="fas fa-microphone-slash" />}
+                            </Button>
+                            <Button
+                              size="md"
+                              rounded
+                              color="white"
+                              outline
+                              onClick={() => {
+                                this.setControls('video', !controls.video);
+                              }}
+                            >
+                              {controls.video && <i className="fas fa-video" />}
+                              {!controls.video && <i className="fas fa-video-slash" />}
+                            </Button>
+                            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                            {!screenShare.sharing && !controls.sharing && (
+                              <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" outline onClick={this.startScreenShare}>
+                                <i className="fas fa-desktop" />
+                              </Button>
+                            )}
+                            {!screenShare.sharing && controls.sharing && (
+                              <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
+                                <i className="fas fa-desktop" />
+                              </Button>
+                            )}
+                            {screenShare.sharing && (
+                              <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
+                                공유 중지 요청
+                              </Button>
+                            )}
+                            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                            <Button
+                              size="md"
+                              rounded
+                              color="danger"
+                              outline
+                              onClick={() => {
+                                history.push('/');
+                              }}
+                            >
+                              <i className="fas fa-times" />
+                            </Button>
+                            <div className="participants-button">
+                              <Button
+                                size="md"
+                                rounded
+                                color="white"
+                                outline
+                                onClick={() => {
+                                  this.setControls('participants', !controls.participants);
+                                }}
+                              >
+                                {controls.participants && <i className="fas fa-toggle-on" />}
+                                {!controls.participants && <i className="fas fa-toggle-off" />}
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="controls">
-                    <Button
-                      className="first"
-                      size="md"
-                      rounded
-                      color="white"
-                      outline
-                      onClick={() => {
-                        this.setControls('audio', !controls.audio);
-                      }}
-                    >
-                      {controls.audio && <i className="fas fa-microphone" />}
-                      {!controls.audio && <i className="fas fa-microphone-slash" />}
-                    </Button>
-                    <Button
-                      size="md"
-                      rounded
-                      color="white"
-                      outline
-                      onClick={() => {
-                        this.setControls('video', !controls.video);
-                      }}
-                    >
-                      {controls.video && <i className="fas fa-video" />}
-                      {!controls.video && <i className="fas fa-video-slash" />}
-                    </Button>
-                    <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
-                    {!screenShare.sharing && !controls.sharing && (
-                      <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" outline onClick={this.startScreenShare}>
-                        <i className="fas fa-desktop" />
-                      </Button>
-                    )}
-                    {!screenShare.sharing && controls.sharing && (
-                      <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
-                        <i className="fas fa-desktop" />
-                      </Button>
-                    )}
-                    {screenShare.sharing && (
-                      <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
-                        공유 중지 요청
-                      </Button>
-                    )}
-                    <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
-                    <Button size="md" rounded color="danger" outline onClick={() => {}}>
-                      <i className="fas fa-times" />
-                    </Button>
-                    <div className="participants-button">
-                      <Button
-                        size="md"
-                        rounded
-                        color="white"
-                        outline
-                        onClick={() => {
-                          this.setControls('participants', !controls.participants);
-                        }}
-                      >
-                        {controls.participants && <i className="fas fa-toggle-on" />}
-                        {!controls.participants && <i className="fas fa-toggle-off" />}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {controls.participants && (
-                <div className="participants-list">
-                  <ParticipantsList conference={conference} align={align} setAlign={this.setAlign} sharingUserId={screenShare.userId} />
-                </div>
-              )}
-            </PageContent>
-          </>
+                      {controls.participants && (
+                        <div className="participants-list">
+                          <ParticipantsList conference={conference} align={align} setAlign={this.setAlign} sharingUserId={screenShare.userId} />
+                        </div>
+                      )}
+                    </PageContent>
+                  </>
+                )}
+              </>
+            )}
+          </Page>
         )}
-        {conference && !existConference && (
-          <>
-            <PageTitle>미팅 참석</PageTitle>
-            <PageContent>
-              <div className="h-100 d-flex justify-content-center">
-                <div className="align-self-center ">
-                  <div>{t('미팅 정보를 찾을 수 없습니다.')}</div>
-                  <div className="text-center mt-3">
-                    <Button
-                      size="sm"
-                      color="white"
-                      outline
-                      onClick={() => {
-                        history.push('/meetings/new');
-                      }}
-                    >
-                      <i className="fas fa-plus" /> 새 미팅
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </PageContent>
-          </>
-        )}
-      </Page>
+      </>
     );
   }
 }

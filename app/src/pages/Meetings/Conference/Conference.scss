@@ -1,5 +1,4 @@
 .conference-wrapper {
-  padding: 1rem;
   padding: 0;
 
   .conference-content {
@@ -8,8 +7,7 @@
     flex-direction: row;
     border: none;
     background-color: transparent;
-    padding: 0.5rem 0 0;
-    padding: 0 0 0;
+    padding: 0;
 
     .streaming-content {
       flex-grow: 1;
@@ -30,19 +28,13 @@
         .video-content {
           display: flex;
           flex-grow: 1;
+          padding: 0.5rem;
+          _background-color: #000;
           > div.video-list-content {
             flex-grow: 1;
             position: relative;
             > div {
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-
-              > div.videos {
-                vertical-align: middle;
-              }
+              display: inline-flex;
             }
           }
 
