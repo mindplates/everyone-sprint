@@ -7,7 +7,7 @@ import EditSprint from './Sprints/EditSprint';
 import Sprint from './Sprints/Sprint';
 import EditMeeting from './Meetings/EditMeeting';
 import Meetings from './Meetings/Meetings';
-import Conference from './Meetings/Conference';
+import Conference from './Meetings/Conference/Conference';
 import Common from './Common/Common';
 import Header from './Common/Header';
 import Footer from './Common/Footer';

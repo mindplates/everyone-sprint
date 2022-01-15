@@ -87,11 +87,49 @@ async function getBasicConstraint(permissions) {
       result.video = true;
     }
 
-    console.log(result);
     return result;
   }
 
   return null;
+}
+
+function getCurrentConstraints(supportInfo) {
+  let constraints = null;
+
+  if (supportInfo.enabledVideo && supportInfo.mediaConfig.video.deviceId) {
+    if (!constraints) {
+      constraints = {};
+    }
+
+    if (constraints && !constraints.video) {
+      constraints.video = {};
+    }
+
+    if (constraints) {
+      constraints.video.deviceId = { exact: supportInfo.mediaConfig.video.deviceId };
+    }
+
+    if (constraints && supportInfo.mediaConfig.sendResolution) {
+      constraints.video.width = supportInfo.mediaConfig.sendResolution;
+      constraints.video.height = (supportInfo.mediaConfig.sendResolution / 4) * 3;
+    }
+  }
+
+  if (supportInfo.enabledAudio && supportInfo.mediaConfig.audio.deviceId) {
+    if (!constraints) {
+      constraints = {
+        audio: {},
+      };
+    }
+
+    if (!constraints.audio) {
+      constraints.audio = {};
+    }
+
+    constraints.audio.deviceId = { exact: supportInfo.mediaConfig.audio.deviceId };
+  }
+
+  return constraints;
 }
 
 const mediaUtil = {
@@ -102,6 +140,7 @@ const mediaUtil = {
   getDeviceIds,
   getUserMedia,
   getPermissionNames,
+  getCurrentConstraints,
 };
 
 export default mediaUtil;
