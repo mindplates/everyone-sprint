@@ -1,4 +1,12 @@
+import { detect } from 'detect-browser';
+
+const browser = detect();
+
 async function getPermissions(names) {
+  if (browser.name === 'firefox') {
+    return [];
+  }
+
   const queryPromises = names.map((name) => {
     return navigator.permissions.query({ name });
   });
@@ -33,6 +41,10 @@ async function getUserMedia(constraint) {
   try {
     stream = await navigator.mediaDevices.getUserMedia(constraint);
   } catch (e) {
+    console.error(e);
+    return {
+      error: e,
+    };
     //
   }
 

@@ -11,6 +11,7 @@ import '@/languages/i18n';
 import App from './App';
 import './index.scss';
 import 'react-datepicker/dist/react-datepicker.css';
+import 'md-gum-polyfill';
 
 TimeAgo.addLocale(ko);
 TimeAgo.addLocale(en);

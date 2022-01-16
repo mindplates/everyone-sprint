@@ -58,6 +58,7 @@
       display: flex;
       flex-direction: row;
       max-width: 100%;
+      justify-content: center;
 
       .capabilities-editor {
         @media (max-width: 992px) {

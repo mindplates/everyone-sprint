@@ -69,7 +69,6 @@ class Conference extends React.Component {
         },
         deviceInfo: {
           supported: true,
-          errorName: '',
           errorMessage: '',
           devices: [],
         },
@@ -368,7 +367,6 @@ class Conference extends React.Component {
       nextSupportInfo.enabledVideo = false;
       nextSupportInfo.deviceInfo = {
         supported: false,
-        errorName: t('미디어 API 오류'),
         errorMessage: t('디바이스 목록을 가져올 수 없습니다.'),
         devices: [],
       };
@@ -446,13 +444,17 @@ class Conference extends React.Component {
   };
 
   setUpPeerConnection = (userId, isSender) => {
+    console.log('setUpPeerConnection', userId);
     const { conference } = this.state;
 
     if (!userId) return;
 
     const nextConference = { ...conference };
     const nextUsers = nextConference.users.slice(0);
+    console.log(nextUsers);
     const userInfo = nextUsers.find((d) => d.userId === userId);
+
+    console.log(userInfo);
 
     if (!userInfo) {
       return;
@@ -460,6 +462,7 @@ class Conference extends React.Component {
 
     if (userInfo.peerConnection) {
       // TODO 초기화 코드 처리 필요
+      console.log('초기화', userInfo.peerConnection);
     }
 
     userInfo.peerConnection = new RTCPeerConnection(peerConnectionConfig);
@@ -482,6 +485,7 @@ class Conference extends React.Component {
       }
       const [first] = event.streams;
       const video = document.querySelector(`#video-${userInfo.userId}`);
+      console.log(video);
       if (video) {
         video.srcObject = first;
         userInfo.tracking = true;
@@ -606,7 +610,10 @@ class Conference extends React.Component {
       return;
     }
 
-    console.log(userInfo.peerConnection);
+    if (userInfo.peerConnection) {
+      userInfo.peerConnection.close();
+      userInfo.peerConnection = null;
+    }
 
     // TODO 나간 사용자가 화면 공유 중인 경우
     // this.myScreenStream = null;
@@ -752,15 +759,12 @@ class Conference extends React.Component {
 
     const { user } = this.props;
 
-    console.log(type, data, senderInfo);
+    // console.log(type, data, senderInfo);
 
     const isMe = Number(senderInfo.id) === Number(user.id);
 
     switch (type) {
       case 'LEAVE': {
-        if (!isMe) {
-          this.clearOtherUserStreamAndVideo(senderInfo.id);
-        }
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
         this.setState(
           {
@@ -768,6 +772,9 @@ class Conference extends React.Component {
           },
           () => {
             this.setVideoInfo();
+            if (!isMe) {
+              this.clearOtherUserStreamAndVideo(senderInfo.id);
+            }
           },
         );
         break;
@@ -783,12 +790,6 @@ class Conference extends React.Component {
           () => {
             if (!isSetting) {
               this.setVideoInfo();
-              if (!isMe) {
-                // 다른 사람이 조인한 경우,
-                setTimeout(() => {
-                  // this.setUpPeerConnection(senderInfo.id, true);
-                }, 3000);
-              }
             }
           },
         );
@@ -886,6 +887,7 @@ class Conference extends React.Component {
       case 'ICE': {
         if (!isMe) {
           const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
+          console.log('RECEIVE ICE');
           if (!targetUser.peerConnection) {
             this.setUpPeerConnection(senderInfo.id, false);
           }
@@ -999,6 +1001,21 @@ class Conference extends React.Component {
         () => {
           this.setMyMedia();
           this.sendToAll('JOIN', controls);
+          setTimeout(() => {
+            const { conference } = this.state;
+
+            const connectedUsers = conference.users
+              .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+              .filter((userInfo) => userInfo.participant?.connected);
+
+            console.log(connectedUsers);
+
+            console.log('connectedUsers', connectedUsers.length);
+            connectedUsers.forEach((userInfo) => {
+              console.log(userInfo.userId, 'setUpPeerConnection');
+              this.setUpPeerConnection(userInfo.userId, true);
+            });
+          }, 1000);
         },
       );
     }
@@ -1064,7 +1081,6 @@ class Conference extends React.Component {
                               >
                                 <ConferenceVideoItem
                                   useVideoInfo={!isSharing}
-                                  videoInfo={videoInfo}
                                   onRef={(d) => {
                                     this.myVideo = d;
                                   }}
@@ -1090,9 +1106,7 @@ class Conference extends React.Component {
                                       <ConferenceVideoItem
                                         useVideoInfo={!isSharing}
                                         id={`video-${userInfo.userId}`}
-                                        videoInfo={videoInfo}
                                         tracking={userInfo.tracking}
-                                        controls={controls}
                                         alias={userInfo.alias}
                                         imageType={userInfo.imageType}
                                         imageData={userInfo.imageData}
