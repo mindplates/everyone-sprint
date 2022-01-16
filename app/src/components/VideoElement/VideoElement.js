@@ -16,6 +16,20 @@ class VideoElement extends React.Component {
 
   componentDidMount() {}
 
+  getErrorName = (errorMessage) => {
+    const { t } = this.props;
+
+    if (errorMessage.indexOf('NotReadableError') > -1) {
+      return t('카메라 및 오디오가 이미 사용중이거나, 찾을 수 없습니다.');
+    }
+
+    if (errorMessage.indexOf('NotAllowedError') > -1) {
+      return t('카메라와 마이크에 엑세스가 거부 되었습니다. 브라우저 주소 표시줄에서 차단된 카메라 아이콘을 클릭해주세요.');
+    }
+
+    return errorMessage;
+  };
+
   render() {
     const {
       t,
@@ -64,15 +78,6 @@ class VideoElement extends React.Component {
             autoPlay
             playsInline
             muted={muted}
-            /*
-            onLoadedMetadata={(e) => {
-              console.log(e, e.target, e.target.videoWidth);
-              console.log(e, e.target, e.target.videoHeight);
-            }}
-            onLoadedData={(e) => {
-              console.log(e);
-            }}
-             */
           />
           {controls && (
             <div className="control-status">
@@ -100,8 +105,7 @@ class VideoElement extends React.Component {
           <div className="not-supported-user-media">
             <div>
               <div className="message">
-                <div>{t('카메라 및 오디오를 찾을 수 없거나, 지원하지 않는 브라우저입니다.')}</div>
-                {supportInfo.deviceInfo.errorName && <div className="small">({supportInfo.deviceInfo.errorName})</div>}
+                <div>{this.getErrorName(supportInfo.deviceInfo.errorMessage)}</div>
                 {retrying && (
                   <div className="loading">
                     <img src={images.spinner} alt="loading" />
@@ -183,7 +187,6 @@ VideoElement.propTypes = {
   supportInfo: PropTypes.shape({
     deviceInfo: PropTypes.shape({
       supported: PropTypes.bool,
-      errorName: PropTypes.string,
       errorMessage: PropTypes.string,
       devices: PropTypes.arrayOf(
         PropTypes.shape({

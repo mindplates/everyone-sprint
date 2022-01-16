@@ -2,6 +2,7 @@ import React, { createRef } from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import _, { debounce } from 'lodash';
+import { detect } from 'detect-browser';
 import dialog from '@/utils/dialog';
 import { Button, CapabilitiesEditor, Liner, VideoElement } from '@/components';
 import { CAPABILITIES, MESSAGE_CATEGORY } from '@/constants/constants';
@@ -11,7 +12,13 @@ import { UserPropTypes } from '@/proptypes';
 import mediaUtil from '@/utils/mediaUtil';
 import './ConferenceDeviceConfig.scss';
 
+const browser = detect();
+
 class ConferenceDeviceConfig extends React.Component {
+  firefoxPermissionInterval = null;
+
+  isShowFirefoxPermissionMessage = false;
+
   myConfigVideo = createRef();
 
   resizeDebounced;
@@ -72,7 +79,6 @@ class ConferenceDeviceConfig extends React.Component {
         enabledVideo: false,
         deviceInfo: {
           supported: false,
-          errorName: t('미디어 API 오류'),
           errorMessage: t('디바이스 목록을 가져올 수 없습니다.'),
           devices: [],
         },
@@ -82,6 +88,7 @@ class ConferenceDeviceConfig extends React.Component {
     }
 
     const connectedDevices = await mediaUtil.getConnectedDevices();
+
     const hasAudio = connectedDevices.filter((device) => device.kind === 'audioinput').length > 0;
     const hasVideo = connectedDevices.filter((device) => device.kind === 'videoinput').length > 0;
 
@@ -173,10 +180,43 @@ class ConferenceDeviceConfig extends React.Component {
       }
     }
 
-    const currentStream = await mediaUtil.getUserMedia(constraints || basicConstraint);
     const devices = await mediaUtil.getConnectedDevices();
 
-    if (currentStream) {
+    const currentStream = await mediaUtil.getUserMedia(constraints || basicConstraint);
+
+    if (currentStream && currentStream.error) {
+      setSupportInfo({
+        deviceInfo: {
+          supported: false,
+          errorMessage: String(currentStream.error),
+        },
+      });
+
+      if (browser.name === 'firefox') {
+        if (!this.isShowFirefoxPermissionMessage) {
+          this.isShowFirefoxPermissionMessage = true;
+          this.showPermissionMessage({
+            state: 'denied',
+          });
+        }
+
+        if (this.firefoxPermissionInterval) {
+          clearTimeout(this.firefoxPermissionInterval);
+          this.firefoxPermissionInterval = null;
+        }
+
+        this.firefoxPermissionInterval = setTimeout(() => {
+          this.setDeviceInfoDebounced();
+        }, 2000);
+      }
+    }
+
+    if (currentStream && !currentStream.error) {
+      if (this.firefoxPermissionInterval) {
+        clearInterval(this.firefoxPermissionInterval);
+        this.firefoxPermissionInterval = null;
+      }
+
       // 현재 동작중인 스트림이 있다면 중지
       if (stream) {
         stream.getTracks().forEach((track) => {
@@ -217,6 +257,8 @@ class ConferenceDeviceConfig extends React.Component {
           },
         },
         deviceInfo: {
+          supported: true,
+          errorMessage: '',
           devices,
         },
         enabledAudio: basicConstraint.audio,
@@ -519,12 +561,6 @@ class ConferenceDeviceConfig extends React.Component {
               {t('참가하기')}
             </Button>
           </div>
-          {!supportInfo.deviceInfo.supported && (
-            <div className="device-error-info">
-              <div className="error-name">{supportInfo.deviceInfo.errorName}</div>
-              <div className="error-message">{supportInfo.deviceInfo.errorMessage}</div>
-            </div>
-          )}
         </div>
       </div>
     );
@@ -542,7 +578,6 @@ ConferenceDeviceConfig.propTypes = {
     }),
     deviceInfo: PropTypes.shape({
       supported: PropTypes.bool,
-      errorName: PropTypes.string,
       errorMessage: PropTypes.string,
       devices: PropTypes.arrayOf(
         PropTypes.shape({
