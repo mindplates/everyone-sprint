@@ -16,8 +16,6 @@ const peerConnectionConfig = {
   iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
 };
 
-const logging = true;
-
 class Conference extends React.Component {
   myStream = null;
 
@@ -32,6 +30,8 @@ class Conference extends React.Component {
   streamingContent = createRef();
 
   setVideoInfoDebounced;
+
+  userStreams = {};
 
   constructor(props) {
     super(props);
@@ -279,7 +279,6 @@ class Conference extends React.Component {
             conference,
           },
           () => {
-            // this.setUpUserMedia(false); // TODO
             this.getUsers(code);
           },
         );
@@ -358,71 +357,6 @@ class Conference extends React.Component {
     }
   };
 
-  setUpUserMedia = () => {
-    const { t } = this.props;
-
-    if (!mediaUtil.getIsSupportMedia()) {
-      const nextSupportInfo = {};
-      nextSupportInfo.enabledAudio = false;
-      nextSupportInfo.enabledVideo = false;
-      nextSupportInfo.deviceInfo = {
-        supported: false,
-        errorMessage: t('디바이스 목록을 가져올 수 없습니다.'),
-        devices: [],
-      };
-
-      this.setSupportInfo(nextSupportInfo);
-
-      return;
-    }
-
-    if (navigator.mediaDevices.getUserMedia) {
-      const { supportInfo } = this.state;
-      const nextSupportInfo = { ...supportInfo };
-
-      this.setState({
-        supportInfo: {
-          ...nextSupportInfo,
-        },
-      });
-
-      navigator.mediaDevices
-        .getUserMedia({
-          video: true,
-          audio: true,
-        })
-        .then((stream) => {
-          const { supportInfo: currentSupportInfo } = this.state;
-
-          this.myStream = stream;
-          this.myVideo.srcObject = stream;
-          this.setState({
-            supportInfo: {
-              ...currentSupportInfo,
-            },
-          });
-        })
-        .catch(() => {
-          setTimeout(() => {
-            const { supportInfo: currentSupportInfo } = this.state;
-            this.setState({
-              supportInfo: {
-                ...currentSupportInfo,
-              },
-            });
-          }, 500);
-        });
-    } else {
-      setTimeout(() => {
-        this.setState({
-          supportInfo: {
-            // supportUserMedia: false,
-          },
-        });
-      }, 500);
-    }
-  };
-
   sendToAll = (type, data) => {
     const { code } = this.state;
     if (this.socket && this.socket.state && this.socket.state.connected) {
@@ -444,72 +378,47 @@ class Conference extends React.Component {
   };
 
   setUpPeerConnection = (userId, isSender) => {
-    console.log('setUpPeerConnection', userId);
     const { conference } = this.state;
 
     if (!userId) return;
 
     const nextConference = { ...conference };
     const nextUsers = nextConference.users.slice(0);
-    console.log(nextUsers);
     const userInfo = nextUsers.find((d) => d.userId === userId);
-
-    console.log(userInfo);
 
     if (!userInfo) {
       return;
     }
 
-    if (userInfo.peerConnection) {
-      // TODO 초기화 코드 처리 필요
-      console.log('초기화', userInfo.peerConnection);
-    }
-
     userInfo.peerConnection = new RTCPeerConnection(peerConnectionConfig);
-    if (logging) {
-      console.log('SET UP Peer Connection');
-    }
-
     userInfo.peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        if (logging) {
-          console.log('SEND ICE', userInfo.userId);
-        }
         this.sendToUser('ICE', userId, event.candidate);
       }
     };
 
     userInfo.peerConnection.ontrack = (event) => {
-      if (logging) {
-        console.log('ON TRACT');
-      }
       const [first] = event.streams;
-      const video = document.querySelector(`#video-${userInfo.userId}`);
-      console.log(video);
-      if (video) {
-        video.srcObject = first;
-        userInfo.tracking = true;
-
-        this.setState({
-          conference: nextConference,
-        });
+      if (this.userStreams[userInfo.userId]) {
+        this.userStreams[userInfo.userId] = null;
       }
+
+      this.userStreams[userInfo.userId] = first;
+      userInfo.tracking = true;
+      this.setState({
+        conference: nextConference,
+      });
     };
 
-    userInfo.peerConnection.oniceconnectionstatechange = (event) => {
+    userInfo.peerConnection.oniceconnectionstatechange = () => {
       if (userInfo.peerConnection) {
         const state = userInfo.peerConnection.iceConnectionState;
-        if (logging) {
-          console.log(`CONNECTED WITH ${userInfo.userId} ${state}`);
-        }
+
         if (state === 'failed' || state === 'closed' || state === 'disconnected') {
-          if (logging) {
-            userInfo.tracking = false;
-            console.log(`DISCONNECTED WITH ${userInfo.userId}`, event);
-            this.setState({
-              conference: nextConference,
-            });
-          }
+          userInfo.tracking = false;
+          this.setState({
+            conference: nextConference,
+          });
         }
       }
     };
@@ -524,14 +433,11 @@ class Conference extends React.Component {
       userInfo.peerConnection.createOffer().then(
         (description) => {
           userInfo.peerConnection.setLocalDescription(description).then(() => {
-            if (logging) {
-              console.log(`SEND OFFER TO ${userInfo.userId}`);
-            }
             this.sendToUser('SDP', userId, userInfo.peerConnection.localDescription);
           });
         },
         (e) => {
-          console.log(e);
+          console.error(e);
         },
       );
     }
@@ -555,7 +461,6 @@ class Conference extends React.Component {
     navigator.mediaDevices
       .getDisplayMedia(displayMediaOptions)
       .then((stream) => {
-        console.log(stream);
         this.myScreenStream = stream;
 
         this.setState(
@@ -576,7 +481,6 @@ class Conference extends React.Component {
               const { conference } = this.state;
 
               const otherUsers = conference.users.filter((d) => d.userId !== user.id && d.participant && d.participant.connected);
-              console.log(otherUsers);
               otherUsers.forEach((userInfo) => {
                 this.setUpScreenSharing(userInfo.userId, true);
               });
@@ -619,12 +523,6 @@ class Conference extends React.Component {
     // this.myScreenStream = null;
     // this.stopStreamAndVideo(this.myScreenStreamVideo.current);
 
-    const video = document.querySelector(`#video-${userInfo.userId}`);
-
-    if (video) {
-      this.stopStreamAndVideo(video);
-    }
-
     this.setState({
       conference: nextConference,
     });
@@ -659,7 +557,6 @@ class Conference extends React.Component {
   };
 
   setUpScreenSharing = (userId, isSender) => {
-    console.log('setUpScreenSharing', userId, isSender);
     const { conference } = this.state;
 
     if (!userId) return;
@@ -673,32 +570,23 @@ class Conference extends React.Component {
     }
 
     if (userInfo.screenSharePeerConnection) {
-      // TODO 초기화 코드 처리 필요
+      userInfo.screenSharePeerConnection.close();
+      userInfo.screenSharePeerConnection = null;
     }
 
     userInfo.screenSharePeerConnection = new RTCPeerConnection(peerConnectionConfig);
-    if (logging) {
-      console.log('SET UP Screen Share Peer Connection');
-    }
-
     userInfo.screenSharePeerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        if (logging) {
-          console.log('SEND Screen Share ICE', userInfo.userId);
-        }
         this.sendToUser('SCREEN_SHARE_ICE', userId, event.candidate);
       }
     };
 
     userInfo.screenSharePeerConnection.ontrack = (event) => {
-      if (logging) {
-        console.log('ON SCREEN SHARE TRACT');
-      }
       const [first] = event.streams;
       if (this.myScreenStreamVideo.current) {
         this.myScreenStream = first;
         this.myScreenStreamVideo.current.srcObject = first;
-        // userInfo.tracking = true;
+        userInfo.tracking = true;
 
         this.setState({
           conference: nextConference,
@@ -706,19 +594,14 @@ class Conference extends React.Component {
       }
     };
 
-    userInfo.screenSharePeerConnection.oniceconnectionstatechange = (event) => {
+    userInfo.screenSharePeerConnection.oniceconnectionstatechange = () => {
       const state = userInfo.screenSharePeerConnection.iceConnectionState;
-      if (logging) {
-        console.log(`CONNECTED SCREEN SHARE WITH ${userInfo.userId} ${state}`);
-      }
+
       if (state === 'failed' || state === 'closed' || state === 'disconnected') {
-        if (logging) {
-          // userInfo.tracking = false;
-          console.log(`DISCONNECTED SCREEN SHARE WITH ${userInfo.userId}`, event);
-          this.setState({
-            conference: nextConference,
-          });
-        }
+        userInfo.tracking = false;
+        this.setState({
+          conference: nextConference,
+        });
       }
     };
 
@@ -732,14 +615,11 @@ class Conference extends React.Component {
       userInfo.screenSharePeerConnection.createOffer().then(
         (description) => {
           userInfo.screenSharePeerConnection.setLocalDescription(description).then(() => {
-            if (logging) {
-              console.log(`SEND SCREEN SHARE OFFER TO ${userInfo.userId}`);
-            }
             this.sendToUser('SCREEN_SHARE_SDP', userId, userInfo.screenSharePeerConnection.localDescription);
           });
         },
         (e) => {
-          console.log(e);
+          console.error(e);
         },
       );
     }
@@ -766,6 +646,9 @@ class Conference extends React.Component {
     switch (type) {
       case 'LEAVE': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
+        if (this.userStreams[senderInfo.id]) {
+          this.userStreams[senderInfo.id] = null;
+        }
         this.setState(
           {
             conference: nextConference,
@@ -813,7 +696,6 @@ class Conference extends React.Component {
 
       case 'START_SCREEN_SHARING': {
         if (!isMe) {
-          console.log(type, data);
           this.setState({
             screenShare: {
               sharing: true,
@@ -846,7 +728,7 @@ class Conference extends React.Component {
             this.setUpScreenSharing(senderInfo.id, false);
           }
           targetUser.screenSharePeerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
-            console.log(e);
+            console.error(e);
           });
         }
 
@@ -859,23 +741,17 @@ class Conference extends React.Component {
           if (!targetUser.screenSharePeerConnection) {
             this.setUpScreenSharing(senderInfo.id, false);
           }
-          if (logging) {
-            console.log(`RECEIVE SCREEN SHARE SDP FROM ${senderInfo.id}`, data.type);
-          }
           targetUser.screenSharePeerConnection.setRemoteDescription(new RTCSessionDescription(data)).then(() => {
             if (data.type === 'offer') {
               targetUser.screenSharePeerConnection
                 .createAnswer()
                 .then((description) => {
                   targetUser.screenSharePeerConnection.setLocalDescription(description).then(() => {
-                    if (logging) {
-                      console.log(`SEND SCREEN SHARE  ANSWER TO ${senderInfo.id}`);
-                    }
                     this.sendToUser('SCREEN_SHARE_SDP', senderInfo.id, targetUser.screenSharePeerConnection.localDescription);
                   });
                 })
                 .catch((e) => {
-                  console.log(e);
+                  console.error(e);
                 });
             }
           });
@@ -887,12 +763,11 @@ class Conference extends React.Component {
       case 'ICE': {
         if (!isMe) {
           const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
-          console.log('RECEIVE ICE');
           if (!targetUser.peerConnection) {
             this.setUpPeerConnection(senderInfo.id, false);
           }
           targetUser.peerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
-            console.log(e);
+            console.error(e);
           });
         }
 
@@ -904,23 +779,18 @@ class Conference extends React.Component {
           if (!targetUser.peerConnection) {
             this.setUpPeerConnection(senderInfo.id, false);
           }
-          if (logging) {
-            console.log(`RECEIVE SDP FROM ${senderInfo.id}`, data.type);
-          }
+
           targetUser.peerConnection.setRemoteDescription(new RTCSessionDescription(data)).then(() => {
             if (data.type === 'offer') {
               targetUser.peerConnection
                 .createAnswer()
                 .then((description) => {
                   targetUser.peerConnection.setLocalDescription(description).then(() => {
-                    if (logging) {
-                      console.log(`SEND ANSWER TO ${senderInfo.id}`);
-                    }
                     this.sendToUser('SDP', senderInfo.id, targetUser.peerConnection.localDescription);
                   });
                 })
                 .catch((e) => {
-                  console.log(e);
+                  console.error(e);
                 });
             }
           });
@@ -970,9 +840,7 @@ class Conference extends React.Component {
 
     const { supportInfo } = this.state;
 
-    if (this.myStream) {
-      this.myVideo.srcObject = this.myStream;
-    } else {
+    if (!this.myStream) {
       const constraints = mediaUtil.getCurrentConstraints(supportInfo) || {
         video: true,
         audio: true,
@@ -981,7 +849,6 @@ class Conference extends React.Component {
         .getUserMedia(constraints)
         .then((stream) => {
           this.myStream = stream;
-          this.myVideo.srcObject = stream;
           this.setDeviceInfoSupported(true);
         })
         .catch(() => {
@@ -1008,11 +875,7 @@ class Conference extends React.Component {
               .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
               .filter((userInfo) => userInfo.participant?.connected);
 
-            console.log(connectedUsers);
-
-            console.log('connectedUsers', connectedUsers.length);
             connectedUsers.forEach((userInfo) => {
-              console.log(userInfo.userId, 'setUpPeerConnection');
               this.setUpPeerConnection(userInfo.userId, true);
             });
           }, 1000);
@@ -1081,14 +944,11 @@ class Conference extends React.Component {
                               >
                                 <ConferenceVideoItem
                                   useVideoInfo={!isSharing}
-                                  onRef={(d) => {
-                                    this.myVideo = d;
-                                  }}
                                   controls={controls}
                                   supportInfo={supportInfo}
                                   alias={user.alias}
-                                  setUpUserMedia={this.setUpUserMedia}
                                   muted
+                                  stream={this.myStream}
                                 />
                               </div>
                               {conference.users
@@ -1106,10 +966,15 @@ class Conference extends React.Component {
                                       <ConferenceVideoItem
                                         useVideoInfo={!isSharing}
                                         id={`video-${userInfo.userId}`}
+                                        stream={this.userStreams[userInfo.userId]}
                                         tracking={userInfo.tracking}
                                         alias={userInfo.alias}
                                         imageType={userInfo.imageType}
                                         imageData={userInfo.imageData}
+                                        controls={{
+                                          audio: userInfo.participant.audio,
+                                          video: userInfo.participant.video,
+                                        }}
                                       />
                                     </div>
                                   );
