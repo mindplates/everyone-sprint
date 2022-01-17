@@ -277,7 +277,6 @@ class Conference extends React.Component {
             conference,
           },
           () => {
-            // this.setUpUserMedia(false); // TODO
             this.getUsers(code);
           },
         );
@@ -353,71 +352,6 @@ class Conference extends React.Component {
           supported: value,
         },
       });
-    }
-  };
-
-  setUpUserMedia = () => {
-    const { t } = this.props;
-
-    if (!mediaUtil.getIsSupportMedia()) {
-      const nextSupportInfo = {};
-      nextSupportInfo.enabledAudio = false;
-      nextSupportInfo.enabledVideo = false;
-      nextSupportInfo.deviceInfo = {
-        supported: false,
-        errorMessage: t('디바이스 목록을 가져올 수 없습니다.'),
-        devices: [],
-      };
-
-      this.setSupportInfo(nextSupportInfo);
-
-      return;
-    }
-
-    if (navigator.mediaDevices.getUserMedia) {
-      const { supportInfo } = this.state;
-      const nextSupportInfo = { ...supportInfo };
-
-      this.setState({
-        supportInfo: {
-          ...nextSupportInfo,
-        },
-      });
-
-      navigator.mediaDevices
-        .getUserMedia({
-          video: true,
-          audio: true,
-        })
-        .then((stream) => {
-          const { supportInfo: currentSupportInfo } = this.state;
-
-          this.myStream = stream;
-          this.myVideo.srcObject = stream;
-          this.setState({
-            supportInfo: {
-              ...currentSupportInfo,
-            },
-          });
-        })
-        .catch(() => {
-          setTimeout(() => {
-            const { supportInfo: currentSupportInfo } = this.state;
-            this.setState({
-              supportInfo: {
-                ...currentSupportInfo,
-              },
-            });
-          }, 500);
-        });
-    } else {
-      setTimeout(() => {
-        this.setState({
-          supportInfo: {
-            // supportUserMedia: false,
-          },
-        });
-      }, 500);
     }
   };
 
@@ -906,9 +840,7 @@ class Conference extends React.Component {
 
     const { supportInfo } = this.state;
 
-    if (this.myStream) {
-      this.myVideo.srcObject = this.myStream;
-    } else {
+    if (!this.myStream) {
       const constraints = mediaUtil.getCurrentConstraints(supportInfo) || {
         video: true,
         audio: true,
@@ -917,7 +849,6 @@ class Conference extends React.Component {
         .getUserMedia(constraints)
         .then((stream) => {
           this.myStream = stream;
-          this.myVideo.srcObject = stream;
           this.setDeviceInfoSupported(true);
         })
         .catch(() => {
@@ -1013,14 +944,11 @@ class Conference extends React.Component {
                               >
                                 <ConferenceVideoItem
                                   useVideoInfo={!isSharing}
-                                  onRef={(d) => {
-                                    this.myVideo = d;
-                                  }}
                                   controls={controls}
                                   supportInfo={supportInfo}
                                   alias={user.alias}
-                                  setUpUserMedia={this.setUpUserMedia}
                                   muted
+                                  stream={this.myStream}
                                 />
                               </div>
                               {conference.users
