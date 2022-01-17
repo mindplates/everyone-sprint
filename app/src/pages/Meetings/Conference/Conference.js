@@ -31,6 +31,8 @@ class Conference extends React.Component {
 
   setVideoInfoDebounced;
 
+  userStreams = {};
+
   constructor(props) {
     super(props);
 
@@ -397,15 +399,15 @@ class Conference extends React.Component {
 
     userInfo.peerConnection.ontrack = (event) => {
       const [first] = event.streams;
-      const video = document.querySelector(`#video-${userInfo.userId}`);
-      if (video) {
-        video.srcObject = first;
-        userInfo.tracking = true;
-
-        this.setState({
-          conference: nextConference,
-        });
+      if (this.userStreams[userInfo.userId]) {
+        this.userStreams[userInfo.userId] = null;
       }
+
+      this.userStreams[userInfo.userId] = first;
+      userInfo.tracking = true;
+      this.setState({
+        conference: nextConference,
+      });
     };
 
     userInfo.peerConnection.oniceconnectionstatechange = () => {
@@ -521,12 +523,6 @@ class Conference extends React.Component {
     // this.myScreenStream = null;
     // this.stopStreamAndVideo(this.myScreenStreamVideo.current);
 
-    const video = document.querySelector(`#video-${userInfo.userId}`);
-
-    if (video) {
-      this.stopStreamAndVideo(video);
-    }
-
     this.setState({
       conference: nextConference,
     });
@@ -574,7 +570,8 @@ class Conference extends React.Component {
     }
 
     if (userInfo.screenSharePeerConnection) {
-      // TODO 초기화 코드 처리 필요
+      userInfo.screenSharePeerConnection.close();
+      userInfo.screenSharePeerConnection = null;
     }
 
     userInfo.screenSharePeerConnection = new RTCPeerConnection(peerConnectionConfig);
@@ -649,6 +646,9 @@ class Conference extends React.Component {
     switch (type) {
       case 'LEAVE': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
+        if (this.userStreams[senderInfo.id]) {
+          this.userStreams[senderInfo.id] = null;
+        }
         this.setState(
           {
             conference: nextConference,
@@ -966,10 +966,15 @@ class Conference extends React.Component {
                                       <ConferenceVideoItem
                                         useVideoInfo={!isSharing}
                                         id={`video-${userInfo.userId}`}
+                                        stream={this.userStreams[userInfo.userId]}
                                         tracking={userInfo.tracking}
                                         alias={userInfo.alias}
                                         imageType={userInfo.imageType}
                                         imageData={userInfo.imageData}
+                                        controls={{
+                                          audio: userInfo.participant.audio,
+                                          video: userInfo.participant.video,
+                                        }}
                                       />
                                     </div>
                                   );
