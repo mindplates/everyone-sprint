@@ -23,6 +23,7 @@ class ConferenceVideoItem extends React.Component {
 
   componentWillUnmount() {
     this.stopStreamAndVideo(this.video);
+    cancelAnimationFrame(this.drawVisual);
   }
 
   stopStreamAndVideo = (video) => {
@@ -42,6 +43,7 @@ class ConferenceVideoItem extends React.Component {
   };
 
   // https://developer.mozilla.org/ko/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API
+
   setVoiceAnalyser = (stream) => {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const analyser = audioCtx.createAnalyser();

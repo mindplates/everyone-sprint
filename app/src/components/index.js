@@ -37,6 +37,7 @@ import Tabs from '@/components/Tabs/Tabs';
 import TextArea from '@/components/TextArea/TextArea';
 import Placeholder from '@/components/Placeholder/Placeholder';
 import CapabilitiesEditor from '@/components/CapabilitiesEditor/CapabilitiesEditor';
+import PixInfoEditor from '@/components/PixInfoEditor/PixInfoEditor';
 
 export {
   MessageDialog,
@@ -79,4 +80,5 @@ export {
   Placeholder,
   Table,
   CapabilitiesEditor,
+  PixInfoEditor,
 };

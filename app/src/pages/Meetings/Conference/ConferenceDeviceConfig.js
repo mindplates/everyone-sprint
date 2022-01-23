@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import _, { debounce } from 'lodash';
 import { detect } from 'detect-browser';
 import dialog from '@/utils/dialog';
-import { Button, CapabilitiesEditor, Liner, VideoElement } from '@/components';
+import { Button, CapabilitiesEditor, Liner, PixInfoEditor, VideoElement } from '@/components';
 import { CAPABILITIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
 import MediaDeviceConfigPopup from '@/pages/Meetings/Conference/MediaDeviceConfigPopup';
@@ -28,16 +28,25 @@ class ConferenceDeviceConfig extends React.Component {
     camera: null,
   };
 
+  // Running BodyPix on a video stream
+  // https://jameshfisher.com/2020/09/23/running-bodypix-on-a-video-stream/
   constructor(props) {
     super(props);
 
     this.state = {
       openConfigPopup: false,
       openCapabilities: false,
+      openPixInfo: false,
       capabilities: [],
       size: {
         width: '100%',
         height: '100%',
+      },
+      pixInfo: {
+        enabled: false,
+        type: 'effect',
+        key: 'none',
+        value: null,
       },
     };
 
@@ -326,6 +335,24 @@ class ConferenceDeviceConfig extends React.Component {
     });
   };
 
+  setOpenPixInfo = (value) => {
+    this.setState({
+      openPixInfo: value,
+    });
+  };
+
+  onChangePixInfo = (type, key, value) => {
+    const { pixInfo } = this.state;
+    const nextPixInfo = { ...pixInfo };
+    nextPixInfo.type = type;
+    nextPixInfo.key = key;
+    nextPixInfo.value = value;
+
+    this.setState({
+      pixInfo: nextPixInfo,
+    });
+  };
+
   onChangeCapability = (type, key, value) => {
     const { stream, supportInfo, setSupportInfo } = this.props;
     const nextSupportInfo = { ...supportInfo };
@@ -398,9 +425,11 @@ class ConferenceDeviceConfig extends React.Component {
   render() {
     const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls } = this.props;
     const { mediaConfig, enabledAudio, enabledVideo } = supportInfo;
-    const { openConfigPopup, openCapabilities, capabilities, size } = this.state;
+    const { openConfigPopup, openCapabilities, capabilities, size, pixInfo, openPixInfo } = this.state;
 
     const connectedUser = (conference?.users || []).filter((u) => u.participant?.connected && u.userId !== user.id);
+
+    console.log(pixInfo);
 
     return (
       <div className="conference-device-config-wrapper">
@@ -464,6 +493,18 @@ class ConferenceDeviceConfig extends React.Component {
             >
               <i className="fas fa-sliders-h" />
             </Button>
+            <Button
+              size="lg"
+              rounded
+              color="white"
+              outline
+              disabled={!enabledVideo}
+              onClick={() => {
+                this.setOpenPixInfo(!openPixInfo);
+              }}
+            >
+              <i className="fas fa-magic" />
+            </Button>
           </div>
           <div className="video-content">
             <div>
@@ -485,6 +526,7 @@ class ConferenceDeviceConfig extends React.Component {
                 isPrompt={supportInfo.permissions.microphone === 'prompt' || supportInfo.permissions.camera === 'prompt'}
                 isMicrophoneDenied={supportInfo.permissions.microphone === 'denied'}
                 isCameraDenied={supportInfo.permissions.camera === 'denied'}
+                pixInfo={pixInfo}
               />
             </div>
             {openCapabilities && (
@@ -501,6 +543,20 @@ class ConferenceDeviceConfig extends React.Component {
                     this.onChangeCapability('video', key, value);
                   }}
                   setOpened={this.setOpenCapabilities}
+                />
+              </div>
+            )}
+            {openPixInfo && (
+              <div
+                className="pix-info-editor"
+                style={{
+                  height: mediaConfig.video.settings.height,
+                }}
+              >
+                <PixInfoEditor
+                  pixInfo={pixInfo}
+                  onChange={this.onChangePixInfo}
+                  setOpened={this.setOpenPixInfo}
                 />
               </div>
             )}
