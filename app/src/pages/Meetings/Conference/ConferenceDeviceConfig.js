@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import _, { debounce } from 'lodash';
 import { detect } from 'detect-browser';
 import dialog from '@/utils/dialog';
-import { Button, CapabilitiesEditor, Liner, VideoElement } from '@/components';
+import { Button, CapabilitiesEditor, ConferenceVideoItem, Liner, PixInfoEditor, VideoElement } from '@/components';
 import { CAPABILITIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
 import MediaDeviceConfigPopup from '@/pages/Meetings/Conference/MediaDeviceConfigPopup';
@@ -28,16 +28,25 @@ class ConferenceDeviceConfig extends React.Component {
     camera: null,
   };
 
+  // Running BodyPix on a video stream
+  // https://jameshfisher.com/2020/09/23/running-bodypix-on-a-video-stream/
   constructor(props) {
     super(props);
 
     this.state = {
       openConfigPopup: false,
       openCapabilities: false,
+      openPixInfo: false,
       capabilities: [],
       size: {
         width: '100%',
         height: '100%',
+      },
+      pixInfo: {
+        enabled: false,
+        type: 'effect',
+        key: 'none',
+        value: null,
       },
     };
 
@@ -227,7 +236,7 @@ class ConferenceDeviceConfig extends React.Component {
 
       // 반환된 스트림 지정
       setStream(currentStream);
-      this.myConfigVideo.srcObject = currentStream;
+      // this.myConfigVideo.srcObject = currentStream;
 
       // 현재 세팅된 내용을 저장
       let vw = null;
@@ -326,6 +335,35 @@ class ConferenceDeviceConfig extends React.Component {
     });
   };
 
+  setOpenPixInfo = (value) => {
+    this.setState({
+      openPixInfo: value,
+    });
+  };
+
+  onChangePixInfo = (type, key, value) => {
+    const { setPixInfo } = this.props;
+    const { pixInfo } = this.state;
+    const nextPixInfo = { ...pixInfo };
+    nextPixInfo.type = type;
+    nextPixInfo.key = key;
+    nextPixInfo.value = value;
+
+    if (nextPixInfo.type === 'effect' && nextPixInfo.key === 'none') {
+      nextPixInfo.enabled = false;
+    } else {
+      nextPixInfo.enabled = true;
+    }
+
+    console.log(nextPixInfo);
+
+    this.setState({
+      pixInfo: nextPixInfo,
+    });
+
+    setPixInfo(nextPixInfo);
+  };
+
   onChangeCapability = (type, key, value) => {
     const { stream, supportInfo, setSupportInfo } = this.props;
     const nextSupportInfo = { ...supportInfo };
@@ -396,11 +434,13 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   render() {
-    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls } = this.props;
+    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls, stream } = this.props;
     const { mediaConfig, enabledAudio, enabledVideo } = supportInfo;
-    const { openConfigPopup, openCapabilities, capabilities, size } = this.state;
+    const { openConfigPopup, openCapabilities, capabilities, size, pixInfo, openPixInfo } = this.state;
 
     const connectedUser = (conference?.users || []).filter((u) => u.participant?.connected && u.userId !== user.id);
+
+    console.log(pixInfo);
 
     return (
       <div className="conference-device-config-wrapper">
@@ -464,28 +504,46 @@ class ConferenceDeviceConfig extends React.Component {
             >
               <i className="fas fa-sliders-h" />
             </Button>
+            <Button
+              size="lg"
+              rounded
+              color="white"
+              outline
+              disabled={!enabledVideo}
+              onClick={() => {
+                this.setOpenPixInfo(!openPixInfo);
+              }}
+            >
+              <i className="fas fa-magic" />
+            </Button>
           </div>
           <div className="video-content">
             <div>
-              <VideoElement
-                className="config-video"
-                useVideoInfo
-                videoInfo={{
-                  width: size.width < mediaConfig.video.settings.width ? size.width : mediaConfig.video.settings.width,
-                  height: mediaConfig.video.settings.height,
-                  videoWidth: mediaConfig.video.settings.width,
-                  videoHeight: mediaConfig.video.settings.height,
-                }}
-                onRef={(d) => {
-                  this.myConfigVideo = d;
-                }}
-                supportInfo={supportInfo}
-                setUpUserMedia={this.setDeviceInfo}
-                muted
-                isPrompt={supportInfo.permissions.microphone === 'prompt' || supportInfo.permissions.camera === 'prompt'}
-                isMicrophoneDenied={supportInfo.permissions.microphone === 'denied'}
-                isCameraDenied={supportInfo.permissions.camera === 'denied'}
-              />
+              {false && (
+                <VideoElement
+                  className="config-video"
+                  useVideoInfo
+                  videoInfo={{
+                    width: size.width < mediaConfig.video.settings.width ? size.width : mediaConfig.video.settings.width,
+                    height: mediaConfig.video.settings.height,
+                    videoWidth: mediaConfig.video.settings.width,
+                    videoHeight: mediaConfig.video.settings.height,
+                  }}
+                  onRef={(d) => {
+                    this.myConfigVideo = d;
+                  }}
+                  supportInfo={supportInfo}
+                  setUpUserMedia={this.setDeviceInfo}
+                  muted
+                  isPrompt={supportInfo.permissions.microphone === 'prompt' || supportInfo.permissions.camera === 'prompt'}
+                  isMicrophoneDenied={supportInfo.permissions.microphone === 'denied'}
+                  isCameraDenied={supportInfo.permissions.camera === 'denied'}
+                  pixInfo={pixInfo}
+                />
+              )}
+              <div className="my-video">
+                <ConferenceVideoItem useVideoInfo controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
+              </div>
             </div>
             {openCapabilities && (
               <div
@@ -502,6 +560,16 @@ class ConferenceDeviceConfig extends React.Component {
                   }}
                   setOpened={this.setOpenCapabilities}
                 />
+              </div>
+            )}
+            {openPixInfo && (
+              <div
+                className="pix-info-editor"
+                style={{
+                  height: mediaConfig.video.settings.height,
+                }}
+              >
+                <PixInfoEditor pixInfo={pixInfo} onChange={this.onChangePixInfo} setOpened={this.setOpenPixInfo} />
               </div>
             )}
           </div>
@@ -655,4 +723,5 @@ ConferenceDeviceConfig.propTypes = {
     sharing: PropTypes.bool,
   }),
   setControls: PropTypes.func,
+  setPixInfo: PropTypes.func,
 };

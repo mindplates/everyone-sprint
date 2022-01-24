@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
+import * as bodyPix from '@tensorflow-models/body-pix';
 import { withTranslation } from 'react-i18next';
 import { Button, UserImage } from '@/components';
 import images from '@/images';
+import backgroundSrc from './milky-way-2695569-1920.jpg';
 import './VideoElement.scss';
 
 class VideoElement extends React.Component {
+  video = createRef();
+
+  canvas = createRef();
+
+  backgroundRef = createRef();
+
+  maskInfo = {
+    animationFrame: null,
+    init: false,
+    model: null,
+    offCanvas: null,
+    offCtx: null,
+    ctx: null,
+    width: null,
+    height: null,
+  };
+
+  // https://storage.googleapis.com/tfjs-models/demos/body-pix/index.html
   constructor(props) {
     super(props);
 
@@ -15,6 +35,110 @@ class VideoElement extends React.Component {
   }
 
   componentDidMount() {}
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this.maskInfo.animationFrame);
+  }
+
+  async componentDidUpdate() {
+
+    const {
+      pixInfo,
+    } = this.props;
+
+    if (!this.maskInfo.init && this.video && pixInfo.enabled) {
+      this.maskInfo.init = true;
+      await this.prepareMasking();
+      this.video.addEventListener('loadeddata', async (e) => {
+        console.log(e.target.offsetWidth);
+        this.maskInfo.width = '640'; // e.target.offsetWidth;
+        this.maskInfo.height = '480'; // e.target.offsetHeight;
+        e.target.width = '640';
+        e.target.height = '480';
+        console.log('LOADEDDATA', this.maskInfo.width, this.maskInfo.height);
+        await this.renderVideo2();
+      });
+    }
+  }
+
+  prepareMasking = async () => {
+    this.maskInfo.model = await bodyPix.load({
+      architecture: 'ResNet50',
+      outputStride: 32,
+      quantBytes: 2,
+    });
+
+    this.maskInfo.ctx = this.canvas.current.getContext('2d');
+  };
+
+  renderVideo = async () => {
+    const foregroundColor = { r: 0, g: 0, b: 0, a: 255 };
+    const backgroundColor = { r: 0, g: 0, b: 0, a: 0 };
+    const background = this.backgroundRef.current;
+    const canvas = this.canvas.current;
+
+    if (!this.maskInfo.offCanvas) {
+      this.maskInfo.offCanvas = new OffscreenCanvas(this.maskInfo.width, this.maskInfo.height);
+      this.maskInfo.offCtx = this.maskInfo.offCanvas.getContext('2d');
+      canvas.width = this.maskInfo.width;
+      canvas.height = this.maskInfo.height;
+    }
+
+    const segmentation = await this.maskInfo.model.segmentPerson(this.video, {
+      flipHorizontal: false,
+      internalResolution: 'medium',
+      segmentationThreshold: 0.7,
+    });
+
+    const personMasked = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
+    // Draw background first if any
+    if (background) {
+      this.maskInfo.ctx.drawImage(background, 0, 0, this.maskInfo.width, this.maskInfo.height);
+    }
+
+    const oldGCO = this.maskInfo.offCtx.globalCompositeOperation;
+    this.maskInfo.offCtx.clearRect(0, 0, this.maskInfo.width, this.maskInfo.height);
+    this.maskInfo.offCtx.putImageData(personMasked, 0, 0);
+    this.maskInfo.offCtx.globalCompositeOperation = 'source-in';
+    this.maskInfo.offCtx.drawImage(this.video, 0, 0);
+    // Restore GCO
+    this.maskInfo.offCtx.globalCompositeOperation = oldGCO;
+
+    // Copy video with mask on top of background
+    this.maskInfo.ctx.drawImage(this.maskInfo.offCanvas, 0, 0);
+
+    // Next frame
+    this.maskInfo.animationFrame = requestAnimationFrame(this.renderVideo);
+  };
+
+  renderVideo2 = async () => {
+    console.log(1);
+    const canvas = this.canvas.current;
+
+    if (!this.maskInfo.offCanvas) {
+      this.maskInfo.offCanvas = new OffscreenCanvas(this.maskInfo.width, this.maskInfo.height);
+      this.maskInfo.offCtx = this.maskInfo.offCanvas.getContext('2d');
+      console.log(this.maskInfo.width);
+      this.canvas.current.width = this.maskInfo.width;
+      this.canvas.current.height = this.maskInfo.height;
+      this.maskInfo.ctx = this.canvas.current.getContext('2d');
+      this.maskInfo.ctx.clearRect(0, 0, this.maskInfo.width, this.maskInfo.height);
+    }
+
+    const segmentation = await this.maskInfo.model.segmentPerson(this.video, {
+      internalResolution: 'medium',
+      segmentationThreshold: 0.7,
+      maxDetections: 5,
+      scoreThreshold: 0.3,
+      nmsRadius: 20,
+    });
+
+    this.video.play();
+
+    bodyPix.drawBokehEffect(canvas, this.video, segmentation, 10, 3, false);
+
+    this.maskInfo.animationFrame = requestAnimationFrame(this.renderVideo2);
+  };
 
   getErrorName = (errorMessage) => {
     const { t } = this.props;
@@ -30,6 +154,8 @@ class VideoElement extends React.Component {
     return errorMessage;
   };
 
+  // 비디오 필터링 https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Manipulating_video_using_canvas
+  // https://www.linkedin.com/pulse/realtime-webcam-background-replacement-browser-nhu-trinh/
   render() {
     const {
       t,
@@ -49,6 +175,7 @@ class VideoElement extends React.Component {
       isPrompt,
       isCameraDenied,
       isMicrophoneDenied,
+      pixInfo,
     } = this.props;
 
     const { retrying } = this.state;
@@ -68,9 +195,12 @@ class VideoElement extends React.Component {
             height: useVideoInfo ? `${videoInfo.videoHeight}px` : null,
           }}
         >
+          <img src={backgroundSrc} className="d-none" alt="background" height={400} width={400} ref={this.backgroundRef} />
           <video
             id={id}
+            className={pixInfo.enabled ? 'd-none' : ''}
             ref={(d) => {
+              this.video = d;
               if (onRef) {
                 onRef(d);
               }
@@ -78,7 +208,12 @@ class VideoElement extends React.Component {
             autoPlay
             playsInline
             muted={muted}
+            style={{
+              width: '640px',
+              height: '480px',
+            }}
           />
+          {pixInfo.enabled && <canvas ref={this.canvas} />}
           {controls && (
             <div className="control-status">
               <span className="audio-status">
@@ -207,4 +342,10 @@ VideoElement.propTypes = {
   isPrompt: PropTypes.bool,
   isMicrophoneDenied: PropTypes.bool,
   isCameraDenied: PropTypes.bool,
+  pixInfo: PropTypes.shape({
+    enabled: PropTypes.bool,
+    type: PropTypes.string,
+    key: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  }),
 };
