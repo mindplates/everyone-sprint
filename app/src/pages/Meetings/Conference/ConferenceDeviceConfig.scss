@@ -60,6 +60,11 @@
       max-width: 100%;
       justify-content: center;
 
+      .my-video {
+        width: 640px;
+        height: 480px;
+      }
+
       .capabilities-editor {
         @media (max-width: 992px) {
           position: absolute;

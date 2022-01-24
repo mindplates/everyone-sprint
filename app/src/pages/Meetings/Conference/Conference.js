@@ -19,6 +19,8 @@ const peerConnectionConfig = {
 class Conference extends React.Component {
   myStream = null;
 
+  myCanvasStream = null;
+
   myScreenStream = null;
 
   myScreenStreamVideo = createRef();
@@ -93,6 +95,12 @@ class Conference extends React.Component {
           sendResolution: 720,
           receiveResolution: 720,
         },
+      },
+      pixInfo: {
+        enabled: false,
+        type: 'effect',
+        key: 'none',
+        value: null,
       },
     };
   }
@@ -425,7 +433,15 @@ class Conference extends React.Component {
 
     if (this.myStream) {
       if (userInfo.peerConnection && userInfo.peerConnection.addStream) {
-        userInfo.peerConnection.addStream(this.myStream);
+        const { pixInfo } = this.state;
+
+        console.log(pixInfo.enabled, this.myCanvasStream);
+
+        if (pixInfo.enabled && this.myCanvasStream) {
+          userInfo.peerConnection.addStream(this.myCanvasStream);
+        } else {
+          userInfo.peerConnection.addStream(this.myStream);
+        }
       }
     }
 
@@ -884,9 +900,42 @@ class Conference extends React.Component {
     }
   };
 
+  setPixInfo = (pixInfo) => {
+    this.setState({
+      pixInfo,
+    });
+  };
+
+  setCanvasStream = (stream) => {
+    const { conference } = this.state;
+    const { user } = this.props;
+
+    this.myCanvasStream = stream;
+
+    const audioTrack = this.myStream.getTracks().filter((track) => {
+      return track.kind === 'audio';
+    })[0];
+
+    this.myCanvasStream.addTrack(audioTrack);
+
+    const connectedUsers = conference.users
+      .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+      .filter((userInfo) => userInfo.participant?.connected);
+
+    connectedUsers.forEach((userInfo) => {
+      if (this.myCanvasStream) {
+        if (userInfo.peerConnection && userInfo.peerConnection.addStream) {
+          userInfo.peerConnection.addStream(this.myCanvasStream);
+        }
+      }
+
+      // this.setUpPeerConnection(userInfo.userId, true);
+    });
+  };
+
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -919,6 +968,7 @@ class Conference extends React.Component {
                     supportInfo={supportInfo}
                     setSupportInfo={this.setSupportInfo}
                     onJoinClick={this.onJoin}
+                    setPixInfo={this.setPixInfo}
                   />
                 )}
                 {!isSetting && (
@@ -943,12 +993,14 @@ class Conference extends React.Component {
                                 }}
                               >
                                 <ConferenceVideoItem
+                                  pixInfo={pixInfo}
                                   useVideoInfo={!isSharing}
                                   controls={controls}
                                   supportInfo={supportInfo}
                                   alias={user.alias}
                                   muted
                                   stream={this.myStream}
+                                  setCanvasStream={this.setCanvasStream}
                                 />
                               </div>
                               {conference.users
