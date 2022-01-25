@@ -6,12 +6,21 @@
   width: 100%;
   height: 100%;
 
-  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
 
-  &.disable-video-info {
-    width: auto;
-    height: auto;
-    line-height: 0;
+  .loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    display: flex;
+    justify-content: center;
+
+    > div {
+      align-self: center;
+    }
   }
 
   .video-element {
@@ -21,20 +30,98 @@
     width: 100%;
     height: 100%;
     background-color: #000;
-    border-radius: 2px;
 
-    .voice-visualizer {
-      display: inline-block;
-      width: 80px;
-      height: 24px;
+    .control-status {
       position: absolute;
-      top: 0.25rem;
-      right: 0.25rem;
+      top: 0.5rem;
+      right: 0.5rem;
+      display: inline-block;
+      color: $black;
+      line-height: 100%;
+      font-size: 14px;
       z-index: 3;
 
-      > canvas {
-        width: 100%;
-        height: 100%;
+      > div {
+        display: inline-block;
+        position: relative;
+        width: 24px;
+        height: 24px;
+        background-color: $gray-300;
+        border-radius: 50%;
+        overflow: hidden;
+        padding: 2px;
+        z-index: 3;
+        margin-right: 0.25rem;
+        &:last-child {
+          margin-right: 0;
+        }
+
+        > div.icon {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          color: $gray-700;
+          font-size: 14px;
+          line-height: 0;
+          overflow: visible;
+
+          &.audio {
+            font-size: 12px;
+          }
+
+          &.video {
+            font-size: 11px;
+
+            i {
+              position: relative;
+              top: -1px;
+            }
+          }
+
+          > div {
+            align-self: center;
+          }
+
+          .slash {
+            width: 17px;
+            height: 3px;
+            background-color: $danger;
+            opacity: 0.6;
+            position: absolute;
+            top: 11px;
+            left: 4px;
+          }
+        }
+
+        &.simple-voice-visualizer {
+          > div.values {
+            display: flex;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+            opacity: 0.8;
+            > div {
+              position: relative;
+              flex: 1 1 0;
+              margin-right: 1px;
+              &:last-child {
+                margin-right: 0;
+              }
+              > div {
+                position: absolute;
+                bottom: 0;
+                background-color: $primary;
+                width: 100%;
+                transition: 0.1s height ease-in;
+                border-radius: 2px 2px 0 0;
+              }
+            }
+          }
+        }
       }
     }
 
@@ -58,44 +145,10 @@
       position: absolute;
       top: 0;
       left: 0;
-      border-radius: 2px;
+
       transform: rotateY(180deg);
       -webkit-transform: rotateY(180deg);
       -moz-transform: rotateY(180deg);
-      _display: none;
-    }
-
-    &.is-camera-denied {
-      background-color: #333;
-    }
-
-    .control-status {
-      position: absolute;
-      top: 0.5rem;
-      color: $black;
-      width: 100%;
-      line-height: 100%;
-      font-size: 14px;
-      z-index: 3;
-      text-align: center;
-
-      > span {
-        display: inline-flex;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background-color: $yellow;
-        justify-content: center;
-        font-size: 14px;
-        > span {
-          align-self: center;
-        }
-      }
-
-      .audio-status {
-        margin-left: 0.5rem;
-        margin-right: 0.25rem;
-      }
     }
 
     .user-info {
@@ -104,85 +157,24 @@
       color: $black;
       width: 100%;
       text-align: center;
-      font-size: 14px;
       z-index: 3;
       line-height: 100%;
+      font-size: 24px;
 
       .alias {
         text-transform: uppercase;
-        font-family: pretendard, sans-serif;
         font-weight: bold;
-        background-color: $yellow;
-        padding: 0.125rem 0.5rem;
-        border-radius: 2px;
+        line-height: 100%;
+        display: inline-block;
+        font-family: muli, sans-serif;
+        padding: 0 0.125rem;
+        color: $yellow;
+        text-shadow: 1px 1px 2px $black;
+        _text-shadow: 1px 1px 2px $white;
+        _background-color: rgba(255, 255, 255, 0.2);
+        _color: $black;
+        _border-radius: 2px;
       }
-    }
-  }
-
-  .time {
-    position: absolute;
-    bottom: 0;
-  }
-
-  .not-supported-user-media {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    background-color: transparent;
-    border-radius: 2px;
-    display: flex;
-    justify-content: center;
-    z-index: 2;
-    > div {
-      align-self: center;
-      text-align: center;
-
-      .message {
-        margin-bottom: 0.5rem;
-        position: relative;
-        color: $danger;
-        font-weight: bold;
-        text-shadow: 1px 1px 1px $white;
-        padding: 0 2rem;
-
-        .loading {
-          position: absolute;
-          top: -50px;
-          left: 0;
-          width: 100%;
-          text-align: center;
-          > img {
-            width: 50px;
-          }
-        }
-      }
-    }
-  }
-
-  .need-prompt,
-  .need-permission {
-    position: absolute;
-    bottom: 0.5rem;
-    left: 0;
-    right: 0;
-    text-align: center;
-    color: $danger;
-    font-weight: bold;
-    text-shadow: 1px 1px 1px $white;
-    font-size: 14px;
-    z-index: 3;
-  }
-
-  .need-prompt {
-    bottom: 0;
-    top: 0;
-    display: flex;
-    justify-content: center;
-    > div {
-      align-self: center;
     }
   }
 
@@ -200,12 +192,6 @@
     z-index: 1;
     > div {
       align-self: center;
-    }
-  }
-
-  &.tracking {
-    .no-tracking-info {
-      display: none;
     }
   }
 }

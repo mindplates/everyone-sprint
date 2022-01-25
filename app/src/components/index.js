@@ -38,6 +38,7 @@ import TextArea from '@/components/TextArea/TextArea';
 import Placeholder from '@/components/Placeholder/Placeholder';
 import CapabilitiesEditor from '@/components/CapabilitiesEditor/CapabilitiesEditor';
 import PixInfoEditor from '@/components/PixInfoEditor/PixInfoEditor';
+import Spinner from '@/components/Spinner/Spinner';
 
 export {
   MessageDialog,
@@ -81,4 +82,5 @@ export {
   Table,
   CapabilitiesEditor,
   PixInfoEditor,
+  Spinner,
 };

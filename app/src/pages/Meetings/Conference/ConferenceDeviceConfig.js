@@ -440,8 +440,6 @@ class ConferenceDeviceConfig extends React.Component {
 
     const connectedUser = (conference?.users || []).filter((u) => u.participant?.connected && u.userId !== user.id);
 
-    console.log(pixInfo);
-
     return (
       <div className="conference-device-config-wrapper">
         {openConfigPopup && (
@@ -522,7 +520,6 @@ class ConferenceDeviceConfig extends React.Component {
               {false && (
                 <VideoElement
                   className="config-video"
-                  useVideoInfo
                   videoInfo={{
                     width: size.width < mediaConfig.video.settings.width ? size.width : mediaConfig.video.settings.width,
                     height: mediaConfig.video.settings.height,
@@ -542,7 +539,7 @@ class ConferenceDeviceConfig extends React.Component {
                 />
               )}
               <div className="my-video">
-                <ConferenceVideoItem useVideoInfo controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
+                <ConferenceVideoItem filter controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
               </div>
             </div>
             {openCapabilities && (
