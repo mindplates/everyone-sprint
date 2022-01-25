@@ -177,7 +177,6 @@ const JOIN_POLICIES = [
 
 const COLORS = ['#FFAEBC', '#A0E7E5', '#B4F8C8', '#FBE7C6', '#F8EA8C', '#4CD7D0', '#A49393', '#E8B4B8'];
 
-
 const CAPABILITIES = [
   {
     key: 'brightness',
@@ -256,6 +255,29 @@ const CAPABILITIES = [
   },
 ];
 
+const BODY_PIX = {
+  MODELS: {
+    ResNet50: 'ResNet50',
+    MobileNetV1: 'MobileNetV1',
+  },
+  OUTPUT_STRIDES: {
+    8: 8,
+    16: 16,
+    32: 32,
+  },
+  MULTIPLIERS: {
+    1.0: 1.0,
+    0.75: 0.75,
+    0.5: 0.5,
+  },
+
+  QUANT_BYTES: {
+    1: 1,
+    2: 2,
+    4: 4,
+  },
+};
+
 export {
   PORTS,
   USER_STUB,
@@ -273,4 +295,5 @@ export {
   COLORS,
   TIMEZONES,
   CAPABILITIES,
+  BODY_PIX
 };

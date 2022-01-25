@@ -235,6 +235,7 @@ class ConferenceDeviceConfig extends React.Component {
       }
 
       // 반환된 스트림 지정
+
       setStream(currentStream);
       // this.myConfigVideo.srcObject = currentStream;
 
@@ -297,6 +298,7 @@ class ConferenceDeviceConfig extends React.Component {
 
   setOpenCapabilities = (value) => {
     const { stream, supportInfo, setSupportInfo } = this.props;
+    const { openPixInfo } = this.state;
     const metas = [];
     const capabilities = [];
     if (value && stream) {
@@ -330,14 +332,21 @@ class ConferenceDeviceConfig extends React.Component {
     setSupportInfo(nextSupportInfo);
 
     this.setState({
+      openPixInfo: value,
+    });
+
+    this.setState({
       openCapabilities: value,
       capabilities: metas,
+      openPixInfo: value && openPixInfo ? false : openPixInfo,
     });
   };
 
   setOpenPixInfo = (value) => {
+    const { openCapabilities } = this.state;
     this.setState({
       openPixInfo: value,
+      openCapabilities: value && openCapabilities ? false : openCapabilities,
     });
   };
 
@@ -354,8 +363,6 @@ class ConferenceDeviceConfig extends React.Component {
     } else {
       nextPixInfo.enabled = true;
     }
-
-    console.log(nextPixInfo);
 
     this.setState({
       pixInfo: nextPixInfo,
@@ -440,8 +447,6 @@ class ConferenceDeviceConfig extends React.Component {
 
     const connectedUser = (conference?.users || []).filter((u) => u.participant?.connected && u.userId !== user.id);
 
-    console.log(pixInfo);
-
     return (
       <div className="conference-device-config-wrapper">
         {openConfigPopup && (
@@ -522,7 +527,6 @@ class ConferenceDeviceConfig extends React.Component {
               {false && (
                 <VideoElement
                   className="config-video"
-                  useVideoInfo
                   videoInfo={{
                     width: size.width < mediaConfig.video.settings.width ? size.width : mediaConfig.video.settings.width,
                     height: mediaConfig.video.settings.height,
@@ -542,7 +546,7 @@ class ConferenceDeviceConfig extends React.Component {
                 />
               )}
               <div className="my-video">
-                <ConferenceVideoItem useVideoInfo controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
+                <ConferenceVideoItem filter controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
               </div>
             </div>
             {openCapabilities && (
