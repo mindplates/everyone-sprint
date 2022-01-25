@@ -993,13 +993,13 @@ class Conference extends React.Component {
                                 }}
                               >
                                 <ConferenceVideoItem
-                                  pixInfo={pixInfo}
-                                  useVideoInfo={!isSharing}
+                                  filter
                                   controls={controls}
                                   supportInfo={supportInfo}
                                   alias={user.alias}
                                   muted
                                   stream={this.myStream}
+                                  pixInfo={pixInfo}
                                   setCanvasStream={this.setCanvasStream}
                                 />
                               </div>

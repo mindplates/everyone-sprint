@@ -17,6 +17,8 @@ class ConferenceVideoItem extends React.Component {
 
   isSetVideo = false;
 
+  init = false;
+
   soundVisualizationFrame = null;
 
   filterData = {
@@ -62,6 +64,10 @@ class ConferenceVideoItem extends React.Component {
     const { pixInfo, stream } = this.props;
 
     if (!_.isEqual(pixInfo, prevProps.pixInfo) || !_.isEqual(stream, prevProps.stream)) {
+      this.setVideo(stream?.id !== prevProps.stream?.id);
+    }
+
+    if (stream && !this.init) {
       this.setVideo();
     }
   }
@@ -114,11 +120,14 @@ class ConferenceVideoItem extends React.Component {
     });
   };
 
-  setVideo = async () => {
+  setVideo = async (streamChanged) => {
+    this.init = true;
     const { stream, pixInfo } = this.props;
-    if (!this.isSetVideo && this.video.current && stream) {
+
+    if (streamChanged || !this.isSetVideo) {
       this.isSetVideo = true;
       this.video.current.srcObject = stream;
+      this.video.current.play();
       this.setVoiceAnalyser(stream);
     }
 
@@ -159,6 +168,14 @@ class ConferenceVideoItem extends React.Component {
     const video = this.video.current;
 
     if (!canvas || !video) {
+      this.filterData.animationFrame = requestAnimationFrame(this.filtering);
+      return;
+    }
+
+    if (video && video.readyState === 0) {
+      if (this.video.current) {
+        this.video.current.play();
+      }
       this.filterData.animationFrame = requestAnimationFrame(this.filtering);
       return;
     }
@@ -221,6 +238,10 @@ class ConferenceVideoItem extends React.Component {
   };
 
   setVoiceAnalyser = (stream) => {
+    if (this.soundVisualizationFrame) {
+      cancelAnimationFrame(this.soundVisualizationFrame);
+    }
+
     // https://developer.mozilla.org/ko/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API
     // https://developer.mozilla.org/ko/docs/Web/API/AnalyserNode/minDecibels
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();

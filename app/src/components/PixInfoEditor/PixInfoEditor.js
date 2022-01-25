@@ -36,8 +36,6 @@ const PixInfoEditor = ({ className, pixInfo, onChange, t, setOpened }) => {
     },
   };
 
-  console.log(options, pixInfo, onChange);
-
   return (
     <div className={`pix-info-editor-wrapper ${className}`}>
       <div className="title">
