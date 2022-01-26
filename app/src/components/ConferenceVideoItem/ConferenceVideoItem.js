@@ -73,6 +73,7 @@ class ConferenceVideoItem extends React.Component {
   }
 
   componentWillUnmount() {
+    this.setSoundsThrottle.cancel();
     this.stopStreamAndVideo(this.video);
     cancelAnimationFrame(this.soundVisualizationFrame);
     cancelAnimationFrame(this.filterData.animationFrame);
@@ -122,13 +123,15 @@ class ConferenceVideoItem extends React.Component {
 
   setVideo = async (streamChanged) => {
     this.init = true;
-    const { stream, pixInfo } = this.props;
+    const { stream, pixInfo, supportInfo } = this.props;
 
     if (streamChanged || !this.isSetVideo) {
       this.isSetVideo = true;
       this.video.current.srcObject = stream;
       this.video.current.play();
-      this.setVoiceAnalyser(stream);
+      if (supportInfo?.enabledAudio) {
+        this.setVoiceAnalyser(stream);
+      }
     }
 
     if (pixInfo && pixInfo.enabled) {
@@ -389,5 +392,18 @@ ConferenceVideoItem.propTypes = {
     type: PropTypes.string,
     key: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  }),
+  supportInfo: PropTypes.shape({
+    enabledAudio: PropTypes.bool,
+    deviceInfo: PropTypes.shape({
+      supported: PropTypes.bool,
+      errorMessage: PropTypes.string,
+      devices: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+          name: PropTypes.name,
+        }),
+      ),
+    }),
   }),
 };

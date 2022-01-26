@@ -401,6 +401,7 @@ class Conference extends React.Component {
     userInfo.peerConnection = new RTCPeerConnection(peerConnectionConfig);
     userInfo.peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
+        // STEP 2 : 다른 사용자에게 ICE 정보를 송신
         this.sendToUser('ICE', userId, event.candidate);
       }
     };
@@ -421,7 +422,6 @@ class Conference extends React.Component {
     userInfo.peerConnection.oniceconnectionstatechange = () => {
       if (userInfo.peerConnection) {
         const state = userInfo.peerConnection.iceConnectionState;
-
         if (state === 'failed' || state === 'closed' || state === 'disconnected') {
           userInfo.tracking = false;
           this.setState({
@@ -435,8 +435,6 @@ class Conference extends React.Component {
       if (userInfo.peerConnection && userInfo.peerConnection.addStream) {
         const { pixInfo } = this.state;
 
-        console.log(pixInfo.enabled, this.myCanvasStream);
-
         if (pixInfo.enabled && this.myCanvasStream) {
           userInfo.peerConnection.addStream(this.myCanvasStream);
         } else {
@@ -446,6 +444,7 @@ class Conference extends React.Component {
     }
 
     if (isSender) {
+      // STEP 2 : 이미 입장한 유저들에게 SDP offer 송신
       userInfo.peerConnection.createOffer().then(
         (description) => {
           userInfo.peerConnection.setLocalDescription(description).then(() => {
@@ -778,12 +777,24 @@ class Conference extends React.Component {
 
       case 'ICE': {
         if (!isMe) {
-          const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
-          if (!targetUser.peerConnection) {
-            this.setUpPeerConnection(senderInfo.id, false);
-          }
-          targetUser.peerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
-            console.error(e);
+          const addIceCandidate = (handler) => {
+            const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
+            if (!targetUser.peerConnection) {
+              this.setUpPeerConnection(senderInfo.id, false);
+            }
+
+            targetUser.peerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
+              console.error(e);
+              if (handler) {
+                handler();
+              }
+            });
+          };
+
+          addIceCandidate(() => {
+            setTimeout(() => {
+              addIceCandidate();
+            }, 3000);
           });
         }
 
@@ -796,20 +807,27 @@ class Conference extends React.Component {
             this.setUpPeerConnection(senderInfo.id, false);
           }
 
-          targetUser.peerConnection.setRemoteDescription(new RTCSessionDescription(data)).then(() => {
-            if (data.type === 'offer') {
-              targetUser.peerConnection
-                .createAnswer()
-                .then((description) => {
-                  targetUser.peerConnection.setLocalDescription(description).then(() => {
-                    this.sendToUser('SDP', senderInfo.id, targetUser.peerConnection.localDescription);
+          // STEP 4 : SDP answer가 도착하면, remote description 추가
+          targetUser.peerConnection
+            .setRemoteDescription(new RTCSessionDescription(data))
+            .then(() => {
+              if (data.type === 'offer') {
+                // STEP 3 : SDP offer가 도착하면, SDP 송신자에게 내 SDP 정보를 송신
+                targetUser.peerConnection
+                  .createAnswer()
+                  .then((description) => {
+                    targetUser.peerConnection.setLocalDescription(description).then(() => {
+                      this.sendToUser('SDP', senderInfo.id, targetUser.peerConnection.localDescription);
+                    });
+                  })
+                  .catch((e) => {
+                    console.error(e);
                   });
-                })
-                .catch((e) => {
-                  console.error(e);
-                });
-            }
-          });
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
         }
 
         break;
@@ -873,6 +891,7 @@ class Conference extends React.Component {
     }
   };
 
+  // STEP 1 : 참여하기 버튼을 클릭하여, 방에 들어온 경우, 내 미디어를 세팅하고, 모두에게 JOIN 메세지를 송신
   onJoin = () => {
     const { user } = this.props;
     const { controls } = this.state;
@@ -916,7 +935,9 @@ class Conference extends React.Component {
       return track.kind === 'audio';
     })[0];
 
-    this.myCanvasStream.addTrack(audioTrack);
+    if (audioTrack) {
+      this.myCanvasStream.addTrack(audioTrack);
+    }
 
     const connectedUsers = conference.users
       .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
