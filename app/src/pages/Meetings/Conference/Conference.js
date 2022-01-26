@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { Button, ConferenceVideoItem, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
+import { Button, ConferenceVideoItem, ConferenceVideoItem2, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Conference/ConferenceDeviceConfig';
@@ -17,8 +17,6 @@ const peerConnectionConfig = {
 };
 
 class Conference extends React.Component {
-  myStream = null;
-
   myCanvasStream = null;
 
   myScreenStream = null;
@@ -42,6 +40,7 @@ class Conference extends React.Component {
 
     this.state = {
       conference: null,
+      myStream: null,
       code: null,
       align: {
         type: 'CONNECT',
@@ -144,11 +143,11 @@ class Conference extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.myStream) {
-      this.myStream.getTracks().forEach((track) => {
+    const { myStream } = this.state;
+    if (myStream) {
+      myStream.getTracks().forEach((track) => {
         track.stop();
       });
-      this.myStream = null;
     }
 
     this.stopStreamAndVideo(this.myVideo.current);
@@ -343,7 +342,7 @@ class Conference extends React.Component {
 
     this.setState(
       {
-        supportInfo: _.merge(supportInfo, nextSupportInfo),
+        supportInfo: { ..._.merge(supportInfo, nextSupportInfo) },
       },
       () => {
         if (callback) {
@@ -386,7 +385,7 @@ class Conference extends React.Component {
   };
 
   setUpPeerConnection = (userId, isSender) => {
-    const { conference } = this.state;
+    const { conference, myStream } = this.state;
 
     if (!userId) return;
 
@@ -431,14 +430,14 @@ class Conference extends React.Component {
       }
     };
 
-    if (this.myStream) {
+    if (myStream) {
       if (userInfo.peerConnection && userInfo.peerConnection.addStream) {
         const { pixInfo } = this.state;
 
         if (pixInfo.enabled && this.myCanvasStream) {
           userInfo.peerConnection.addStream(this.myCanvasStream);
         } else {
-          userInfo.peerConnection.addStream(this.myStream);
+          userInfo.peerConnection.addStream(myStream);
         }
       }
     }
@@ -846,7 +845,7 @@ class Conference extends React.Component {
   };
 
   setControls = (field, value) => {
-    const { controls, isSetting } = this.state;
+    const { controls, isSetting, myStream } = this.state;
 
     this.setState(
       {
@@ -856,7 +855,7 @@ class Conference extends React.Component {
         if (!isSetting) {
           if (field === 'audio' || field === 'video') {
             const { controls: nextControls } = this.state;
-            const audioTrack = this.myStream.getTracks().find((d) => d.kind === field);
+            const audioTrack = myStream.getTracks().find((d) => d.kind === field);
             if (audioTrack) {
               audioTrack.enabled = nextControls[field];
             }
@@ -872,9 +871,9 @@ class Conference extends React.Component {
       return;
     }
 
-    const { supportInfo } = this.state;
+    const { supportInfo, myStream } = this.state;
 
-    if (!this.myStream) {
+    if (myStream) {
       const constraints = mediaUtil.getCurrentConstraints(supportInfo) || {
         video: true,
         audio: true,
@@ -882,7 +881,9 @@ class Conference extends React.Component {
       navigator.mediaDevices
         .getUserMedia(constraints)
         .then((stream) => {
-          this.myStream = stream;
+          this.setState({
+            myStream: stream,
+          });
           this.setDeviceInfoSupported(true);
         })
         .catch(() => {
@@ -926,12 +927,12 @@ class Conference extends React.Component {
   };
 
   setCanvasStream = (stream) => {
-    const { conference } = this.state;
+    const { conference, myStream } = this.state;
     const { user } = this.props;
 
     this.myCanvasStream = stream;
 
-    const audioTrack = this.myStream.getTracks().filter((track) => {
+    const audioTrack = myStream.getTracks().filter((track) => {
       return track.kind === 'audio';
     })[0];
 
@@ -956,7 +957,7 @@ class Conference extends React.Component {
 
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -980,9 +981,11 @@ class Conference extends React.Component {
                   <ConferenceDeviceConfig
                     user={user}
                     conference={conference}
-                    stream={this.myStream}
+                    stream={myStream}
                     setStream={(stream) => {
-                      this.myStream = stream;
+                      this.setState({
+                        myStream: stream,
+                      });
                     }}
                     controls={controls}
                     setControls={this.setControls}
@@ -1013,13 +1016,13 @@ class Conference extends React.Component {
                                   width: `${100 / videoInfo.cols}%`,
                                 }}
                               >
-                                <ConferenceVideoItem
+                                <ConferenceVideoItem2
                                   filter
                                   controls={controls}
                                   supportInfo={supportInfo}
                                   alias={user.alias}
                                   muted
-                                  stream={this.myStream}
+                                  stream={myStream}
                                   pixInfo={pixInfo}
                                   setCanvasStream={this.setCanvasStream}
                                 />

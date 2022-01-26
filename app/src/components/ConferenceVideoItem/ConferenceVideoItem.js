@@ -214,6 +214,8 @@ class ConferenceVideoItem extends React.Component {
 
     if (!this.filterData.offCanvas) {
       this.filterData.offCanvas = new OffscreenCanvas(this.filterData.width, this.filterData.height);
+      this.filterData.offCanvas.width = this.filterData.width;
+      this.filterData.offCanvas.height = this.filterData.height;
       this.filterData.offCtx = this.filterData.offCanvas.getContext('2d');
       canvas.width = this.filterData.width;
       canvas.height = this.filterData.height;
@@ -258,7 +260,17 @@ class ConferenceVideoItem extends React.Component {
             this.filterData.offCtx.putImageData(personMasked, 0, 0);
             this.filterData.offCtx.globalCompositeOperation = 'source-in';
             if (this.video.current) {
-              this.filterData.offCtx.drawImage(this.video.current, 0, 0);
+              this.filterData.offCtx.drawImage(
+                this.video.current,
+                0,
+                0,
+                this.video.current.videoWidth,
+                this.video.current.videoHeight,
+                0,
+                0,
+                this.filterData.width,
+                this.filterData.height,
+              );
               this.filterData.offCtx.globalCompositeOperation = originalOperation;
               this.filterData.ctx.drawImage(this.filterData.offCanvas, 0, 0);
             }
@@ -368,7 +380,13 @@ class ConferenceVideoItem extends React.Component {
             )}
           </div>
           <div className="background-image d-none">
-            <img src={pixInfo?.type === 'image' ? pixInfo?.key : ''} alt="background" height={400} width={400} ref={this.backgroundRef} />
+            <img
+              src={pixInfo?.type === 'image' ? pixInfo?.key : ''}
+              alt="background"
+              height={this.filterData.height}
+              width={this.filterData.width}
+              ref={this.backgroundRef}
+            />
           </div>
           <div className="video-canvas">
             <canvas ref={this.canvas} className={pixInfo?.enabled ? '' : 'd-none'} />
