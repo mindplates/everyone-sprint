@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { Button, ConferenceVideoItem, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
+import { Button, ConferenceVideoItem, ConferenceVideoItem2, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Conference/ConferenceDeviceConfig';
@@ -17,8 +17,6 @@ const peerConnectionConfig = {
 };
 
 class Conference extends React.Component {
-  myStream = null;
-
   myCanvasStream = null;
 
   myScreenStream = null;
@@ -42,6 +40,7 @@ class Conference extends React.Component {
 
     this.state = {
       conference: null,
+      myStream: null,
       code: null,
       align: {
         type: 'CONNECT',
@@ -144,11 +143,11 @@ class Conference extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.myStream) {
-      this.myStream.getTracks().forEach((track) => {
+    const { myStream } = this.state;
+    if (myStream) {
+      myStream.getTracks().forEach((track) => {
         track.stop();
       });
-      this.myStream = null;
     }
 
     this.stopStreamAndVideo(this.myVideo.current);
@@ -343,7 +342,7 @@ class Conference extends React.Component {
 
     this.setState(
       {
-        supportInfo: _.merge(supportInfo, nextSupportInfo),
+        supportInfo: { ..._.merge(supportInfo, nextSupportInfo) },
       },
       () => {
         if (callback) {
@@ -386,7 +385,7 @@ class Conference extends React.Component {
   };
 
   setUpPeerConnection = (userId, isSender) => {
-    const { conference } = this.state;
+    const { conference, myStream } = this.state;
 
     if (!userId) return;
 
@@ -401,6 +400,7 @@ class Conference extends React.Component {
     userInfo.peerConnection = new RTCPeerConnection(peerConnectionConfig);
     userInfo.peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
+        // STEP 2 : 다른 사용자에게 ICE 정보를 송신
         this.sendToUser('ICE', userId, event.candidate);
       }
     };
@@ -421,7 +421,6 @@ class Conference extends React.Component {
     userInfo.peerConnection.oniceconnectionstatechange = () => {
       if (userInfo.peerConnection) {
         const state = userInfo.peerConnection.iceConnectionState;
-
         if (state === 'failed' || state === 'closed' || state === 'disconnected') {
           userInfo.tracking = false;
           this.setState({
@@ -431,21 +430,20 @@ class Conference extends React.Component {
       }
     };
 
-    if (this.myStream) {
+    if (myStream) {
       if (userInfo.peerConnection && userInfo.peerConnection.addStream) {
         const { pixInfo } = this.state;
-
-        console.log(pixInfo.enabled, this.myCanvasStream);
 
         if (pixInfo.enabled && this.myCanvasStream) {
           userInfo.peerConnection.addStream(this.myCanvasStream);
         } else {
-          userInfo.peerConnection.addStream(this.myStream);
+          userInfo.peerConnection.addStream(myStream);
         }
       }
     }
 
     if (isSender) {
+      // STEP 2 : 이미 입장한 유저들에게 SDP offer 송신
       userInfo.peerConnection.createOffer().then(
         (description) => {
           userInfo.peerConnection.setLocalDescription(description).then(() => {
@@ -778,12 +776,24 @@ class Conference extends React.Component {
 
       case 'ICE': {
         if (!isMe) {
-          const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
-          if (!targetUser.peerConnection) {
-            this.setUpPeerConnection(senderInfo.id, false);
-          }
-          targetUser.peerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
-            console.error(e);
+          const addIceCandidate = (handler) => {
+            const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
+            if (!targetUser.peerConnection) {
+              this.setUpPeerConnection(senderInfo.id, false);
+            }
+
+            targetUser.peerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
+              console.error(e);
+              if (handler) {
+                handler();
+              }
+            });
+          };
+
+          addIceCandidate(() => {
+            setTimeout(() => {
+              addIceCandidate();
+            }, 3000);
           });
         }
 
@@ -796,20 +806,27 @@ class Conference extends React.Component {
             this.setUpPeerConnection(senderInfo.id, false);
           }
 
-          targetUser.peerConnection.setRemoteDescription(new RTCSessionDescription(data)).then(() => {
-            if (data.type === 'offer') {
-              targetUser.peerConnection
-                .createAnswer()
-                .then((description) => {
-                  targetUser.peerConnection.setLocalDescription(description).then(() => {
-                    this.sendToUser('SDP', senderInfo.id, targetUser.peerConnection.localDescription);
+          // STEP 4 : SDP answer가 도착하면, remote description 추가
+          targetUser.peerConnection
+            .setRemoteDescription(new RTCSessionDescription(data))
+            .then(() => {
+              if (data.type === 'offer') {
+                // STEP 3 : SDP offer가 도착하면, SDP 송신자에게 내 SDP 정보를 송신
+                targetUser.peerConnection
+                  .createAnswer()
+                  .then((description) => {
+                    targetUser.peerConnection.setLocalDescription(description).then(() => {
+                      this.sendToUser('SDP', senderInfo.id, targetUser.peerConnection.localDescription);
+                    });
+                  })
+                  .catch((e) => {
+                    console.error(e);
                   });
-                })
-                .catch((e) => {
-                  console.error(e);
-                });
-            }
-          });
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
         }
 
         break;
@@ -828,7 +845,7 @@ class Conference extends React.Component {
   };
 
   setControls = (field, value) => {
-    const { controls, isSetting } = this.state;
+    const { controls, isSetting, myStream } = this.state;
 
     this.setState(
       {
@@ -838,7 +855,7 @@ class Conference extends React.Component {
         if (!isSetting) {
           if (field === 'audio' || field === 'video') {
             const { controls: nextControls } = this.state;
-            const audioTrack = this.myStream.getTracks().find((d) => d.kind === field);
+            const audioTrack = myStream.getTracks().find((d) => d.kind === field);
             if (audioTrack) {
               audioTrack.enabled = nextControls[field];
             }
@@ -854,9 +871,9 @@ class Conference extends React.Component {
       return;
     }
 
-    const { supportInfo } = this.state;
+    const { supportInfo, myStream } = this.state;
 
-    if (!this.myStream) {
+    if (myStream) {
       const constraints = mediaUtil.getCurrentConstraints(supportInfo) || {
         video: true,
         audio: true,
@@ -864,7 +881,9 @@ class Conference extends React.Component {
       navigator.mediaDevices
         .getUserMedia(constraints)
         .then((stream) => {
-          this.myStream = stream;
+          this.setState({
+            myStream: stream,
+          });
           this.setDeviceInfoSupported(true);
         })
         .catch(() => {
@@ -873,6 +892,7 @@ class Conference extends React.Component {
     }
   };
 
+  // STEP 1 : 참여하기 버튼을 클릭하여, 방에 들어온 경우, 내 미디어를 세팅하고, 모두에게 JOIN 메세지를 송신
   onJoin = () => {
     const { user } = this.props;
     const { controls } = this.state;
@@ -907,16 +927,18 @@ class Conference extends React.Component {
   };
 
   setCanvasStream = (stream) => {
-    const { conference } = this.state;
+    const { conference, myStream } = this.state;
     const { user } = this.props;
 
     this.myCanvasStream = stream;
 
-    const audioTrack = this.myStream.getTracks().filter((track) => {
+    const audioTrack = myStream.getTracks().filter((track) => {
       return track.kind === 'audio';
     })[0];
 
-    this.myCanvasStream.addTrack(audioTrack);
+    if (audioTrack) {
+      this.myCanvasStream.addTrack(audioTrack);
+    }
 
     const connectedUsers = conference.users
       .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
@@ -935,7 +957,7 @@ class Conference extends React.Component {
 
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -959,9 +981,11 @@ class Conference extends React.Component {
                   <ConferenceDeviceConfig
                     user={user}
                     conference={conference}
-                    stream={this.myStream}
+                    stream={myStream}
                     setStream={(stream) => {
-                      this.myStream = stream;
+                      this.setState({
+                        myStream: stream,
+                      });
                     }}
                     controls={controls}
                     setControls={this.setControls}
@@ -992,13 +1016,13 @@ class Conference extends React.Component {
                                   width: `${100 / videoInfo.cols}%`,
                                 }}
                               >
-                                <ConferenceVideoItem
+                                <ConferenceVideoItem2
                                   filter
                                   controls={controls}
                                   supportInfo={supportInfo}
                                   alias={user.alias}
                                   muted
-                                  stream={this.myStream}
+                                  stream={myStream}
                                   pixInfo={pixInfo}
                                   setCanvasStream={this.setCanvasStream}
                                 />

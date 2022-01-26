@@ -187,6 +187,7 @@ class VideoElement extends React.Component {
           width: useVideoInfo ? `${videoInfo.width}px` : null,
           height: useVideoInfo ? `${videoInfo.height}px` : null,
         }}
+        ref={this.element}
       >
         <div
           className={`video-element ${isCameraDenied ? 'is-camera-denied' : ''}`}

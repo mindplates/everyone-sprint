@@ -2,6 +2,7 @@ import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import _, { throttle } from 'lodash';
 import * as bodyPix from '@tensorflow-models/body-pix';
+import { withResizeDetector } from 'react-resize-detector';
 import { withTranslation } from 'react-i18next';
 import { UserImage } from '@/components';
 import { BODY_PIX } from '@/constants/constants';
@@ -9,6 +10,8 @@ import Spinner from '@/components/Spinner/Spinner';
 import './ConferenceVideoItem.scss';
 
 class ConferenceVideoItem extends React.Component {
+  element = createRef();
+
   video = createRef();
 
   canvas = createRef();
@@ -45,6 +48,7 @@ class ConferenceVideoItem extends React.Component {
 
   async componentDidMount() {
     const { filter } = this.props;
+
     if (filter) {
       this.setState({
         isLoading: true,
@@ -61,7 +65,7 @@ class ConferenceVideoItem extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { pixInfo, stream } = this.props;
+    const { pixInfo, stream, width, height } = this.props;
 
     if (!_.isEqual(pixInfo, prevProps.pixInfo) || !_.isEqual(stream, prevProps.stream)) {
       this.setVideo(stream?.id !== prevProps.stream?.id);
@@ -70,9 +74,14 @@ class ConferenceVideoItem extends React.Component {
     if (stream && !this.init) {
       this.setVideo();
     }
+
+    if (this.init && width > 0 && height > 0 && (width !== prevProps.width || height !== prevProps.height)) {
+      this.setVideo(false, true);
+    }
   }
 
   componentWillUnmount() {
+    this.setSoundsThrottle.cancel();
     this.stopStreamAndVideo(this.video);
     cancelAnimationFrame(this.soundVisualizationFrame);
     cancelAnimationFrame(this.filterData.animationFrame);
@@ -120,27 +129,50 @@ class ConferenceVideoItem extends React.Component {
     });
   };
 
-  setVideo = async (streamChanged) => {
+  setVideo = async (streamChanged, sizeChanged) => {
     this.init = true;
-    const { stream, pixInfo } = this.props;
+    const { stream, pixInfo, supportInfo } = this.props;
+
+    const canvas = this.canvas.current;
+    const video = this.video.current;
 
     if (streamChanged || !this.isSetVideo) {
       this.isSetVideo = true;
       this.video.current.srcObject = stream;
       this.video.current.play();
-      this.setVoiceAnalyser(stream);
+      if (supportInfo?.enabledAudio) {
+        this.setVoiceAnalyser(stream);
+      }
     }
 
     if (pixInfo && pixInfo.enabled) {
-      if (!this.filterData.init) {
+      if (!this.filterData.init || sizeChanged) {
         if (!this.filterData.model) {
           this.filterData.model = await this.loadingModel();
         }
 
+        const elementWidth = this.element.current.offsetWidth;
+        const elementHeight = this.element.current.offsetHeight;
+
         this.filterData.init = true;
         this.filterData.ctx = this.canvas.current.getContext('2d');
-        this.filterData.width = this.video.current.videoWidth;
-        this.filterData.height = this.video.current.videoHeight;
+        const rate = this.video.current.videoHeight / this.video.current.videoWidth;
+
+        let videoWidth = elementWidth;
+        let videoHeight = elementWidth * rate;
+
+        if (videoHeight > elementHeight) {
+          videoHeight = elementHeight;
+          videoWidth = elementHeight / rate;
+        }
+
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
+        video.width = videoWidth;
+        video.height = videoHeight;
+
+        this.filterData.width = videoWidth; // this.video.current.videoWidth;
+        this.filterData.height = videoHeight; // this.video.current.videoHeight;
 
         if (this.video.current) {
           this.video.current.play();
@@ -182,6 +214,8 @@ class ConferenceVideoItem extends React.Component {
 
     if (!this.filterData.offCanvas) {
       this.filterData.offCanvas = new OffscreenCanvas(this.filterData.width, this.filterData.height);
+      this.filterData.offCanvas.width = this.filterData.width;
+      this.filterData.offCanvas.height = this.filterData.height;
       this.filterData.offCtx = this.filterData.offCanvas.getContext('2d');
       canvas.width = this.filterData.width;
       canvas.height = this.filterData.height;
@@ -226,7 +260,17 @@ class ConferenceVideoItem extends React.Component {
             this.filterData.offCtx.putImageData(personMasked, 0, 0);
             this.filterData.offCtx.globalCompositeOperation = 'source-in';
             if (this.video.current) {
-              this.filterData.offCtx.drawImage(this.video.current, 0, 0);
+              this.filterData.offCtx.drawImage(
+                this.video.current,
+                0,
+                0,
+                this.video.current.videoWidth,
+                this.video.current.videoHeight,
+                0,
+                0,
+                this.filterData.width,
+                this.filterData.height,
+              );
               this.filterData.offCtx.globalCompositeOperation = originalOperation;
               this.filterData.ctx.drawImage(this.filterData.offCanvas, 0, 0);
             }
@@ -276,7 +320,7 @@ class ConferenceVideoItem extends React.Component {
     const { isLoading, sounds } = this.state;
 
     return (
-      <div className={`conference-video-item-wrapper g-no-select ${className}}`}>
+      <div className={`conference-video-item-wrapper g-no-select ${className}}`} ref={this.element}>
         {isLoading && (
           <div className="loading">
             <div>
@@ -336,7 +380,13 @@ class ConferenceVideoItem extends React.Component {
             )}
           </div>
           <div className="background-image d-none">
-            <img src={pixInfo?.type === 'image' ? pixInfo?.key : ''} alt="background" height={400} width={400} ref={this.backgroundRef} />
+            <img
+              src={pixInfo?.type === 'image' ? pixInfo?.key : ''}
+              alt="background"
+              height={this.filterData.height}
+              width={this.filterData.width}
+              ref={this.backgroundRef}
+            />
           </div>
           <div className="video-canvas">
             <canvas ref={this.canvas} className={pixInfo?.enabled ? '' : 'd-none'} />
@@ -360,7 +410,7 @@ class ConferenceVideoItem extends React.Component {
   }
 }
 
-export default withTranslation()(ConferenceVideoItem);
+export default withResizeDetector(withTranslation()(ConferenceVideoItem));
 
 ConferenceVideoItem.defaultProps = {
   className: '',
@@ -390,4 +440,19 @@ ConferenceVideoItem.propTypes = {
     key: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   }),
+  supportInfo: PropTypes.shape({
+    enabledAudio: PropTypes.bool,
+    deviceInfo: PropTypes.shape({
+      supported: PropTypes.bool,
+      errorMessage: PropTypes.string,
+      devices: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+          name: PropTypes.name,
+        }),
+      ),
+    }),
+  }),
+  width: PropTypes.number,
+  height: PropTypes.number,
 };
