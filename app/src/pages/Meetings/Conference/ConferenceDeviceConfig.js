@@ -248,6 +248,8 @@ class ConferenceDeviceConfig extends React.Component {
         vh = settings.height;
       });
 
+      console.log(vw, vh);
+
       const deviceIdMap = await mediaUtil.getDeviceIds(currentStream);
 
       const next = {

@@ -70,6 +70,7 @@
     "react-i18next": "^11.14.2",
     "react-redux": "^7.2.6",
     "react-refresh": "^0.8.3",
+    "react-resize-detector": "^7.0.0",
     "react-router-dom": "^5.1.2",
     "react-stomp": "^5.1.0",
     "react-time-ago": "^7.1.4",

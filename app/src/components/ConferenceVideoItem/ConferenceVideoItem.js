@@ -2,6 +2,7 @@ import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import _, { throttle } from 'lodash';
 import * as bodyPix from '@tensorflow-models/body-pix';
+import { withResizeDetector } from 'react-resize-detector';
 import { withTranslation } from 'react-i18next';
 import { UserImage } from '@/components';
 import { BODY_PIX } from '@/constants/constants';
@@ -9,6 +10,8 @@ import Spinner from '@/components/Spinner/Spinner';
 import './ConferenceVideoItem.scss';
 
 class ConferenceVideoItem extends React.Component {
+  element = createRef();
+
   video = createRef();
 
   canvas = createRef();
@@ -45,6 +48,7 @@ class ConferenceVideoItem extends React.Component {
 
   async componentDidMount() {
     const { filter } = this.props;
+
     if (filter) {
       this.setState({
         isLoading: true,
@@ -61,7 +65,7 @@ class ConferenceVideoItem extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { pixInfo, stream } = this.props;
+    const { pixInfo, stream, width, height } = this.props;
 
     if (!_.isEqual(pixInfo, prevProps.pixInfo) || !_.isEqual(stream, prevProps.stream)) {
       this.setVideo(stream?.id !== prevProps.stream?.id);
@@ -69,6 +73,10 @@ class ConferenceVideoItem extends React.Component {
 
     if (stream && !this.init) {
       this.setVideo();
+    }
+
+    if (this.init && width > 0 && height > 0 && (width !== prevProps.width || height !== prevProps.height)) {
+      this.setVideo(false, true);
     }
   }
 
@@ -121,9 +129,12 @@ class ConferenceVideoItem extends React.Component {
     });
   };
 
-  setVideo = async (streamChanged) => {
+  setVideo = async (streamChanged, sizeChanged) => {
     this.init = true;
     const { stream, pixInfo, supportInfo } = this.props;
+
+    const canvas = this.canvas.current;
+    const video = this.video.current;
 
     if (streamChanged || !this.isSetVideo) {
       this.isSetVideo = true;
@@ -135,15 +146,33 @@ class ConferenceVideoItem extends React.Component {
     }
 
     if (pixInfo && pixInfo.enabled) {
-      if (!this.filterData.init) {
+      if (!this.filterData.init || sizeChanged) {
         if (!this.filterData.model) {
           this.filterData.model = await this.loadingModel();
         }
 
+        const elementWidth = this.element.current.offsetWidth;
+        const elementHeight = this.element.current.offsetHeight;
+
         this.filterData.init = true;
         this.filterData.ctx = this.canvas.current.getContext('2d');
-        this.filterData.width = this.video.current.videoWidth;
-        this.filterData.height = this.video.current.videoHeight;
+        const rate = this.video.current.videoHeight / this.video.current.videoWidth;
+
+        let videoWidth = elementWidth;
+        let videoHeight = elementWidth * rate;
+
+        if (videoHeight > elementHeight) {
+          videoHeight = elementHeight;
+          videoWidth = elementHeight / rate;
+        }
+
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
+        video.width = videoWidth;
+        video.height = videoHeight;
+
+        this.filterData.width = videoWidth; // this.video.current.videoWidth;
+        this.filterData.height = videoHeight; // this.video.current.videoHeight;
 
         if (this.video.current) {
           this.video.current.play();
@@ -279,7 +308,7 @@ class ConferenceVideoItem extends React.Component {
     const { isLoading, sounds } = this.state;
 
     return (
-      <div className={`conference-video-item-wrapper g-no-select ${className}}`}>
+      <div className={`conference-video-item-wrapper g-no-select ${className}}`} ref={this.element}>
         {isLoading && (
           <div className="loading">
             <div>
@@ -363,7 +392,7 @@ class ConferenceVideoItem extends React.Component {
   }
 }
 
-export default withTranslation()(ConferenceVideoItem);
+export default withResizeDetector(withTranslation()(ConferenceVideoItem));
 
 ConferenceVideoItem.defaultProps = {
   className: '',
@@ -406,4 +435,6 @@ ConferenceVideoItem.propTypes = {
       ),
     }),
   }),
+  width: PropTypes.number,
+  height: PropTypes.number,
 };
