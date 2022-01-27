@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { Button, ConferenceVideoItem, ConferenceVideoItem2, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
+import { Button, ConferenceVideoItem, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Conference/ConferenceDeviceConfig';
@@ -855,9 +855,9 @@ class Conference extends React.Component {
         if (!isSetting) {
           if (field === 'audio' || field === 'video') {
             const { controls: nextControls } = this.state;
-            const audioTrack = myStream.getTracks().find((d) => d.kind === field);
-            if (audioTrack) {
-              audioTrack.enabled = nextControls[field];
+            const track = myStream.getTracks().find((d) => d.kind === field);
+            if (track) {
+              track.enabled = nextControls[field];
             }
             this.sendToAll(field.toUpperCase(), { [field]: nextControls[field] });
           }
@@ -871,7 +871,7 @@ class Conference extends React.Component {
       return;
     }
 
-    const { supportInfo, myStream } = this.state;
+    const { supportInfo, myStream, controls } = this.state;
 
     if (myStream) {
       const constraints = mediaUtil.getCurrentConstraints(supportInfo) || {
@@ -881,6 +881,16 @@ class Conference extends React.Component {
       navigator.mediaDevices
         .getUserMedia(constraints)
         .then((stream) => {
+          const audioTrack = stream.getTracks().find((d) => d.kind === 'audio');
+          const videoTrack = stream.getTracks().find((d) => d.kind === 'video');
+          if (audioTrack) {
+            audioTrack.enabled = controls.audio;
+          }
+
+          if (videoTrack) {
+            videoTrack.enabled = controls.video;
+          }
+
           this.setState({
             myStream: stream,
           });
@@ -1016,7 +1026,7 @@ class Conference extends React.Component {
                                   width: `${100 / videoInfo.cols}%`,
                                 }}
                               >
-                                <ConferenceVideoItem2
+                                <ConferenceVideoItem
                                   filter
                                   controls={controls}
                                   supportInfo={supportInfo}

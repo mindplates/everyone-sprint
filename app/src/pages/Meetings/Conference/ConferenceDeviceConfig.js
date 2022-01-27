@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import _, { debounce } from 'lodash';
 import { detect } from 'detect-browser';
 import dialog from '@/utils/dialog';
-import { Button, CapabilitiesEditor, ConferenceVideoItem2, Liner, PixInfoEditor, VideoElement } from '@/components';
+import { Button, CapabilitiesEditor, ConferenceVideoItem, Liner, PixInfoEditor, VideoElement } from '@/components';
 import { CAPABILITIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
 import MediaDeviceConfigPopup from '@/pages/Meetings/Conference/MediaDeviceConfigPopup';
@@ -545,7 +545,7 @@ class ConferenceDeviceConfig extends React.Component {
                 />
               )}
               <div className="my-video">
-                <ConferenceVideoItem2 filter controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
+                <ConferenceVideoItem filter controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
               </div>
             </div>
             {openCapabilities && (

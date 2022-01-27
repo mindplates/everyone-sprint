@@ -32,7 +32,6 @@ import Selector from '@/components/Selector/Selector';
 import ParticipantsList from '@/components/ParticipantsList/ParticipantsList';
 import VideoElement from '@/components/VideoElement/VideoElement';
 import ConferenceVideoItem from '@/components/ConferenceVideoItem/ConferenceVideoItem';
-import ConferenceVideoItem2 from '@/components/ConferenceVideoItem/ConferenceVideoItem2';
 import DailyScrumMeeting from '@/components/DailyScrumMeeting/DailyScrumMeeting';
 import Tabs from '@/components/Tabs/Tabs';
 import TextArea from '@/components/TextArea/TextArea';
@@ -84,5 +83,4 @@ export {
   CapabilitiesEditor,
   PixInfoEditor,
   Spinner,
-  ConferenceVideoItem2,
 };
