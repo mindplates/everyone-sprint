@@ -4,6 +4,11 @@
   flex-direction: column;
   background-color: $light;
 
+  &.conference-page {
+    background-color: #111;
+    background-color: $video-item-background-color;
+  }
+
   > div {
     &.app-header,
     &.app-footer {

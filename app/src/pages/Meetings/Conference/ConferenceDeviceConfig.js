@@ -487,7 +487,6 @@ class ConferenceDeviceConfig extends React.Component {
               size="lg"
               rounded
               color="white"
-              outline
               onClick={() => {
                 this.setState({
                   openConfigPopup: !openConfigPopup,
@@ -500,7 +499,6 @@ class ConferenceDeviceConfig extends React.Component {
               size="lg"
               rounded
               color="white"
-              outline
               disabled={!enabledVideo}
               onClick={() => {
                 this.setOpenCapabilities(!openCapabilities);
@@ -512,7 +510,6 @@ class ConferenceDeviceConfig extends React.Component {
               size="lg"
               rounded
               color="white"
-              outline
               disabled={!enabledVideo}
               onClick={() => {
                 this.setOpenPixInfo(!openPixInfo);
@@ -577,36 +574,13 @@ class ConferenceDeviceConfig extends React.Component {
             )}
           </div>
           <div className="user-media-config-buttons">
-            {supportInfo.permissions.camera === 'prompt' && <span>권한 요청 중</span>}
-            {supportInfo.permissions.camera !== 'prompt' && (
-              <Button
-                size="lg"
-                disabled={!enabledVideo}
-                rounded
-                color={this.getButtonColor(enabledVideo, controls.video)}
-                outline={this.getButtonOutline(enabledVideo, controls.video)}
-                onClick={() => {
-                  this.disableControl('video', !controls.video);
-                }}
-              >
-                {!enabledVideo && (
-                  <span className="icon">
-                    <i className="fas fa-exclamation-triangle" />
-                  </span>
-                )}
-                {enabledVideo && controls.video && <i className="fas fa-video" />}
-                {enabledVideo && !controls.video && <i className="fas fa-video-slash" />}
-                {!enabledVideo && <i className="fas fa-video-slash" />}
-              </Button>
-            )}
-            {supportInfo.permissions.camera !== 'prompt' && supportInfo.permissions.microphone === 'prompt' && <span>권한 요청 중</span>}
+            {supportInfo.permissions.microphone === 'prompt' && <span className="is-requesting microphone">{t('권한 요청 중')}</span>}
             {supportInfo.permissions.microphone !== 'prompt' && (
               <Button
                 size="lg"
                 disabled={!enabledAudio}
                 rounded
                 color={this.getButtonColor(enabledAudio, controls.audio)}
-                outline={this.getButtonOutline(enabledAudio, controls.audio)}
                 onClick={() => {
                   this.disableControl('audio', !controls.audio);
                 }}
@@ -621,10 +595,33 @@ class ConferenceDeviceConfig extends React.Component {
                 {!enabledAudio && <i className="fas fa-microphone-slash" />}
               </Button>
             )}
-            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem 0 0.5rem" />
+            {supportInfo.permissions.microphone !== 'prompt' && supportInfo.permissions.camera === 'prompt' && (
+              <span className="is-requesting camera">{t('권한 요청 중')}</span>
+            )}
+            {supportInfo.permissions.camera !== 'prompt' && (
+              <Button
+                size="lg"
+                disabled={!enabledVideo}
+                rounded
+                color={this.getButtonColor(enabledVideo, controls.video)}
+                onClick={() => {
+                  this.disableControl('video', !controls.video);
+                }}
+              >
+                {!enabledVideo && (
+                  <span className="icon">
+                    <i className="fas fa-exclamation-triangle" />
+                  </span>
+                )}
+                {enabledVideo && controls.video && <i className="fas fa-video" />}
+                {enabledVideo && !controls.video && <i className="fas fa-video-slash" />}
+                {!enabledVideo && <i className="fas fa-video-slash" />}
+              </Button>
+            )}
+            <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 1rem 0 0.5rem" />
             <Button
               size="lg"
-              color="primary"
+              color="white"
               onClick={() => {
                 onJoinClick();
               }}

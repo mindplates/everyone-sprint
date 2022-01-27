@@ -2,6 +2,7 @@
   height: 100%;
   display: flex;
   justify-content: center;
+  color: $white;
 
   > div {
     align-self: center;
@@ -109,6 +110,16 @@
     .user-media-config-buttons {
       margin-top: 1rem;
       text-align: center;
+
+      .is-requesting {
+        &.microphone {
+          margin-right: 1rem;
+        }
+
+        &.camera {
+          margin-left: 0.5rem;
+        }
+      }
       > button {
         margin-right: 0.5rem;
         position: relative;
