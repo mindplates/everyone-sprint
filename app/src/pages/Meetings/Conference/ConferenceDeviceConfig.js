@@ -237,7 +237,6 @@ class ConferenceDeviceConfig extends React.Component {
       // 반환된 스트림 지정
 
       setStream(currentStream);
-      // this.myConfigVideo.srcObject = currentStream;
 
       // 현재 세팅된 내용을 저장
       let vw = null;
@@ -247,8 +246,6 @@ class ConferenceDeviceConfig extends React.Component {
         vw = settings.width;
         vh = settings.height;
       });
-
-      console.log(vw, vh);
 
       const deviceIdMap = await mediaUtil.getDeviceIds(currentStream);
 
@@ -548,12 +545,7 @@ class ConferenceDeviceConfig extends React.Component {
                 />
               )}
               <div className="my-video">
-                <ConferenceVideoItem2 filter
-                                      controls={controls}
-                                      supportInfo={supportInfo}
-                                      alias={user.alias}
-                                      muted
-                                      stream={stream} pixInfo={pixInfo} />
+                <ConferenceVideoItem2 filter controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
               </div>
             </div>
             {openCapabilities && (

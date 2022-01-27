@@ -19,8 +19,6 @@ const ConferenceVideoItem2 = (props) => {
 
   const image = useRef();
 
-  const isSetVideo = useRef(false);
-
   const soundVisualizationFrame = useRef();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -75,15 +73,62 @@ const ConferenceVideoItem2 = (props) => {
     });
   };
 
-  const onResize = useCallback(() => {
-    console.log('resize');
-  }, []);
+  const onResize = useCallback(
+    (width, height) => {
+      if (!filter) {
+        return;
+      }
 
-  const { ref: element, width, height } = useResizeDetector({ onResize });
+      if (!isLoaded) {
+        return;
+      }
 
-  if (1 > 2) {
-    console.log(element, width, height, stream);
-  }
+      if (!stream) {
+        return;
+      }
+
+      if (supportInfo?.enabledVideo && pixInfo?.enabled && filterData.current.filteringReady) {
+        const elementWidth = width;
+        const elementHeight = height;
+
+        const { width: settingWidth, height: settingHeight } = supportInfo.mediaConfig.video.settings;
+
+        let rate;
+        if (settingWidth && settingHeight) {
+          rate = settingHeight / settingWidth;
+        } else if (video.current.videoHeight > 40 && video.current.videoWidth > 40) {
+          rate = video.current.videoHeight / video.current.videoWidth;
+        } else {
+          rate = 480 / 640;
+        }
+
+        let videoWidth = elementWidth;
+        let videoHeight = elementWidth * rate;
+
+        if (videoHeight > elementHeight) {
+          videoHeight = elementHeight;
+          videoWidth = elementHeight / rate;
+        }
+
+        filterData.current.width = videoWidth;
+        filterData.current.height = videoHeight;
+        video.current.width = videoWidth;
+        video.current.height = videoHeight;
+        canvas.current.width = videoWidth;
+        canvas.current.height = videoHeight;
+        if (filterData.current.canvasContext) {
+          filterData.current.canvasContext.clearRect(0, 0, videoWidth, videoHeight);
+        }
+      }
+    },
+    [filter, supportInfo, isLoaded, stream, supportInfo, pixInfo],
+  );
+
+  const { ref: element } = useResizeDetector({
+    refreshMode: 'debounce',
+    refreshRate: 200,
+    onResize,
+  });
 
   const startVideoAnimationFrame = (handler) => {
     if (!filterData.current.animationFrame && filterData.current.animationFrame !== false && handler) {
@@ -116,24 +161,6 @@ const ConferenceVideoItem2 = (props) => {
       startVideoAnimationFrame(filtering);
       return;
     }
-
-    /* RESIZE에서 대체해야함
-    if (!filterData.current.hiddenCanvas) {
-      filterData.current.hiddenCanvas = new OffscreenCanvas(filterData.current.width, filterData.current.height);
-      filterData.current.hiddenCanvasContext = filterData.current.hiddenCanvas.getContext('2d');
-      canvas.current.width = filterData.current.width;
-      canvas.current.height = filterData.current.height;
-      video.current.width = filterData.current.width;
-      video.current.height = filterData.current.height;
-      filterData.current.canvasContext = canvas.current.getContext('2d');
-      filterData.current.canvasContext.clearRect(0, 0, filterData.current.width, filterData.current.height);
-
-      if (setCanvasStream) {
-        setCanvasStream(canvas.current.captureStream(25));
-      }
-    }
-
-     */
 
     // https://github.com/tensorflow/tfjs-models/blob/master/body-pix/README.md
     if (filterData.current.model && video.current.readyState === 4) {
@@ -222,65 +249,6 @@ const ConferenceVideoItem2 = (props) => {
     drawAlt();
   }, [stream]);
 
-  const startVideoStream333333 = useCallback(
-    async (streamChanged, sizeChanged) => {
-      if (stream && (streamChanged || !isSetVideo.current)) {
-        isSetVideo.current = true;
-        video.current.srcObject = stream;
-        video.current.play();
-        if (supportInfo?.enabledAudio) {
-          setVoiceAnalyser(stream);
-        }
-      }
-
-      if (pixInfo && pixInfo.enabled) {
-        if (!filterData.current.filteringReady || sizeChanged) {
-          if (!filterData.current.model) {
-            filterData.current.model = await loadingModel();
-          }
-
-          const elementWidth = element.current.offsetWidth;
-          const elementHeight = element.current.offsetHeight;
-
-          filterData.current.filteringReady = true;
-          filterData.current.canvasContext = canvas.current.getContext('2d');
-          const rate = video.current.videoHeight / video.current.videoWidth;
-
-          let videoWidth = elementWidth;
-          let videoHeight = elementWidth * rate;
-
-          if (videoHeight > elementHeight) {
-            videoHeight = elementHeight;
-            videoWidth = elementHeight / rate;
-          }
-
-          canvas.current.width = videoWidth;
-          canvas.current.height = videoHeight;
-          video.current.width = videoWidth;
-          video.current.height = videoHeight;
-
-          filterData.current.width = videoWidth; // this.video.current.videoWidth;
-          filterData.current.height = videoHeight; // this.video.current.videoHeight;
-
-          if (video.current) {
-            video.current.play();
-          }
-        }
-
-        filterData.current.animationFrame = null;
-        startVideoAnimationFrame(filtering);
-      } else if (filterData.current.filteringReady) {
-        filterData.current.filteringReady = false;
-        stopVideoAnimationFrame();
-      }
-    },
-    [pixInfo, supportInfo, stream],
-  );
-
-  if (1 > 2) {
-    console.log(startVideoStream333333);
-  }
-
   const manageAudioVideoAnimationFrame = useCallback(() => {
     if (!isLoaded) {
       return;
@@ -299,7 +267,7 @@ const ConferenceVideoItem2 = (props) => {
       setVoiceAnalyser();
     }
 
-    if (supportInfo?.enabledVideo && pixInfo?.enabled) {
+    if (filter && supportInfo?.enabledVideo && pixInfo?.enabled) {
       if (!filterData.current.model) {
         getModel();
       }
@@ -308,7 +276,21 @@ const ConferenceVideoItem2 = (props) => {
       const elementHeight = element.current.offsetHeight;
 
       filterData.current.canvasContext = canvas.current.getContext('2d');
-      const rate = video.current.videoHeight / video.current.videoWidth;
+
+      const { width: settingWidth, height: settingHeight } = supportInfo.mediaConfig.video.settings;
+
+      let rate;
+      if (settingWidth && settingHeight) {
+        rate = settingHeight / settingWidth;
+      } else if (video.current.videoHeight > 40 && video.current.videoWidth > 40) {
+        rate = video.current.videoHeight / video.current.videoWidth;
+      } else {
+        rate = 480 / 640;
+      }
+
+      if (video.current) {
+        video.current.play();
+      }
 
       let videoWidth = elementWidth;
       let videoHeight = elementWidth * rate;
@@ -320,14 +302,6 @@ const ConferenceVideoItem2 = (props) => {
 
       filterData.current.width = videoWidth;
       filterData.current.height = videoHeight;
-      video.current.width = videoWidth;
-      video.current.height = videoHeight;
-      canvas.current.width = videoWidth;
-      canvas.current.height = videoHeight;
-
-      if (video.current) {
-        video.current.play();
-      }
 
       filterData.current.hiddenCanvas = new OffscreenCanvas(videoWidth, videoHeight);
       filterData.current.hiddenCanvasContext = filterData.current.hiddenCanvas.getContext('2d');
@@ -344,7 +318,6 @@ const ConferenceVideoItem2 = (props) => {
 
       filterData.current.filteringReady = true;
 
-      console.log('START FILTERING');
       stopVideoAnimationFrame();
 
       setTimeout(() => {
@@ -353,8 +326,7 @@ const ConferenceVideoItem2 = (props) => {
       }, 100);
     }
 
-    if ((!supportInfo?.enabledVideo || !pixInfo?.enabled) && filterData.current.filteringReady) {
-      console.log('STOP FILTERING');
+    if (filter && (!supportInfo?.enabledVideo || !pixInfo?.enabled) && filterData.current.filteringReady) {
       if (setCanvasStream) {
         setCanvasStream(null);
       }
@@ -364,11 +336,11 @@ const ConferenceVideoItem2 = (props) => {
         stopVideoAnimationFrame();
       }
     }
-  }, [pixInfo, supportInfo, stream]);
+  }, [pixInfo, supportInfo, stream, filter]);
 
   useEffect(() => {
     manageAudioVideoAnimationFrame();
-  }, [pixInfo, supportInfo, stream, isLoaded]);
+  }, [pixInfo, supportInfo, stream, isLoaded, filter]);
 
   const loaded = () => {
     setIsLoaded(true);
@@ -410,11 +382,13 @@ const ConferenceVideoItem2 = (props) => {
         video.current.srcObject = null;
       }
 
-      stopVideoAnimationFrame();
+      if (filter) {
+        stopVideoAnimationFrame();
+      }
 
       cancelAnimationFrame(soundVisualizationFrame.current);
     };
-  }, []);
+  }, [filter]);
 
   return (
     <div className={`conference-video-item-wrapper g-no-select ${className}}`} ref={element}>
@@ -542,6 +516,14 @@ ConferenceVideoItem2.propTypes = {
           name: PropTypes.name,
         }),
       ),
+    }),
+    mediaConfig: PropTypes.shape({
+      video: PropTypes.shape({
+        settings: PropTypes.shape({
+          width: PropTypes.number,
+          height: PropTypes.number,
+        }),
+      }),
     }),
   }),
 };
