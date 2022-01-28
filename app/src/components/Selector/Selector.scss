@@ -5,18 +5,47 @@
   &.size-xs {
     height: $control-xs-height;
     font-size: 0.8rem;
+    .selector-current {
+      > span {
+        &.text {
+          max-height: $control-xs-height;
+        }
+      }
+    }
   }
 
   &.size-sm {
     height: $control-sm-height;
+    .selector-current {
+      > span {
+        &.text {
+          max-height: $control-sm-height;
+        }
+      }
+    }
   }
 
   &.size-md {
     height: $control-md-height;
+
+    .selector-current {
+      > span {
+        &.text {
+          max-height: $control-md-height;
+        }
+      }
+    }
   }
 
   &.size-lg {
     height: $control-lg-height;
+    .selector-current {
+      > span {
+        &.text {
+          max-height: $control-lg-height;
+        }
+      }
+    }
   }
 
   .selector-overlay {
@@ -73,7 +102,7 @@
         flex: 1;
         align-self: center;
         overflow: hidden;
-        line-height: 160%;
+        line-height: 240%;
       }
 
       &.liner {
@@ -205,7 +234,6 @@
         text-align: left;
         margin-bottom: 1px;
         line-height: 100%;
-        white-space: nowrap;
 
         &:last-child {
           border-bottom: none;

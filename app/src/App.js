@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {
   Common,
   Conference,
+  ConferenceHeader,
   EditMeeting,
   EditSprint,
   Entry,
@@ -22,15 +23,18 @@ import {
 import './App.scss';
 import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
 
-const NO_MAX_WIDTH_PATTERNS = [/^\/conferences\/[A-Za-z0-9]*/, /^\/starting-line[A-Za-z0-9]*/];
+const CONFERENCE_PATTERN = /^\/conferences\/[A-Za-z0-9]*/;
+const NO_MAX_WIDTH_PATTERNS = [CONFERENCE_PATTERN, /^\/starting-line[A-Za-z0-9]*/];
 
 function App({ history, setting }) {
   const noMaxWidth = NO_MAX_WIDTH_PATTERNS.some((pattern) => pattern.test(history.location.pathname));
+  const isConference = CONFERENCE_PATTERN.test(history.location.pathname);
 
   return (
-    <div className="app-wrapper">
+    <div className={`app-wrapper ${isConference ? 'conference-page' : ''}`}>
       <div className="app-header">
-        <Header />
+        {isConference && <ConferenceHeader />}
+        {!isConference && <Header />}
       </div>
       <div className={`app-content ${noMaxWidth ? 'no-max-width' : ''}`}>
         <Switch>

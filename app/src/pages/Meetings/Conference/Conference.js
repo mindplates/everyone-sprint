@@ -912,6 +912,7 @@ class Conference extends React.Component {
           isSetting: false,
         },
         () => {
+          // this.setFullScreen(true);
           this.setMyMedia();
           this.sendToAll('JOIN', controls);
           setTimeout(() => {

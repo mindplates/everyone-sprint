@@ -51,7 +51,7 @@
 
   > div.config-popup {
     position: absolute;
-    top: 62px;
+    top: 59px;
     left: 0;
     right: 0;
     z-index: 4;
@@ -61,10 +61,10 @@
       > div.config-popup-layout {
         > div {
           .arrow {
-            right: 89px;
+            right: 76px;
 
             @media (max-width: 992px) {
-              right: 32px;
+              right: 19px;
             }
           }
         }
@@ -87,7 +87,7 @@
       text-align: right;
       position: relative;
       z-index: 4;
-      padding-right: 2px;
+      padding-right: 1rem;
 
       > div {
         width: 300px;
@@ -101,12 +101,12 @@
         .arrow {
           position: absolute;
           top: -7px;
-          right: 150px;
+          right: 134px;
           @media (max-width: 992px) {
-            right: 76px;
+            right: 62px;
           }
           @media (max-width: 576px) {
-            right: 69px;
+            right: 54px;
           }
           > div {
             width: 12px;
@@ -158,7 +158,7 @@
           }
 
           .sub-title {
-            margin-bottom: 0.25rem;
+            margin-bottom: 1rem;
           }
 
           .quick-menu {
@@ -528,7 +528,7 @@
                   display: inline-block;
                   width: 10px;
                   height: 10px;
-                  background-color: $white;
+                  background-color: $black;
                   transform: rotate(45deg);
                   position: relative;
                   top: -5px;

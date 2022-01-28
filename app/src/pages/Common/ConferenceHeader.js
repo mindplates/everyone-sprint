@@ -4,31 +4,25 @@ import { withTranslation } from 'react-i18next';
 import TimeAgo from 'javascript-time-ago/modules/TimeAgo';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { HistoryPropTypes, SettingPropTypes, UserPropTypes } from '@/proptypes';
+import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import storage from '@/utils/storage';
-import MENU from '@/constants/menu';
-import { BlockTitle, Button, Liner, Overlay, ProductLogo, UserImage } from '@/components';
-import { setSetting, setUserInfo } from '@/store/actions';
-import './Header.scss';
+import { BlockTitle, Button, Liner, ProductLogo, UserImage } from '@/components';
+import { setUserInfo } from '@/store/actions';
+import './ConferenceHeader.scss';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
+import commonUtil from '@/utils/commonUtil';
 
-const Header = (props) => {
-  const { setSetting: setSettingReducer, setUserInfo: setUserInfoReducer, setting, location, t, user, i18n, history } = props;
+const ConferenceHeader = (props) => {
+  const { setUserInfo: setUserInfoReducer, location, t, user, i18n, history } = props;
 
-  const [menuOpen, setMenuOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
 
   useEffect(() => {}, []);
 
   const values = (location.pathname.split('/') || []).filter((value) => value);
   const [currentTopMenu] = values;
-
-  let menuAlias = currentTopMenu;
-  if (currentTopMenu === 'conferences') {
-    menuAlias = 'meetings';
-  }
 
   const logout = () => {
     storage.setItem('auth', 'token', null);
@@ -74,68 +68,16 @@ const Header = (props) => {
   };
 
   return (
-    <div className={`header-wrapper ${setting.collapsed ? 'collapsed' : ''}`}>
+    <div className="conference-header-wrapper">
       <div className="header-content">
-        <div className="top-menu">
-          <Button
-            className="menu-toggle-button"
-            size="lg"
-            outline
+        <div className="product-logo">
+          <Link
+            to="/"
             onClick={() => {
-              setMenuOpen(!menuOpen);
+              commonUtil.fullscreen(false);
             }}
           >
-            <i className="fas fa-bars" />
-          </Button>
-          {menuOpen && (
-            <Overlay
-              className="mobile-overlay"
-              zIndex={10}
-              onClick={() => {
-                setMenuOpen(false);
-              }}
-            />
-          )}
-          <ul className={menuOpen ? 'opened' : ''}>
-            <li className="menu-toggle-list-button">
-              <Button
-                className="menu-toggle-button"
-                size="lg"
-                outline
-                onClick={() => {
-                  setMenuOpen(!menuOpen);
-                }}
-              >
-                <i className="fas fa-bars" />
-              </Button>
-            </li>
-            {Object.keys(MENU).map((topMenuKey) => {
-              const menu = MENU[topMenuKey];
-              return (
-                <li key={topMenuKey} className={`${(menuAlias || 'public-park') === topMenuKey ? 'selected' : 'no-selected'}`}>
-                  <Link
-                    to={`/${topMenuKey}`}
-                    onClick={() => {
-                      setMenuOpen(false);
-                    }}
-                  >
-                    <div>
-                      <div className={`icon ${topMenuKey}`}>
-                        <div>
-                          <span>{menu.icon}</span>
-                        </div>
-                      </div>
-                      <div className="text">{t(menu.name)}</div>
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        <div className="product-logo">
-          <Link to="/">
-            <ProductLogo hover collapsed={setting.collapsed} />
+            <ProductLogo hover backgroundColor="transparent" name={false} width="auto" />
           </Link>
         </div>
         <div className="top-button">
@@ -152,7 +94,6 @@ const Header = (props) => {
                 {!(user && user.id) && <i className="fas fa-cog" />}
               </Button>
             </div>
-
             {!(user && user.id) && (
               <div className="login">
                 <div className={currentTopMenu === 'starting-line' ? 'selected' : ''}>
@@ -165,22 +106,6 @@ const Header = (props) => {
                 </div>
               </div>
             )}
-            <div className="liner">
-              <Liner height="10px" color="black" />
-            </div>
-            <div>
-              <Button
-                className="collapsed-button"
-                size="lg"
-                outline
-                onClick={() => {
-                  setSettingReducer('collapsed', !setting.collapsed);
-                }}
-              >
-                {!setting.collapsed && <i className="fas fa-angle-up" />}
-                {setting.collapsed && <i className="fas fa-angle-down" />}
-              </Button>
-            </div>
           </div>
         </div>
       </div>
@@ -238,7 +163,7 @@ const Header = (props) => {
                     </div>
                   </div>
                 )}
-                <BlockTitle className={`sub-title ${user && user.id ? '' : 'pt-0'}`} size="xs" bold={false}>
+                <BlockTitle className="sub-title" size="xs" bold={false}>
                   QUICK MENU
                 </BlockTitle>
                 <div className="d-flex quick-menu">
@@ -305,21 +230,19 @@ const Header = (props) => {
 const mapStateToProps = (state) => {
   return {
     systemInfo: state.systemInfo,
-    setting: state.setting,
     user: state.user,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setSetting: (key, value) => dispatch(setSetting(key, value)),
     setUserInfo: (user) => dispatch(setUserInfo(user)),
   };
 };
 
-export default withRouter(withTranslation()(connect(mapStateToProps, mapDispatchToProps)(Header)));
+export default withRouter(withTranslation()(connect(mapStateToProps, mapDispatchToProps)(ConferenceHeader)));
 
-Header.propTypes = {
+ConferenceHeader.propTypes = {
   t: PropTypes.func,
   i18n: PropTypes.objectOf(PropTypes.any),
   systemInfo: PropTypes.shape({
@@ -328,8 +251,6 @@ Header.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string,
   }),
-  setting: SettingPropTypes,
-  setSetting: PropTypes.func,
   user: UserPropTypes,
   setUserInfo: PropTypes.func,
   history: HistoryPropTypes,

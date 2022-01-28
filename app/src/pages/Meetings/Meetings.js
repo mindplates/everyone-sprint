@@ -12,6 +12,7 @@ import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomIn
 import { DATE_FORMATS } from '@/constants/constants';
 import './Meetings.scss';
 import dateUtil from '@/utils/dateUtil';
+import commonUtil from '@/utils/commonUtil';
 
 const ranges = [
   {
@@ -250,6 +251,7 @@ const Meetings = ({ t, user, history }) => {
               <MeetingList
                 meetings={list}
                 onJoin={(code) => {
+                  commonUtil.fullscreen(true);
                   history.push(`/conferences/${code}`);
                 }}
               />

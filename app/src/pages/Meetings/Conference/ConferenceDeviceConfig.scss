@@ -2,14 +2,10 @@
   height: 100%;
   display: flex;
   justify-content: center;
+  color: $white;
 
   > div {
     align-self: center;
-
-    @media (max-width: 576px) {
-      align-self: flex-start;
-      padding-top: 2rem;
-    }
 
     .current-user-info {
       text-align: center;
@@ -17,6 +13,8 @@
 
       .text {
         font-weight: bold;
+        font-size: 1.2rem;
+        color: $gray-400;
       }
 
       .user-count {
@@ -57,15 +55,16 @@
     .video-content {
       display: flex;
       flex-direction: row;
-      max-width: 100%;
+      max-width: 640px;
       justify-content: center;
 
       .my-video {
-        width: 640px;
-        height: 480px;
+        width: 100%;
+        height: 100%;
       }
 
-      .capabilities-editor {
+      .capabilities-editor,
+      .pix-info-editor {
         @media (max-width: 992px) {
           position: absolute;
           left: 0;
@@ -74,7 +73,7 @@
           height: auto !important;
           width: calc(100% - 4rem);
           margin: 0 2rem;
-          z-index: 3;
+          z-index: 6;
         }
       }
 
@@ -109,6 +108,42 @@
     .user-media-config-buttons {
       margin-top: 1rem;
       text-align: center;
+      position: relative;
+
+      .enter-button {
+        display: inline-block;
+
+        @media (max-width: 576px) {
+          display: block;
+          margin-top: 1rem;
+        }
+      }
+
+      .enter-liner {
+        @media (max-width: 576px) {
+          display: none !important;
+        }
+      }
+
+      .exit-button {
+        position: absolute;
+        left: 0;
+
+        @media (max-width: 576px) {
+          top : 0;
+        }
+      }
+
+      .is-requesting {
+        &.microphone {
+          margin-right: 1rem;
+        }
+
+        &.camera {
+          margin-left: 0.5rem;
+        }
+      }
+
       > button {
         margin-right: 0.5rem;
         position: relative;

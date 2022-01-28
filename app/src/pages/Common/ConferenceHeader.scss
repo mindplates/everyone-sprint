@@ -1,0 +1,329 @@
+.conference-header-wrapper {
+  position: fixed;
+  top: 0;
+  height: 60px;
+  display: flex;
+  width: 100%;
+  background-color: transparent;
+  transition: all 0.3s;
+  z-index: 5;
+
+  > div.header-content > .product-logo > a {
+    color: $black;
+  }
+
+  &.header-wrapper,
+  > div.header-content > .top-menu ul li > a,
+  > div.header-content > .top-button > div > div > button,
+  > div.header-content > .top-button > div > div > div > a {
+    color: $black;
+  }
+
+  > div.config-popup {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    border-radius: 0;
+
+    &.logged-in {
+      > div.config-popup-layout {
+        > div {
+          .arrow {
+            right: 18px;
+          }
+        }
+      }
+    }
+
+    > div.config-popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+    }
+
+    > div.config-popup-layout {
+      width: 100%;
+      margin: 0 auto;
+      text-align: right;
+      position: relative;
+      z-index: 4;
+      padding-right: 1rem;
+
+      > div {
+        width: 300px;
+        background-color: $white;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        display: inline-block;
+        text-align: left;
+        padding: 1rem;
+        position: relative;
+
+        .arrow {
+          position: absolute;
+          top: -7px;
+          right: 150px;
+          @media (max-width: 992px) {
+            right: 76px;
+          }
+          @media (max-width: 576px) {
+            right: 69px;
+          }
+          > div {
+            width: 12px;
+            height: 12px;
+            background-color: $white;
+            transform: rotate(45deg);
+            border-left: 1px solid rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(0, 0, 0, 0.3);
+          }
+        }
+
+        .config-popup-content {
+          color: $black;
+          .user-info {
+            display: flex;
+
+            > div {
+              align-self: center;
+              &:last-child {
+                line-height: 100%;
+                flex-grow: 1;
+                padding: 0 1rem;
+
+                > div {
+                  margin-bottom: 0.25rem;
+                  &:last-child {
+                    margin-bottom: 0;
+                  }
+
+                  &.name {
+                    font-size: 14px;
+                    font-family: pretendard, sans-serif;
+                    text-transform: uppercase;
+                    span:first-child {
+                      margin-right: 0.25rem;
+                    }
+                  }
+
+                  &.email {
+                    font-size: 13px;
+                    text-transform: uppercase;
+                  }
+
+                  &.link {
+                  }
+                }
+              }
+            }
+          }
+
+          .sub-title {
+            margin-bottom: 1rem;
+          }
+
+          .quick-menu {
+            margin-bottom: 0.5rem;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+            > div {
+              align-self: center;
+            }
+            .quick-menu-label {
+              width: 28px;
+            }
+            .quick-menu-icon {
+              margin-left: 0.25rem;
+              width: 25px;
+              font-size: 14px;
+              &.language-icon {
+                font-size: 18px;
+              }
+            }
+
+            .radio-button {
+              > button {
+                min-width: 42px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  > div.header-content {
+    align-self: center;
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    margin: 0 auto;
+
+    > .product-logo {
+      flex-grow: 0;
+      padding: 0 1rem;
+
+
+      > a {
+        height: 100%;
+        display: block;
+      }
+    }
+
+    > .top-button {
+      flex: 1 1 0;
+      padding-right: 1rem;
+      display: flex;
+
+      @media (max-width: 992px) {
+        padding-right: 0;
+      }
+
+      > div {
+        display: flex;
+        text-align: right;
+        width: 100%;
+
+        > div {
+          align-self: center;
+          height: 100%;
+
+          &.user-icon {
+            flex-grow: 1;
+            @media (max-width: 992px) {
+              &.logged-in {
+                margin-right: 1rem;
+              }
+            }
+            > button {
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+              width: auto;
+            }
+          }
+
+          &.login {
+            display: flex;
+            text-align: right;
+            white-space: nowrap;
+            > div {
+              align-self: center;
+              flex-grow: 1;
+              text-align: right;
+              height: 100%;
+              position: relative;
+
+              .arrow {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 10px;
+                text-align: center;
+                line-height: 100%;
+                display: none;
+
+                > div {
+                  vertical-align: top;
+                  line-height: 100%;
+                  display: inline-block;
+                  width: 10px;
+                  height: 10px;
+                  background-color: $white;
+                  transform: rotate(45deg);
+                  position: relative;
+                  top: -5px;
+                }
+              }
+
+              &.selected {
+                .arrow {
+                  display: block;
+                }
+              }
+
+              > a {
+                text-decoration: none;
+                font-family: pretendard, sans-serif;
+                height: 100%;
+                display: inline-flex;
+                padding: 0 1rem;
+                font-size: 14px;
+
+                @media (max-width: 576px) {
+                  padding: 0 0.75rem;
+                }
+
+                &:hover {
+                  background-color: $header-hover-bg-color;
+                }
+                > span {
+                  align-self: center;
+                }
+              }
+            }
+          }
+
+          &.liner {
+            display: flex;
+            margin: 0 0.5rem;
+            > div {
+              align-self: center;
+            }
+
+            @media (max-width: 992px) {
+              display: none;
+            }
+          }
+
+          > button {
+            height: 100%;
+            border-radius: 0;
+            padding-left: 0;
+            padding-right: 0;
+            width: 40px;
+            border: none;
+            background-color: transparent;
+
+            > div {
+              > div {
+                border: $border;
+              }
+            }
+
+            &:hover {
+              border: none;
+
+              > div {
+                > div {
+                  border: $border-dark;
+                }
+              }
+            }
+
+            @media (max-width: 992px) {
+              width: auto;
+              padding-left: 1rem;
+              padding-right: 1rem;
+            }
+
+            &:hover {
+              background-color: transparent;
+            }
+
+            &:focus {
+              box-shadow: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
