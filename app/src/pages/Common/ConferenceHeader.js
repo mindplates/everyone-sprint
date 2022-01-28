@@ -12,6 +12,7 @@ import './ConferenceHeader.scss';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
+import commonUtil from '@/utils/commonUtil';
 
 const ConferenceHeader = (props) => {
   const { setUserInfo: setUserInfoReducer, location, t, user, i18n, history } = props;
@@ -70,7 +71,12 @@ const ConferenceHeader = (props) => {
     <div className="conference-header-wrapper">
       <div className="header-content">
         <div className="product-logo">
-          <Link to="/">
+          <Link
+            to="/"
+            onClick={() => {
+              commonUtil.fullscreen(false);
+            }}
+          >
             <ProductLogo hover backgroundColor="transparent" name={false} width="auto" />
           </Link>
         </div>
@@ -118,47 +124,44 @@ const ConferenceHeader = (props) => {
               </div>
               <div className="config-popup-content">
                 {user && user.id && (
-                  <>
-                    <div className="user-info">
-                      <div>
-                        <UserImage size="50px" imageType={user.imageType} imageData={user.imageData} rounded border />
+                  <div className="user-info">
+                    <div>
+                      <UserImage size="50px" imageType={user.imageType} imageData={user.imageData} rounded border />
+                    </div>
+                    <div>
+                      <div className="name">
+                        <span>{user.alias}</span>
+                        {user.name && <span>[{user.name}]</span>}
                       </div>
-                      <div>
-                        <div className="name">
-                          <span>{user.alias}</span>
-                          {user.name && <span>[{user.name}]</span>}
-                        </div>
-                        <div className="email">{user.email}</div>
-                        <div className="link">
-                          <Button
-                            size="xs"
-                            outline
-                            color="white"
-                            onClick={() => {
-                              history.push('/my-info');
-                              setConfigOpen(false);
-                            }}
-                          >
-                            내 정보
-                          </Button>
-                          <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
-                          <Button
-                            className="log-button"
-                            size="xs"
-                            outline
-                            color="danger"
-                            onClick={() => {
-                              logout();
-                              setConfigOpen(false);
-                            }}
-                          >
-                            로그아웃
-                          </Button>
-                        </div>
+                      <div className="email">{user.email}</div>
+                      <div className="link">
+                        <Button
+                          size="xs"
+                          outline
+                          color="white"
+                          onClick={() => {
+                            history.push('/my-info');
+                            setConfigOpen(false);
+                          }}
+                        >
+                          내 정보
+                        </Button>
+                        <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                        <Button
+                          className="log-button"
+                          size="xs"
+                          outline
+                          color="danger"
+                          onClick={() => {
+                            logout();
+                            setConfigOpen(false);
+                          }}
+                        >
+                          로그아웃
+                        </Button>
                       </div>
                     </div>
-                    <Liner width="100%" height="1px" color="light" margin="0.75rem 0" />
-                  </>
+                  </div>
                 )}
                 <BlockTitle className="sub-title" size="xs" bold={false}>
                   QUICK MENU

@@ -1,16 +1,19 @@
-import React, { createRef } from 'react';
+import React from 'react';
 import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
+import { withResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
-import _, { debounce } from 'lodash';
+import _ from 'lodash';
 import { detect } from 'detect-browser';
 import dialog from '@/utils/dialog';
-import { Button, CapabilitiesEditor, ConferenceVideoItem, Liner, PixInfoEditor, VideoElement } from '@/components';
+import { Button, CapabilitiesEditor, ConferenceVideoItem, Liner, PixInfoEditor } from '@/components';
 import { CAPABILITIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
 import MediaDeviceConfigPopup from '@/pages/Meetings/Conference/MediaDeviceConfigPopup';
-import { UserPropTypes } from '@/proptypes';
+import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import mediaUtil from '@/utils/mediaUtil';
 import './ConferenceDeviceConfig.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const browser = detect();
 
@@ -19,17 +22,11 @@ class ConferenceDeviceConfig extends React.Component {
 
   isShowFirefoxPermissionMessage = false;
 
-  myConfigVideo = createRef();
-
-  resizeDebounced;
-
   permissions = {
     microphone: null,
     camera: null,
   };
 
-  // Running BodyPix on a video stream
-  // https://jameshfisher.com/2020/09/23/running-bodypix-on-a-video-stream/
   constructor(props) {
     super(props);
 
@@ -38,44 +35,43 @@ class ConferenceDeviceConfig extends React.Component {
       openCapabilities: false,
       openPixInfo: false,
       capabilities: [],
-      size: {
-        width: '100%',
-        height: '100%',
-      },
       pixInfo: {
         enabled: false,
         type: 'effect',
         key: 'none',
         value: null,
       },
+      size: {
+        width: 640,
+        height: 480,
+      },
     };
 
     this.setDeviceInfoDebounced = _.debounce(this.setDeviceInfo, 100);
-    this.resizeDebounced = debounce(this.resize, 500);
   }
 
   componentDidMount() {
     this.checkPermissions();
-    window.addEventListener('resize', this.resizeDebounced);
-    this.resizeDebounced();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { width, height } = this.props;
+    const { mediaConfig } = this.state;
+
+    if (width !== prevProps.width || height !== prevProps.height) {
+      this.setSize(width, height, mediaConfig);
+    }
   }
 
   componentWillUnmount() {
     if (this.setDeviceInfoDebounced) {
       this.setDeviceInfoDebounced.cancel();
     }
-
-    if (this.resizeDebounced) {
-      this.resizeDebounced.cancel();
-    }
   }
 
-  resize = () => {
+  setSize = (width, height, mediaConfig) => {
     this.setState({
-      size: {
-        width: window.innerWidth - 32,
-        height: window.innerHeight - 32,
-      },
+      size: this.getSize(width, height, mediaConfig?.video?.settings.width, mediaConfig?.video?.settings.height),
     });
   };
 
@@ -356,12 +352,7 @@ class ConferenceDeviceConfig extends React.Component {
     nextPixInfo.type = type;
     nextPixInfo.key = key;
     nextPixInfo.value = value;
-
-    if (nextPixInfo.type === 'effect' && nextPixInfo.key === 'none') {
-      nextPixInfo.enabled = false;
-    } else {
-      nextPixInfo.enabled = true;
-    }
+    nextPixInfo.enabled = !(nextPixInfo.type === 'effect' && nextPixInfo.key === 'none');
 
     this.setState({
       pixInfo: nextPixInfo,
@@ -423,26 +414,36 @@ class ConferenceDeviceConfig extends React.Component {
     return 'white';
   };
 
-  getButtonOutline = (enabled, on) => {
-    if (!enabled) {
-      return true;
+  getSize = (width, height, videoWidth = 640, videoHeight = 480) => {
+    const size = {
+      width: 640,
+      height: 480,
+    };
+
+    const maxHeight = height - 200;
+    const maxWidth = width - 100;
+    const rate = videoHeight / videoWidth;
+
+    size.width = videoWidth;
+    size.height = videoHeight;
+
+    if (size.width > maxWidth) {
+      size.width = maxWidth;
+      size.height = size.width * rate;
     }
 
-    if (enabled && on) {
-      return true;
+    if (size.height > maxHeight) {
+      size.height = maxHeight;
+      size.width = size.height / rate;
     }
 
-    if (enabled && !on) {
-      return false;
-    }
-
-    return false;
+    return size;
   };
 
   render() {
-    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls, stream } = this.props;
+    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls, stream, history } = this.props;
     const { mediaConfig, enabledAudio, enabledVideo } = supportInfo;
-    const { openConfigPopup, openCapabilities, capabilities, size, pixInfo, openPixInfo } = this.state;
+    const { openConfigPopup, openCapabilities, capabilities, pixInfo, openPixInfo, size } = this.state;
 
     const connectedUser = (conference?.users || []).filter((u) => u.participant?.connected && u.userId !== user.id);
 
@@ -520,28 +521,13 @@ class ConferenceDeviceConfig extends React.Component {
           </div>
           <div className="video-content">
             <div>
-              {false && (
-                <VideoElement
-                  className="config-video"
-                  videoInfo={{
-                    width: size.width < mediaConfig.video.settings.width ? size.width : mediaConfig.video.settings.width,
-                    height: mediaConfig.video.settings.height,
-                    videoWidth: mediaConfig.video.settings.width,
-                    videoHeight: mediaConfig.video.settings.height,
-                  }}
-                  onRef={(d) => {
-                    this.myConfigVideo = d;
-                  }}
-                  supportInfo={supportInfo}
-                  setUpUserMedia={this.setDeviceInfo}
-                  muted
-                  isPrompt={supportInfo.permissions.microphone === 'prompt' || supportInfo.permissions.camera === 'prompt'}
-                  isMicrophoneDenied={supportInfo.permissions.microphone === 'denied'}
-                  isCameraDenied={supportInfo.permissions.camera === 'denied'}
-                  pixInfo={pixInfo}
-                />
-              )}
-              <div className="my-video">
+              <div
+                className="my-video"
+                style={{
+                  width: `${size.width}px`,
+                  height: `${size.height}px`,
+                }}
+              >
                 <ConferenceVideoItem filter controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
               </div>
             </div>
@@ -618,15 +604,30 @@ class ConferenceDeviceConfig extends React.Component {
                 {!enabledVideo && <i className="fas fa-video-slash" />}
               </Button>
             )}
-            <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 1rem 0 0.5rem" />
+            <Liner className="enter-liner" display="inline-block" width="1px" height="10px" color="white" margin="0 1rem 0 0.5rem" />
+            <div className="enter-button">
+              <Button
+                size="lg"
+                color="white"
+                onClick={() => {
+                  onJoinClick();
+                }}
+              >
+                {t('입장')}
+              </Button>
+            </div>
             <Button
+              className="exit-button"
               size="lg"
-              color="white"
+              disabled={!enabledVideo}
+              rounded
+              color="danger"
               onClick={() => {
-                onJoinClick();
+                commonUtil.fullscreen(false);
+                history.push('/meetings');
               }}
             >
-              {t('참가하기')}
+              <i className="fas fa-times" />
             </Button>
           </div>
         </div>
@@ -635,10 +636,11 @@ class ConferenceDeviceConfig extends React.Component {
   }
 }
 
-export default withTranslation()(ConferenceDeviceConfig);
+export default withTranslation()(withRouter(withResizeDetector(ConferenceDeviceConfig)));
 
 ConferenceDeviceConfig.propTypes = {
   t: PropTypes.func,
+  history: HistoryPropTypes,
   supportInfo: PropTypes.shape({
     permissions: PropTypes.shape({
       microphone: PropTypes.string,
@@ -724,4 +726,6 @@ ConferenceDeviceConfig.propTypes = {
   }),
   setControls: PropTypes.func,
   setPixInfo: PropTypes.func,
+  width: PropTypes.number,
+  height: PropTypes.number,
 };

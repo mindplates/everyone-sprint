@@ -199,49 +199,46 @@ const Header = (props) => {
               </div>
               <div className="config-popup-content">
                 {user && user.id && (
-                  <>
-                    <div className="user-info">
-                      <div>
-                        <UserImage size="50px" imageType={user.imageType} imageData={user.imageData} rounded border />
+                  <div className="user-info">
+                    <div>
+                      <UserImage size="50px" imageType={user.imageType} imageData={user.imageData} rounded border />
+                    </div>
+                    <div>
+                      <div className="name">
+                        <span>{user.alias}</span>
+                        {user.name && <span>[{user.name}]</span>}
                       </div>
-                      <div>
-                        <div className="name">
-                          <span>{user.alias}</span>
-                          {user.name && <span>[{user.name}]</span>}
-                        </div>
-                        <div className="email">{user.email}</div>
-                        <div className="link">
-                          <Button
-                            size="xs"
-                            outline
-                            color="white"
-                            onClick={() => {
-                              history.push('/my-info');
-                              setConfigOpen(false);
-                            }}
-                          >
-                            내 정보
-                          </Button>
-                          <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
-                          <Button
-                            className="log-button"
-                            size="xs"
-                            outline
-                            color="danger"
-                            onClick={() => {
-                              logout();
-                              setConfigOpen(false);
-                            }}
-                          >
-                            로그아웃
-                          </Button>
-                        </div>
+                      <div className="email">{user.email}</div>
+                      <div className="link">
+                        <Button
+                          size="xs"
+                          outline
+                          color="white"
+                          onClick={() => {
+                            history.push('/my-info');
+                            setConfigOpen(false);
+                          }}
+                        >
+                          내 정보
+                        </Button>
+                        <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                        <Button
+                          className="log-button"
+                          size="xs"
+                          outline
+                          color="danger"
+                          onClick={() => {
+                            logout();
+                            setConfigOpen(false);
+                          }}
+                        >
+                          로그아웃
+                        </Button>
                       </div>
                     </div>
-                    <Liner width="100%" height="1px" color="light" margin="0.75rem 0" />
-                  </>
+                  </div>
                 )}
-                <BlockTitle className="sub-title" size="xs" bold={false}>
+                <BlockTitle className={`sub-title ${user && user.id ? '' : 'pt-0'}`} size="xs" bold={false}>
                   QUICK MENU
                 </BlockTitle>
                 <div className="d-flex quick-menu">

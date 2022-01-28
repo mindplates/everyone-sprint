@@ -28,7 +28,7 @@ const NO_MAX_WIDTH_PATTERNS = [CONFERENCE_PATTERN, /^\/starting-line[A-Za-z0-9]*
 
 function App({ history, setting }) {
   const noMaxWidth = NO_MAX_WIDTH_PATTERNS.some((pattern) => pattern.test(history.location.pathname));
-  const isConference = NO_MAX_WIDTH_PATTERNS.some((pattern) => pattern.test(history.location.pathname));
+  const isConference = CONFERENCE_PATTERN.test(history.location.pathname);
 
   return (
     <div className={`app-wrapper ${isConference ? 'conference-page' : ''}`}>
