@@ -27,7 +27,7 @@ class Conference extends React.Component {
 
   myVideo = createRef();
 
-  streamingContent = createRef();
+  videoListContent = createRef();
 
   setVideoInfoDebounced;
 
@@ -167,77 +167,16 @@ class Conference extends React.Component {
     window.removeEventListener('resize', this.setVideoInfoDebounced);
   }
 
-  setVideoInfo1 = () => {
-    if (this.streamingContent && this.streamingContent.current) {
-      const { conference } = this.state;
-
-      const contentWidth = this.streamingContent.current.offsetWidth;
-      const contentHeight = this.streamingContent.current.offsetHeight;
-
-      let width;
-      let height;
-      let videoWidth;
-      let videoHeight;
-
-      let connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected).length;
-      if (connectedUserCount < 3) {
-        connectedUserCount = 4;
-      }
-
-      const sqrtNo = Math.ceil(Math.sqrt(connectedUserCount));
-
-      let rows = 0;
-      let cols = 0;
-
-      if (contentWidth > contentHeight) {
-        rows = sqrtNo;
-        cols = Math.ceil(connectedUserCount / rows);
-        width = contentWidth / rows;
-        height = contentHeight / cols;
-      } else {
-        cols = sqrtNo;
-        rows = Math.ceil(connectedUserCount / cols);
-
-        width = contentWidth / rows;
-        height = contentHeight / cols;
-
-        if (height > width * 2) {
-          cols = Math.ceil((connectedUserCount / rows) * 2);
-          rows = Math.ceil(connectedUserCount / cols);
-          width = contentWidth / rows;
-          height = contentHeight / cols;
-        }
-      }
-
-      if (width * 3 > height * 4) {
-        videoHeight = height - 32;
-        videoWidth = (videoHeight * 4) / 3;
-      } else {
-        videoWidth = width - 32;
-        videoHeight = (videoWidth * 3) / 4;
-      }
-
-      this.setState({
-        videoInfo: {
-          width,
-          height,
-          videoWidth,
-          videoHeight,
-          init: true,
-        },
-      });
-    }
-  };
-
   setVideoInfo = () => {
-    if (this.streamingContent && this.streamingContent.current) {
+    if (this.videoListContent && this.videoListContent.current) {
       const { conference, videoInfo } = this.state;
 
-      const contentWidth = this.streamingContent.current.offsetWidth;
-      const contentHeight = this.streamingContent.current.offsetHeight;
+      const contentWidth = this.videoListContent.current.offsetWidth;
+      const contentHeight = this.videoListContent.current.offsetHeight;
 
       const rate = contentWidth / contentHeight;
-      const connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected).length;
+      const connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected).length - 1;
+
       /*
       if (connectedUserCount < 3) {
         connectedUserCount = 3;
@@ -249,7 +188,7 @@ class Conference extends React.Component {
 
       if (rate >= 1) {
         const rate1 = contentWidth / contentHeight;
-        rows = Math.ceil(connectedUserCount / (rate1 + 1));
+        rows = Math.floor(connectedUserCount / (rate1 + 1));
         if (rows < 1) {
           rows = 1;
         }
@@ -653,7 +592,7 @@ class Conference extends React.Component {
 
     const { user } = this.props;
 
-    // console.log(type, data, senderInfo);
+    console.log(type, data, senderInfo);
 
     const isMe = Number(senderInfo.id) === Number(user.id);
 
@@ -855,11 +794,13 @@ class Conference extends React.Component {
         if (!isSetting) {
           if (field === 'audio' || field === 'video') {
             const { controls: nextControls } = this.state;
-            const track = myStream.getTracks().find((d) => d.kind === field);
-            if (track) {
-              track.enabled = nextControls[field];
+            if (myStream) {
+              const track = myStream.getTracks().find((d) => d.kind === field);
+              if (track) {
+                track.enabled = nextControls[field];
+              }
+              this.sendToAll(field.toUpperCase(), { [field]: nextControls[field] });
             }
-            this.sendToAll(field.toUpperCase(), { [field]: nextControls[field] });
           }
         }
       },
@@ -1020,11 +961,12 @@ class Conference extends React.Component {
                                 </div>
                               </div>
                             )}
-                            <div className="video-list-content" ref={this.streamingContent}>
+                            <div className="video-list-content" ref={this.videoListContent}>
                               <div
+                                className="my-video"
                                 style={{
-                                  height: `${100 / videoInfo.rows}%`,
-                                  width: `${100 / videoInfo.cols}%`,
+                                  width: `${200}px`,
+                                  height: `${(200 * supportInfo.mediaConfig.video.settings.height) / supportInfo.mediaConfig.video.settings.width}px`,
                                 }}
                               >
                                 <ConferenceVideoItem
@@ -1041,13 +983,28 @@ class Conference extends React.Component {
                               {conference.users
                                 .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
                                 .filter((userInfo) => userInfo.participant?.connected)
-                                .map((userInfo) => {
+                                .map((userInfo, index) => {
+                                  let lastCol = false;
+                                  let lastRow = false;
+                                  if (index > 0) {
+                                    const rowNumber = Math.floor(index / videoInfo.cols);
+                                    const colNumber = (index - videoInfo.cols * rowNumber) % videoInfo.cols;
+                                    if (colNumber + 1 === videoInfo.cols) {
+                                      lastCol = true;
+                                    }
+                                    if (rowNumber + 1 === videoInfo.rows) {
+                                      lastRow = true;
+                                    }
+                                  }
+
                                   return (
                                     <div
                                       key={userInfo.id}
                                       style={{
-                                        height: `${100 / videoInfo.rows}%`,
-                                        width: `${100 / videoInfo.cols}%`,
+                                        height: `calc((100% - ${16 * (videoInfo.rows - 1)}px) / ${videoInfo.rows})`,
+                                        width: `calc((100% - ${16 * (videoInfo.cols - 1)}px) / ${videoInfo.cols})`,
+                                        marginRight: `${lastCol ? 0 : '16px'}`,
+                                        marginBottom: `${lastRow ? 0 : '16px'}`,
                                       }}
                                     >
                                       <ConferenceVideoItem
@@ -1059,8 +1016,8 @@ class Conference extends React.Component {
                                         imageType={userInfo.imageType}
                                         imageData={userInfo.imageData}
                                         controls={{
-                                          audio: userInfo.participant.audio,
-                                          video: userInfo.participant.video,
+                                          audio: userInfo.participant?.audio,
+                                          video: userInfo.participant?.video,
                                         }}
                                       />
                                     </div>
@@ -1074,7 +1031,6 @@ class Conference extends React.Component {
                               size="md"
                               rounded
                               color="white"
-                              outline
                               onClick={() => {
                                 this.setControls('audio', !controls.audio);
                               }}
@@ -1086,7 +1042,6 @@ class Conference extends React.Component {
                               size="md"
                               rounded
                               color="white"
-                              outline
                               onClick={() => {
                                 this.setControls('video', !controls.video);
                               }}
@@ -1096,7 +1051,7 @@ class Conference extends React.Component {
                             </Button>
                             <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
                             {!screenShare.sharing && !controls.sharing && (
-                              <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" outline onClick={this.startScreenShare}>
+                              <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" onClick={this.startScreenShare}>
                                 <i className="fas fa-desktop" />
                               </Button>
                             )}
@@ -1115,7 +1070,6 @@ class Conference extends React.Component {
                               size="md"
                               rounded
                               color="danger"
-                              outline
                               onClick={() => {
                                 history.push('/');
                               }}
