@@ -14,7 +14,7 @@
       display: flex;
       position: relative;
       flex-direction: column;
-      padding: 60px 1rem 1rem;
+      padding: 120px 1rem 1rem;
 
       > div {
         display: flex;
@@ -27,7 +27,7 @@
           display: flex;
           flex-grow: 1;
           padding: 0;
-          margin-bottom: 2rem;
+          margin-bottom: 60px;
           > div.video-list-content {
             flex-grow: 1;
             position: relative;
@@ -38,7 +38,7 @@
 
               &.my-video {
                 position: absolute;
-                bottom: -2rem;
+                bottom: -60px;
                 right: 0;
                 width: 200px;
                 height: 200px;
