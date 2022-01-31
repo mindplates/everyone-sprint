@@ -14,27 +14,36 @@
       display: flex;
       position: relative;
       flex-direction: column;
-      padding: 1rem;
+      padding: 60px 1rem 1rem;
 
       > div {
         display: flex;
         flex-grow: 1;
         flex-direction: column;
-        background-color: $white;
-        border: 1px solid rgba(0, 0, 0, 0.3);
         border-radius: 4px;
         position: relative;
 
         .video-content {
           display: flex;
           flex-grow: 1;
-          padding: 0.5rem;
-          _background-color: #000;
+          padding: 0;
+          margin-bottom: 2rem;
           > div.video-list-content {
             flex-grow: 1;
             position: relative;
+            line-height: 0;
             > div {
               display: inline-flex;
+              line-height: 160%;
+
+              &.my-video {
+                position: absolute;
+                bottom: -2rem;
+                right: 0;
+                width: 200px;
+                height: 200px;
+                z-index: 4;
+              }
             }
           }
 

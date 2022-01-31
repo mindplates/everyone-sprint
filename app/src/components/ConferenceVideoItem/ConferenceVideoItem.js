@@ -162,6 +162,11 @@ const ConferenceVideoItem = (props) => {
       return;
     }
 
+    if (video.current.width < 40 || video.current.height < 40) {
+      startVideoAnimationFrame(filtering);
+      return;
+    }
+
     // https://github.com/tensorflow/tfjs-models/blob/master/body-pix/README.md
     if (filterData.current.model && video.current.readyState === 4) {
       filterData.current.model
@@ -377,7 +382,7 @@ const ConferenceVideoItem = (props) => {
     return () => {
       setSoundsThrottled.cancel();
 
-      if (video.current && video.current.srcObject) {
+      if (filter && video.current && video.current.srcObject) {
         video.current.srcObject.getTracks().forEach((track) => track.stop());
         video.current.srcObject = null;
       }
