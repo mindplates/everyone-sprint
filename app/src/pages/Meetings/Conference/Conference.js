@@ -1026,76 +1026,97 @@ class Conference extends React.Component {
                             </div>
                           </div>
                           <div className="controls">
-                            <Button
-                              className="first"
-                              size="md"
-                              rounded
-                              color="white"
-                              onClick={() => {
-                                this.setControls('audio', !controls.audio);
-                              }}
-                            >
-                              {controls.audio && <i className="fas fa-microphone" />}
-                              {!controls.audio && <i className="fas fa-microphone-slash" />}
-                            </Button>
-                            <Button
-                              size="md"
-                              rounded
-                              color="white"
-                              onClick={() => {
-                                this.setControls('video', !controls.video);
-                              }}
-                            >
-                              {controls.video && <i className="fas fa-video" />}
-                              {!controls.video && <i className="fas fa-video-slash" />}
-                            </Button>
-                            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
-                            {!screenShare.sharing && !controls.sharing && (
-                              <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" onClick={this.startScreenShare}>
-                                <i className="fas fa-desktop" />
+                            <div>
+                              <Button
+                                className="first"
+                                size="md"
+                                rounded
+                                color="white"
+                                onClick={() => {
+                                  this.setControls('audio', !controls.audio);
+                                }}
+                              >
+                                {controls.audio && <i className="fas fa-microphone" />}
+                                {!controls.audio && <i className="fas fa-microphone-slash" />}
                               </Button>
-                            )}
-                            {!screenShare.sharing && controls.sharing && (
-                              <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
-                                <i className="fas fa-desktop" />
-                              </Button>
-                            )}
-                            {screenShare.sharing && (
-                              <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
-                                공유 중지 요청
-                              </Button>
-                            )}
-                            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
-                            <Button
-                              size="md"
-                              rounded
-                              color="danger"
-                              onClick={() => {
-                                history.push('/');
-                              }}
-                            >
-                              <i className="fas fa-times" />
-                            </Button>
-                            <div className="participants-button">
                               <Button
                                 size="md"
                                 rounded
                                 color="white"
-                                outline
                                 onClick={() => {
-                                  this.setControls('participants', !controls.participants);
+                                  this.setControls('video', !controls.video);
                                 }}
                               >
-                                {controls.participants && <i className="fas fa-toggle-on" />}
-                                {!controls.participants && <i className="fas fa-toggle-off" />}
+                                {controls.video && <i className="fas fa-video" />}
+                                {!controls.video && <i className="fas fa-video-slash" />}
                               </Button>
+                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+                              {!screenShare.sharing && !controls.sharing && (
+                                <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" onClick={this.startScreenShare}>
+                                  <i className="fas fa-desktop" />
+                                </Button>
+                              )}
+                              {!screenShare.sharing && controls.sharing && (
+                                <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
+                                  <i className="fas fa-desktop" />
+                                </Button>
+                              )}
+                              {screenShare.sharing && (
+                                <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
+                                  공유 중지 요청
+                                </Button>
+                              )}
+                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+                              <Button
+                                size="md"
+                                rounded
+                                color="danger"
+                                onClick={() => {
+                                  history.push('/');
+                                }}
+                              >
+                                <i className="fas fa-times" />
+                              </Button>
+                              <div className="additional-button">
+                                <Button
+                                  size="md"
+                                  rounded
+                                  color="white"
+                                  data-tip={t('참석자 목록')}
+                                  className={controls.participants ? 'selected' : ''}
+                                  onClick={() => {
+                                    this.setControls('participants', !controls.participants);
+                                  }}
+                                >
+                                  <i className="fas fa-child" />
+                                </Button>
+                                <Button
+                                  size="md"
+                                  rounded
+                                  color="white"
+                                  data-tip={t('채팅')}
+                                  className={controls.participants ? 'selected' : ''}
+                                  onClick={() => {}}
+                                  disabled
+                                >
+                                  <i className="far fa-comment-dots" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       {controls.participants && (
                         <div className="participants-list">
-                          <ParticipantsList conference={conference} align={align} setAlign={this.setAlign} sharingUserId={screenShare.userId} />
+                          <ParticipantsList
+                            conference={conference}
+                            align={align}
+                            setAlign={this.setAlign}
+                            sharingUserId={screenShare.userId}
+                            onExitButtonClick={() => {
+                              this.setControls('participants', !controls.participants);
+                            }}
+                          />
                         </div>
                       )}
                     </PageContent>

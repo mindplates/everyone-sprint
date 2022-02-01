@@ -14,7 +14,7 @@
       display: flex;
       position: relative;
       flex-direction: column;
-      padding: 120px 1rem 1rem;
+      padding: 120px 1rem 0;
 
       > div {
         display: flex;
@@ -27,7 +27,7 @@
           display: flex;
           flex-grow: 1;
           padding: 0;
-          margin-bottom: 60px;
+          _margin-bottom: 60px;
           > div.video-list-content {
             flex-grow: 1;
             position: relative;
@@ -38,11 +38,13 @@
 
               &.my-video {
                 position: absolute;
-                bottom: -60px;
-                right: 0;
+                bottom: -90px;
+                left: 1rem;
                 width: 200px;
                 height: 200px;
                 z-index: 4;
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                border-radius: 20px;
               }
             }
           }
@@ -84,18 +86,31 @@
 
         > .controls {
           text-align: center;
-          border-top: 1px solid rgba(0, 0, 0, 0.1);
           padding: 1rem;
-          position: relative;
+          height: 120px;
+          display: flex;
+          > div {
+            align-self: center;
+            width: 100%;
+            position: relative;
 
-          .first {
-            margin-right: 0.5rem;
-          }
+            .first {
+              margin-right: 0.5rem;
+            }
 
-          .participants-button {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
+            .additional-button {
+              position: absolute;
+              right: 1rem;
+              bottom: 0;
+
+              > button {
+                margin-left: 1rem;
+              }
+
+              .selected {
+                background-color: $yellow;
+              }
+            }
           }
         }
       }
@@ -103,7 +118,8 @@
 
     .participants-list {
       width: 300px;
-      border-left: 1px solid rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 5;
     }
   }
 }
