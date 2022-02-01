@@ -11,6 +11,7 @@ import ConferenceDeviceConfig from '@/pages/Meetings/Conference/ConferenceDevice
 import EmptyConference from './EmptyConference';
 import mediaUtil from '@/utils/mediaUtil';
 import './Conference.scss';
+import dateUtil from '@/utils/dateUtil';
 
 const peerConnectionConfig = {
   iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
@@ -100,6 +101,10 @@ class Conference extends React.Component {
         type: 'effect',
         key: 'none',
         value: null,
+      },
+      statistics: {
+        count: 0,
+        time: 0,
       },
     };
   }
@@ -907,9 +912,19 @@ class Conference extends React.Component {
     });
   };
 
+  addSpeak = (count, time) => {
+    const { statistics } = this.state;
+    const nextStatistics = { ...statistics };
+    nextStatistics.count += count;
+    nextStatistics.time += time;
+    this.setState({
+      statistics: nextStatistics,
+    });
+  };
+
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -951,6 +966,19 @@ class Conference extends React.Component {
                   <>
                     <PageTitle className="d-none">{conference?.name}</PageTitle>
                     <PageContent className="conference-content">
+                      <div className="statistics">
+                        <div>
+                          <span className="icon">
+                            <i className="fas fa-compact-disc" />
+                          </span>
+                          <span className="count">
+                            {statistics.count}
+                            {t('회')}
+                          </span>
+                          <span className="times">/</span>
+                          <span className="duration">{dateUtil.getDurationMinutes(statistics.time)}</span>
+                        </div>
+                      </div>
                       <div className="streaming-content">
                         <div>
                           <div className={`video-content ${isSharing ? 'sharing' : ''}`}>
@@ -965,8 +993,9 @@ class Conference extends React.Component {
                               <div
                                 className="my-video"
                                 style={{
-                                  width: `${200}px`,
-                                  height: `${(200 * supportInfo.mediaConfig.video.settings.height) / supportInfo.mediaConfig.video.settings.width}px`,
+                                  width: `${supportInfo.mediaConfig.video.settings.width}px`,
+                                  height: `${supportInfo.mediaConfig.video.settings.height}px`,
+                                  transform: `scale(${200 / supportInfo.mediaConfig.video.settings.width})`,
                                 }}
                               >
                                 <ConferenceVideoItem
@@ -978,6 +1007,7 @@ class Conference extends React.Component {
                                   stream={myStream}
                                   pixInfo={pixInfo}
                                   setCanvasStream={this.setCanvasStream}
+                                  addSpeak={this.addSpeak}
                                 />
                               </div>
                               {conference.users
@@ -1026,76 +1056,97 @@ class Conference extends React.Component {
                             </div>
                           </div>
                           <div className="controls">
-                            <Button
-                              className="first"
-                              size="md"
-                              rounded
-                              color="white"
-                              onClick={() => {
-                                this.setControls('audio', !controls.audio);
-                              }}
-                            >
-                              {controls.audio && <i className="fas fa-microphone" />}
-                              {!controls.audio && <i className="fas fa-microphone-slash" />}
-                            </Button>
-                            <Button
-                              size="md"
-                              rounded
-                              color="white"
-                              onClick={() => {
-                                this.setControls('video', !controls.video);
-                              }}
-                            >
-                              {controls.video && <i className="fas fa-video" />}
-                              {!controls.video && <i className="fas fa-video-slash" />}
-                            </Button>
-                            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
-                            {!screenShare.sharing && !controls.sharing && (
-                              <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" onClick={this.startScreenShare}>
-                                <i className="fas fa-desktop" />
+                            <div>
+                              <Button
+                                className="first"
+                                size="md"
+                                rounded
+                                color="white"
+                                onClick={() => {
+                                  this.setControls('audio', !controls.audio);
+                                }}
+                              >
+                                {controls.audio && <i className="fas fa-microphone" />}
+                                {!controls.audio && <i className="fas fa-microphone-slash" />}
                               </Button>
-                            )}
-                            {!screenShare.sharing && controls.sharing && (
-                              <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
-                                <i className="fas fa-desktop" />
-                              </Button>
-                            )}
-                            {screenShare.sharing && (
-                              <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
-                                공유 중지 요청
-                              </Button>
-                            )}
-                            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
-                            <Button
-                              size="md"
-                              rounded
-                              color="danger"
-                              onClick={() => {
-                                history.push('/');
-                              }}
-                            >
-                              <i className="fas fa-times" />
-                            </Button>
-                            <div className="participants-button">
                               <Button
                                 size="md"
                                 rounded
                                 color="white"
-                                outline
                                 onClick={() => {
-                                  this.setControls('participants', !controls.participants);
+                                  this.setControls('video', !controls.video);
                                 }}
                               >
-                                {controls.participants && <i className="fas fa-toggle-on" />}
-                                {!controls.participants && <i className="fas fa-toggle-off" />}
+                                {controls.video && <i className="fas fa-video" />}
+                                {!controls.video && <i className="fas fa-video-slash" />}
                               </Button>
+                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+                              {!screenShare.sharing && !controls.sharing && (
+                                <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" onClick={this.startScreenShare}>
+                                  <i className="fas fa-desktop" />
+                                </Button>
+                              )}
+                              {!screenShare.sharing && controls.sharing && (
+                                <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
+                                  <i className="fas fa-desktop" />
+                                </Button>
+                              )}
+                              {screenShare.sharing && (
+                                <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
+                                  공유 중지 요청
+                                </Button>
+                              )}
+                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+                              <Button
+                                size="md"
+                                rounded
+                                color="danger"
+                                onClick={() => {
+                                  history.push('/');
+                                }}
+                              >
+                                <i className="fas fa-times" />
+                              </Button>
+                              <div className="additional-button">
+                                <Button
+                                  size="md"
+                                  rounded
+                                  color="white"
+                                  data-tip={t('참석자 목록')}
+                                  className={controls.participants ? 'selected' : ''}
+                                  onClick={() => {
+                                    this.setControls('participants', !controls.participants);
+                                  }}
+                                >
+                                  <i className="fas fa-child" />
+                                </Button>
+                                <Button
+                                  size="md"
+                                  rounded
+                                  color="white"
+                                  data-tip={t('채팅')}
+                                  className={controls.participants ? 'selected' : ''}
+                                  onClick={() => {}}
+                                  disabled
+                                >
+                                  <i className="far fa-comment-dots" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       {controls.participants && (
                         <div className="participants-list">
-                          <ParticipantsList conference={conference} align={align} setAlign={this.setAlign} sharingUserId={screenShare.userId} />
+                          <ParticipantsList
+                            conference={conference}
+                            align={align}
+                            setAlign={this.setAlign}
+                            sharingUserId={screenShare.userId}
+                            onExitButtonClick={() => {
+                              this.setControls('participants', !controls.participants);
+                            }}
+                          />
                         </div>
                       )}
                     </PageContent>

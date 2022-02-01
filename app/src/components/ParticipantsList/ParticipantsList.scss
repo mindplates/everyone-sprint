@@ -25,12 +25,22 @@
         .user-align-content {
           flex-grow: 1;
           text-align: right;
+          display: flex;
           .user-align {
+            flex-grow: 1;
             > button {
               padding-left: 0;
               padding-right: 0;
               min-width: 30px;
             }
+          }
+
+          > div {
+            align-self: center;
+          }
+
+          .close-button {
+            margin-left: 1rem;
           }
         }
       }
@@ -52,34 +62,20 @@
           margin: 0;
           padding: 0;
           list-style: none;
-          border: 1px solid rgba(0, 0, 0, 0.2);
+
           li {
             display: flex;
             border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-            padding-bottom: 0.5rem;
-            padding-top: 0.5rem;
-
-            &:last-child {
-              border-bottom: none;
-            }
+            padding: 0.5rem;
 
             > div {
               align-self: center;
               opacity: 0.5;
 
-              &.connect-status {
-                > div {
-                  margin: 0 0.25rem;
-                  width: 10px;
-                  height: 10px;
-                  border-radius: 50%;
-                  display: inline-block;
-                  background-color: $gray-300;
-                }
-              }
-
               &.user-icon {
-                margin-right: 0.25rem;
+                margin-right: 0.5rem;
+                border: 2px solid transparent;
+                border-radius: 50%;
               }
 
               &.user-info {
@@ -111,10 +107,8 @@
             &.visited {
               > div {
                 opacity: 1;
-                &.connect-status {
-                  > div {
-                    background-color: $gray-500;
-                  }
+                &.user-icon {
+                  border: 2px solid $gray-500;
                 }
               }
             }
@@ -122,10 +116,9 @@
             &.connected.visited {
               > div {
                 opacity: 1;
-                &.connect-status {
-                  > div {
-                    background-color: $green;
-                  }
+
+                &.user-icon {
+                  border: 2px solid $green;
                 }
               }
             }

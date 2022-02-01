@@ -102,6 +102,13 @@ function getTimeAtStartOfDay(dateString) {
   return today.getTime();
 }
 
+function getDurationMinutes(val, format) {
+  return moment
+    .utc(val)
+    .local()
+    .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.minutes].moment);
+}
+
 const dateUtil = {
   getDateString,
   getDate,
@@ -118,6 +125,7 @@ const dateUtil = {
   getUserLocale,
   getTimeAtStartOfDay,
   getLocalDateISOString,
+  getDurationMinutes,
 };
 
 export default dateUtil;

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import * as bodyPix from '@tensorflow-models/body-pix';
-import _, { throttle } from 'lodash';
+import _, { debounce, throttle } from 'lodash';
 import PropTypes from 'prop-types';
 import Spinner from '@/components/Spinner/Spinner';
 import { UserImage } from '@/components';
@@ -10,14 +10,21 @@ import './ConferenceVideoItem.scss';
 
 import { BODY_PIX } from '@/constants/constants';
 
+const spokenDetectionLimit = 80;
+const spokenSensitive = 2000;
+
 const ConferenceVideoItem = (props) => {
-  const { t, className, controls, alias, muted, tracking, id, imageType, imageData, pixInfo, filter, stream, supportInfo, setCanvasStream } = props;
+  const { t, className, controls, alias, muted, tracking, id, imageType, imageData, pixInfo, filter, stream, supportInfo, setCanvasStream, addSpeak } = props;
 
   const video = useRef();
 
   const canvas = useRef();
 
   const image = useRef();
+
+  const startSpeakTime = useRef(null);
+
+  const isStopSpoken = useRef(false);
 
   const soundVisualizationFrame = useRef();
 
@@ -26,6 +33,8 @@ const ConferenceVideoItem = (props) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const [sounds, setSounds] = useState([]);
+
+  const currentSounds = useRef([]);
 
   const filterData = useRef({
     animationFrame: null,
@@ -37,6 +46,25 @@ const ConferenceVideoItem = (props) => {
     width: null,
     height: null,
   });
+
+  const stopSpeak = () => {
+    if (startSpeakTime.current) {
+      addSpeak(1, Date.now() - startSpeakTime.current);
+    }
+
+    startSpeakTime.current = null;
+    isStopSpoken.current = false;
+  };
+
+  const addSpeakTime = () => {
+    if (startSpeakTime.current) {
+      addSpeak(0, Date.now() - startSpeakTime.current);
+      startSpeakTime.current = Date.now();
+    }
+  };
+
+  const stopSpeakDebounce = useMemo(() => debounce(stopSpeak, spokenSensitive), []);
+  const addSpeakThrottle = useMemo(() => throttle(addSpeakTime, 1000), []);
 
   const setSoundsThrottled = useMemo(
     () =>
@@ -57,12 +85,41 @@ const ConferenceVideoItem = (props) => {
           nextSounds[i] = Math.round(nextSounds[i] > 0 ? (nextSounds[i] / max) * 100 : 0);
         }
 
-        if (!_.isEqual(sounds, nextSounds)) {
+        const sum = nextSounds.reduce((prev, current) => {
+          return prev + current;
+        });
+
+        if (addSpeak) {
+          if (sum > spokenDetectionLimit) {
+            if (!startSpeakTime.current) {
+              startSpeakTime.current = Date.now();
+            } else {
+              addSpeakThrottle();
+            }
+            stopSpeakDebounce.cancel();
+            isStopSpoken.current = false;
+          }
+
+          if (sum < spokenDetectionLimit && startSpeakTime.current && isStopSpoken.current === false) {
+            isStopSpoken.current = true;
+            stopSpeakDebounce();
+          }
+        }
+
+        if (!_.isEqual(currentSounds.current, nextSounds)) {
+          currentSounds.current = nextSounds;
           setSounds(nextSounds);
         }
       }, 100),
-    [],
+    [addSpeak],
   );
+
+  useEffect(() => {
+    stopSpeakDebounce.cancel();
+    if (addSpeak && !controls.audio && startSpeakTime.current) {
+      stopSpeak();
+    }
+  }, [addSpeak, controls.audio]);
 
   const loadingModel = () => {
     return bodyPix.load({
@@ -531,4 +588,5 @@ ConferenceVideoItem.propTypes = {
       }),
     }),
   }),
+  addSpeak: PropTypes.func,
 };

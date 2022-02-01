@@ -25,12 +25,12 @@
 
 .common-wrapper {
   .__react_component_tooltip {
-    background-color: $header-bg-color;
-    color: $black;
+    _background-color: $header-bg-color;
+    _color: $black;
     font-weight: bold;
 
     &::after {
-      border-top-color: $header-bg-color !important;
+      _border-top-color: $header-bg-color !important;
     }
   }
   .common-message {

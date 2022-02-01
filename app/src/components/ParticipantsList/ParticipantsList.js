@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import ReactTimeAgo from 'react-time-ago';
 import dateUtil from '@/utils/dateUtil';
-import { Block, BlockTitle, UserImage } from '@/components';
+import { Block, BlockTitle, ExitButton, UserImage } from '@/components';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { UserPropTypes } from '@/proptypes';
 import './ParticipantsList.scss';
@@ -29,12 +29,13 @@ class ParticipantsList extends React.PureComponent {
       setAlign,
       user,
       sharingUserId,
+      onExitButtonClick,
     } = this.props;
 
     return (
       <div className={`participants-list-wrapper ${className}`}>
         <Block className="p-3 user-list-content">
-          <BlockTitle size="sm" className="title pt-0">
+          <BlockTitle size="sm" className="title pt-0 pb-3 mb-1">
             <div className="title-content">
               <div>{t('참석자')}</div>
               <div className="user-align-content">
@@ -63,6 +64,7 @@ class ParticipantsList extends React.PureComponent {
                     }
                   }}
                 />
+                <ExitButton className="close-button" size="xxs" color="black" onClick={onExitButtonClick} />
               </div>
             </div>
           </BlockTitle>
@@ -79,19 +81,35 @@ class ParticipantsList extends React.PureComponent {
                       return b.alias.localeCompare(a.alias);
                     }
 
-                    const aString = `${a.participant?.connected ? 'A' : 'B'}${a.userId}`;
-                    const bString = `${b.participant?.connected ? 'A' : 'B'}${b.userId}`;
+                    let aPriority = '';
+                    let bPriority = '';
+
+                    if (a.participant?.connected) {
+                      aPriority += 'A';
+                    } else if (a.participant?.leaveTime) {
+                      aPriority += 'B';
+                    } else {
+                      aPriority += 'C';
+                    }
+
+                    if (b.participant?.connected) {
+                      bPriority += 'A';
+                    } else if (b.participant?.leaveTime) {
+                      bPriority += 'B';
+                    } else {
+                      bPriority += 'C';
+                    }
+
+                    const aString = `${aPriority}${a.userId}`;
+                    const bString = `${bPriority}${b.userId}`;
 
                     return aString.localeCompare(bString);
                   })
                   .map((d) => {
                     return (
                       <li key={d.id} className={`${d.participant?.connected ? 'connected' : ''} ${d.participant ? 'visited' : ''}`}>
-                        <div className="connect-status">
-                          <div />
-                        </div>
                         <div className="user-icon">
-                          <UserImage border rounded size="30px" iconFontSize="14px" imageType={d.imageType} imageData={d.imageData} />
+                          <UserImage rounded size="30px" iconFontSize="14px" imageType={d.imageType} imageData={d.imageData} />
                         </div>
                         <div className="user-info">
                           <div className="user-name">{d.alias}</div>
@@ -100,7 +118,7 @@ class ParticipantsList extends React.PureComponent {
                               <div className="flex-grow-1">
                                 {d.participant.connected && d.participant.joinTime && (
                                   <span>
-                                    <span>
+                                    <span className="mr-1">
                                       <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getDate(d.participant.joinTime)} />
                                     </span>
                                     <span className="attendance-statue">{t('참석')}</span>
@@ -108,7 +126,7 @@ class ParticipantsList extends React.PureComponent {
                                 )}
                                 {!d.participant.connected && d.participant.leaveTime && (
                                   <span>
-                                    <span>
+                                    <span className="mr-1">
                                       <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getDate(d.participant.leaveTime)} />
                                     </span>
                                     <span className="attendance-status">{t('나감')}</span>
@@ -133,7 +151,7 @@ class ParticipantsList extends React.PureComponent {
                                 </span>
                               </div>
                             )}
-                            {!d.participant && <div>{t('참석안함')}</div>}
+                            {!d.participant && <div>{t('미참석')}</div>}
                           </div>
                         </div>
                       </li>
@@ -171,4 +189,5 @@ ParticipantsList.propTypes = {
   setAlign: PropTypes.func,
   user: UserPropTypes,
   sharingUserId: PropTypes.number,
+  onExitButtonClick: PropTypes.func,
 };
