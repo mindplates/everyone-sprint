@@ -9,6 +9,32 @@
     background-color: transparent;
     padding: 0;
 
+    .statistics {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 120px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      color: $white;
+      > div {
+        align-self: center;
+
+        .icon {
+          margin-right: 0.5rem;
+        }
+
+        .count {
+          margin-right: 0.5rem;
+        }
+
+        .times {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+
     .streaming-content {
       flex-grow: 1;
       display: flex;

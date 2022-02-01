@@ -11,6 +11,7 @@ import ConferenceDeviceConfig from '@/pages/Meetings/Conference/ConferenceDevice
 import EmptyConference from './EmptyConference';
 import mediaUtil from '@/utils/mediaUtil';
 import './Conference.scss';
+import dateUtil from '@/utils/dateUtil';
 
 const peerConnectionConfig = {
   iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
@@ -100,6 +101,10 @@ class Conference extends React.Component {
         type: 'effect',
         key: 'none',
         value: null,
+      },
+      statistics: {
+        count: 0,
+        time: 0,
       },
     };
   }
@@ -907,9 +912,19 @@ class Conference extends React.Component {
     });
   };
 
+  addSpeak = (count, time) => {
+    const { statistics } = this.state;
+    const nextStatistics = { ...statistics };
+    nextStatistics.count += count;
+    nextStatistics.time += time;
+    this.setState({
+      statistics: nextStatistics,
+    });
+  };
+
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -951,6 +966,19 @@ class Conference extends React.Component {
                   <>
                     <PageTitle className="d-none">{conference?.name}</PageTitle>
                     <PageContent className="conference-content">
+                      <div className="statistics">
+                        <div>
+                          <span className="icon">
+                            <i className="fas fa-compact-disc" />
+                          </span>
+                          <span className="count">
+                            {statistics.count}
+                            {t('회')}
+                          </span>
+                          <span className="times">/</span>
+                          <span className="duration">{dateUtil.getDurationMinutes(statistics.time)}</span>
+                        </div>
+                      </div>
                       <div className="streaming-content">
                         <div>
                           <div className={`video-content ${isSharing ? 'sharing' : ''}`}>
@@ -979,6 +1007,7 @@ class Conference extends React.Component {
                                   stream={myStream}
                                   pixInfo={pixInfo}
                                   setCanvasStream={this.setCanvasStream}
+                                  addSpeak={this.addSpeak}
                                 />
                               </div>
                               {conference.users
