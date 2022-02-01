@@ -965,8 +965,9 @@ class Conference extends React.Component {
                               <div
                                 className="my-video"
                                 style={{
-                                  width: `${200}px`,
-                                  height: `${(200 * supportInfo.mediaConfig.video.settings.height) / supportInfo.mediaConfig.video.settings.width}px`,
+                                  width: `${supportInfo.mediaConfig.video.settings.width}px`,
+                                  height: `${supportInfo.mediaConfig.video.settings.height}px`,
+                                  transform: `scale(${200 / supportInfo.mediaConfig.video.settings.width})`,
                                 }}
                               >
                                 <ConferenceVideoItem
