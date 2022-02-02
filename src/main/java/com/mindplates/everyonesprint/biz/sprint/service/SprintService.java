@@ -241,5 +241,9 @@ public class SprintService {
 
     }
 
+    public List<SprintDailyMeetingAnswer> selectSprintDailyMeetingAnswerList(Long sprintId, Long meetingId, LocalDate date) {
+        return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndDateEquals(sprintId, meetingId, date);
+    }
+
 
 }

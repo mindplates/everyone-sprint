@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.meeting.vo.response;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
+import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintDailyMeetingQuestionResponse;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class MeetingResponse {
     private LocalDateTime endDate;
     private List<User> users;
     private Long sprintDailyMeetingId;
+    private List<SprintDailyMeetingQuestionResponse> sprintDailyMeetingQuestions;
 
     public MeetingResponse(Meeting meeting) {
         this.id = meeting.getId();
@@ -43,6 +45,12 @@ public class MeetingResponse {
                         .imageType(meetingUser.getUser().getImageType())
                         .imageData(meetingUser.getUser().getImageData())
                         .build()).collect(Collectors.toList());
+        if (meeting.getSprintDailyMeeting() != null) {
+            this.sprintDailyMeetingQuestions = meeting.getSprintDailyMeeting().getSprintDailyMeetingQuestions()
+                    .stream()
+                    .map((sprintDailyMeetingQuestion -> new SprintDailyMeetingQuestionResponse(sprintDailyMeetingQuestion))).collect(Collectors.toList());
+        }
+
     }
 
     @Data
