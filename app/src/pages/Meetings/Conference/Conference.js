@@ -2,6 +2,7 @@ import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import ReactTimeAgo from 'react-time-ago';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import { Button, ConferenceVideoItem, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
@@ -12,6 +13,7 @@ import EmptyConference from './EmptyConference';
 import mediaUtil from '@/utils/mediaUtil';
 import './Conference.scss';
 import dateUtil from '@/utils/dateUtil';
+import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
 
 const peerConnectionConfig = {
   iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
@@ -59,6 +61,8 @@ class Conference extends React.Component {
         video: true,
         participants: false,
         sharing: false,
+        chatting: false,
+        scrumInfo: false,
       },
       screenShare: {
         sharing: false,
@@ -106,6 +110,7 @@ class Conference extends React.Component {
         count: 0,
         time: 0,
       },
+      answers: [],
     };
   }
 
@@ -219,6 +224,21 @@ class Conference extends React.Component {
     }
   };
 
+  getAnswers = (sprintId, sprintDailyMeetingId, date, loading) => {
+    const { t } = this.props;
+    request.get(
+      `/api/sprints/${sprintId}/meetings/${sprintDailyMeetingId}/answers?date=${dateUtil.getLocalDateISOString(date)}`,
+      null,
+      (answers) => {
+        this.setState({
+          answers,
+        });
+      },
+      null,
+      loading ? t('등록된 데일리 스크럼 답변을 가져오고 있습니다.') : null,
+    );
+  };
+
   getConference = (code) => {
     const { t } = this.props;
     request.get(
@@ -231,6 +251,9 @@ class Conference extends React.Component {
           },
           () => {
             this.getUsers(code);
+            if (conference.sprintDailyMeetingId) {
+              this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate);
+            }
           },
         );
       },
@@ -602,6 +625,11 @@ class Conference extends React.Component {
     const isMe = Number(senderInfo.id) === Number(user.id);
 
     switch (type) {
+      case 'SCRUM_INFO_CHANGED': {
+        this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate, false);
+        break;
+      }
+
       case 'LEAVE': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
         if (this.userStreams[senderInfo.id]) {
@@ -924,7 +952,7 @@ class Conference extends React.Component {
 
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -966,17 +994,58 @@ class Conference extends React.Component {
                   <>
                     <PageTitle className="d-none">{conference?.name}</PageTitle>
                     <PageContent className="conference-content">
-                      <div className="statistics">
+                      <div className="info-bar">
+                        <div className="time-info">
+                          <div>
+                            <div>
+                              <span>
+                                <i className="fas fa-clock" />
+                              </span>
+                              <span>
+                                {conference.startDate && (
+                                  <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />
+                                )}{' '}
+                                {t('시작')}
+                              </span>
+                            </div>
+                            <div className="my-conference-info">
+                              <div>
+                                <span className="icon">
+                                  <i className="fas fa-compact-disc" />
+                                </span>
+                                <span className="count">
+                                  {statistics.count}
+                                  {t('회')}
+                                </span>
+                                <span className="times">/</span>
+                                <span className="duration">{dateUtil.getDurationMinutes(statistics.time)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                         <div>
-                          <span className="icon">
-                            <i className="fas fa-compact-disc" />
-                          </span>
-                          <span className="count">
-                            {statistics.count}
-                            {t('회')}
-                          </span>
-                          <span className="times">/</span>
-                          <span className="duration">{dateUtil.getDurationMinutes(statistics.time)}</span>
+                          {conference.sprintDailyMeetingId && (
+                            <div className="scrum-control">
+                              <div>
+                                <Button size="md" color="white" onClick={() => {}}>
+                                  데일리 스크럼 시작
+                                </Button>
+                              </div>
+                              <div>
+                                <Button
+                                  className="my-daily-button"
+                                  size="md"
+                                  color="white"
+                                  onClick={() => {
+                                    this.setControls('scrumInfo', !controls.scrumInfo);
+                                  }}
+                                >
+                                  MY DAILY
+                                  {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
+                                </Button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="streaming-content">
@@ -1125,7 +1194,7 @@ class Conference extends React.Component {
                                   rounded
                                   color="white"
                                   data-tip={t('채팅')}
-                                  className={controls.participants ? 'selected' : ''}
+                                  className={controls.chatting ? 'selected' : ''}
                                   onClick={() => {}}
                                   disabled
                                 >
@@ -1150,6 +1219,22 @@ class Conference extends React.Component {
                         </div>
                       )}
                     </PageContent>
+                    {controls.scrumInfo && (
+                      <ScrumInfoEditorPopup
+                        setOpen={() => {
+                          this.setControls('scrumInfo', !controls.scrumInfo);
+                        }}
+                        sprintId={conference.sprintId}
+                        date={dateUtil.getLocalDateISOString(conference.startDate)}
+                        sprintDailyMeetingId={conference.sprintDailyMeetingId}
+                        questions={conference.sprintDailyMeetingQuestions}
+                        answers={answers.filter((answer) => answer.user.id === user.id)}
+                        onSaveComplete={() => {
+                          this.sendToAll('SCRUM_INFO_CHANGED');
+                          // this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate);
+                        }}
+                      />
+                    )}
                   </>
                 )}
               </>

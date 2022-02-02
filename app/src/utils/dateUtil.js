@@ -21,6 +21,12 @@ function getLocalDateISOString(val) {
     .format('YYYY-MM-DD');
 }
 
+function getLocalDate(val) {
+  return moment
+    .utc(val)
+    .local();
+}
+
 function getDate(val) {
   return new Date(`${val}Z`);
 }
@@ -126,6 +132,7 @@ const dateUtil = {
   getTimeAtStartOfDay,
   getLocalDateISOString,
   getDurationMinutes,
+  getLocalDate,
 };
 
 export default dateUtil;

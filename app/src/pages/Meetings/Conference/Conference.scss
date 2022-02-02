@@ -9,28 +9,92 @@
     background-color: transparent;
     padding: 0;
 
-    .statistics {
+    .info-bar {
       position: absolute;
       top: 0;
-      left: 0;
+      left: 80px;
       height: 120px;
-      width: 100%;
+      right: 80px;
       display: flex;
       justify-content: center;
       color: $white;
+      z-index: 5;
+
+      .time-info {
+        position: absolute;
+        top: 0;
+        height: 70px;
+        right: 0;
+        display: inline-flex;
+        font-size: 14px;
+        > div {
+          align-self: center;
+          color: $gray-500;
+          line-height: 100%;
+
+          > div {
+            &:first-child {
+              margin-bottom: 0.25rem;
+              margin-top: 0.25rem;
+            }
+          }
+
+          .my-conference-info {
+            display: inline-flex;
+            > div {
+              align-self: center;
+              .icon {
+                margin-right: 0.5rem;
+              }
+
+              .count {
+                margin-right: 0.5rem;
+              }
+
+              .times {
+                margin-right: 0.5rem;
+              }
+            }
+          }
+
+          span:first-child {
+            margin-right: 0.5rem;
+          }
+        }
+      }
       > div {
         align-self: center;
+        display: flex;
 
-        .icon {
-          margin-right: 0.5rem;
-        }
+        .scrum-control {
+          display: inline-flex;
+          margin-right: 1rem;
+          > div {
+            align-self: center;
+            margin-right: 0.5rem;
+            &:last-child {
+              margin-right: 0;
+            }
 
-        .count {
-          margin-right: 0.5rem;
-        }
+            .my-daily-button {
+              position: relative;
 
-        .times {
-          margin-right: 0.5rem;
+              .no-register {
+                position: absolute;
+                top: -14px;
+                left: calc(100% - 20px);
+                display: inline-block;
+                background-color: $warning;
+                white-space: nowrap;
+                color: $white;
+                line-height: 100%;
+                font-size: 14px;
+                font-weight: bold;
+                padding: 0.25rem;
+                border-radius: 5px;
+              }
+            }
+          }
         }
       }
     }

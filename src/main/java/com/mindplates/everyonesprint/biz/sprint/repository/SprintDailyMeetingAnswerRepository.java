@@ -12,6 +12,7 @@ public interface SprintDailyMeetingAnswerRepository extends JpaRepository<Sprint
     SprintDailyMeetingAnswer findTop1BySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndUserIdAndDateLessThanOrderByDateDesc(Long sprintId, Long meetingId, Long userId, LocalDate date);
     List<SprintDailyMeetingAnswer> findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndUserIdAndDateEquals(Long sprintId, Long meetingId, Long userId, LocalDate date);
     void deleteAllBySprintId(Long sprintId);
+    List<SprintDailyMeetingAnswer> findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndDateEquals(Long sprintId, Long meetingId, LocalDate date);
 
 }
 
