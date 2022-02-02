@@ -13,6 +13,7 @@ import EmptyConference from './EmptyConference';
 import mediaUtil from '@/utils/mediaUtil';
 import './Conference.scss';
 import dateUtil from '@/utils/dateUtil';
+import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
 
 const peerConnectionConfig = {
   iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
@@ -61,6 +62,7 @@ class Conference extends React.Component {
         participants: false,
         sharing: false,
         chatting: false,
+        scrumInfo: false,
       },
       screenShare: {
         sharing: false,
@@ -109,7 +111,6 @@ class Conference extends React.Component {
         time: 0,
       },
       answers: [],
-      isMyAnswerRegistered: false,
     };
   }
 
@@ -223,19 +224,18 @@ class Conference extends React.Component {
     }
   };
 
-  getAnswers = (sprintId, sprintDailyMeetingId, date) => {
-    const { t, user } = this.props;
+  getAnswers = (sprintId, sprintDailyMeetingId, date, loading) => {
+    const { t } = this.props;
     request.get(
       `/api/sprints/${sprintId}/meetings/${sprintDailyMeetingId}/answers?date=${dateUtil.getLocalDateISOString(date)}`,
       null,
       (answers) => {
         this.setState({
           answers,
-          isMyAnswerRegistered: answers.filter((answer) => answer.user.id === user.id).length > 0,
         });
       },
       null,
-      t('등록된 데일리 스크럼 답변을 가져오고 있습니다.'),
+      loading ? t('등록된 데일리 스크럼 답변을 가져오고 있습니다.') : null,
     );
   };
 
@@ -625,6 +625,11 @@ class Conference extends React.Component {
     const isMe = Number(senderInfo.id) === Number(user.id);
 
     switch (type) {
+      case 'SCRUM_INFO_CHANGED': {
+        this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate, false);
+        break;
+      }
+
       case 'LEAVE': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
         if (this.userStreams[senderInfo.id]) {
@@ -947,12 +952,9 @@ class Conference extends React.Component {
 
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers, isMyAnswerRegistered } =
-      this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
-
-    console.log(answers);
 
     return (
       <>
@@ -1030,9 +1032,16 @@ class Conference extends React.Component {
                                 </Button>
                               </div>
                               <div>
-                                <Button className="my-daily-button" size="md" color="white" onClick={() => {}}>
+                                <Button
+                                  className="my-daily-button"
+                                  size="md"
+                                  color="white"
+                                  onClick={() => {
+                                    this.setControls('scrumInfo', !controls.scrumInfo);
+                                  }}
+                                >
                                   MY DAILY
-                                  {!isMyAnswerRegistered && <div className="no-register">{t('미등록')}</div>}
+                                  {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
                                 </Button>
                               </div>
                             </div>
@@ -1210,6 +1219,22 @@ class Conference extends React.Component {
                         </div>
                       )}
                     </PageContent>
+                    {controls.scrumInfo && (
+                      <ScrumInfoEditorPopup
+                        setOpen={() => {
+                          this.setControls('scrumInfo', !controls.scrumInfo);
+                        }}
+                        sprintId={conference.sprintId}
+                        date={dateUtil.getLocalDateISOString(conference.startDate)}
+                        sprintDailyMeetingId={conference.sprintDailyMeetingId}
+                        questions={conference.sprintDailyMeetingQuestions}
+                        answers={answers.filter((answer) => answer.user.id === user.id)}
+                        onSaveComplete={() => {
+                          this.sendToAll('SCRUM_INFO_CHANGED');
+                          // this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate);
+                        }}
+                      />
+                    )}
                   </>
                 )}
               </>
