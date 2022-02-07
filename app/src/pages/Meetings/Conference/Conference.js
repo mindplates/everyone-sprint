@@ -14,6 +14,7 @@ import mediaUtil from '@/utils/mediaUtil';
 import './Conference.scss';
 import dateUtil from '@/utils/dateUtil';
 import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
+import ScrumInfoViewer from '@/pages/Meetings/Conference/ScrumInfoViewer';
 
 const peerConnectionConfig = {
   iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
@@ -111,6 +112,7 @@ class Conference extends React.Component {
         time: 0,
       },
       answers: [],
+      dailyScrumInfo: null,
     };
   }
 
@@ -398,13 +400,17 @@ class Conference extends React.Component {
     };
 
     if (myStream) {
-      if (userInfo.peerConnection && userInfo.peerConnection.addStream) {
+      if (userInfo.peerConnection && userInfo.peerConnection.addTrack) {
         const { pixInfo } = this.state;
 
         if (pixInfo.enabled && this.myCanvasStream) {
-          userInfo.peerConnection.addStream(this.myCanvasStream);
+          this.myCanvasStream.getTracks().forEach((track) => {
+            userInfo.peerConnection.addTrack(track, this.myCanvasStream);
+          });
         } else {
-          userInfo.peerConnection.addStream(myStream);
+          myStream.getTracks().forEach((track) => {
+            userInfo.peerConnection.addTrack(track, myStream);
+          });
         }
       }
     }
@@ -567,7 +573,6 @@ class Conference extends React.Component {
       if (this.myScreenStreamVideo.current) {
         this.myScreenStream = first;
         this.myScreenStreamVideo.current.srcObject = first;
-        userInfo.tracking = true;
 
         this.setState({
           conference: nextConference,
@@ -579,7 +584,6 @@ class Conference extends React.Component {
       const state = userInfo.screenSharePeerConnection.iceConnectionState;
 
       if (state === 'failed' || state === 'closed' || state === 'disconnected') {
-        userInfo.tracking = false;
         this.setState({
           conference: nextConference,
         });
@@ -587,8 +591,10 @@ class Conference extends React.Component {
     };
 
     if (this.myScreenStream) {
-      if (userInfo.screenSharePeerConnection && userInfo.screenSharePeerConnection.addStream) {
-        userInfo.screenSharePeerConnection.addStream(this.myScreenStream);
+      if (userInfo.screenSharePeerConnection && userInfo.screenSharePeerConnection.addTrack) {
+        this.myScreenStream.getTracks().forEach((track) => {
+          userInfo.screenSharePeerConnection.addTrack(track, this.myScreenStream);
+        });
       }
     }
 
@@ -616,6 +622,7 @@ class Conference extends React.Component {
       conference,
       conference: { users },
       isSetting,
+      dailyScrumInfo,
     } = this.state;
 
     const { user } = this.props;
@@ -625,8 +632,32 @@ class Conference extends React.Component {
     const isMe = Number(senderInfo.id) === Number(user.id);
 
     switch (type) {
+      case 'DAILY_SCRUM_CHANGED': {
+        const currentSpeakerUser = data.scrumUserOrders?.find((d) => d.isCurrentSpeaker);
+
+        this.setState({
+          dailyScrumInfo: {
+            started: data.started,
+            scrumUserOrders: data.scrumUserOrders,
+            currentSpeakerUserId: currentSpeakerUser?.userId,
+            currentFocusId: null,
+          },
+        });
+        break;
+      }
+
       case 'SCRUM_INFO_CHANGED': {
         this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate, false);
+        break;
+      }
+
+      case 'SCRUM_INFO_FOCUS_CHANGED': {
+        this.setState({
+          dailyScrumInfo: {
+            ...dailyScrumInfo,
+            currentFocusId: data.id,
+          },
+        });
         break;
       }
 
@@ -652,9 +683,17 @@ class Conference extends React.Component {
       case 'JOIN': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
 
+        const currentSpeakerUser = data.scrumUserOrders?.find((d) => d.isCurrentSpeaker);
+
         this.setState(
           {
             conference: nextConference,
+            dailyScrumInfo: {
+              started: data.started,
+              scrumUserOrders: data.scrumUserOrders,
+              currentSpeakerUserId: currentSpeakerUser?.userId,
+              currentFocusId: null,
+            },
           },
           () => {
             if (!isSetting) {
@@ -709,13 +748,52 @@ class Conference extends React.Component {
 
       case 'SCREEN_SHARE_ICE': {
         if (!isMe) {
-          const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
-          if (!targetUser.screenSharePeerConnection) {
-            this.setUpScreenSharing(senderInfo.id, false);
-          }
-          targetUser.screenSharePeerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
-            console.error(e);
+          const addIceCandidate = (handler) => {
+            const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
+            if (!targetUser.screenSharePeerConnection) {
+              this.setUpScreenSharing(senderInfo.id, false);
+            }
+            targetUser.screenSharePeerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
+              console.error(e);
+              if (handler) {
+                handler();
+              }
+            });
+          };
+
+          addIceCandidate(() => {
+            setTimeout(() => {
+              addIceCandidate();
+            }, 3000);
           });
+        }
+
+        break;
+      }
+
+      case 'ICE': {
+        if (!isMe) {
+          const addIceCandidate = (handler) => {
+            const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
+            if (!targetUser.peerConnection) {
+              this.setUpPeerConnection(senderInfo.id, false);
+            }
+
+            targetUser.peerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
+              console.error(e);
+              if (handler) {
+                handler();
+              }
+            });
+          };
+
+          setTimeout(() => {
+            addIceCandidate(() => {
+              setTimeout(() => {
+                addIceCandidate();
+              }, 3000);
+            });
+          }, 1000);
         }
 
         break;
@@ -746,31 +824,6 @@ class Conference extends React.Component {
         break;
       }
 
-      case 'ICE': {
-        if (!isMe) {
-          const addIceCandidate = (handler) => {
-            const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
-            if (!targetUser.peerConnection) {
-              this.setUpPeerConnection(senderInfo.id, false);
-            }
-
-            targetUser.peerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
-              console.error(e);
-              if (handler) {
-                handler();
-              }
-            });
-          };
-
-          addIceCandidate(() => {
-            setTimeout(() => {
-              addIceCandidate();
-            }, 3000);
-          });
-        }
-
-        break;
-      }
       case 'SDP': {
         if (!isMe) {
           const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
@@ -840,7 +893,7 @@ class Conference extends React.Component {
     );
   };
 
-  setMyMedia = () => {
+  setMyMedia = (handler) => {
     if (!mediaUtil.getIsSupportMedia()) {
       return;
     }
@@ -865,13 +918,23 @@ class Conference extends React.Component {
             videoTrack.enabled = controls.video;
           }
 
-          this.setState({
-            myStream: stream,
-          });
+          this.setState(
+            {
+              myStream: stream,
+            },
+            () => {
+              if (handler) {
+                handler();
+              }
+            },
+          );
           this.setDeviceInfoSupported(true);
         })
         .catch(() => {
           this.setDeviceInfoSupported(false);
+          if (handler) {
+            handler();
+          }
         });
     }
   };
@@ -887,19 +950,20 @@ class Conference extends React.Component {
         },
         () => {
           // this.setFullScreen(true);
-          this.setMyMedia();
-          this.sendToAll('JOIN', controls);
-          setTimeout(() => {
-            const { conference } = this.state;
+          this.setMyMedia(() => {
+            this.sendToAll('JOIN', controls);
+            setTimeout(() => {
+              const { conference } = this.state;
 
-            const connectedUsers = conference.users
-              .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
-              .filter((userInfo) => userInfo.participant?.connected);
+              const connectedUsers = conference.users
+                .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+                .filter((userInfo) => userInfo.participant?.connected);
 
-            connectedUsers.forEach((userInfo) => {
-              this.setUpPeerConnection(userInfo.userId, true);
-            });
-          }, 1000);
+              connectedUsers.forEach((userInfo) => {
+                this.setUpPeerConnection(userInfo.userId, true);
+              });
+            }, 1000);
+          });
         },
       );
     }
@@ -931,9 +995,11 @@ class Conference extends React.Component {
 
     connectedUsers.forEach((userInfo) => {
       if (this.myCanvasStream) {
-        if (userInfo.peerConnection && userInfo.peerConnection.addStream) {
-          userInfo.peerConnection.addStream(this.myCanvasStream);
-        }
+        this.myCanvasStream.getTracks().forEach((track) => {
+          if (userInfo.peerConnection) {
+            userInfo.peerConnection.addTrack(track, this.myCanvasStream);
+          }
+        });
       }
 
       // this.setUpPeerConnection(userInfo.userId, true);
@@ -950,9 +1016,52 @@ class Conference extends React.Component {
     });
   };
 
+  dailyScrumStart = () => {
+    const { t } = this.props;
+    const { conference } = this.state;
+
+    request.post(`/api/conferences/${conference.code}/scrum/start`, null, null, null, t('데일리 스크럼 시작을 위한 정보를 생성합니다.'));
+  };
+
+  dailyScrumStop = () => {
+    const { t } = this.props;
+    const { conference } = this.state;
+
+    request.post(`/api/conferences/${conference.code}/scrum/stop`, null, null, null, t('데일리 스크럼을 종료하고 있습니다.'));
+  };
+
+  doneUserScrumDone = () => {
+    const { conference } = this.state;
+
+    request.post(`/api/conferences/${conference.code}/scrum/done`, null, (data) => {
+      console.log(data);
+    });
+  };
+
+  getCurrentSpeaker = () => {
+    const { conference, dailyScrumInfo } = this.state;
+    return conference.users.find((d) => d.userId === dailyScrumInfo.currentSpeakerUserId);
+  };
+
+  getNextSpeaker = () => {
+    const { conference, dailyScrumInfo } = this.state;
+
+    const currentUserIndex = dailyScrumInfo.scrumUserOrders.findIndex((d) => d.userId === dailyScrumInfo.currentSpeakerUserId);
+    for (let i = currentUserIndex; i < dailyScrumInfo.scrumUserOrders.length; i += 1) {
+      if (
+        !dailyScrumInfo.scrumUserOrders[i].isDailyScrumDone &&
+        dailyScrumInfo.scrumUserOrders[currentUserIndex].order < dailyScrumInfo.scrumUserOrders[i].order
+      ) {
+        return conference.users.find((d) => d.userId === dailyScrumInfo.scrumUserOrders[i].userId);
+      }
+    }
+
+    return null;
+  };
+
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers, dailyScrumInfo } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -994,63 +1103,107 @@ class Conference extends React.Component {
                   <>
                     <PageTitle className="d-none">{conference?.name}</PageTitle>
                     <PageContent className="conference-content">
-                      <div className="info-bar">
-                        <div className="time-info">
-                          <div>
+                      <div className="streaming-content">
+                        <div className="info-bar">
+                          <div className="time-info">
                             <div>
-                              <span>
-                                <i className="fas fa-clock" />
-                              </span>
-                              <span>
-                                {conference.startDate && (
-                                  <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />
-                                )}{' '}
-                                {t('시작')}
-                              </span>
-                            </div>
-                            <div className="my-conference-info">
                               <div>
-                                <span className="icon">
-                                  <i className="fas fa-compact-disc" />
+                                <span>
+                                  <i className="fas fa-clock" />
                                 </span>
-                                <span className="count">
-                                  {statistics.count}
-                                  {t('회')}
+                                <span>
+                                  {conference.startDate && (
+                                    <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />
+                                  )}{' '}
+                                  {t('시작')}
                                 </span>
-                                <span className="times">/</span>
-                                <span className="duration">{dateUtil.getDurationMinutes(statistics.time)}</span>
+                              </div>
+                              <div className="my-conference-info">
+                                <div>
+                                  <span className="icon">
+                                    <i className="fas fa-compact-disc" />
+                                  </span>
+                                  <span className="count">
+                                    {statistics.count}
+                                    {t('회')}
+                                  </span>
+                                  <span className="times">/</span>
+                                  <span className="duration">{dateUtil.getDurationMinutes(statistics.time)}</span>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          {conference.sprintDailyMeetingId && (
-                            <div className="scrum-control">
+                          {conference?.sprintDailyMeetingId && dailyScrumInfo?.started && (
+                            <div className="scrum-info-status">
                               <div>
-                                <Button size="md" color="white" onClick={() => {}}>
-                                  데일리 스크럼 시작
-                                </Button>
+                                <span className="tag">NOW</span>
                               </div>
+                              <div>{this.getCurrentSpeaker()?.alias}</div>
                               <div>
-                                <Button
-                                  className="my-daily-button"
-                                  size="md"
-                                  color="white"
-                                  onClick={() => {
-                                    this.setControls('scrumInfo', !controls.scrumInfo);
-                                  }}
-                                >
-                                  MY DAILY
-                                  {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
-                                </Button>
+                                <i className="fas fa-long-arrow-alt-right" />
                               </div>
+                              {this.getNextSpeaker() ? (
+                                <>
+                                  <div>
+                                    <span className="tag">NEXT</span>
+                                  </div>
+                                  <div>{this.getNextSpeaker()?.alias}</div>
+                                </>
+                              ) : <div>{t('NONE')}</div>}
                             </div>
                           )}
+                          <div>
+                            {conference.sprintDailyMeetingId && (
+                              <div className="scrum-control">
+                                {dailyScrumInfo !== null && !dailyScrumInfo.started && (
+                                  <div>
+                                    <Button size="md" color="white" onClick={this.dailyScrumStart}>
+                                      데일리 스크럼 시작
+                                    </Button>
+                                  </div>
+                                )}
+                                {dailyScrumInfo !== null && dailyScrumInfo.started && (
+                                  <div>
+                                    <Button size="md" color="white" onClick={this.dailyScrumStop}>
+                                      데일리 스크럼 종료
+                                    </Button>
+                                  </div>
+                                )}
+                                <div>
+                                  <Button
+                                    className="my-daily-button"
+                                    size="md"
+                                    color="white"
+                                    onClick={() => {
+                                      this.setControls('scrumInfo', !controls.scrumInfo);
+                                    }}
+                                  >
+                                    MY DAILY
+                                    {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <div className="streaming-content">
                         <div>
                           <div className={`video-content ${isSharing ? 'sharing' : ''}`}>
+                            {dailyScrumInfo !== null && dailyScrumInfo.started && (
+                              <div className="daily-scrum-content">
+                                <ScrumInfoViewer
+                                  dailyScrumInfo={dailyScrumInfo}
+                                  questions={conference.sprintDailyMeetingQuestions}
+                                  answers={answers}
+                                  user={user}
+                                  doneUserScrumDone={this.doneUserScrumDone}
+                                  currentUser={this.getCurrentSpeaker()}
+                                  stream={user.id === dailyScrumInfo.currentSpeakerUserId ? myStream : this.userStreams[dailyScrumInfo.currentSpeakerUserId]}
+                                  onFocus={(id) => {
+                                    this.sendToAll('SCRUM_INFO_FOCUS_CHANGED', { id });
+                                  }}
+                                />
+                              </div>
+                            )}
                             {isSharing && (
                               <div className="screen-sharing-content">
                                 <div>
@@ -1062,9 +1215,9 @@ class Conference extends React.Component {
                               <div
                                 className="my-video"
                                 style={{
-                                  width: `${supportInfo.mediaConfig.video.settings.width}px`,
-                                  height: `${supportInfo.mediaConfig.video.settings.height}px`,
-                                  transform: `scale(${200 / supportInfo.mediaConfig.video.settings.width})`,
+                                  width: `${supportInfo.mediaConfig.video.settings.width || 640}px`,
+                                  height: `${supportInfo.mediaConfig.video.settings.height || 480}px`,
+                                  transform: `scale(${200 / (supportInfo.mediaConfig.video.settings.width || 640)})`,
                                 }}
                               >
                                 <ConferenceVideoItem
@@ -1171,7 +1324,7 @@ class Conference extends React.Component {
                                 rounded
                                 color="danger"
                                 onClick={() => {
-                                  history.push('/');
+                                  history.push('/meetings');
                                 }}
                               >
                                 <i className="fas fa-times" />
@@ -1231,7 +1384,6 @@ class Conference extends React.Component {
                         answers={answers.filter((answer) => answer.user.id === user.id)}
                         onSaveComplete={() => {
                           this.sendToAll('SCRUM_INFO_CHANGED');
-                          // this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate);
                         }}
                       />
                     )}

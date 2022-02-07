@@ -9,14 +9,26 @@
   z-index: 5;
 
   > div.header-content > .product-logo > a {
-    color: $black;
+    color: $white;
+    &:hover {
+      color: $black;
+    }
   }
 
   &.header-wrapper,
   > div.header-content > .top-menu ul li > a,
-  > div.header-content > .top-button > div > div > button,
   > div.header-content > .top-button > div > div > div > a {
-    color: $black;
+    color: $white;
+    &:hover {
+      color: $black;
+    }
+  }
+
+  > div.header-content > .top-button > div > div > button {
+    color: $white;
+    &:hover {
+      color: $yellow;
+    }
   }
 
   > div.config-popup {
@@ -169,7 +181,6 @@
     > .product-logo {
       flex-grow: 0;
       padding: 0 1rem;
-
 
       > a {
         height: 100%;

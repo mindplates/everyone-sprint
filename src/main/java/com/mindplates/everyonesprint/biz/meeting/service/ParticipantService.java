@@ -7,6 +7,8 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 public class ParticipantService {
@@ -27,8 +29,12 @@ public class ParticipantService {
         return participantRepository.findAll(Example.of(participant));
     }
 
-    public Participant findById(Long id) {
-        return participantRepository.findById(String.valueOf(id)).orElse(null);
+    public Optional<Participant> findOne(Participant participant) {
+        return participantRepository.findOne(Example.of(participant));
+    }
+
+    public Participant findById(String key) {
+        return participantRepository.findById(key).orElse(null);
     }
 
     public void deleteById(String id) {

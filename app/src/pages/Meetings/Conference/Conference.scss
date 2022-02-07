@@ -9,102 +9,130 @@
     background-color: transparent;
     padding: 0;
 
-    .info-bar {
-      position: absolute;
-      top: 0;
-      left: 80px;
-      height: 120px;
-      right: 80px;
-      display: flex;
-      justify-content: center;
-      color: $white;
-      z-index: 5;
-
-      .time-info {
-        position: absolute;
-        top: 0;
-        height: 70px;
-        right: 0;
-        display: inline-flex;
-        font-size: 14px;
-        > div {
-          align-self: center;
-          color: $gray-500;
-          line-height: 100%;
-
-          > div {
-            &:first-child {
-              margin-bottom: 0.25rem;
-              margin-top: 0.25rem;
-            }
-          }
-
-          .my-conference-info {
-            display: inline-flex;
-            > div {
-              align-self: center;
-              .icon {
-                margin-right: 0.5rem;
-              }
-
-              .count {
-                margin-right: 0.5rem;
-              }
-
-              .times {
-                margin-right: 0.5rem;
-              }
-            }
-          }
-
-          span:first-child {
-            margin-right: 0.5rem;
-          }
-        }
-      }
-      > div {
-        align-self: center;
-        display: flex;
-
-        .scrum-control {
-          display: inline-flex;
-          margin-right: 1rem;
-          > div {
-            align-self: center;
-            margin-right: 0.5rem;
-            &:last-child {
-              margin-right: 0;
-            }
-
-            .my-daily-button {
-              position: relative;
-
-              .no-register {
-                position: absolute;
-                top: -14px;
-                left: calc(100% - 20px);
-                display: inline-block;
-                background-color: $warning;
-                white-space: nowrap;
-                color: $white;
-                line-height: 100%;
-                font-size: 14px;
-                font-weight: bold;
-                padding: 0.25rem;
-                border-radius: 5px;
-              }
-            }
-          }
-        }
-      }
-    }
-
     .streaming-content {
       flex-grow: 1;
       display: flex;
       position: relative;
       flex-direction: column;
       padding: 120px 1rem 0;
+
+      .info-bar {
+        position: absolute;
+        top: 0;
+        left: 80px;
+        height: 120px;
+        right: 80px;
+        display: flex;
+        justify-content: center;
+        color: $white;
+        z-index: 5;
+
+        .time-info {
+          position: absolute;
+          top: 0;
+          height: 70px;
+          right: 0;
+          display: inline-flex;
+          font-size: 14px;
+          > div {
+            align-self: center;
+            color: $gray-500;
+            line-height: 100%;
+
+            > div {
+              &:first-child {
+                margin-bottom: 0.25rem;
+                margin-top: 0.25rem;
+              }
+            }
+
+            .my-conference-info {
+              display: inline-flex;
+              > div {
+                align-self: center;
+                .icon {
+                  margin-right: 0.5rem;
+                }
+
+                .count {
+                  margin-right: 0.5rem;
+                }
+
+                .times {
+                  margin-right: 0.5rem;
+                }
+              }
+            }
+
+            span:first-child {
+              margin-right: 0.5rem;
+            }
+          }
+        }
+
+        .scrum-info-status {
+          position: absolute;
+          bottom: 0;
+          right: -2rem;
+          display: flex;
+          height: 30px;
+
+          > div {
+            align-self: center;
+            margin-right: 0.5rem;
+            line-height: 0;
+            font-size: 14px;
+            span.tag {
+              font-size: 10px;
+              font-family: 'Noto Sans', sans-serif;
+              font-weight: bold;
+              display: inline-block;
+              line-height: 100%;
+              background: $primary;
+              padding: 2px 4px;
+              border-radius: 2px;
+            }
+            &:last-child {
+              margin-right: 0;
+            }
+          }
+        }
+        > div {
+          align-self: center;
+          display: flex;
+
+          .scrum-control {
+            display: inline-flex;
+            margin-right: 1rem;
+            > div {
+              align-self: center;
+              margin-right: 0.5rem;
+              &:last-child {
+                margin-right: 0;
+              }
+
+              .my-daily-button {
+                position: relative;
+
+                .no-register {
+                  position: absolute;
+                  top: -14px;
+                  left: calc(100% - 20px);
+                  display: inline-block;
+                  background-color: $warning;
+                  white-space: nowrap;
+                  color: $white;
+                  line-height: 100%;
+                  font-size: 14px;
+                  font-weight: bold;
+                  padding: 0.25rem;
+                  border-radius: 5px;
+                }
+              }
+            }
+          }
+        }
+      }
 
       > div {
         display: flex;
@@ -118,6 +146,16 @@
           flex-grow: 1;
           padding: 0;
           _margin-bottom: 60px;
+          position: relative;
+
+          > .daily-scrum-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 4;
+          }
           > div.video-list-content {
             flex-grow: 1;
             position: relative;

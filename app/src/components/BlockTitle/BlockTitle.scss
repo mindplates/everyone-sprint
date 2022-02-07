@@ -91,6 +91,14 @@
     }
   }
 
+  &.size-lg {
+    .text {
+      > span {
+        font-size: 22px;
+      }
+    }
+  }
+
   &.is-bold {
     font-weight: bold;
   }
