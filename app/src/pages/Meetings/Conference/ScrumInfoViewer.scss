@@ -1,0 +1,149 @@
+.scrum-info-viewer-wrapper {
+  padding: 2rem;
+  background-color: $gray-200;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+
+  margin: 0 2rem;
+  border-radius: 4px;
+
+  .message-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    background-color: $video-item-background-color;
+    z-index: 10;
+
+    > div {
+      align-self: center;
+      text-align: center;
+
+      .image-content {
+        width: 200px;
+        height: 200px;
+        overflow: hidden;
+        background-image: url('../../../images/close-up-picture-hand-holding-planting-sapling-plant.jpg');
+        background-size: auto 200px;
+        background-position: -100px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .message-text {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: $white;
+      }
+    }
+  }
+
+  .scrum-info-content {
+    display: flex;
+    flex-grow: 1;
+
+    .question-answer {
+      flex-grow: 1;
+      margin-right: 1rem;
+
+      .scrum-info-title {
+        margin: 0 0.5rem 0.5rem;
+        font-weight: bold;
+        font-family: pretendard, sans-serif;
+      }
+
+      .question-answer-content {
+        ul {
+          padding: 0;
+          margin: 0;
+          list-style: none;
+
+          li {
+            background-color: $gray-200;
+            padding: 1rem;
+            margin-bottom: 0;
+
+            &.my-turn {
+              cursor: pointer;
+            }
+
+            &.focused {
+              background-color: $yellow;
+              color: $black;
+            }
+
+            .question {
+              font-family: pretendard, sans-serif;
+              text-align: left;
+              margin-bottom: 0.5rem;
+
+              > span {
+                display: inline-block;
+                border-bottom: 1px solid $white;
+                border-bottom: 1px solid $black;
+                padding: 0.25rem 0.5rem;
+              }
+            }
+
+            .answer {
+              padding: 0;
+              margin: 0 0.5rem;
+              font-weight: bold;
+
+              > span {
+                display: block;
+                background-color: $gray-300;
+                padding: 0.5rem;
+              }
+            }
+
+            &.focused {
+              .answer {
+                > span {
+                  background-color: lighten($yellow, 12%);
+                }
+              }
+            }
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+
+    .current-user-video {
+      min-width: 400px;
+      margin: 50px 0 0;
+
+      .video-element {
+        background: transparent;
+      }
+
+      video {
+        height: auto;
+        border-radius: 0;
+      }
+    }
+  }
+
+  .scrum-info-button {
+    margin-top: 1.5rem;
+    width: 100%;
+    text-align: center;
+    > button {
+      margin-right: 0.5rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

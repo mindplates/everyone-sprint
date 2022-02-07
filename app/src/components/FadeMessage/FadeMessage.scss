@@ -1,0 +1,24 @@
+.fade-message-wrapper {
+  padding: 1rem;
+  position: relative;
+
+  &.fadein {
+    > div {
+      animation: fadein 0.5s;
+      -moz-animation: fadein 0.5s;
+      -webkit-animation: fadein 0.5s;
+      -o-animation: fadein 0.5s;
+      animation-fill-mode: forwards;
+    }
+  }
+
+  &.fadeout {
+    > div {
+      animation: fadeout 0.5s;
+      -moz-animation: fadeout 0.5s;
+      -webkit-animation: fadeout 0.5s;
+      -o-animation: fadeout 0.5s;
+      animation-fill-mode: forwards;
+    }
+  }
+}

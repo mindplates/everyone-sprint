@@ -7,6 +7,15 @@
   }
 }
 
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes flyLeftToRight {
   0% {
     left: 5px;

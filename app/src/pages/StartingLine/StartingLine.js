@@ -122,8 +122,8 @@ const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer })
       </div>
       <PageContent className="starting-line-content">
         <Form onSubmit={onSubmit} className={typing ? 'typing' : ''}>
-          <div className="mb-2">
-            <ProductLogo className="bg-white" />
+          <div className="mb-2 text-center">
+            <ProductLogo className="bg-white d-inline-block" />
           </div>
           <Liner width="100%" height="1px" color="light" margin="1rem 0" />
           {url && (

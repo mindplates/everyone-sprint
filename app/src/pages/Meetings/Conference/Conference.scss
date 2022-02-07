@@ -69,6 +69,34 @@
             }
           }
         }
+
+        .scrum-info-status {
+          position: absolute;
+          bottom: 0;
+          right: -2rem;
+          display: flex;
+          height: 30px;
+
+          > div {
+            align-self: center;
+            margin-right: 0.5rem;
+            line-height: 0;
+            font-size: 14px;
+            span.tag {
+              font-size: 10px;
+              font-family: 'Noto Sans', sans-serif;
+              font-weight: bold;
+              display: inline-block;
+              line-height: 100%;
+              background: $primary;
+              padding: 2px 4px;
+              border-radius: 2px;
+            }
+            &:last-child {
+              margin-right: 0;
+            }
+          }
+        }
         > div {
           align-self: center;
           display: flex;
@@ -118,6 +146,16 @@
           flex-grow: 1;
           padding: 0;
           _margin-bottom: 60px;
+          position: relative;
+
+          > .daily-scrum-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 4;
+          }
           > div.video-list-content {
             flex-grow: 1;
             position: relative;

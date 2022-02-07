@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button, Page, PageContent, PageTitle } from '@/components';
+import { Button, Page, PageContent } from '@/components';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import './EmptyConference.scss';
 
 class EmptyConference extends React.PureComponent {
   render() {
@@ -14,8 +15,7 @@ class EmptyConference extends React.PureComponent {
 
     return (
       <Page className="empty-conference-wrapper">
-        <PageTitle>{t('미팅 참석')}</PageTitle>
-        <PageContent>
+        <PageContent className='empty-conference-content'>
           <div className="h-100 d-flex justify-content-center">
             <div className="align-self-center ">
               <div>{t('미팅 정보를 찾을 수 없습니다.')}</div>

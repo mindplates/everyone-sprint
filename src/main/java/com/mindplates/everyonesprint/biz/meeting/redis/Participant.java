@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @RedisHash(value = "participant")
 @Setter
-public class Participant {
+public class Participant implements Comparable {
     @Id
     private String key;
     @Indexed
@@ -34,8 +34,12 @@ public class Participant {
     private String ip;
     private Boolean audio;
     private Boolean video;
+    private Integer dailyScrumOrder;
+    private Boolean isCurrentSpeaker;
+    private Boolean isDailyScrumDone;
     @Indexed
     private String socketId;
+
 
     public Participant() {
 
@@ -57,6 +61,22 @@ public class Participant {
             this.socketId = socketId;
             this.audio = audio;
             this.video = video;
+            this.isDailyScrumDone = false;
         }
     }
+
+    @Override
+    public int compareTo(Object object) {
+        if (this.dailyScrumOrder == null) {
+            return 1;
+        }
+
+        if (((Participant) object).dailyScrumOrder == null) {
+            return 1;
+        }
+
+        return this.dailyScrumOrder.compareTo(((Participant) object).dailyScrumOrder);
+    }
+
+
 }

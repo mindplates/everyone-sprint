@@ -39,6 +39,7 @@ import Placeholder from '@/components/Placeholder/Placeholder';
 import CapabilitiesEditor from '@/components/CapabilitiesEditor/CapabilitiesEditor';
 import PixInfoEditor from '@/components/PixInfoEditor/PixInfoEditor';
 import Spinner from '@/components/Spinner/Spinner';
+import FadeMessage from '@/components/FadeMessage/FadeMessage';
 
 export {
   MessageDialog,
@@ -83,4 +84,5 @@ export {
   CapabilitiesEditor,
   PixInfoEditor,
   Spinner,
+  FadeMessage,
 };

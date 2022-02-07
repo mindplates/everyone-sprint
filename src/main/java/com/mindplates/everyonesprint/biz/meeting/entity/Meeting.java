@@ -58,4 +58,10 @@ public class Meeting extends CommonEntity {
     @JoinColumn(name = "sprint_daily_meeting_id")
     private SprintDailyMeeting sprintDailyMeeting;
 
+    @Column(name = "current_max_order")
+    private Integer currentMaxOrder;
+
+    @Column(name = "daily_scrum_started")
+    private Boolean dailyScrumStarted;
+
 }

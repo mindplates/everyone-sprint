@@ -14,6 +14,7 @@ import mediaUtil from '@/utils/mediaUtil';
 import './Conference.scss';
 import dateUtil from '@/utils/dateUtil';
 import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
+import ScrumInfoViewer from '@/pages/Meetings/Conference/ScrumInfoViewer';
 
 const peerConnectionConfig = {
   iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
@@ -111,6 +112,7 @@ class Conference extends React.Component {
         time: 0,
       },
       answers: [],
+      dailyScrumInfo: null,
     };
   }
 
@@ -405,7 +407,7 @@ class Conference extends React.Component {
           this.myCanvasStream.getTracks().forEach((track) => {
             userInfo.peerConnection.addTrack(track, this.myCanvasStream);
           });
-        } else if (myStream) {
+        } else {
           myStream.getTracks().forEach((track) => {
             userInfo.peerConnection.addTrack(track, myStream);
           });
@@ -620,17 +622,42 @@ class Conference extends React.Component {
       conference,
       conference: { users },
       isSetting,
+      dailyScrumInfo,
     } = this.state;
 
     const { user } = this.props;
 
-    // console.log(type, data, senderInfo);
+    console.log(type, data, senderInfo);
 
     const isMe = Number(senderInfo.id) === Number(user.id);
 
     switch (type) {
+      case 'DAILY_SCRUM_CHANGED': {
+        const currentSpeakerUser = data.scrumUserOrders?.find((d) => d.isCurrentSpeaker);
+
+        this.setState({
+          dailyScrumInfo: {
+            started: data.started,
+            scrumUserOrders: data.scrumUserOrders,
+            currentSpeakerUserId: currentSpeakerUser?.userId,
+            currentFocusId: null,
+          },
+        });
+        break;
+      }
+
       case 'SCRUM_INFO_CHANGED': {
         this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate, false);
+        break;
+      }
+
+      case 'SCRUM_INFO_FOCUS_CHANGED': {
+        this.setState({
+          dailyScrumInfo: {
+            ...dailyScrumInfo,
+            currentFocusId: data.id,
+          },
+        });
         break;
       }
 
@@ -656,9 +683,17 @@ class Conference extends React.Component {
       case 'JOIN': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
 
+        const currentSpeakerUser = data.scrumUserOrders?.find((d) => d.isCurrentSpeaker);
+
         this.setState(
           {
             conference: nextConference,
+            dailyScrumInfo: {
+              started: data.started,
+              scrumUserOrders: data.scrumUserOrders,
+              currentSpeakerUserId: currentSpeakerUser?.userId,
+              currentFocusId: null,
+            },
           },
           () => {
             if (!isSetting) {
@@ -961,7 +996,9 @@ class Conference extends React.Component {
     connectedUsers.forEach((userInfo) => {
       if (this.myCanvasStream) {
         this.myCanvasStream.getTracks().forEach((track) => {
-          userInfo.peerConnection.addTrack(track, this.myCanvasStream);
+          if (userInfo.peerConnection) {
+            userInfo.peerConnection.addTrack(track, this.myCanvasStream);
+          }
         });
       }
 
@@ -979,9 +1016,52 @@ class Conference extends React.Component {
     });
   };
 
+  dailyScrumStart = () => {
+    const { t } = this.props;
+    const { conference } = this.state;
+
+    request.post(`/api/conferences/${conference.code}/scrum/start`, null, null, null, t('데일리 스크럼 시작을 위한 정보를 생성합니다.'));
+  };
+
+  dailyScrumStop = () => {
+    const { t } = this.props;
+    const { conference } = this.state;
+
+    request.post(`/api/conferences/${conference.code}/scrum/stop`, null, null, null, t('데일리 스크럼을 종료하고 있습니다.'));
+  };
+
+  doneUserScrumDone = () => {
+    const { conference } = this.state;
+
+    request.post(`/api/conferences/${conference.code}/scrum/done`, null, (data) => {
+      console.log(data);
+    });
+  };
+
+  getCurrentSpeaker = () => {
+    const { conference, dailyScrumInfo } = this.state;
+    return conference.users.find((d) => d.userId === dailyScrumInfo.currentSpeakerUserId);
+  };
+
+  getNextSpeaker = () => {
+    const { conference, dailyScrumInfo } = this.state;
+
+    const currentUserIndex = dailyScrumInfo.scrumUserOrders.findIndex((d) => d.userId === dailyScrumInfo.currentSpeakerUserId);
+    for (let i = currentUserIndex; i < dailyScrumInfo.scrumUserOrders.length; i += 1) {
+      if (
+        !dailyScrumInfo.scrumUserOrders[i].isDailyScrumDone &&
+        dailyScrumInfo.scrumUserOrders[currentUserIndex].order < dailyScrumInfo.scrumUserOrders[i].order
+      ) {
+        return conference.users.find((d) => d.userId === dailyScrumInfo.scrumUserOrders[i].userId);
+      }
+    }
+
+    return null;
+  };
+
   render() {
     const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers } = this.state;
+    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers, dailyScrumInfo } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -1053,14 +1133,42 @@ class Conference extends React.Component {
                               </div>
                             </div>
                           </div>
+                          {conference?.sprintDailyMeetingId && dailyScrumInfo?.started && (
+                            <div className="scrum-info-status">
+                              <div>
+                                <span className="tag">NOW</span>
+                              </div>
+                              <div>{this.getCurrentSpeaker()?.alias}</div>
+                              <div>
+                                <i className="fas fa-long-arrow-alt-right" />
+                              </div>
+                              {this.getNextSpeaker() ? (
+                                <>
+                                  <div>
+                                    <span className="tag">NEXT</span>
+                                  </div>
+                                  <div>{this.getNextSpeaker()?.alias}</div>
+                                </>
+                              ) : <div>{t('NONE')}</div>}
+                            </div>
+                          )}
                           <div>
                             {conference.sprintDailyMeetingId && (
                               <div className="scrum-control">
-                                <div>
-                                  <Button size="md" color="white" onClick={() => {}}>
-                                    데일리 스크럼 시작
-                                  </Button>
-                                </div>
+                                {dailyScrumInfo !== null && !dailyScrumInfo.started && (
+                                  <div>
+                                    <Button size="md" color="white" onClick={this.dailyScrumStart}>
+                                      데일리 스크럼 시작
+                                    </Button>
+                                  </div>
+                                )}
+                                {dailyScrumInfo !== null && dailyScrumInfo.started && (
+                                  <div>
+                                    <Button size="md" color="white" onClick={this.dailyScrumStop}>
+                                      데일리 스크럼 종료
+                                    </Button>
+                                  </div>
+                                )}
                                 <div>
                                   <Button
                                     className="my-daily-button"
@@ -1080,6 +1188,22 @@ class Conference extends React.Component {
                         </div>
                         <div>
                           <div className={`video-content ${isSharing ? 'sharing' : ''}`}>
+                            {dailyScrumInfo !== null && dailyScrumInfo.started && (
+                              <div className="daily-scrum-content">
+                                <ScrumInfoViewer
+                                  dailyScrumInfo={dailyScrumInfo}
+                                  questions={conference.sprintDailyMeetingQuestions}
+                                  answers={answers}
+                                  user={user}
+                                  doneUserScrumDone={this.doneUserScrumDone}
+                                  currentUser={this.getCurrentSpeaker()}
+                                  stream={user.id === dailyScrumInfo.currentSpeakerUserId ? myStream : this.userStreams[dailyScrumInfo.currentSpeakerUserId]}
+                                  onFocus={(id) => {
+                                    this.sendToAll('SCRUM_INFO_FOCUS_CHANGED', { id });
+                                  }}
+                                />
+                              </div>
+                            )}
                             {isSharing && (
                               <div className="screen-sharing-content">
                                 <div>
