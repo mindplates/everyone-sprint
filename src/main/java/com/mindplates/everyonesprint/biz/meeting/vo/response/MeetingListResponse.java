@@ -15,7 +15,7 @@ public class MeetingListResponse {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer userCount;
-    private Integer durationSeconds;
+    private Long durationSeconds;
 
     public MeetingListResponse(Meeting meeting) {
         this.id = meeting.getId();

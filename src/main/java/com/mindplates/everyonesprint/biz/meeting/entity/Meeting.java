@@ -48,7 +48,7 @@ public class Meeting extends CommonEntity {
     private LocalDateTime realEndDate;
 
     @Column(name = "duration_seconds")
-    private Integer durationSeconds;
+    private Long durationSeconds;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)

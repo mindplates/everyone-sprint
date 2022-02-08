@@ -7,6 +7,7 @@ import com.mindplates.everyonesprint.biz.meeting.redis.Participant;
 import com.mindplates.everyonesprint.biz.meeting.service.DailyScrumService;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
 import com.mindplates.everyonesprint.biz.meeting.service.ParticipantService;
+import com.mindplates.everyonesprint.biz.meeting.vo.request.TalkedRequest;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.DailyScrumStatusResponse;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingResponse;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
@@ -21,10 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -150,6 +148,28 @@ public class ConferenceController {
         sendData.put("started", false);
         MessageData data = MessageData.builder().type("DAILY_SCRUM_CHANGED").data(sendData).build();
         messageSendService.sendTo("conferences/" + code, data, userSession);
+
+        return new ResponseEntity(HttpStatus.OK);
+
+    }
+
+    @PutMapping("/{code}/talked")
+    public ResponseEntity updateUserTalkedInfo(@PathVariable String code, @RequestBody TalkedRequest talkedRequest, UserSession userSession) {
+
+        Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsMeetingMember(userSession, meeting.getUsers());
+
+        Participant currentParticipant = participantService.findById(code + userSession.getId());
+
+        if (currentParticipant == null) {
+            meetingService.updateUserTalkedInfo(meeting, userSession, talkedRequest.getCount(), talkedRequest.getTime());
+        } else {
+            meetingService.updateUserTalkedInfo(meeting, userSession, Optional.ofNullable(currentParticipant.getTalkedCount()).orElse(0L) + talkedRequest.getCount(), Optional.ofNullable(currentParticipant.getTalkedSeconds()).orElse(0L) + talkedRequest.getTime());
+            currentParticipant.setTalkedCount(Optional.ofNullable(currentParticipant.getTalkedCount()).orElse(0L) + talkedRequest.getCount());
+            currentParticipant.setTalkedSeconds(Optional.ofNullable(currentParticipant.getTalkedSeconds()).orElse(0L) + talkedRequest.getTime());
+            participantService.save(currentParticipant);
+        }
+
 
         return new ResponseEntity(HttpStatus.OK);
 

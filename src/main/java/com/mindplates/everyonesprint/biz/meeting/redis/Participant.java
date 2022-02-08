@@ -37,6 +37,8 @@ public class Participant implements Comparable {
     private Integer dailyScrumOrder;
     private Boolean isCurrentSpeaker;
     private Boolean isDailyScrumDone;
+    private Long talkedSeconds;
+    private Long talkedCount;
     @Indexed
     private String socketId;
 
@@ -62,6 +64,8 @@ public class Participant implements Comparable {
             this.audio = audio;
             this.video = video;
             this.isDailyScrumDone = false;
+            this.talkedSeconds = 0L;
+            this.talkedCount = 0L;
         }
     }
 

@@ -1031,11 +1031,10 @@ class Conference extends React.Component {
   };
 
   doneUserScrumDone = () => {
+    const { t } = this.props;
     const { conference } = this.state;
 
-    request.post(`/api/conferences/${conference.code}/scrum/done`, null, (data) => {
-      console.log(data);
-    });
+    request.post(`/api/conferences/${conference.code}/scrum/done`, null, null, null, t('다음 데일리 스크럼 사용자를 찾고 있습니다.'));
   };
 
   getCurrentSpeaker = () => {
@@ -1076,7 +1075,16 @@ class Conference extends React.Component {
                   topics={[`/sub/conferences/${conference.code}`, `/sub/conferences/${conference.code}/${user.id}`]}
                   onMessage={this.onMessage}
                   onConnect={() => {}}
-                  onDisconnect={() => {}}
+                  onDisconnect={() => {
+                    console.log({
+                      ...statistics,
+                      time: Math.round(statistics.time / 1000),
+                    });
+                    request.put(`/api/conferences/${conference.code}/talked`, {
+                      ...statistics,
+                      time: Math.round(statistics.time / 1000),
+                    });
+                  }}
                   setRef={(client) => {
                     this.socket = client;
                   }}
@@ -1149,7 +1157,9 @@ class Conference extends React.Component {
                                   </div>
                                   <div>{this.getNextSpeaker()?.alias}</div>
                                 </>
-                              ) : <div>{t('NONE')}</div>}
+                              ) : (
+                                <div>{t('NONE')}</div>
+                              )}
                             </div>
                           )}
                           <div>
