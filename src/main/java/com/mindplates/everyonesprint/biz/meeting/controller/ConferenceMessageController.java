@@ -23,10 +23,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Log
 @RestController
@@ -56,55 +58,28 @@ public class ConferenceMessageController {
 
         String type = (String) value.get("type");
         Map<String, Object> receiveData = (Map<String, Object>) value.get("data");
-        Map<String, Object> sendData;
-        sendData = null;
+        Map<String, Object> sendData = null;
 
         if (userSession != null) {
             if ("JOIN".equals(type)) {
                 // JOIN 정보
-                sendData = new HashMap<>();
-                sendData.put("type", type);
+                Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
                 User user = userService.selectUser(userSession.getId());
 
+                sendData = new HashMap<>();
+                sendData.put("type", type);
+                Participant currentParticipant = meetingService.updateUserJoinInfo(code, user, SessionUtil.getUserIP(headerAccessor), headerAccessor.getSessionId(), (Boolean) receiveData.get("audio"), (Boolean) receiveData.get("video"), meeting);
+                sendData.put("participant", currentParticipant);
 
-                Participant currentPaticipant = participantService.findById(code + user.getId());
-                Participant participant;
-                if (currentPaticipant == null) {
-                    participant = new Participant(user, code, SessionUtil.getUserIP(headerAccessor), headerAccessor.getSessionId(), (Boolean) receiveData.get("audio"), (Boolean) receiveData.get("video"));
-                } else {
-                    participant = currentPaticipant;
-                    participant.setId(Long.toString(user.getId()));
-                    participant.setIp(SessionUtil.getUserIP(headerAccessor));
-                    participant.setSocketId(headerAccessor.getSessionId());
-                    participant.setAudio((Boolean) receiveData.get("audio"));
-                    participant.setVideo((Boolean) receiveData.get("video"));
-                    participant.setConnected(true);
-                }
-
-                participantService.save(participant);
-                sendData.put("participant", participant);
-
-
-                // 현재 스프린트 진행 정보
-                Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-                List<Participant> list = dailyScrumService.addDailyScrumUser(meeting, userSession);
-
-                List<DailyScrumStatusResponse> scrumUserOrders = new ArrayList<>();
-                for (Participant p : list) {
-                    scrumUserOrders.add(DailyScrumStatusResponse.builder()
-                            .userId(Long.parseLong(p.getId()))
-                            .order(p.getDailyScrumOrder())
-                            .isCurrentSpeaker(p.getIsCurrentSpeaker())
-                            .isDailyScrumDone(p.getIsDailyScrumDone())
-                            .build());
-                }
+                List<Participant> participantList = dailyScrumService.addDailyScrumUser(meeting, userSession);
+                List<DailyScrumStatusResponse> scrumUserOrders = StreamSupport.stream(participantList.spliterator(), false).map(DailyScrumStatusResponse::new).collect(Collectors.toList());
 
                 sendData.put("started", meeting.getDailyScrumStarted());
                 sendData.put("scrumUserOrders", scrumUserOrders);
             }
         }
 
-        MessageData data = MessageData.builder().type(type).data(sendData != null ? sendData : receiveData).build();
+        MessageData data = MessageData.builder().type(type).data(Optional.ofNullable(sendData).orElse(receiveData)).build();
         messageSendService.sendTo("conferences/" + code, data, userSession);
     }
 

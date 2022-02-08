@@ -36,8 +36,11 @@ public class MeetingUser extends CommonEntity {
     private LocalDateTime lastOutDate;
 
     @Column(name = "join_duration_seconds")
-    private Integer joinDurationSeconds;
+    private Long joinDurationSeconds;
 
     @Column(name = "talked_seconds")
-    private Integer talkedSeconds;
+    private Long talkedSeconds;
+
+    @Column(name = "talked_count")
+    private Long talkedCount;
 }

@@ -19,7 +19,7 @@ public class MeetingSummaryResponse {
     private LocalDateTime endDate;
     private LocalDateTime realStartDate;
     private LocalDateTime realEndDate;
-    private Integer durationSeconds;
+    private Long durationSeconds;
     private List<User> users;
     private Long sprintDailyMeetingId;
 
@@ -50,7 +50,7 @@ public class MeetingSummaryResponse {
         private Long userId;
         private LocalDateTime firstJoinDate;
         private LocalDateTime lastOutDate;
-        private Integer joinDurationSeconds;
-        private Integer talkedSeconds;
+        private Long joinDurationSeconds;
+        private Long talkedSeconds;
     }
 }
