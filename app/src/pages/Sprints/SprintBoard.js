@@ -377,7 +377,7 @@ const SprintBoard = ({
                                         <div className="date">
                                           <div>{dateUtil.getDateString(d.startDate)}</div>
                                           <Liner className="dash" width="10px" height="1px" display="inline-block" color="black" margin="0 0.5rem 0 0.5rem" />
-                                          <div>{dateUtil.getDateString(d.endDate, 'hours')}</div>
+                                          <div>{dateUtil.getDateString(d.endDate, 'hoursMinutes')}</div>
                                         </div>
                                       </div>
                                       <div className="list-button">

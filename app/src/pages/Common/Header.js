@@ -109,28 +109,30 @@ const Header = (props) => {
                 <i className="fas fa-bars" />
               </Button>
             </li>
-            {Object.keys(MENU).map((topMenuKey) => {
-              const menu = MENU[topMenuKey];
-              return (
-                <li key={topMenuKey} className={`${(menuAlias || 'public-park') === topMenuKey ? 'selected' : 'no-selected'}`}>
-                  <Link
-                    to={`/${topMenuKey}`}
-                    onClick={() => {
-                      setMenuOpen(false);
-                    }}
-                  >
-                    <div>
-                      <div className={`icon ${topMenuKey}`}>
-                        <div>
-                          <span>{menu.icon}</span>
+            {Object.keys(MENU)
+              .filter((menu) => MENU[menu].enabled)
+              .map((topMenuKey) => {
+                const menu = MENU[topMenuKey];
+                return (
+                  <li key={topMenuKey} className={`${(menuAlias || 'home') === topMenuKey ? 'selected' : 'no-selected'}`}>
+                    <Link
+                      to={`/${topMenuKey}`}
+                      onClick={() => {
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <div>
+                        <div className={`icon ${topMenuKey}`}>
+                          <div>
+                            <span>{menu.icon}</span>
+                          </div>
                         </div>
+                        <div className="text">{t(menu.name)}</div>
                       </div>
-                      <div className="text">{t(menu.name)}</div>
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
+                    </Link>
+                  </li>
+                );
+              })}
           </ul>
         </div>
         <div className="product-logo">
@@ -165,12 +167,12 @@ const Header = (props) => {
                 </div>
               </div>
             )}
-            <div className="liner">
+            <div className="d-none liner">
               <Liner height="10px" color="black" />
             </div>
             <div>
               <Button
-                className="collapsed-button"
+                className="d-none collapsed-button"
                 size="lg"
                 outline
                 onClick={() => {

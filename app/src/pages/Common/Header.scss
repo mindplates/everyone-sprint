@@ -38,8 +38,8 @@
   }
 
   > div.header-content > .product-logo > a {
-    color: $white;
     color: $black;
+    color: $white;
   }
 
   &.header-wrapper,
@@ -47,6 +47,7 @@
   > div.header-content > .top-button > div > div > button,
   > div.header-content > .top-button > div > div > div > a {
     color: $black;
+    color: $white;
   }
 
   > div.config-popup {
