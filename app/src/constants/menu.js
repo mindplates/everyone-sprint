@@ -1,6 +1,12 @@
 import React from 'react';
 
 const MENU = {
+  home: {
+    icon: <i className="fas fa-home" />,
+    name: 'HOME',
+    enabled: true,
+    submenus: [],
+  },
   'public-park': {
     icon: <i className="fas fa-tree" />,
     name: '모두의 공원',

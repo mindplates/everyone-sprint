@@ -1,0 +1,52 @@
+.time-line-item-wrapper {
+  width: 100%;
+  line-height: 100%;
+  font-size: 12px;
+  font-family: pretendard, sans-serif;
+  display: inline-flex;
+  position: relative;
+  border: $border;
+  background-color: $white;
+  border-radius: 2px;
+  padding: 0 1rem;
+  min-width: 140px;
+  z-index: 1;
+  cursor: pointer;
+
+  &:hover {
+    z-index: 10;
+    border: $border-darken;
+  }
+
+  > div.meeting-info {
+    align-self: center;
+    padding: 0 0.5rem;
+    position: relative;
+    text-align: center;
+    width: 100%;
+
+    .name {
+      font-weight: bold;
+    }
+
+    .time-ago {
+      font-size: 10px;
+      &:before {
+        content: '(';
+      }
+      &:after {
+        content: ')';
+      }
+    }
+  }
+
+  .time-info {
+    text-align: center;
+    position: absolute;
+    font-size: 10px;
+    white-space: nowrap;
+    top: 4px;
+    left: 0;
+    right: 0;
+  }
+}

@@ -40,6 +40,7 @@ import CapabilitiesEditor from '@/components/CapabilitiesEditor/CapabilitiesEdit
 import PixInfoEditor from '@/components/PixInfoEditor/PixInfoEditor';
 import Spinner from '@/components/Spinner/Spinner';
 import FadeMessage from '@/components/FadeMessage/FadeMessage';
+import TimeLineItem from '@/components/TimeLineItem/TimeLineItem';
 
 export {
   MessageDialog,
@@ -85,4 +86,5 @@ export {
   PixInfoEditor,
   Spinner,
   FadeMessage,
+  TimeLineItem,
 };

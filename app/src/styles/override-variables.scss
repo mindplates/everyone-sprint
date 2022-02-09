@@ -1,10 +1,12 @@
 $min-contrast-ratio: 2.5;
 $wrapper-width: 1680px;
 $logo-bg-color: #ff030d;
-$header-bg-color: #1d88ea;
+
 $header-bg-color: #fee500;
-$header-hover-bg-color: #104e8b;
 $header-hover-bg-color: #fed900;
+$header-bg-color: #1d88ea;
+$header-hover-bg-color: darken(#1d88ea, 8%);
+
 $primary: rgb(11, 154, 223);
 $primary: rgb(247, 52, 94);
 $danger: #fa1d2f;
@@ -23,6 +25,8 @@ $control-md-height: 38px;
 $control-lg-height: 48px;
 
 $video-item-background-color: #111;
+
+
 
 @import '~bootstrap/scss/functions';
 @import '~bootstrap/scss/variables';

@@ -9,15 +9,15 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 public class JsonRedisTemplate<V> extends RedisTemplate<String, V> {
 
-	public JsonRedisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper, Class<V> valueType) {
-	    RedisSerializer<String> stringSerializer = new StringRedisSerializer();
-	    super.setKeySerializer(stringSerializer);
-	    super.setHashKeySerializer(stringSerializer);
-	    super.setHashValueSerializer(stringSerializer);
-	    Jackson2JsonRedisSerializer<V> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(valueType);
-	    jsonRedisSerializer.setObjectMapper(objectMapper);
-	    super.setValueSerializer(jsonRedisSerializer);
-	    super.setConnectionFactory(connectionFactory);
-	    super.afterPropertiesSet();
-	  }
+    public JsonRedisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper, Class<V> valueType) {
+        RedisSerializer<String> stringSerializer = new StringRedisSerializer();
+        super.setKeySerializer(stringSerializer);
+        super.setHashKeySerializer(stringSerializer);
+        super.setHashValueSerializer(stringSerializer);
+        Jackson2JsonRedisSerializer<V> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(valueType);
+        jsonRedisSerializer.setObjectMapper(objectMapper);
+        super.setValueSerializer(jsonRedisSerializer);
+        super.setConnectionFactory(connectionFactory);
+        super.afterPropertiesSet();
+    }
 }

@@ -4,11 +4,6 @@
   flex-direction: column;
   background-color: $light;
 
-  &.conference-page {
-    background-color: #111;
-    background-color: $video-item-background-color;
-  }
-
   > div {
     &.app-header,
     &.app-footer {
@@ -20,9 +15,20 @@
       max-width: $wrapper-width;
       width: 100%;
       margin: 0 auto;
+      background: linear-gradient($light, $white);
 
       &.no-max-width {
         max-width: none;
+      }
+    }
+  }
+
+  &.conference-page {
+    background: $video-item-background-color;
+
+    > div {
+      &.app-content {
+        background: $video-item-background-color;
       }
     }
   }

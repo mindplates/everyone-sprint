@@ -44,18 +44,18 @@ public class SessionUtil {
             throw new ServiceException("session.error.expired");
         }
 
-        UserSession userInfo = (UserSession) attributes.get("USER_INFO");
-
-        return userInfo;
+        return (UserSession) attributes.get("USER_INFO");
 
     }
 
     public static String getUserIP(SimpMessageHeaderAccessor headerAccessor) {
 
         Map<String, Object> attributes = headerAccessor.getSessionAttributes();
-        return (String) attributes.get("USER_IP");
+        if (attributes != null) {
+            return (String) attributes.get("USER_IP");
+        }
 
-
+        return "";
     }
 
     public static Long getUserId(SimpMessageHeaderAccessor headerAccessor) {
@@ -109,11 +109,8 @@ public class SessionUtil {
         return false;
     }
 
-    public void login(HttpServletRequest request, User user) {
-        this.login(request, user, true);
-    }
 
-    public void login(HttpServletRequest request, User user, Boolean register) {
+    public void login(HttpServletRequest request, User user) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();

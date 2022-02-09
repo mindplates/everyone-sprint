@@ -21,6 +21,7 @@ const USER_STUB = {
 const DATE_FORMATS_TYPES = {
   full: 'full',
   days: 'days',
+  hoursMinutes: 'hoursMinutes',
   hours: 'hours',
   dayHours: 'dayHours',
   minutes: 'minutes',
@@ -76,28 +77,32 @@ const DATE_FORMATS = {
     full: { moment: 'YYYY년 MM월 DD일 HH시 mm분', picker: 'yyyy년 MM월 dd일 HH시 mm분' },
     days: { moment: 'YYYY년 MM월 DD일', picker: 'yyyy년 MM월 dd일 (eee)' },
     dayHours: { moment: 'MM월 DD일 HH시 mm분', picker: 'MM월 dd일 HH시 mm분' },
-    hours: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
+    hoursMinutes: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
+    hours: { moment: 'HH시', picker: 'HH시' },
     minutes: { moment: 'mm분 ss초', picker: 'mm시 ss초' },
   },
   ko_US: {
     full: { moment: 'MM월/DD일/YYYY년 HH시 mm분', picker: 'MM월/dd일/yyyy년 HH시 mm분' },
     days: { moment: 'MM월/DD일/YYYY년', picker: 'MM월/dd일/yyyy년 (eee)' },
     dayHours: { moment: 'MM월/DD일 HH시 mm분', picker: 'MM월/dd일 HH시 mm분' },
-    hours: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
+    hoursMinutes: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
+    hours: { moment: 'HH시', picker: 'HH시' },
     minutes: { moment: 'mm분 ss초', picker: 'mm시 ss초' },
   },
   en_US: {
     full: { moment: 'MM/DD/YYYY HH:mm', picker: 'MM/dd/yyyy HH:mm' },
     days: { moment: 'MM/DD/YYYY', picker: 'MM/dd/yyyy (eee)' },
     dayHours: { moment: 'MM/DD HH:mm', picker: 'MM/dd HH:mm' },
-    hours: { moment: 'HH:mm', picker: 'HH:mm' },
+    hoursMinutes: { moment: 'HH:mm', picker: 'HH:mm' },
+    hours: { moment: 'HH', picker: 'HH' },
     minutes: { moment: 'mm:ss', picker: 'mm:ss' },
   },
   en_KR: {
     full: { moment: 'YYYY-MM-DD HH:mm', picker: 'yyyy-MM-dd HH:mm' },
     days: { moment: 'YYYY-MM-DD', picker: 'yyyy-MM-dd (eee)' },
     dayHours: { moment: 'DD-MM HH:mm', picker: 'dd-MM HH:mm' },
-    hours: { moment: 'HH:mm', picker: 'HH:mm' },
+    hoursMinutes: { moment: 'HH:mm', picker: 'HH:mm' },
+    hours: { moment: 'HH', picker: 'HH' },
     minutes: { moment: 'mm:ss', picker: 'mm:ss' },
   },
 };
@@ -300,5 +305,5 @@ export {
   COLORS,
   TIMEZONES,
   CAPABILITIES,
-  BODY_PIX
+  BODY_PIX,
 };

@@ -2,14 +2,12 @@ package com.mindplates.everyonesprint.biz.user.entity;
 
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Builder
 @Table(name = "user")
@@ -79,11 +77,11 @@ public class User extends CommonEntity {
     @Column(name = "recovery_mail_send_result")
     private Boolean recoveryMailSendResult;
 
-    @Column(name="role_code", columnDefinition = "VARCHAR(15)")
+    @Column(name = "role_code", columnDefinition = "VARCHAR(15)")
     @Enumerated(EnumType.STRING)
     private RoleCode roleCode;
 
-    @Column(name="active_role_code", columnDefinition = "VARCHAR(15)")
+    @Column(name = "active_role_code", columnDefinition = "VARCHAR(15)")
     @Enumerated(EnumType.STRING)
     private RoleCode activeRoleCode;
 

@@ -6,34 +6,27 @@ import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
-public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
+public class LoginCheckInterceptor implements HandlerInterceptor {
 
     private final SessionUtil sessionUtil;
 
-    private final MessageSourceAccessor messageSourceAccessor;
-
-    private final String activeProfile;
-
     private final UserService userService;
 
-    public LoginCheckInterceptor(UserService userService, SessionUtil sessionUtil, MessageSourceAccessor messageSourceAccessor, String activeProfile) {
+    public LoginCheckInterceptor(UserService userService, SessionUtil sessionUtil) {
         this.userService = userService;
         this.sessionUtil = sessionUtil;
-        this.messageSourceAccessor = messageSourceAccessor;
-        this.activeProfile = activeProfile;
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         if (!sessionUtil.isLogin(request)) {
             String token = request.getHeader("Token");

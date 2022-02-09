@@ -11,7 +11,6 @@ import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,11 +25,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    @Autowired
-    UserService userService;
 
-    @Autowired
-    SessionUtil sessionUtil;
+    final private UserService userService;
+    final private SessionUtil sessionUtil;
+
+    public UserController(UserService userService, SessionUtil sessionUtil) {
+        this.userService = userService;
+        this.sessionUtil = sessionUtil;
+    }
 
     @DisableLogin
     @PostMapping("")
@@ -43,10 +44,10 @@ public class UserController {
         }
 
         User user = userRequest.buildEntity();
-        userService.createUser(user);
-        sessionUtil.login(request, user);
+        User result = userService.createUser(user);
+        sessionUtil.login(request, result);
 
-        return new MyInfoResponse(user);
+        return new MyInfoResponse(result);
     }
 
     @DisableLogin
@@ -75,7 +76,7 @@ public class UserController {
 
     @DisableLogin
     @PostMapping("/login")
-    public MyInfoResponse login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) throws NoSuchAlgorithmException {
+    public MyInfoResponse login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
 
         User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword(), loginRequest.getAutoLogin());
         if (user == null) {
@@ -105,7 +106,7 @@ public class UserController {
     @GetMapping("")
     public List<UserResponse> selectUsers(@RequestParam("word") String word) {
         List<User> users = userService.selectUserList(word + "%", word + "%");
-        return users.stream().map(user -> new UserResponse(user)).collect(Collectors.toList());
+        return users.stream().map(UserResponse::new).collect(Collectors.toList());
     }
 
 }

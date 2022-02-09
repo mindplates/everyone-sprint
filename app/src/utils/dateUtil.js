@@ -15,16 +15,11 @@ function getDateString(val, format) {
 }
 
 function getLocalDateISOString(val) {
-  return moment
-    .utc(val)
-    .local()
-    .format('YYYY-MM-DD');
+  return moment.utc(val).local().format('YYYY-MM-DD');
 }
 
 function getLocalDate(val) {
-  return moment
-    .utc(val)
-    .local();
+  return moment.utc(val).local();
 }
 
 function getDate(val) {
@@ -99,6 +94,13 @@ function getSpan(startDate, endDate) {
   };
 }
 
+function getSpanHours(startDate, endDate, point) {
+  if (point) {
+    return (endDate - startDate) / (1000 * 60 * 60);
+  }
+  return Math.floor((endDate - startDate) / (1000 * 60 * 60));
+}
+
 function getTimeAtStartOfDay(dateString) {
   const today = new Date(Date.parse(dateString));
   today.setHours(0);
@@ -128,6 +130,7 @@ const dateUtil = {
   getUserOffsetHours,
   getUserOffsetMinutes,
   getSpan,
+  getSpanHours,
   getUserLocale,
   getTimeAtStartOfDay,
   getLocalDateISOString,

@@ -4,11 +4,9 @@ import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.repository.UserRepository;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.util.EncryptUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -17,11 +15,13 @@ import java.util.UUID;
 @Transactional
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    final private UserRepository userRepository;
+    final private EncryptUtil encryptUtil;
 
-    @Autowired
-    private EncryptUtil encryptUtil;
+    public UserService(UserRepository userRepository, EncryptUtil encryptUtil) {
+        this.userRepository = userRepository;
+        this.encryptUtil = encryptUtil;
+    }
 
     public User selectUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
@@ -69,7 +69,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User login(String email, String password, Boolean autoLogin) throws NoSuchAlgorithmException {
+    public User login(String email, String password, Boolean autoLogin) {
         User user = userRepository.findByEmail(email).filter(u -> {
             String salt = u.getSalt();
             byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
@@ -88,20 +88,20 @@ public class UserService {
         return user;
     }
 
-    public User updateUser(User user) {
-        return userRepository.save(user);
+    public void updateUser(User user) {
+        userRepository.save(user);
     }
 
-    public User updateUserLanguage(Long userId, String language) {
+    public void updateUserLanguage(Long userId, String language) {
         User user = selectUser(userId);
         user.setLanguage(language);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
-    public User updateUserCountry(Long userId, String country) {
+    public void updateUserCountry(Long userId, String country) {
         User user = selectUser(userId);
         user.setCountry(country);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
 

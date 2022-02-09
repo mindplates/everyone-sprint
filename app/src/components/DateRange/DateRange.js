@@ -26,7 +26,7 @@ const DateRange = ({ className, language, startDate, endDate, onChange, size, sh
           }}
           locale={language}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][showTimeSelectOnly ? 'hours' : 'full'].picker}
+          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][showTimeSelectOnly ? 'hoursMinutes' : 'full'].picker}
         />
       </div>
       <Liner className="dash" width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
@@ -41,7 +41,7 @@ const DateRange = ({ className, language, startDate, endDate, onChange, size, sh
           }}
           locale={language}
           customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][showTimeSelectOnly ? 'hours' : 'full'].picker}
+          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][showTimeSelectOnly ? 'hoursMinutes' : 'full'].picker}
         />
       </div>
     </div>

@@ -11,7 +11,6 @@ import com.mindplates.everyonesprint.biz.sprint.repository.SprintDailyMeetingAns
 import com.mindplates.everyonesprint.biz.sprint.repository.SprintRepository;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.vo.UserSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,17 +24,15 @@ import java.util.Optional;
 @Transactional
 public class SprintService {
 
-    @Autowired
-    private SprintRepository sprintRepository;
+    final private SprintRepository sprintRepository;
+    final private MeetingRepository meetingRepository;
+    final private SprintDailyMeetingAnswerRepository sprintDailyMeetingAnswerRepository;
 
-    @Autowired
-    private MeetingRepository meetingRepository;
-
-    @Autowired
-    private SprintDailyMeetingAnswerRepository sprintDailyMeetingAnswerRepository;
-
-    @Autowired
-    private MeetingService meetingService;
+    public SprintService(SprintRepository sprintRepository, MeetingRepository meetingRepository, SprintDailyMeetingAnswerRepository sprintDailyMeetingAnswerRepository) {
+        this.sprintRepository = sprintRepository;
+        this.meetingRepository = meetingRepository;
+        this.sprintDailyMeetingAnswerRepository = sprintDailyMeetingAnswerRepository;
+    }
 
     public Sprint selectByName(String name) {
         return sprintRepository.findByName(name).orElse(null);
@@ -52,7 +49,7 @@ public class SprintService {
         LocalDateTime startDate = sprint.getStartDate();
         LocalDateTime endDate = sprint.getEndDate();
 
-        ArrayList meetings = new ArrayList();
+        ArrayList<Meeting> meetings = new ArrayList<>();
 
         for (SprintDailyMeeting sprintDailyMeeting : sprint.getSprintDailyMeetings()) {
             meetings.addAll(makeMeetings(sprintDailyMeeting, startDate, endDate, userSession));
@@ -73,11 +70,11 @@ public class SprintService {
         LocalDateTime startDate = sprint.getStartDate();
         LocalDateTime endDate = sprint.getEndDate();
 
-        List updateMeetings = new ArrayList();
-        List deleteMeetings = new ArrayList();
+        List<Meeting> updateMeetings = new ArrayList<>();
+        List<Meeting> deleteMeetings = new ArrayList<>();
 
         // 스프린트 미팅 및 미팅 삭제
-        List deleteSprintDailyMeetings = new ArrayList();
+        List<SprintDailyMeeting> deleteSprintDailyMeetings = new ArrayList<>();
         sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> "D".equals(sprintDailyMeeting.getCRUD()))).forEach((sprintDailyMeeting -> {
             deleteSprintDailyMeetings.add(sprintDailyMeeting);
             meetingRepository.deleteAllBySprintDailyMeetingId(sprintDailyMeeting.getId());
@@ -91,7 +88,7 @@ public class SprintService {
             List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSprintDailyMeetingId(sprint.getId(), sprintDailyMeeting.getId());
 
             // 범위에 포함되지 않는 미팅 삭제
-            meetings.stream().forEach((meeting -> {
+            meetings.forEach((meeting -> {
                 if (meeting.getStartDate().isBefore(startDate) || meeting.getStartDate().isAfter(endDate)) {
                     deleteMeetings.add(meeting);
                 }
@@ -131,7 +128,7 @@ public class SprintService {
 
     private List<Meeting> makeMeetings(SprintDailyMeeting sprintDailyMeeting, LocalDateTime startDate, LocalDateTime endDate, UserSession userSession) {
 
-        ArrayList meetings = new ArrayList();
+        ArrayList<Meeting> meetings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
 
         LocalDateTime date = startDate;
@@ -156,7 +153,7 @@ public class SprintService {
 
         if (pMeeting == null) {
             do {
-                code = pMeeting == null ? MeetingService.makeShortUUID() : pMeeting.getCode();
+                code = MeetingService.makeShortUUID();
                 count = meetingRepository.countByCode(code);
             } while (count > 0L);
         }
@@ -176,7 +173,6 @@ public class SprintService {
         meetingUsers.clear();
 
         sprint.getUsers()
-                .stream()
                 .forEach((sprintUser) -> {
                     MeetingUser meetingUser = MeetingUser.builder().build();
                     meetingUser.setUser(User.builder().id(sprintUser.getUser().getId()).build());

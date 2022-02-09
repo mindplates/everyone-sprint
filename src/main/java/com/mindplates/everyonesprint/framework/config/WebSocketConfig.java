@@ -2,7 +2,6 @@ package com.mindplates.everyonesprint.framework.config;
 
 import com.mindplates.everyonesprint.framework.websocket.handler.ProjectWebSocketHandler;
 import com.mindplates.everyonesprint.framework.websocket.interceptor.WebSocketInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -14,11 +13,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    final private WebSocketInterceptor webSocketInterceptor;
     @Value("${everyone_sprint.corsUrls}")
     private String[] corsUrls;
 
-    @Autowired
-    private WebSocketInterceptor webSocketInterceptor;
+
+    public WebSocketConfig(WebSocketInterceptor webSocketInterceptor) {
+        this.webSocketInterceptor = webSocketInterceptor;
+    }
 
     public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
         brokerRegistry.enableSimpleBroker("/sub");

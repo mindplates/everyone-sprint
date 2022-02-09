@@ -20,8 +20,7 @@ public class SprintDailyMeetingAnswerRequest {
 
 
     public SprintDailyMeetingAnswer buildEntity(Long userId) {
-
-        SprintDailyMeetingAnswer sprintDailyMeetingAnswer = SprintDailyMeetingAnswer.builder()
+        return SprintDailyMeetingAnswer.builder()
                 .id(id)
                 .sprint(Sprint.builder().id(sprintId).build())
                 .sprintDailyMeetingQuestion(SprintDailyMeetingQuestion.builder().id(sprintDailyMeetingQuestionId).build())
@@ -29,10 +28,6 @@ public class SprintDailyMeetingAnswerRequest {
                 .date(date)
                 .answer(answer)
                 .build();
-
-
-
-        return sprintDailyMeetingAnswer;
     }
 
 

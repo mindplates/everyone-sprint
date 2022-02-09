@@ -6,15 +6,17 @@ import com.mindplates.everyonesprint.common.message.vo.MessageInfo;
 import com.mindplates.everyonesprint.common.message.vo.SenderInfo;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Log
 @Service
 public class MessageSendService {
 
-    @Autowired
-    private MessageBroker messageBroker;
+    final private MessageBroker messageBroker;
+
+    public MessageSendService(MessageBroker messageBroker) {
+        this.messageBroker = messageBroker;
+    }
 
     public void sendTo(String topic, MessageData messageData, UserSession userSession) {
         messageBroker.pubMessage(MessageInfo.builder()

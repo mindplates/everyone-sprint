@@ -12,6 +12,7 @@ import {
   Footer,
   Groups,
   Header,
+  Home,
   Meetings,
   PublicPark,
   Sprint,
@@ -38,7 +39,8 @@ function App({ history, setting }) {
       </div>
       <div className={`app-content ${noMaxWidth ? 'no-max-width' : ''}`}>
         <Switch>
-          <Route exact path="/" component={PublicPark} />
+          <Route exact path="/" component={Home} />
+          <Route exact path="/home" component={Home} />
           <Route exact path="/public-park" component={PublicPark} />
           <Route exact path="/groups" component={Groups} />
           <Route exact path="/sprints/new" render={() => <EditSprint type="new" />} />

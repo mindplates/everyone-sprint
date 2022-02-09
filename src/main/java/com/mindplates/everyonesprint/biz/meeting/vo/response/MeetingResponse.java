@@ -48,7 +48,7 @@ public class MeetingResponse {
         if (meeting.getSprintDailyMeeting() != null) {
             this.sprintDailyMeetingQuestions = meeting.getSprintDailyMeeting().getSprintDailyMeetingQuestions()
                     .stream()
-                    .map((sprintDailyMeetingQuestion -> new SprintDailyMeetingQuestionResponse(sprintDailyMeetingQuestion))).collect(Collectors.toList());
+                    .map((SprintDailyMeetingQuestionResponse::new)).collect(Collectors.toList());
         }
 
     }

@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum RoleCode {
 
-	SUPER_MAN("ROOT"),
-	ADMIN("ADMIN"),
-	MEMBER("MEMBER");
-	private String code;
+    SUPER_MAN("ROOT"),
+    ADMIN("ADMIN"),
+    MEMBER("MEMBER");
+    private String code;
 
 }

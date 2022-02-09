@@ -8,11 +8,11 @@ const DateRangeText = ({ className, startDate, endDate, size, showTimeOnly }) =>
   return (
     <div className={`date-range-text-wrapper ${className} size-${size}`}>
       <div>
-        <Text>{dateUtil.getDateString(startDate, showTimeOnly ? 'hours' : '')}</Text>
+        <Text>{dateUtil.getDateString(startDate, showTimeOnly ? 'hoursMinutes' : '')}</Text>
       </div>
       <Liner width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
       <div>
-        <Text>{dateUtil.getDateString(endDate, showTimeOnly ? 'hours' : '')}</Text>
+        <Text>{dateUtil.getDateString(endDate, showTimeOnly ? 'hoursMinutes' : '')}</Text>
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ const MeetingList = ({ t, meetings, user, onJoin }) => {
                 </div>
                 <div className="meeting-date">
                   <div className="start-date">
-                    {dateUtil.getDateString(meeting.startDate, isSameDay ? DATE_FORMATS_TYPES.hours : DATE_FORMATS_TYPES.dayHours)}
+                    {dateUtil.getDateString(meeting.startDate, isSameDay ? DATE_FORMATS_TYPES.hoursMinutes : DATE_FORMATS_TYPES.dayHours)}
                   </div>
                   <Liner className="date-liner" width="10px" height="1px" display="inline-block" color="black" margin="0 0.5rem" />
                   <div className="end-date">{dateUtil.getDateString(meeting.endDate, DATE_FORMATS_TYPES.hours)}</div>

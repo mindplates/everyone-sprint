@@ -14,6 +14,7 @@ import Footer from './Common/Footer';
 import SprintBoard from './Sprints/SprintBoard';
 import SprintDeactivate from './Sprints/SprintDeactivate';
 import ConferenceHeader from './Common/ConferenceHeader';
+import Home from './Home/Home';
 
 export {
   PublicPark,
@@ -32,4 +33,5 @@ export {
   SprintBoard,
   SprintDeactivate,
   ConferenceHeader,
+  Home,
 };
