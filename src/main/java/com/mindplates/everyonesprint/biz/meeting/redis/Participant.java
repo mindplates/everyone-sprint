@@ -1,10 +1,7 @@
 package com.mindplates.everyonesprint.biz.meeting.redis;
 
 import com.mindplates.everyonesprint.biz.user.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
@@ -12,11 +9,12 @@ import org.springframework.data.redis.core.index.Indexed;
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @RedisHash(value = "participant")
 @Setter
-public class Participant implements Comparable {
+public class Participant implements Comparable<Participant> {
     @Id
     private String key;
     @Indexed
@@ -42,11 +40,6 @@ public class Participant implements Comparable {
     @Indexed
     private String socketId;
 
-
-    public Participant() {
-
-    }
-
     public Participant(User user, String code, String ip, String socketId, Boolean audio, Boolean video) {
         if (user != null) {
             this.key = code + user.getId();
@@ -70,16 +63,16 @@ public class Participant implements Comparable {
     }
 
     @Override
-    public int compareTo(Object object) {
+    public int compareTo(Participant participant) {
         if (this.dailyScrumOrder == null) {
             return 1;
         }
 
-        if (((Participant) object).dailyScrumOrder == null) {
+        if (participant.dailyScrumOrder == null) {
             return 1;
         }
 
-        return this.dailyScrumOrder.compareTo(((Participant) object).dailyScrumOrder);
+        return this.dailyScrumOrder.compareTo(participant.dailyScrumOrder);
     }
 
 

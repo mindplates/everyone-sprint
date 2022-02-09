@@ -2,7 +2,6 @@ package com.mindplates.everyonesprint.biz.meeting.service;
 
 import com.mindplates.everyonesprint.biz.meeting.redis.Participant;
 import com.mindplates.everyonesprint.biz.meeting.repository.ParticipantRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,16 +12,14 @@ import java.util.Optional;
 @Transactional
 public class ParticipantService {
 
-    @Autowired
-    ParticipantRepository participantRepository;
+    final private ParticipantRepository participantRepository;
 
+    public ParticipantService(ParticipantRepository participantRepository) {
+        this.participantRepository = participantRepository;
+    }
 
     public void save(Participant walker) {
         participantRepository.save(walker);
-    }
-
-    public Iterable<Participant> findAll() {
-        return participantRepository.findAll();
     }
 
     public Iterable<Participant> findAll(Participant participant) {
@@ -40,6 +37,4 @@ public class ParticipantService {
     public void deleteById(String id) {
         participantRepository.deleteById(id);
     }
-
-
 }

@@ -1,10 +1,7 @@
 package com.mindplates.everyonesprint.biz.meeting.redis;
 
 import com.mindplates.everyonesprint.biz.user.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @RedisHash(value = "participant")
 @Setter
@@ -36,10 +34,6 @@ public class DailyScrum {
     private Boolean video;
     @Indexed
     private String socketId;
-
-    public DailyScrum() {
-
-    }
 
     public DailyScrum(User user, String code, String ip, String socketId, Boolean audio, Boolean video) {
         if (user != null) {

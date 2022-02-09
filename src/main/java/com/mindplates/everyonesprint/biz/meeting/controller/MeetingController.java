@@ -7,10 +7,8 @@ import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingResponse;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
-import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +23,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/meetings")
 public class MeetingController {
-    @Autowired
-    MeetingService meetingService;
 
-    @Autowired
-    SprintService sprintService;
+    final private MeetingService meetingService;
+    final private SprintService sprintService;
 
-    @Autowired
-    SessionUtil sessionUtil;
+    public MeetingController(MeetingService meetingService, SprintService sprintService) {
+        this.meetingService = meetingService;
+        this.sprintService = sprintService;
+    }
 
     private void checkIsMember(UserSession userSession, Sprint sprint) {
         if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
@@ -43,8 +41,7 @@ public class MeetingController {
     @PostMapping("")
     public MeetingResponse createMeetingInfo(@Valid @RequestBody MeetingRequest meetingRequest, UserSession userSession) {
         Meeting meeting = meetingRequest.buildEntity();
-        meetingService.createMeetingInfo(meeting, userSession);
-        return new MeetingResponse(meeting);
+        return new MeetingResponse(meetingService.createMeetingInfo(meeting, userSession));
     }
 
     @PutMapping("/{id}")
@@ -54,13 +51,12 @@ public class MeetingController {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
+        meetingService.selectMeetingInfo(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Sprint sprint = sprintService.selectSprintInfo(meetingRequest.getSprintId());
         checkIsMember(userSession, sprint);
-        Meeting meeting = meetingService.selectMeetingInfo(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         Meeting meetingInfo = meetingRequest.buildEntity();
-        meetingService.updateMeetingInfo(meetingInfo, userSession);
-        return new MeetingResponse(meeting);
+        return new MeetingResponse(meetingService.updateMeetingInfo(meetingInfo, userSession));
     }
 
     @DeleteMapping("/{id}")
@@ -85,6 +81,4 @@ public class MeetingController {
         checkIsMember(userSession, meeting.getSprint());
         return new MeetingResponse(meeting);
     }
-
-
 }

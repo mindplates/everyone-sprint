@@ -6,7 +6,6 @@ import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.redis.Participant;
 import com.mindplates.everyonesprint.biz.meeting.service.DailyScrumService;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
-import com.mindplates.everyonesprint.biz.meeting.service.ParticipantService;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.DailyScrumStatusResponse;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.service.UserService;
@@ -16,7 +15,6 @@ import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -35,19 +33,19 @@ import java.util.stream.StreamSupport;
 @MessageMapping("/api/message/conferences/{code}")
 public class ConferenceMessageController {
 
-    @Autowired
-    ParticipantService participantService;
+    final private UserService userService;
+    final private MeetingService meetingService;
+    final private ObjectMapper mapper;
+    final private MessageSendService messageSendService;
+    final private DailyScrumService dailyScrumService;
 
-    @Autowired
-    UserService userService;
-    @Autowired
-    MeetingService meetingService;
-    @Autowired
-    private ObjectMapper mapper;
-    @Autowired
-    private MessageSendService messageSendService;
-    @Autowired
-    private DailyScrumService dailyScrumService;
+    public ConferenceMessageController(UserService userService, MeetingService meetingService, ObjectMapper mapper, MessageSendService messageSendService, DailyScrumService dailyScrumService) {
+        this.userService = userService;
+        this.meetingService = meetingService;
+        this.mapper = mapper;
+        this.messageSendService = messageSendService;
+        this.dailyScrumService = dailyScrumService;
+    }
 
     @MessageMapping("/send")
     @SuppressWarnings("unchecked")
@@ -71,8 +69,8 @@ public class ConferenceMessageController {
                 Participant currentParticipant = meetingService.updateUserJoinInfo(code, user, SessionUtil.getUserIP(headerAccessor), headerAccessor.getSessionId(), (Boolean) receiveData.get("audio"), (Boolean) receiveData.get("video"), meeting);
                 sendData.put("participant", currentParticipant);
 
-                List<Participant> participantList = dailyScrumService.addDailyScrumUser(meeting, userSession);
-                List<DailyScrumStatusResponse> scrumUserOrders = StreamSupport.stream(participantList.spliterator(), false).map(DailyScrumStatusResponse::new).collect(Collectors.toList());
+                List<Participant> participantList = dailyScrumService.updateAddUserDailyScrumInfo(meeting, userSession);
+                List<DailyScrumStatusResponse> scrumUserOrders = participantList.stream().map(DailyScrumStatusResponse::new).collect(Collectors.toList());
 
                 sendData.put("started", meeting.getDailyScrumStarted());
                 sendData.put("scrumUserOrders", scrumUserOrders);

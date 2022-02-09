@@ -10,7 +10,6 @@ import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.vo.UserSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,17 +27,19 @@ import java.util.stream.StreamSupport;
 @Transactional
 public class MeetingService {
 
-    @Autowired
-    ParticipantService participantService;
-    @Autowired
-    ParticipantRepository participantRepository;
-    @Autowired
-    private MeetingRepository meetingRepository;
-    @Autowired
-    private MessageSendService messageSendService;
+    final private ParticipantService participantService;
+    final private ParticipantRepository participantRepository;
+    final private MeetingRepository meetingRepository;
+    final private MessageSendService messageSendService;
+    final private MeetingUserRepository meetingUserRepository;
 
-    @Autowired
-    private MeetingUserRepository meetingUserRepository;
+    public MeetingService(ParticipantService participantService, ParticipantRepository participantRepository, MeetingRepository meetingRepository, MessageSendService messageSendService, MeetingUserRepository meetingUserRepository) {
+        this.participantService = participantService;
+        this.participantRepository = participantRepository;
+        this.meetingRepository = meetingRepository;
+        this.messageSendService = messageSendService;
+        this.meetingUserRepository = meetingUserRepository;
+    }
 
     public static String makeShortUUID() {
         UUID uuid = UUID.randomUUID();
