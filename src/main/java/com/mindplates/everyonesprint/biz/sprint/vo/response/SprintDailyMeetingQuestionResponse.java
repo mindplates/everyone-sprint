@@ -1,4 +1,5 @@
 package com.mindplates.everyonesprint.biz.sprint.vo.response;
+
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeetingQuestion;
 import lombok.Data;
 

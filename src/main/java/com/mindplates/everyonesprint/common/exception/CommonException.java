@@ -1,5 +1,5 @@
 package com.mindplates.everyonesprint.common.exception;
 
-public class CommonException extends RuntimeException{
+public class CommonException extends RuntimeException {
 
 }

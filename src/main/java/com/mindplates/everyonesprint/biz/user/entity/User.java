@@ -79,11 +79,11 @@ public class User extends CommonEntity {
     @Column(name = "recovery_mail_send_result")
     private Boolean recoveryMailSendResult;
 
-    @Column(name="role_code", columnDefinition = "VARCHAR(15)")
+    @Column(name = "role_code", columnDefinition = "VARCHAR(15)")
     @Enumerated(EnumType.STRING)
     private RoleCode roleCode;
 
-    @Column(name="active_role_code", columnDefinition = "VARCHAR(15)")
+    @Column(name = "active_role_code", columnDefinition = "VARCHAR(15)")
     @Enumerated(EnumType.STRING)
     private RoleCode activeRoleCode;
 

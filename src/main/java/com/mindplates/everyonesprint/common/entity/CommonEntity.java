@@ -14,16 +14,16 @@ import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-@EntityListeners(value = { AuditingEntityListener.class })
+@EntityListeners(value = {AuditingEntityListener.class})
 @Getter
 @Setter
 public class CommonEntity {
 
-	@CreatedDate
+    @CreatedDate
     @Column(name = "creation_date", updatable = false)
     private LocalDateTime creationDate;
 
-	@CreatedBy
+    @CreatedBy
     @Column(name = "created_by", updatable = false)
     private Long createdBy;
 

@@ -31,7 +31,6 @@ public class SprintDailyMeetingAnswerRequest {
                 .build();
 
 
-
         return sprintDailyMeetingAnswer;
     }
 

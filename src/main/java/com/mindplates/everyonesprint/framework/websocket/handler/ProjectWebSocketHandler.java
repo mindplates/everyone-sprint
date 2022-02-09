@@ -16,7 +16,6 @@ import java.util.Map;
 public class ProjectWebSocketHandler extends DefaultHandshakeHandler {
 
 
-
     @Override
     protected Principal determineUser(ServerHttpRequest request,
                                       WebSocketHandler wsHandler,

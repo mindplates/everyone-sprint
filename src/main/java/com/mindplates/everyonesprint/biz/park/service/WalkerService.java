@@ -2,7 +2,6 @@ package com.mindplates.everyonesprint.biz.park.service;
 
 import com.mindplates.everyonesprint.biz.park.redis.Walker;
 import com.mindplates.everyonesprint.biz.park.repository.WalkerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,8 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class WalkerService {
 
-    @Autowired
-    private WalkerRepository walkerRepository;
+    final private WalkerRepository walkerRepository;
+
+    public WalkerService(WalkerRepository walkerRepository) {
+        this.walkerRepository = walkerRepository;
+    }
 
     public void save(Walker walker) {
         walkerRepository.save(walker);
