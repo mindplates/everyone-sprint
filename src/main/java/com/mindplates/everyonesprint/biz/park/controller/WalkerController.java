@@ -22,8 +22,7 @@ public class WalkerController {
     @DisableLogin
     @GetMapping("/all")
     public Iterable<Walker> selectMyInfo() {
-        Iterable<Walker> all = walkerService.findAll();
-        return all;
+        return walkerService.findAll();
     }
 
 

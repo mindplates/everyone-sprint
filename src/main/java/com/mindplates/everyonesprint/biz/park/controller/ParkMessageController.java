@@ -34,8 +34,8 @@ public class ParkMessageController {
         this.messageSendService = messageSendService;
     }
 
+    @SuppressWarnings({"unused", "unchecked"})
     @MessageMapping("/send")
-    @SuppressWarnings("unchecked")
     public void send(String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
         Map<String, Object> value = mapper.readValue(message, Map.class);
         UserSession userSession = SessionUtil.getUserInfo(headerAccessor);

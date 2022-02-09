@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"unchecked", "unused"})
 @Log
 @RestController
 @MessageMapping("/api/message/conferences/{code}")
@@ -47,7 +48,6 @@ public class ConferenceMessageController {
     }
 
     @MessageMapping("/send")
-    @SuppressWarnings("unchecked")
     public void sendToConference(@DestinationVariable(value = "code") String code, String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
 
         UserSession userSession = SessionUtil.getUserInfo(headerAccessor);
@@ -57,23 +57,21 @@ public class ConferenceMessageController {
         Map<String, Object> receiveData = (Map<String, Object>) value.get("data");
         Map<String, Object> sendData = null;
 
-        if (userSession != null) {
-            if ("JOIN".equals(type)) {
-                // JOIN 정보
-                Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-                User user = userService.selectUser(userSession.getId());
+        if (userSession != null && "JOIN".equals(type)) {
+            // JOIN 정보
+            Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            User user = userService.selectUser(userSession.getId());
 
-                sendData = new HashMap<>();
-                sendData.put("type", type);
-                Participant currentParticipant = meetingService.updateUserJoinInfo(code, user, SessionUtil.getUserIP(headerAccessor), headerAccessor.getSessionId(), (Boolean) receiveData.get("audio"), (Boolean) receiveData.get("video"), meeting);
-                sendData.put("participant", currentParticipant);
+            sendData = new HashMap<>();
+            sendData.put("type", type);
+            Participant currentParticipant = meetingService.updateUserJoinInfo(code, user, SessionUtil.getUserIP(headerAccessor), headerAccessor.getSessionId(), (Boolean) receiveData.get("audio"), (Boolean) receiveData.get("video"), meeting);
+            sendData.put("participant", currentParticipant);
 
-                List<Participant> participantList = dailyScrumService.updateAddUserDailyScrumInfo(meeting, userSession);
-                List<DailyScrumStatusResponse> scrumUserOrders = participantList.stream().map(DailyScrumStatusResponse::new).collect(Collectors.toList());
+            List<Participant> participantList = dailyScrumService.updateAddUserDailyScrumInfo(meeting, userSession);
+            List<DailyScrumStatusResponse> scrumUserOrders = participantList.stream().map(DailyScrumStatusResponse::new).collect(Collectors.toList());
 
-                sendData.put("started", meeting.getDailyScrumStarted());
-                sendData.put("scrumUserOrders", scrumUserOrders);
-            }
+            sendData.put("started", meeting.getDailyScrumStarted());
+            sendData.put("scrumUserOrders", scrumUserOrders);
         }
 
         MessageData data = MessageData.builder().type(type).data(Optional.ofNullable(sendData).orElse(receiveData)).build();
@@ -81,7 +79,6 @@ public class ConferenceMessageController {
     }
 
     @MessageMapping("/{userId}/send")
-    @SuppressWarnings("unchecked")
     public void sendToUser(@DestinationVariable(value = "code") String code, @DestinationVariable(value = "userId") Long userId, String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
 
         UserSession userSession = SessionUtil.getUserInfo(headerAccessor);

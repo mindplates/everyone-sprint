@@ -49,7 +49,7 @@ public class SprintService {
         LocalDateTime startDate = sprint.getStartDate();
         LocalDateTime endDate = sprint.getEndDate();
 
-        ArrayList meetings = new ArrayList();
+        ArrayList<Meeting> meetings = new ArrayList<>();
 
         for (SprintDailyMeeting sprintDailyMeeting : sprint.getSprintDailyMeetings()) {
             meetings.addAll(makeMeetings(sprintDailyMeeting, startDate, endDate, userSession));
@@ -70,11 +70,11 @@ public class SprintService {
         LocalDateTime startDate = sprint.getStartDate();
         LocalDateTime endDate = sprint.getEndDate();
 
-        List updateMeetings = new ArrayList();
-        List deleteMeetings = new ArrayList();
+        List<Meeting> updateMeetings = new ArrayList<>();
+        List<Meeting> deleteMeetings = new ArrayList<>();
 
         // 스프린트 미팅 및 미팅 삭제
-        List deleteSprintDailyMeetings = new ArrayList();
+        List<SprintDailyMeeting> deleteSprintDailyMeetings = new ArrayList<>();
         sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> "D".equals(sprintDailyMeeting.getCRUD()))).forEach((sprintDailyMeeting -> {
             deleteSprintDailyMeetings.add(sprintDailyMeeting);
             meetingRepository.deleteAllBySprintDailyMeetingId(sprintDailyMeeting.getId());
@@ -88,7 +88,7 @@ public class SprintService {
             List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSprintDailyMeetingId(sprint.getId(), sprintDailyMeeting.getId());
 
             // 범위에 포함되지 않는 미팅 삭제
-            meetings.stream().forEach((meeting -> {
+            meetings.forEach((meeting -> {
                 if (meeting.getStartDate().isBefore(startDate) || meeting.getStartDate().isAfter(endDate)) {
                     deleteMeetings.add(meeting);
                 }
@@ -128,7 +128,7 @@ public class SprintService {
 
     private List<Meeting> makeMeetings(SprintDailyMeeting sprintDailyMeeting, LocalDateTime startDate, LocalDateTime endDate, UserSession userSession) {
 
-        ArrayList<Meeting> meetings = new ArrayList();
+        ArrayList<Meeting> meetings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
 
         LocalDateTime date = startDate;

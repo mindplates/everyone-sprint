@@ -70,7 +70,7 @@ public class MeetingService {
         return this.updateMeetingInfo(meeting, userSession.getId());
     }
 
-    public Meeting updateMeetingInfo(Meeting meeting, Long userId) {
+    private Meeting updateMeetingInfo(Meeting meeting, Long userId) {
         LocalDateTime now = LocalDateTime.now();
         meeting.setLastUpdateDate(now);
         meeting.setLastUpdatedBy(userId);

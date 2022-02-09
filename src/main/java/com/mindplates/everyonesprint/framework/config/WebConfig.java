@@ -4,7 +4,6 @@ import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.framework.interceptor.LoginCheckInterceptor;
 import com.mindplates.everyonesprint.framework.resolver.MethodArgumentResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,17 +22,17 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Autowired
-    SessionUtil sessionUtil;
-    @Autowired
-    MessageSourceAccessor messageSourceAccessor;
-    @Autowired
-    UserService userService;
-
+    final private SessionUtil sessionUtil;
+    final private UserService userService;
     @Value("${spring.profiles.active}")
     private String activeProfile;
     @Value("${everyone_sprint.corsUrls}")
     private String[] corsUrls;
+
+    public WebConfig(SessionUtil sessionUtil, UserService userService) {
+        this.sessionUtil = sessionUtil;
+        this.userService = userService;
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -56,8 +55,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public MessageSourceAccessor messageSourceAccessor() {
-        MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource());
-        return messageSourceAccessor;
+        return new MessageSourceAccessor(messageSource());
     }
 
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -76,7 +74,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(localeChangeInterceptor());
 
         registry.addInterceptor(
-                new LoginCheckInterceptor(this.userService, this.sessionUtil, this.messageSourceAccessor, this.activeProfile))
+                new LoginCheckInterceptor(this.userService, this.sessionUtil))
                 .addPathPatterns("/**")
                 .excludePathPatterns("/test/**/")
                 .excludePathPatterns("/v3/**")

@@ -9,52 +9,41 @@ import java.security.NoSuchAlgorithmException;
 @Component
 public class EncryptUtil {
     public String getEncrypt(String source, byte[] salt) {
-        String result = "";
         try {
-
             byte[] a = source.getBytes();
             byte[] bytes = new byte[a.length + salt.length];
             System.arraycopy(a, 0, bytes, 0, a.length);
             System.arraycopy(salt, 0, bytes, a.length, salt.length);
 
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(bytes);
-
-            byte[] byteData = md.digest();
-
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < byteData.length; ++i) {
-                sb.append(Integer.toString((byteData[i] & 0xFF) + 256, 16).substring(1));
-            }
-
-            result = sb.toString();
+            return getMessageDigestString(bytes);
         } catch (NoSuchAlgorithmException e) {
-
             throw new ServiceException("BAD_REQUEST");
         }
 
-        return result;
     }
 
-    public String getHash(String source) throws NoSuchAlgorithmException {
-        String result = "";
-        byte[] a = source.getBytes();
-        byte[] bytes = new byte[a.length];
-        System.arraycopy(a, 0, bytes, 0, a.length);
-
+    @SuppressWarnings("StringBufferMayBeStringBuilder")
+    private String getMessageDigestString(byte[] bytes) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(bytes);
 
         byte[] byteData = md.digest();
 
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < byteData.length; ++i) {
-            sb.append(Integer.toString((byteData[i] & 0xFF) + 256, 16).substring(1));
+        for (byte byteDatum : byteData) {
+            sb.append(Integer.toString((byteDatum & 0xFF) + 256, 16).substring(1));
         }
 
-        result = sb.toString();
+        return sb.toString();
+    }
 
-        return result;
+    public String getHash(String source) throws NoSuchAlgorithmException {
+
+        byte[] a = source.getBytes();
+        byte[] bytes = new byte[a.length];
+        System.arraycopy(a, 0, bytes, 0, a.length);
+
+        return getMessageDigestString(bytes);
     }
 
     public byte[] getSaltByteArray() {

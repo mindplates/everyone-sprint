@@ -3,7 +3,6 @@ package com.mindplates.everyonesprint.framework.handler;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,20 +16,19 @@ import java.util.function.BiFunction;
 @Slf4j
 public class RestApiExceptionHandler {
 
-    BiFunction<HttpStatus, String, ResponseEntity<ErrorResponse>> messageResponse = (code, message) -> {
-        return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
-                .code(code)
-                .message(message)
-                .build(), HttpStatus.BAD_REQUEST);
-    };
-    BiFunction<HttpStatus, String, ResponseEntity<ErrorResponse>> response = (code, message) -> {
-        return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
-                .code(code)
-                .message(message)
-                .build(), code);
-    };
-    @Autowired
-    private MessageSourceAccessor messageSourceAccessor;
+    final private MessageSourceAccessor messageSourceAccessor;
+
+    final private BiFunction<HttpStatus, String, ResponseEntity<ErrorResponse>> messageResponse = ((code, message) ->
+            new ResponseEntity<>(ErrorResponse.builder().code(code).message(message).build(), HttpStatus.BAD_REQUEST)
+    );
+
+    final private BiFunction<HttpStatus, String, ResponseEntity<ErrorResponse>> response = ((code, message) ->
+            new ResponseEntity<>(ErrorResponse.builder().code(code).message(message).build(), code)
+    );
+
+    public RestApiExceptionHandler(MessageSourceAccessor messageSourceAccessor) {
+        this.messageSourceAccessor = messageSourceAccessor;
+    }
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<?> handleServiceException(ServiceException e) {
