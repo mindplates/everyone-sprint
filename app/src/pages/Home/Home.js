@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { BlockTitle, PageContent, PageTitle, TimeLineItem } from '@/components';
+import { BlockTitle, PageContent, PageTitle, SocketClient, TimeLineItem } from '@/components';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import dateUtil from '@/utils/dateUtil';
@@ -22,10 +22,11 @@ const now = Date.now();
 
 const Home = ({ t, user, history }) => {
   const [meetings, setMeetings] = useState(null);
+  const socket = useRef(null);
 
   const getMeetings = () => {
     request.get(
-      '/api/meetings',
+      '/api/meetings/today',
       { date: dateUtil.getToday() },
       (list) => {
         setMeetings(list.sort((a, b) => dateUtil.getTime(a.startDate) - dateUtil.getTime(b.startDate)));
@@ -39,23 +40,63 @@ const Home = ({ t, user, history }) => {
     getMeetings();
   }, []);
 
-  /*
-  * code: "1iuvibhrdiek3"
-endDate: "2022-02-09T03:00:00"
-id: 417
-name: "데일리 스크럼"
-sprintDailyMeetingId: 46
-sprintDailyMeetingQuestions: (3) [{…}, {…}, {…}]
-sprintId: 68
-sprintName: "모두의 스프린트 2차"
-startDate: "2022-02-09T02:00:00"
-* */
-
   let meetingCount = 0;
+
+  const onMessage = useCallback(
+    (info) => {
+      const {
+        data: { type, data },
+      } = info;
+
+      switch (type) {
+        case 'JOIN': {
+          if (meetings) {
+            const nextMeetings = meetings.slice(0);
+            const targetMeeting = nextMeetings.find((meeting) => meeting.id === data.meetingId);
+            if (targetMeeting) {
+              targetMeeting.connectedUserCount += 1;
+              setMeetings(nextMeetings);
+            }
+          }
+
+          break;
+        }
+
+        case 'LEAVE': {
+          if (meetings) {
+            const nextMeetings = meetings.slice(0);
+            const targetMeeting = nextMeetings.find((meeting) => meeting.id === data.meetingId);
+            if (targetMeeting) {
+              targetMeeting.connectedUserCount -= 1;
+              if (targetMeeting.connectedUserCount < 0) {
+                targetMeeting.connectedUserCount = 0;
+              }
+              setMeetings(nextMeetings);
+            }
+          }
+
+          break;
+        }
+
+        default: {
+          break;
+        }
+      }
+    },
+    [meetings],
+  );
 
   return (
     <div className="home-wrapper g-content">
       <PageTitle className="d-none">{t('HOME')}</PageTitle>
+      <SocketClient
+        topics={['/sub/conferences/notify']}
+        onMessage={onMessage}
+        onConnect={() => {}}
+        setRef={(client) => {
+          socket.current = client;
+        }}
+      />
       <PageContent border padding="0">
         {user?.id && (
           <div className="home-content">

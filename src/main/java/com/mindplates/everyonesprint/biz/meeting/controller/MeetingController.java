@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.meeting.controller;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
+import com.mindplates.everyonesprint.biz.meeting.service.ParticipantService;
 import com.mindplates.everyonesprint.biz.meeting.vo.request.MeetingRequest;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingResponse;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
@@ -26,10 +27,12 @@ public class MeetingController {
 
     final private MeetingService meetingService;
     final private SprintService sprintService;
+    final private ParticipantService participantService;
 
-    public MeetingController(MeetingService meetingService, SprintService sprintService) {
+    public MeetingController(MeetingService meetingService, SprintService sprintService, ParticipantService participantService) {
         this.meetingService = meetingService;
         this.sprintService = sprintService;
+        this.participantService = participantService;
     }
 
     private void checkIsMember(UserSession userSession, Sprint sprint) {
@@ -73,6 +76,14 @@ public class MeetingController {
     public List<MeetingResponse> selectUserMeetingList(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @RequestParam(value = "sprintId", required = false) Long sprintId, UserSession userSession) {
         List<Meeting> meetings = meetingService.selectUserMeetingList(sprintId, date, userSession);
         return meetings.stream().map(MeetingResponse::new).collect(Collectors.toList());
+    }
+
+    @GetMapping("/today")
+    public List<MeetingResponse> selectUserMeetingListWithConnectionCount(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @RequestParam(value = "sprintId", required = false) Long sprintId, UserSession userSession) {
+        List<Meeting> meetings = meetingService.selectUserMeetingList(sprintId, date, userSession);
+        return meetings.stream().map(MeetingResponse::new).peek((meetingResponse -> {
+            meetingResponse.setConnectedUserCount(participantService.countByCodeAndConnectedTrue(meetingResponse.getCode()));
+        })).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
