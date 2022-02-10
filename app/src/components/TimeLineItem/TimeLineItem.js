@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTimeAgo from 'react-time-ago';
+import { withTranslation } from 'react-i18next';
 import { withResizeDetector } from 'react-resize-detector';
 import dateUtil from '@/utils/dateUtil';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
 import { MeetingPropTypes, UserPropTypes } from '@/proptypes';
 import './TimeLineItem.scss';
 
-const TimeLineItem = ({ className, meeting, timeSpan, user, height, onClick }) => {
+const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }) => {
   return (
     <div
       className={`time-line-item-wrapper ${className}`}
@@ -20,8 +21,34 @@ const TimeLineItem = ({ className, meeting, timeSpan, user, height, onClick }) =
         }
       }}
     >
+      <div className="tooltip-info" onClick={(e) => e.stopPropagation()}>
+        <div>
+          <div className="move">
+            <a href={`/conferences/${meeting.code}`}>{t('클릭하여 이동')}</a>
+          </div>
+          <div className="meeting-name">
+            <span>{meeting.name}</span>
+          </div>
+          <div>
+            <span>{dateUtil.getDateString(meeting.startDate, DATE_FORMATS_TYPES.hoursMinutes)}</span>
+            <span className="mx-1">-</span>
+            <span>{dateUtil.getDateString(meeting.endDate, DATE_FORMATS_TYPES.hoursMinutes)}</span>
+          </div>
+          <div>
+            <span>{meeting.users[0].alias}</span>
+            {meeting.users.length - 1 > 0 && <span className="ml-1">외</span>}
+            {meeting.users.length - 1 > 0 && <span className="ml-1">{meeting.users.length - 1}명</span>}
+            <span className="connected-count">{meeting.connectedUserCount} 명 참가중</span>
+          </div>
+        </div>
+      </div>
       <div className="meeting-info">
-        <div className="name">{meeting.name}</div>
+        <div className="meeting-name">
+          <span>{meeting.name}</span>
+          <span className="connected-user-count">
+            <span>{meeting.connectedUserCount}</span>
+          </span>
+        </div>
         {height > 40 && (
           <div className="time-ago">
             <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getTime(meeting.startDate)} />
@@ -39,13 +66,14 @@ const TimeLineItem = ({ className, meeting, timeSpan, user, height, onClick }) =
   );
 };
 
-export default withResizeDetector(TimeLineItem);
+export default withResizeDetector(withTranslation()(TimeLineItem));
 
 TimeLineItem.defaultProps = {
   className: '',
 };
 
 TimeLineItem.propTypes = {
+  t: PropTypes.func,
   className: PropTypes.string,
   meeting: MeetingPropTypes,
   timeSpan: PropTypes.number,

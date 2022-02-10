@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MeetingResponse {
@@ -25,6 +26,7 @@ public class MeetingResponse {
     private List<User> users;
     private Long sprintDailyMeetingId;
     private List<SprintDailyMeetingQuestionResponse> sprintDailyMeetingQuestions;
+    private Long connectedUserCount;
 
     public MeetingResponse(Meeting meeting) {
         this.id = meeting.getId();

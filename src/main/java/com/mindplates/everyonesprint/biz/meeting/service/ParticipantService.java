@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
@@ -36,5 +37,11 @@ public class ParticipantService {
 
     public void deleteById(String id) {
         participantRepository.deleteById(id);
+    }
+
+    public Long countByCodeAndConnectedTrue(String code) {
+        Participant participant = Participant.builder().code(code).build();
+        participant.setConnected(true);
+        return StreamSupport.stream(participantRepository.findAll(Example.of(participant)).spliterator(), false).count();
     }
 }

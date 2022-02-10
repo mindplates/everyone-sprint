@@ -17,10 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -188,13 +185,15 @@ public class MeetingService {
             });
 
 
+            Meeting currentMeeting = null;
             if (participant.getCode() != null) {
                 Participant conferenceCondition = Participant.builder().code(participant.getCode()).build();
                 // 모든 사용자가 접속 종료하였고, 시작시간보다 나중이거나, 시작시간이 기록되어 있다면, 회의 시간을 기록하고 관련 기능을 중지
                 Iterable<Participant> conferenceUsers = participantService.findAll(conferenceCondition);
                 long connectedUserCount = StreamSupport.stream(conferenceUsers.spliterator(), false).filter(p -> Optional.ofNullable(p.getConnected()).orElse(false)).count();
                 if (connectedUserCount < 1) {
-                    this.selectMeetingInfo(participant.getCode()).ifPresent(meeting -> {
+                    currentMeeting = this.selectMeetingInfo(participant.getCode()).orElse(null);
+                    Optional.ofNullable(currentMeeting).ifPresent(meeting -> {
                         if (meeting.getStartDate().isAfter(now) || meeting.getRealStartDate() != null) {
                             meeting.setRealEndDate(now);
                             meeting.setDailyScrumStarted(false);
@@ -216,6 +215,13 @@ public class MeetingService {
             data.put("participant", participant);
             MessageData message = MessageData.builder().type("LEAVE").data(data).build();
             messageSendService.sendTo("conferences/" + participant.getCode(), message, userSession);
+
+            if (currentMeeting != null) {
+                Map<String, Object> notifyData = new HashMap<>();
+                notifyData.put("meetingId", currentMeeting.getId());
+                messageSendService.sendTo("conferences/notify", MessageData.builder().type("LEAVE").data(notifyData).build(), null);
+            }
+
         });
     }
 

@@ -72,10 +72,16 @@ public class ConferenceMessageController {
 
             sendData.put("started", meeting.getDailyScrumStarted());
             sendData.put("scrumUserOrders", scrumUserOrders);
+
+            Map<String, Object> notifyData = new HashMap<>();
+            notifyData.put("meetingId", meeting.getId());
+            messageSendService.sendTo("conferences/notify", MessageData.builder().type("JOIN").data(notifyData).build(), null);
         }
 
         MessageData data = MessageData.builder().type(type).data(Optional.ofNullable(sendData).orElse(receiveData)).build();
         messageSendService.sendTo("conferences/" + code, data, userSession);
+
+
     }
 
     @MessageMapping("/{userId}/send")
