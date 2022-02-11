@@ -41,6 +41,7 @@
                 list-style: none;
                 border-bottom: 1px dashed $gray-300;
                 position: relative;
+                min-height: 30px;
 
                 &:first-child {
                   border-top: 1px dashed $gray-300;

@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
+import { withResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
@@ -10,24 +12,38 @@ import dateUtil from '@/utils/dateUtil';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
 import './Home.scss';
 
-const times = [];
 const today = dateUtil.getToday();
-const startTime = 8;
-const endTime = 24;
-const timeSpan = 2;
-for (let i = startTime; i < endTime; i += timeSpan) {
-  times.push(today.setHours(i));
-}
+
 const now = Date.now();
 
-const Home = ({ t, user, history }) => {
+const Home = ({ t, user, history, height }) => {
+  const timeSpan = useRef(2);
+
+  const getTimes = useCallback((startTime, endTime) => {
+    const defaultTimes = [];
+    for (let i = startTime; i < endTime; i += timeSpan.current) {
+      defaultTimes.push(today.setHours(i));
+    }
+
+    return defaultTimes;
+  }, []);
+
   const [meetings, setMeetings] = useState(null);
+  const [times, setTimes] = useState(getTimes(8, 24));
+  const debounceSetTimes = useCallback(
+    _.debounce((startTime, endTime) => {
+      setTimes(getTimes(startTime, endTime));
+    }, 500),
+    [],
+  );
+
+  const content = useRef(null);
   const socket = useRef(null);
 
   const getMeetings = () => {
     request.get(
       '/api/meetings/today',
-      { date: dateUtil.getToday() },
+      { date: today },
       (list) => {
         setMeetings(list.sort((a, b) => dateUtil.getTime(a.startDate) - dateUtil.getTime(b.startDate)));
       },
@@ -39,6 +55,16 @@ const Home = ({ t, user, history }) => {
   useEffect(() => {
     getMeetings();
   }, []);
+
+  useEffect(() => {
+    if (height > 1000) {
+      timeSpan.current = 1;
+      debounceSetTimes(0, 24);
+    } else {
+      timeSpan.current = 2;
+      debounceSetTimes(8, 24);
+    }
+  }, [height]);
 
   let meetingCount = 0;
 
@@ -99,7 +125,7 @@ const Home = ({ t, user, history }) => {
       />
       <PageContent border padding="0">
         {user?.id && (
-          <div className="home-content">
+          <div className="home-content" ref={content}>
             <div className="timeline-content">
               <BlockTitle className="mb-3">오늘의 미팅</BlockTitle>
               <div className="timeline-meeting">
@@ -112,7 +138,7 @@ const Home = ({ t, user, history }) => {
                           if (d < now && now < times[inx + 1]) {
                             current = true;
                           }
-                        } else if (now > d) {
+                        } else if (now > d && now < d + timeSpan * 1000 * 60 * 60) {
                           current = true;
                         }
                         return (
@@ -127,7 +153,7 @@ const Home = ({ t, user, history }) => {
                                   if (d <= startDate && startDate < times[inx + 1]) {
                                     return true;
                                   }
-                                } else if (startDate >= d) {
+                                } else if (d + timeSpan.current * 1000 * 60 * 60 > startDate && startDate >= d) {
                                   return true;
                                 }
 
@@ -141,14 +167,14 @@ const Home = ({ t, user, history }) => {
                                     key={meeting.id}
                                     style={{
                                       left: `${60 + 10 * meetingCount}px`,
-                                      top: `${(dateUtil.getSpanHours(d, dateUtil.getLocalDate(meeting.startDate), true) / timeSpan) * 100}%`,
+                                      top: `${(dateUtil.getSpanHours(d, dateUtil.getLocalDate(meeting.startDate), true) / timeSpan.current) * 100}%`,
                                     }}
                                   >
                                     <TimeLineItem
                                       meeting={meeting}
                                       count={meetingCount}
                                       zIndex={meetingCount}
-                                      timeSpan={timeSpan}
+                                      timeSpan={timeSpan.current}
                                       baseTime={d}
                                       user={user}
                                       onClick={() => {
@@ -183,10 +209,11 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(Home)));
+export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withResizeDetector(Home))));
 
 Home.propTypes = {
   t: PropTypes.func,
   user: UserPropTypes,
   history: HistoryPropTypes,
+  height: PropTypes.number,
 };
