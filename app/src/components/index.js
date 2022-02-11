@@ -41,6 +41,7 @@ import PixInfoEditor from '@/components/PixInfoEditor/PixInfoEditor';
 import Spinner from '@/components/Spinner/Spinner';
 import FadeMessage from '@/components/FadeMessage/FadeMessage';
 import TimeLineItem from '@/components/TimeLineItem/TimeLineItem';
+import MeetingTimeLine from '@/components/MeetingTimeLine/MeetingTimeLine';
 
 export {
   MessageDialog,
@@ -87,4 +88,5 @@ export {
   Spinner,
   FadeMessage,
   TimeLineItem,
+  MeetingTimeLine,
 };
