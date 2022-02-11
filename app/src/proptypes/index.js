@@ -47,8 +47,8 @@ const SprintDailyMeetingPropTypes = PropTypes.shape({
 const SprintPropTypes = PropTypes.shape({
   id: PropTypes.number,
   name: PropTypes.string,
-  startDate: PropTypes.number,
-  endDate: PropTypes.number,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
   realEndDate: PropTypes.string,
   isJiraSprint: PropTypes.bool,
   jiraSprintUrl: PropTypes.string,

@@ -115,7 +115,7 @@ MeetingTimeLine.defaultProps = {
 
 MeetingTimeLine.propTypes = {
   className: PropTypes.string,
-  date: PropTypes.number,
+  date: PropTypes.instanceOf(Date),
   user: UserPropTypes,
   history: HistoryPropTypes,
   meetings: PropTypes.arrayOf(MeetingPropTypes),

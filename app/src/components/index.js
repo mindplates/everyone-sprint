@@ -42,6 +42,7 @@ import Spinner from '@/components/Spinner/Spinner';
 import FadeMessage from '@/components/FadeMessage/FadeMessage';
 import TimeLineItem from '@/components/TimeLineItem/TimeLineItem';
 import MeetingTimeLine from '@/components/MeetingTimeLine/MeetingTimeLine';
+import MySprintSummaryList from '@/components/MySprintSummaryList/MySprintSummaryList';
 
 export {
   MessageDialog,
@@ -89,4 +90,5 @@ export {
   FadeMessage,
   TimeLineItem,
   MeetingTimeLine,
+  MySprintSummaryList,
 };

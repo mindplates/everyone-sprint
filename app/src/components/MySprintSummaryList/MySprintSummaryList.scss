@@ -1,0 +1,221 @@
+.my-sprint-summary-list-wrapper {
+  height: 100%;
+
+  > div.my-sprint-list {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    margin-right: -0.5rem;
+
+    ul {
+      height: 100%;
+      padding: 0 0.5rem 0 0;
+      margin: 0;
+      list-style: none;
+      width: 100%;
+      overflow-y: auto;
+
+      > li {
+        display: inline-block;
+        width: calc((100% - 2rem) / 3);
+        margin-right: 1rem;
+        position: relative;
+        padding: 1rem;
+        background-color: $white;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+        cursor: pointer;
+        vertical-align: top;
+
+        &:nth-child(3n) {
+          margin-right: 0;
+        }
+
+        &:hover {
+          border: 1px solid rgba(0, 0, 0, 0.6);
+        }
+
+        .config-button {
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+        }
+
+        .name {
+          font-weight: bold;
+          margin-bottom: 0;
+          font-size: 18px;
+          text-align: center;
+          width: 100%;
+          margin-bottom: 1rem;
+        }
+
+        .duration {
+          > div.status-bar {
+            height: 20px;
+            background-color: $gray-200;
+            position: relative;
+            margin-bottom: 0.5rem;
+            .current {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 0;
+              height: 100%;
+              background-color: $green;
+            }
+          }
+
+          > .message {
+            font-size: 14px;
+            text-align: center;
+          }
+        }
+
+        .name-and-date {
+          flex-grow: 1;
+          .name {
+            font-weight: bold;
+            margin-bottom: 0;
+            font-size: 20px;
+          }
+
+          .sprint-date {
+            > div {
+              display: inline-flex;
+              border-radius: 2px;
+              font-size: 14px;
+              @media (max-width: 576px) {
+                display: block;
+
+                .date-liner {
+                  display: none !important;
+                }
+              }
+              > div {
+                align-self: center;
+                @media (max-width: 576px) {
+                  display: flex;
+                }
+
+                &.old {
+                  margin-left: 0.5rem;
+
+                  @media (max-width: 576px) {
+                    display: none;
+                  }
+                  > span {
+                    background-color: $warning;
+                    padding: 0 0.5rem;
+                    text-transform: uppercase;
+                    font-size: 12px;
+                    color: $white;
+                  }
+                }
+              }
+
+              .date-label {
+                display: none;
+                align-self: center;
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                width: 40px;
+                text-align: center;
+                line-height: 100%;
+                padding: 2px 0;
+                border-radius: 2px;
+
+                @media (max-width: 576px) {
+                  display: inline-block;
+                  margin-right: 0.5rem;
+                  font-size: 10px;
+                }
+              }
+            }
+            &.old-sprint {
+              .date-text {
+                color: $warning !important;
+              }
+            }
+          }
+        }
+
+        > ____div {
+          display: flex;
+
+          @media (max-width: 992px) {
+            flex-direction: column;
+          }
+
+          .liner {
+            display: flex;
+            flex-grow: 0;
+            align-self: center;
+
+            @media (max-width: 992px) {
+              display: none;
+            }
+          }
+
+          .status {
+            align-self: center;
+            margin-right: 0.5rem;
+
+            @media (max-width: 992px) {
+              position: absolute;
+              right: 0.5rem;
+              top: 1rem;
+            }
+          }
+
+          .others {
+            display: flex;
+            display: none;
+            flex-grow: 0;
+
+            @media (max-width: 992px) {
+              margin-top: 0.5rem;
+            }
+
+            > div {
+              width: 80px;
+              text-align: center;
+              align-self: center;
+
+              @media (max-width: 992px) {
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                margin-right: 0.5rem;
+
+                &:last-child {
+                  margin-right: 0;
+                }
+              }
+
+              @media (max-width: 576px) {
+                flex: 1 1 0;
+              }
+
+              .label {
+                > span {
+                  font-size: 12px;
+                  display: inline-block;
+                }
+              }
+
+              .value {
+                font-size: 20px;
+                @media (max-width: 992px) {
+                  margin-bottom: 0.25rem;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

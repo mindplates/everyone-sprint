@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
-import { BlockTitle, MeetingTimeLine, PageContent, PageTitle, SocketClient } from '@/components';
+import { withRouter } from 'react-router-dom';
+import { BlockTitle, MeetingTimeLine, MySprintSummaryList, PageContent, PageTitle, SocketClient } from '@/components';
 import { UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import dateUtil from '@/utils/dateUtil';
@@ -12,6 +14,7 @@ const Home = ({ t, user }) => {
   const socket = useRef(null);
   const today = dateUtil.getToday();
   const [meetings, setMeetings] = useState(null);
+  const [sprints, setSprints] = useState(null);
 
   const getMeetings = () => {
     request.get(
@@ -25,8 +28,21 @@ const Home = ({ t, user }) => {
     );
   };
 
+  const getSprints = () => {
+    request.get(
+      '/api/sprints',
+      null,
+      (list) => {
+        setSprints(list);
+      },
+      null,
+      t('사용자의 스프린트 목록을 모으고 있습니다.'),
+    );
+  };
+
   useEffect(() => {
     getMeetings();
+    getSprints();
   }, []);
 
   const onMessage = useCallback(
@@ -93,8 +109,11 @@ const Home = ({ t, user }) => {
                 <MeetingTimeLine user={user} meetings={meetings} date={today} />
               </div>
             </div>
-            <div className="other-content">
-              <div />
+            <div className="my-sprints">
+              <BlockTitle className="mb-3">내 스프린트</BlockTitle>
+              <div className="my-sprints-content">
+                <MySprintSummaryList sprints={sprints} />
+              </div>
             </div>
           </div>
         )}
@@ -110,7 +129,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(Home));
+export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(Home);
 
 Home.propTypes = {
   t: PropTypes.func,
