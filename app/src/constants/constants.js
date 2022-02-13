@@ -75,7 +75,8 @@ const TIMEZONES = {
 const DATE_FORMATS = {
   ko_KR: {
     full: { moment: 'YYYY년 MM월 DD일 HH시 mm분', picker: 'yyyy년 MM월 dd일 HH시 mm분' },
-    days: { moment: 'YYYY년 MM월 DD일', picker: 'yyyy년 MM월 dd일 (eee)' },
+    yearsDays: { moment: 'YYYY년 MM월 DD일', picker: 'yyyy년 MM월 dd일 (eee)' },
+    days: { moment: 'MM월 DD일', picker: 'MM월 dd일 (eee)' },
     dayHours: { moment: 'MM월 DD일 HH시 mm분', picker: 'MM월 dd일 HH시 mm분' },
     hoursMinutes: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
     hours: { moment: 'HH시', picker: 'HH시' },
@@ -83,7 +84,8 @@ const DATE_FORMATS = {
   },
   ko_US: {
     full: { moment: 'MM월/DD일/YYYY년 HH시 mm분', picker: 'MM월/dd일/yyyy년 HH시 mm분' },
-    days: { moment: 'MM월/DD일/YYYY년', picker: 'MM월/dd일/yyyy년 (eee)' },
+    yearsDays: { moment: 'MM월/DD일/YYYY년', picker: 'MM월/dd일/yyyy년 (eee)' },
+    days: { moment: 'MM월/DD일', picker: 'MM월/dd일 (eee)' },
     dayHours: { moment: 'MM월/DD일 HH시 mm분', picker: 'MM월/dd일 HH시 mm분' },
     hoursMinutes: { moment: 'HH시 mm분', picker: 'HH시 mm분' },
     hours: { moment: 'HH시', picker: 'HH시' },
@@ -91,7 +93,8 @@ const DATE_FORMATS = {
   },
   en_US: {
     full: { moment: 'MM/DD/YYYY HH:mm', picker: 'MM/dd/yyyy HH:mm' },
-    days: { moment: 'MM/DD/YYYY', picker: 'MM/dd/yyyy (eee)' },
+    yearsDays: { moment: 'MM/DD/YYYY', picker: 'MM/dd/yyyy (eee)' },
+    days: { moment: 'MM/DD', picker: 'MM/dd (eee)' },
     dayHours: { moment: 'MM/DD HH:mm', picker: 'MM/dd HH:mm' },
     hoursMinutes: { moment: 'HH:mm', picker: 'HH:mm' },
     hours: { moment: 'HH', picker: 'HH' },
@@ -99,7 +102,8 @@ const DATE_FORMATS = {
   },
   en_KR: {
     full: { moment: 'YYYY-MM-DD HH:mm', picker: 'yyyy-MM-dd HH:mm' },
-    days: { moment: 'YYYY-MM-DD', picker: 'yyyy-MM-dd (eee)' },
+    yearsDays: { moment: 'YYYY-MM-DD', picker: 'yyyy-MM-dd (eee)' },
+    days: { moment: 'MM-DD', picker: 'MM-dd (eee)' },
     dayHours: { moment: 'DD-MM HH:mm', picker: 'dd-MM HH:mm' },
     hoursMinutes: { moment: 'HH:mm', picker: 'HH:mm' },
     hours: { moment: 'HH', picker: 'HH' },

@@ -9,12 +9,19 @@ import { UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import dateUtil from '@/utils/dateUtil';
 import './Home.scss';
+import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
 
 const Home = ({ t, user }) => {
   const socket = useRef(null);
   const today = dateUtil.getToday();
   const [meetings, setMeetings] = useState(null);
   const [sprints, setSprints] = useState(null);
+  const [scrumInfo, setScrumInfo] = useState({
+    isOpen: false,
+    sprintId: null,
+    sprintDailyMeetings: [],
+    currentSprintDailyMeetingId: null,
+  });
 
   const getMeetings = () => {
     request.get(
@@ -29,8 +36,11 @@ const Home = ({ t, user }) => {
   };
 
   const getSprints = () => {
+    // 클라이언트에서 서버로 시간 값을 보낼때는, Date.toISOString() 형식으로 문자열로 전송 (2022-02-13T15:00:00.000Z)
+    // 클라이언트에서 서버로 날짜를 보낼때는 dateUtil.getLocalDateISOString()로 날짜 문자열로 전송 (2022-02-14)
+    const todayString = dateUtil.getLocalDateISOString(Date.now());
     request.get(
-      '/api/sprints',
+      `/api/sprints?date=${todayString}&startDate=${today.toISOString()}`,
       null,
       (list) => {
         setSprints(list);
@@ -89,6 +99,39 @@ const Home = ({ t, user }) => {
     [meetings],
   );
 
+  const onChangeScrumInfo = (sprintId, isOpen) => {
+    if (isOpen) {
+      const todayString = dateUtil.getLocalDateISOString(Date.now());
+      request.get(
+        `/api/sprints/${sprintId}/scrums?date=${todayString}&startDate=${today.toISOString()}`,
+        null,
+        (sprintDailyMeetings) => {
+          const nextScrumInfo = { ...scrumInfo };
+          nextScrumInfo.isOpen = isOpen;
+          nextScrumInfo.sprintId = sprintId;
+          nextScrumInfo.sprintDailyMeetings = sprintDailyMeetings;
+          if (nextScrumInfo.sprintDailyMeetings.length > 0) {
+            nextScrumInfo.currentSprintDailyMeetingId = nextScrumInfo.sprintDailyMeetings[0].id;
+          }
+
+          setScrumInfo(nextScrumInfo);
+        },
+        null,
+        t('사용자의 스프린트 목록을 모으고 있습니다.'),
+      );
+    } else {
+      setScrumInfo({
+        isOpen: false,
+      });
+    }
+  };
+
+  const onChangeCurrentSprintDailyMeetingId = (sprintDailyMeetingId) => {
+    const nextScrumInfo = { ...scrumInfo };
+    nextScrumInfo.currentSprintDailyMeetingId = sprintDailyMeetingId;
+    setScrumInfo(nextScrumInfo);
+  };
+
   return (
     <div className="home-wrapper g-content">
       <PageTitle className="d-none">{t('HOME')}</PageTitle>
@@ -110,14 +153,37 @@ const Home = ({ t, user }) => {
               </div>
             </div>
             <div className="my-sprints">
-              <BlockTitle className="mb-3">내 스프린트</BlockTitle>
+              <BlockTitle className="mb-3">오늘의 스프린트</BlockTitle>
               <div className="my-sprints-content">
-                <MySprintSummaryList sprints={sprints} />
+                <MySprintSummaryList
+                  sprints={sprints}
+                  onClickScrumInfo={(sprintId) => {
+                    onChangeScrumInfo(sprintId, true);
+                  }}
+                />
               </div>
             </div>
           </div>
         )}
       </PageContent>
+      {scrumInfo.isOpen && (
+        <ScrumInfoEditorPopup
+          setOpen={() => {
+            onChangeScrumInfo(null, false);
+          }}
+          sprintDailyMeetings={scrumInfo.sprintDailyMeetings}
+          onChangeCurrentSprintDailyMeetingId={onChangeCurrentSprintDailyMeetingId}
+          sprintId={scrumInfo.sprintId}
+          date={dateUtil.getLocalDateISOString(Date.now())}
+          sprintDailyMeetingId={scrumInfo.currentSprintDailyMeetingId}
+          questions={scrumInfo.sprintDailyMeetings.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId).sprintDailyMeetingQuestions}
+          answers={scrumInfo.sprintDailyMeetings.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId).sprintDailyMeetingAnswers}
+          onSaveComplete={() => {
+            getSprints();
+            // this.sendToAll('SCRUM_INFO_CHANGED');
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -24,6 +24,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,11 +49,18 @@ public class SprintController {
 
     @Operation(description = "사용자의 스프린트 목록 조회")
     @GetMapping("")
-    public List<SprintListResponse> selectUserSprintList(@ApiIgnore UserSession userSession) {
+    public List<SprintListResponse> selectUserSprintList(@RequestParam(value = "date", required = false) LocalDate date, @RequestParam(value = "startDate", required = false) LocalDateTime startDate, @ApiIgnore UserSession userSession) {
         List<Sprint> sprints = sprintService.selectUserSprintList(userSession);
         return sprints.stream().map((sprint -> {
             SprintListResponse item = new SprintListResponse(sprint);
             item.setIsMember(sprint.getUsers().stream().anyMatch((sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))));
+            if (startDate != null && date != null) {
+                LocalDateTime endDate = startDate.plusDays(1).minusSeconds(1);
+                if (meetingService.selectHasSprintMeeting(item.getId(), startDate, endDate)) {
+                    item.setHasScrumMeeting(true);
+                    item.setIsUserScrumInfoRegistered(sprintService.selectIsSprintUserScrumInfoRegistered(sprint.getId(), date, userSession.getId()));
+                }
+            }
             return item;
         })).collect(Collectors.toList());
     }
@@ -117,7 +125,7 @@ public class SprintController {
         }
 
         List<Long> sprintDailyMeetingIds = sprint.getSprintDailyMeetings().stream().map(SprintDailyMeeting::getId).collect(Collectors.toList());
-        List<Meeting> dailyMeetings = meetingService.selectSprintScrumMeetingList(userSession.getId(), sprintDailyMeetingIds, start, end);
+        List<Meeting> dailyMeetings = meetingService.selectSprintUserScrumMeetingList(userSession.getId(), sprintDailyMeetingIds, start, end);
         List<Meeting> noDailyMeetings = meetingService.selectSprintNotScrumMeetingList(userSession.getId(), start, end);
         List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(id, date);
 
@@ -205,6 +213,26 @@ public class SprintController {
                 .collect(Collectors.toList());
 
         return response;
+    }
+
+
+    @GetMapping("/{id}/scrums")
+    public List<SprintDailyMeetingResponse> selectSprintDailyMeetingList(@PathVariable Long id, @RequestParam("date") LocalDate date, @RequestParam(value = "startDate", required = false) LocalDateTime startDate, @ApiIgnore UserSession userSession) {
+
+        Sprint sprint = sprintService.selectSprintInfo(id);
+        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
+            throw new ServiceException("common.not.authorized");
+        }
+
+        LocalDateTime endDate = startDate.plusDays(1).minusSeconds(1);
+        List<Meeting> meetings = meetingService.selectSprintScrumMeetingList(id, startDate, endDate);
+        List<SprintDailyMeeting> sprintDailyMeetings = meetings.stream().map(Meeting::getSprintDailyMeeting).distinct().collect(Collectors.toList());
+        List<SprintDailyMeetingResponse> sprintDailyMeetingResponses = new ArrayList<>();
+        sprintDailyMeetings.forEach(sprintDailyMeeting ->
+                sprintDailyMeetingResponses.add(new SprintDailyMeetingResponse(sprintDailyMeeting, sprintService.selectSprintDailyMeetingAnswerList(id, sprintDailyMeeting.getId(), date)))
+        );
+
+        return sprintDailyMeetingResponses;
     }
 
 

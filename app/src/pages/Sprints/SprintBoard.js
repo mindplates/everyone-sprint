@@ -324,7 +324,7 @@ const SprintBoard = ({
                             onChange={moveDate}
                             locale={user.language}
                             customInput={<DateCustomInput />}
-                            dateFormat={DATE_FORMATS[dateUtil.getUserLocale()].days.picker}
+                            dateFormat={DATE_FORMATS[dateUtil.getUserLocale()].yearsDays.picker}
                           />
                         </div>
                         <div>

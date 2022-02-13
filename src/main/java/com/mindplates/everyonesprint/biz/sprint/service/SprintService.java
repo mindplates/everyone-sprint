@@ -227,6 +227,10 @@ public class SprintService {
         return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndDateEquals(sprintId, date);
     }
 
+    public boolean selectIsSprintUserScrumInfoRegistered(Long sprintId, LocalDate date, Long userId) {
+        return sprintDailyMeetingAnswerRepository.countBySprintIdAndDateEqualsAndUserId(sprintId, date, userId) > 0L;
+    }
+
     public List<SprintDailyMeetingAnswer> selectLastUserSprintDailyMeetingAnswerList(Long sprintId, Long meetingId, Long userId, LocalDate date) {
         SprintDailyMeetingAnswer lastAnswer = sprintDailyMeetingAnswerRepository.findTop1BySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndUserIdAndDateLessThanOrderByDateDesc(sprintId, meetingId, userId, date);
         if (lastAnswer != null) {

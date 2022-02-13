@@ -8,8 +8,9 @@ import { Button, EmptyContent, Liner } from '@/components';
 import { HistoryPropTypes, SprintPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './MySprintSummaryList.scss';
+import { DATE_FORMATS_TYPES } from '@/constants/constants';
 
-const MySprintSummaryList = ({ className, printOld, t, history, sprints }) => {
+const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo }) => {
   const now = Date.now();
   return (
     <div className={`my-sprint-summary-list-wrapper ${className} ${sprints && sprints?.length > 0 ? 'g-list-content' : 'g-page-content'}`}>
@@ -36,13 +37,13 @@ const MySprintSummaryList = ({ className, printOld, t, history, sprints }) => {
         <div className="my-sprint-list">
           <ul>
             {sprints.map((sprint) => {
-              const old = now > dateUtil.getTime(sprint.endDate);
-
               const startTime = dateUtil.getTime(sprint.startDate);
               const endTime = dateUtil.getTime(sprint.endDate);
               const duration = endTime - startTime;
               const span = (endTime > now ? now : endTime) - startTime;
-              console.log(new Date(startTime), new Date(now));
+              const percentage = (span / duration) * 100;
+              const isStarted = now > startTime;
+              const isDone = isStarted && endTime < now;
 
               return (
                 <li
@@ -68,76 +69,51 @@ const MySprintSummaryList = ({ className, printOld, t, history, sprints }) => {
                     </div>
                   )}
                   <div className="name">{sprint.name}</div>
-                  {now > startTime && (
-                    <div className="duration">
-                      <div className="status-bar">
-                        <div
-                          className="current"
-                          style={{
-                            width: `${(span / duration) * 100}%`,
+                  <div className="duration">
+                    <div className="status-bar">
+                      <span className="start-day">{dateUtil.getDateString(startTime, DATE_FORMATS_TYPES.days)}</span>
+                      <span className="end-day">{dateUtil.getDateString(endTime, DATE_FORMATS_TYPES.days)}</span>
+                      <div
+                        className={`current ${isDone ? 'done' : ''}`}
+                        style={{
+                          width: `${percentage}%`,
+                        }}
+                      >
+                        {isDone && (
+                          <span className="last-days">
+                            <span>-{dateUtil.getSpan(endTime, now).days}일</span>
+                          </span>
+                        )}
+                        {isStarted && !isDone && (
+                          <span className="sprint-progress">
+                            <span>{Math.round(percentage)}%</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="message">
+                      {isStarted && isDone && <span>{t('스트린트 종료일이 지났습니다.')}</span>}
+                      {isStarted && !isDone && <span>{dateUtil.getSpan(now, endTime).days}일 남았습니다</span>}
+                      {!isStarted && <span>{dateUtil.getSpan(now, startTime).days}일 후 시작됩니다</span>}
+                    </div>
+                  </div>
+                  <Liner width="100%" height="1px" color="light" margin="1rem 0" />
+                  <div className="controls">
+                    <div>
+                      {sprint.hasScrumMeeting && (
+                        <Button
+                          size="xs"
+                          className="daily-scrum-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onClickScrumInfo(sprint.id);
                           }}
-                        />
-                      </div>
-                      <div className="message">
-                        {endTime < now && <span>스트린트 종료일이 지났습니다</span>}
-                        {endTime > now && <span>X일 남았습니다</span>}
-                      </div>
-                    </div>
-                  )}
-                  {now < startTime && (
-                    <div className="duration">
-                      <div className="status-bar" />
-                      <div className="message">아직 시작되지 않았습니다</div>
-                    </div>
-                  )}
-                  <div className="d-none">
-                    <div className="name-and-date">
-                      <div className="name">{sprint.name}</div>
-                      <div className={`sprint-date ${printOld && old ? 'old-sprint' : ''}`}>
-                        <div>
-                          <div>
-                            <span className="date-label">FROM</span>
-                            <span className="date-text">{dateUtil.getDateString(sprint.startDate)}</span>
-                          </div>
-                          <Liner className="date-liner" width="10px" height="1px" display="inline-block" color="black" margin="0 0.5rem" />
-                          <div>
-                            <span className="date-label">TO</span>
-                            <span className="date-text">{dateUtil.getDateString(sprint.endDate)}</span>
-                          </div>
-                          {printOld && old && (
-                            <div className="old">
-                              <span>old</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    {printOld && old && (
-                      <>
-                        <div className="status">
-                          <Button
-                            size="xs"
-                            color="danger"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              history.push(`/sprints/${sprint.id}/deactivate`);
-                            }}
-                          >
-                            <i className="far fa-stop-circle" /> {t('종료')}
-                          </Button>
-                        </div>
-                        <div className="liner">
-                          <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 0.5rem" />
-                        </div>
-                      </>
-                    )}
-                    <div className="others">
-                      <div className="user-count">
-                        <div className="label">
-                          <span>{t('사용자')}</span>
-                        </div>
-                        <div className="value">{sprint.userCount}</div>
-                      </div>
+                        >
+                          {!sprint.isUserScrumInfoRegistered && <div className="no-register">{t('미등록')}</div>}
+                          <i className="fas fa-file-invoice" /> {t('데일리 스크럼')}
+                        </Button>
+                      )}
+                      {!sprint.hasScrumMeeting && <div className="control-message">{t('NO DAILY SCRUM')}</div>}
                     </div>
                   </div>
                 </li>
@@ -160,7 +136,6 @@ export default compose(withRouter, withTranslation(), connect(mapStateToProps, u
 
 MySprintSummaryList.defaultProps = {
   className: '',
-  printOld: true,
 };
 
 MySprintSummaryList.propTypes = {
@@ -168,5 +143,5 @@ MySprintSummaryList.propTypes = {
   t: PropTypes.func,
   sprints: PropTypes.arrayOf(SprintPropTypes),
   history: HistoryPropTypes,
-  printOld: PropTypes.bool,
+  onClickScrumInfo : PropTypes.func,
 };
