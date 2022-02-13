@@ -17,6 +17,8 @@ public class SprintListResponse {
     private Integer userCount;
     private Boolean activated;
     private Boolean isMember;
+    private Boolean hasScrumMeeting;
+    private Boolean isUserScrumInfoRegistered;
 
     public SprintListResponse(Sprint sprint) {
         this.id = sprint.getId();

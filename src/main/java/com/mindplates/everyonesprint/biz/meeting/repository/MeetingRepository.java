@@ -26,7 +26,11 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     List<Meeting> findAllByUsersUserIdAndSprintDailyMeetingIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(Long userId, List<Long> sprintDailyMeetingIds, LocalDateTime startTime, LocalDateTime endTime);
 
+    long countBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNotNull(Long sprintId, LocalDateTime startTime, LocalDateTime endTime);
+
     List<Meeting> findAllByUsersUserIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNull(Long userId, LocalDateTime date, LocalDateTime nextDay);
+
+    List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNotNull(Long userId, LocalDateTime date, LocalDateTime nextDay);
 
 
 }

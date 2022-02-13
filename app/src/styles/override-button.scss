@@ -65,6 +65,16 @@ button.btn {
     }
   }
 
+  &.btn-primary {
+    &:hover {
+      background-color: lighten($primary, 8%);
+    }
+
+    &.disabled:hover {
+      background-color: $primary;
+    }
+  }
+
   &.btn-white {
     background-color: $white;
     color: $black;

@@ -100,8 +100,16 @@ public class MeetingService {
         return meetingRepository.findAllBySprintId(sprintId);
     }
 
-    public List<Meeting> selectSprintScrumMeetingList(Long userId, List<Long> springDailyMeetingIds, LocalDateTime startTime, LocalDateTime endTime) {
+    public List<Meeting> selectSprintUserScrumMeetingList(Long userId, List<Long> springDailyMeetingIds, LocalDateTime startTime, LocalDateTime endTime) {
         return meetingRepository.findAllByUsersUserIdAndSprintDailyMeetingIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(userId, springDailyMeetingIds, startTime, endTime);
+    }
+
+    public List<Meeting> selectSprintScrumMeetingList(Long sprintId, LocalDateTime startTime, LocalDateTime endTime) {
+        return meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNotNull(sprintId, startTime, endTime);
+    }
+
+    public boolean selectHasSprintMeeting(Long sprintId, LocalDateTime startTime, LocalDateTime endTime) {
+        return meetingRepository.countBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNotNull(sprintId, startTime, endTime) > 0L;
     }
 
     public List<Meeting> selectSprintNotScrumMeetingList(Long userId, LocalDateTime startTime, LocalDateTime endTime) {

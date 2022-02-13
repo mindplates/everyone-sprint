@@ -18,5 +18,7 @@ public interface SprintDailyMeetingAnswerRepository extends JpaRepository<Sprint
 
     List<SprintDailyMeetingAnswer> findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndDateEquals(Long sprintId, Long meetingId, LocalDate date);
 
+    Long countBySprintIdAndDateEqualsAndUserId(Long sprintId, LocalDate date, Long userId);
+
 }
 

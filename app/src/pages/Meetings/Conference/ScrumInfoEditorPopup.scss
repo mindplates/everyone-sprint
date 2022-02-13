@@ -1,7 +1,30 @@
 .scrum-info-editor-popup-wrapper {
   .scrum-info-content {
     padding: 1.5rem;
-    ul {
+
+    .daily-meeting-list {
+      margin-bottom: 1rem;
+      ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        text-align: left;
+
+        li {
+          display: inline-block;
+          margin-right: 0.5rem;
+          &:last-child {
+            margin-right: 0;
+          }
+
+          button.selected {
+            background-color: $yellow;
+          }
+        }
+      }
+    }
+
+    ul.questions {
       padding: 0;
       margin: 0;
       list-style: none;
@@ -41,7 +64,7 @@
         }
       }
     }
-    > div {
+    > div.buttons {
       margin-top: 1.5rem;
       width: 100%;
       text-align: center;

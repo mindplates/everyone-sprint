@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { Button, Popup, TextArea } from '@/components';
+import { Button, Liner, Popup, TextArea } from '@/components';
 import './ScrumInfoEditorPopup.scss';
 import request from '@/utils/request';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 
-const ScrumInfoEditorPopup = ({ t, setOpen, questions, answers: propsAnswer, sprintDailyMeetingId, date, sprintId, onSaveComplete }) => {
+const ScrumInfoEditorPopup = ({
+  t,
+  setOpen,
+  questions,
+  answers: propsAnswer,
+  sprintDailyMeetingId,
+  date,
+  sprintId,
+  onSaveComplete,
+  sprintDailyMeetings,
+  onChangeCurrentSprintDailyMeetingId,
+}) => {
   const [answers, setAnswer] = useState(_.cloneDeep(propsAnswer));
+
+  useEffect(() => {
+    setAnswer(_.cloneDeep(propsAnswer));
+  }, [sprintDailyMeetingId]);
 
   const getLastMeetingAnswer = () => {
     request.get(
@@ -87,8 +102,32 @@ const ScrumInfoEditorPopup = ({ t, setOpen, questions, answers: propsAnswer, spr
       }}
     >
       <div className="scrum-info-content">
+        {sprintDailyMeetings?.length > 1 && (
+          <div className="daily-meeting-list">
+            <ul>
+              {sprintDailyMeetings.map((d) => {
+                return (
+                  <li key={d.id}>
+                    <Button
+                      size="sm"
+                      color="white"
+                      className={`${d.id === sprintDailyMeetingId ? 'selected' : ''}`}
+                      outline
+                      onClick={() => {
+                        onChangeCurrentSprintDailyMeetingId(d.id);
+                      }}
+                    >
+                      {d.name}
+                    </Button>
+                  </li>
+                );
+              })}
+            </ul>
+            <Liner width="100%" height="1px" color="light" margin="1rem 0" />
+          </div>
+        )}
         {questions && questions.length > 0 && (
-          <ul>
+          <ul className="questions">
             {questions.map((d, inx) => {
               const currentAnswer = answers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id)?.answer;
               return (
@@ -158,7 +197,7 @@ const ScrumInfoEditorPopup = ({ t, setOpen, questions, answers: propsAnswer, spr
             })}
           </ul>
         )}
-        <div>
+        <div className="buttons">
           <Button size="md" color="white" outline onClick={getLastMeetingAnswer}>
             <i className="fas fa-retweet" /> {t('지난 마지막 스크럼 정보 불러오기')}
           </Button>
@@ -198,4 +237,7 @@ ScrumInfoEditorPopup.propTypes = {
   date: PropTypes.string,
   sprintId: PropTypes.number,
   onSaveComplete: PropTypes.func,
+
+  sprintDailyMeetings: PropTypes.arrayOf(PropTypes.any),
+  onChangeCurrentSprintDailyMeetingId: PropTypes.func,
 };
