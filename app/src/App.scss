@@ -21,6 +21,12 @@
         max-width: none;
       }
     }
+
+    @media (max-width: 576px) {
+      &.app-footer {
+        display: none;
+      }
+    }
   }
 
   &.conference-page {

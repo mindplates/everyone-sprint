@@ -431,7 +431,8 @@ const SprintBoard = ({
                         tabs={viewTypes}
                         onChange={setViewType}
                         rounded
-                        size="45px"
+                        width="45px"
+                        height="45px"
                         border
                         content={
                           <div className={`sub-view-type ${viewType === 'team' ? '' : 'd-none'}`}>

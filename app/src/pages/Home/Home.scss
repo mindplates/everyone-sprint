@@ -1,10 +1,52 @@
 .home-wrapper {
-  padding-top: 2rem !important;
+  .home-layout {
+    flex-grow: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .tabs {
+      flex-grow: 0;
+      padding: 1.5rem 2rem 0;
+      display: none;
+
+      @media (max-width: 1200px) {
+        display: block;
+      }
+
+      @media (max-width: 576px) {
+        padding: 1rem 1rem 0;
+      }
+
+      .tab-side-content {
+        font-family: pretendard, sans-serif;
+        font-weight: bold;
+        text-align: right;
+        font-size: 14px;
+      }
+    }
+
+    .home-content {
+      flex-grow: 1;
+    }
+  }
 
   .home-content {
     display: flex;
     flex-direction: row;
     height: 100%;
+
+    .content-title {
+      position: relative;
+      .today {
+        position: absolute;
+        right: 0;
+        font-size: 16px;
+      }
+      @media (max-width: 1200px) {
+        display: none;
+      }
+    }
 
     .timeline-content {
       min-width: 500px;
@@ -12,6 +54,18 @@
       display: flex;
       flex-direction: column;
       padding: 1rem 0 2rem 2rem;
+
+      @media (max-width: 1600px) {
+        min-width: 400px;
+      }
+
+      @media (max-width: 1500px) {
+        min-width: 350px;
+      }
+
+      @media (max-width: 1200px) {
+        display: none;
+      }
 
       .timeline-meeting {
         position: relative;
@@ -26,9 +80,40 @@
       display: flex;
       flex-direction: column;
 
+      @media (max-width: 1200px) {
+        display: none;
+      }
+
+      @media (max-width: 576px) {
+        padding: 1rem;
+      }
+
       .my-sprints-content {
         position: relative;
         flex-grow: 1;
+      }
+    }
+
+    &.meeting {
+      .timeline-content {
+        @media (max-width: 1200px) {
+          display: flex;
+          flex-grow: 1;
+          min-width: auto;
+          padding-right: 2rem;
+        }
+
+        @media (max-width: 576px) {
+          padding: 1rem;
+        }
+      }
+    }
+
+    &.sprint {
+      .my-sprints {
+        @media (max-width: 1200px) {
+          display: flex;
+        }
       }
     }
   }

@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Tabs.scss';
 
-const Tabs = ({ className, tabs, tab, rounded, onChange, border, size, cornered, content }) => {
+const Tabs = ({ className, tabs, tab, rounded, onChange, border, size, width, height, cornered, content }) => {
   return (
-    <div className={`tabs-wrapper g-no-select ${className} ${cornered ? 'cornered' : ''} ${rounded ? 'rounded' : ''} ${border ? 'has-board' : ''}`}>
+    <div
+      className={`tabs-wrapper g-no-select ${className} ${cornered ? 'cornered' : ''} ${rounded ? 'rounded' : ''} ${border ? 'has-board' : ''} size-${size}`}
+    >
       <div className="tabs-content">
         <div className="tab-controls">
           {tabs.map((d) => {
@@ -12,8 +14,8 @@ const Tabs = ({ className, tabs, tab, rounded, onChange, border, size, cornered,
               <span
                 key={d.key}
                 style={{
-                  width: size,
-                  height: size,
+                  width,
+                  height,
                 }}
                 className={`${d.key === tab ? 'selected' : ''}`}
                 onClick={() => {
@@ -41,6 +43,7 @@ Tabs.defaultProps = {
   rounded: false,
   border: true,
   cornered: false,
+  size: 'md',
 };
 
 Tabs.propTypes = {
@@ -48,6 +51,8 @@ Tabs.propTypes = {
   rounded: PropTypes.bool,
   cornered: PropTypes.bool,
   size: PropTypes.string,
+  width: PropTypes.string,
+  height: PropTypes.string,
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       key: PropTypes.string,
