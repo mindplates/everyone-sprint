@@ -5,6 +5,7 @@
   line-height: 100%;
   position: relative;
   display: flex;
+  min-width: 100px;
 
   > div {
     align-self: center;
@@ -13,18 +14,25 @@
 
   .logo-icon {
     font-size: 18px;
+    position: relative;
+
     > div {
-      width: 36px;
-      height: 36px;
-      background-color: $primary;
+      width: 50px;
+      height: 50px;
+      background-color: #1d88ea;
       border-radius: 50%;
       display: inline-flex;
       text-align: center;
+      padding: 2px;
       span {
         align-self: center;
         width: 100%;
         text-align: center;
         line-height: 100%;
+        img {
+          width: 100%;
+          height: 100%;
+        }
       }
     }
   }
@@ -32,7 +40,11 @@
   .company-name {
     font-size: 11px;
     line-height: 100%;
-    margin-top: 2px;
+    z-index: 1;
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    right: 0;
 
     > div.company-text {
       display: inline-block;
@@ -45,8 +57,7 @@
 
     > div.created-by {
       font-size: 10px;
-      position: absolute;
-      top: 6px;
+
       text-align: center;
       width: 100%;
       @media (max-width: 576px) {

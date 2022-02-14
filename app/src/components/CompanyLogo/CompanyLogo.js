@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './CompanyLogo.scss';
+import images from '@/images';
 
 const CompanyLogo = ({ className }) => {
   return (
@@ -9,12 +10,12 @@ const CompanyLogo = ({ className }) => {
         <div className="logo-icon">
           <div>
             <span>
-              <i className="fas fa-tshirt" />
+              <img src={images.mindplates} alt="mindplates" />
             </span>
           </div>
         </div>
         <div className="company-name">
-          <div className="company-text">케빈네 잡화점</div>
+          <div className="company-text">MINDPLATES</div>
           <div className="created-by">CREATED BY</div>
         </div>
       </div>
