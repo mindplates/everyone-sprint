@@ -4,16 +4,28 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { BlockTitle, MeetingTimeLine, MySprintSummaryList, PageContent, PageTitle, SocketClient } from '@/components';
+import { BlockTitle, MeetingTimeLine, MySprintSummaryList, PageContent, SocketClient, Tabs } from '@/components';
 import { UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import dateUtil from '@/utils/dateUtil';
-import './Home.scss';
 import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
+import './Home.scss';
 
 const Home = ({ t, user }) => {
+  const tabs = [
+    {
+      key: 'meeting',
+      value: t('오늘의 미팅'),
+    },
+    {
+      key: 'sprint',
+      value: t('오늘의 스프린트'),
+    },
+  ];
+
   const socket = useRef(null);
-  const today = dateUtil.getToday();
+  const [tab, setTab] = useState('meeting');
+  const [today] = useState(dateUtil.getToday());
   const [meetings, setMeetings] = useState(null);
   const [sprints, setSprints] = useState(null);
   const [scrumInfo, setScrumInfo] = useState({
@@ -36,11 +48,11 @@ const Home = ({ t, user }) => {
   };
 
   const getSprints = () => {
-    // 클라이언트에서 서버로 시간 값을 보낼때는, Date.toISOString() 형식으로 문자열로 전송 (2022-02-13T15:00:00.000Z)
+    // 클라이언트에서 서버로 날짜+시간 값을 보낼때는, Date.toISOString() 형식으로 문자열로 전송 (2022-02-13T15:00:00.000Z)
     // 클라이언트에서 서버로 날짜를 보낼때는 dateUtil.getLocalDateISOString()로 날짜 문자열로 전송 (2022-02-14)
-    const todayString = dateUtil.getLocalDateISOString(Date.now());
+
     request.get(
-      `/api/sprints?date=${todayString}&startDate=${today.toISOString()}`,
+      `/api/sprints?date=${dateUtil.getLocalDateISOString(today)}&startDate=${today.toISOString()}`,
       null,
       (list) => {
         setSprints(list);
@@ -133,8 +145,7 @@ const Home = ({ t, user }) => {
   };
 
   return (
-    <div className="home-wrapper g-content">
-      <PageTitle className="d-none">{t('HOME')}</PageTitle>
+    <div className="home-wrapper g-content g-has-no-title">
       <SocketClient
         topics={['/sub/conferences/notify']}
         onMessage={onMessage}
@@ -145,22 +156,25 @@ const Home = ({ t, user }) => {
       />
       <PageContent border padding="0">
         {user?.id && (
-          <div className="home-content">
-            <div className="timeline-content">
-              <BlockTitle className="mb-3">오늘의 미팅</BlockTitle>
-              <div className="timeline-meeting">
-                <MeetingTimeLine user={user} meetings={meetings} date={today} />
+          <div className="home-layout">
+            <Tabs className="tabs" tab={tab} tabs={tabs} onChange={setTab} border={false} cornered size="sm" />
+            <div className={`home-content ${tab}`}>
+              <div className="timeline-content">
+                <BlockTitle className="content-title mb-3">오늘의 미팅</BlockTitle>
+                <div className="timeline-meeting">
+                  <MeetingTimeLine user={user} meetings={meetings} date={today} />
+                </div>
               </div>
-            </div>
-            <div className="my-sprints">
-              <BlockTitle className="mb-3">오늘의 스프린트</BlockTitle>
-              <div className="my-sprints-content">
-                <MySprintSummaryList
-                  sprints={sprints}
-                  onClickScrumInfo={(sprintId) => {
-                    onChangeScrumInfo(sprintId, true);
-                  }}
-                />
+              <div className="my-sprints">
+                <BlockTitle className="content-title mb-3">오늘의 스프린트</BlockTitle>
+                <div className="my-sprints-content">
+                  <MySprintSummaryList
+                    sprints={sprints}
+                    onClickScrumInfo={(sprintId) => {
+                      onChangeScrumInfo(sprintId, true);
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>

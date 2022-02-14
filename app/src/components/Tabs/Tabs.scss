@@ -8,11 +8,14 @@
     }
     .tab-controls {
       > span {
-        display: inline-block;
-        padding: 0.25rem 1.5rem;
+        display: inline-flex;
+        padding: 0 1.5rem;
         background-color: $gray-200;
         font-family: pretendard, sans-serif;
         cursor: pointer;
+        > span {
+          align-self: center;
+        }
 
         &:hover {
           background-color: $gray-300;
@@ -32,6 +35,53 @@
     .tab-side-content {
       padding: 0 1rem;
       flex-grow: 1;
+    }
+  }
+
+  &.size-lg {
+    .tabs-content {
+      .tab-controls {
+        > span {
+          font-size: 18px;
+          height: 48px;
+        }
+      }
+    }
+  }
+
+  &.size-md {
+    .tabs-content {
+      .tab-controls {
+        > span {
+          padding: 0 1.5rem;
+          font-size: 16px;
+          height: 38px;
+        }
+      }
+    }
+  }
+
+  &.size-sm {
+    .tabs-content {
+      .tab-controls {
+        > span {
+          padding: 0 1rem;
+          font-size: 14px;
+          height: 31px;
+        }
+      }
+    }
+  }
+
+  &.size-xs {
+    .tabs-content {
+      .tab-controls {
+        > span {
+          padding: 0 0.75rem;
+          font-size: 13px;
+          height: 26px;
+        }
+      }
     }
   }
 
