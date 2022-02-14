@@ -10,6 +10,7 @@ import request from '@/utils/request';
 import dateUtil from '@/utils/dateUtil';
 import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
 import './Home.scss';
+import { DATE_FORMATS_TYPES } from '@/constants/constants';
 
 const Home = ({ t, user }) => {
   const tabs = [
@@ -157,7 +158,16 @@ const Home = ({ t, user }) => {
       <PageContent border padding="0">
         {user?.id && (
           <div className="home-layout">
-            <Tabs className="tabs" tab={tab} tabs={tabs} onChange={setTab} border={false} cornered size="sm" />
+            <Tabs
+              className="tabs"
+              tab={tab}
+              tabs={tabs}
+              onChange={setTab}
+              border={false}
+              cornered
+              size="sm"
+              content={<span className="today">{dateUtil.getDateString(today, DATE_FORMATS_TYPES.days)}</span>}
+            />
             <div className={`home-content ${tab}`}>
               <div className="timeline-content">
                 <BlockTitle className="content-title mb-3">오늘의 미팅</BlockTitle>
@@ -166,7 +176,10 @@ const Home = ({ t, user }) => {
                 </div>
               </div>
               <div className="my-sprints">
-                <BlockTitle className="content-title mb-3">오늘의 스프린트</BlockTitle>
+                <BlockTitle className="content-title mb-3">
+                  오늘의 스프린트
+                  <span className="today">{dateUtil.getDateString(today, DATE_FORMATS_TYPES.days)}</span>
+                </BlockTitle>
                 <div className="my-sprints-content">
                   <MySprintSummaryList
                     sprints={sprints}

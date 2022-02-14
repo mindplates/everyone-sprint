@@ -17,6 +17,13 @@
       @media (max-width: 576px) {
         padding: 1rem 1rem 0;
       }
+
+      .tab-side-content {
+        font-family: pretendard, sans-serif;
+        font-weight: bold;
+        text-align: right;
+        font-size: 14px;
+      }
     }
 
     .home-content {
@@ -30,6 +37,12 @@
     height: 100%;
 
     .content-title {
+      position: relative;
+      .today {
+        position: absolute;
+        right: 0;
+        font-size: 16px;
+      }
       @media (max-width: 1200px) {
         display: none;
       }
@@ -63,16 +76,16 @@
 
     .my-sprints {
       padding: 1rem 2rem 2rem;
-
-      @media (max-width: 576px) {
-        padding: 1rem;
-      }
       flex-grow: 1;
       display: flex;
       flex-direction: column;
 
       @media (max-width: 1200px) {
         display: none;
+      }
+
+      @media (max-width: 576px) {
+        padding: 1rem;
       }
 
       .my-sprints-content {
@@ -88,6 +101,10 @@
           flex-grow: 1;
           min-width: auto;
           padding-right: 2rem;
+        }
+
+        @media (max-width: 576px) {
+          padding: 1rem;
         }
       }
     }
