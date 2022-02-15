@@ -26,13 +26,19 @@ const ConferenceHeader = (props) => {
 
   const logout = () => {
     storage.setItem('auth', 'token', null);
-    request.del('/api/users/logout', null, () => {
-      setUserInfoReducer({
-        ...USER_STUB,
-        language: user.language,
-      });
-      history.push('/');
-    });
+    request.del(
+      '/api/users/logout',
+      null,
+      () => {
+        setUserInfoReducer({
+          ...USER_STUB,
+          language: user.language,
+        });
+        history.push('/');
+      },
+      null,
+      t('로그인 정보를 깨끗하게 정리하고 있습니다.'),
+    );
   };
 
   const updateLanguage = (language) => {

@@ -32,13 +32,19 @@ const Header = (props) => {
 
   const logout = () => {
     storage.setItem('auth', 'token', null);
-    request.del('/api/users/logout', null, () => {
-      setUserInfoReducer({
-        ...USER_STUB,
-        language: user.language,
-      });
-      history.push('/');
-    });
+    request.del(
+      '/api/users/logout',
+      null,
+      () => {
+        setUserInfoReducer({
+          ...USER_STUB,
+          language: user.language,
+        });
+        history.push('/');
+      },
+      null,
+      t('로그인 정보를 깨끗하게 정리하고 있습니다.'),
+    );
   };
 
   const updateLanguage = (language) => {
@@ -144,7 +150,7 @@ const Header = (props) => {
           <div>
             <div className={`user-icon ${user.id ? 'logged-in' : ''}`}>
               <Button
-                className='config-or-user-button'
+                className="config-or-user-button"
                 size="lg"
                 outline
                 onClick={() => {

@@ -1,0 +1,45 @@
+.message-wrapper {
+  padding: 0 !important;
+  .message-content {
+    display: flex;
+    justify-content: center;
+    position: relative;
+
+    .bg {
+      position: absolute;
+      left: 0;
+      bottom: 0.5rem;
+      width: 100%;
+      text-align: center;
+      > div {
+        display: inline-flex;
+        flex-direction: row;
+        text-align: center;
+        margin: 0 auto;
+        > span {
+          align-self: flex-end;
+          line-height: 0;
+          animation-name: bouncing-small;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
+        }
+      }
+    }
+
+    .page-not-found {
+      align-self: center;
+
+      .message-title {
+        text-align: center;
+        font-size: 3rem;
+        font-family: righteous, sans-serif;
+        font-weight: bold;
+      }
+
+      .message-desc {
+        font-family: pretendard, sans-serif;
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
