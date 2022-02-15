@@ -104,5 +104,9 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public Long selectAllUserCount() {
+        return userRepository.countBy();
+    }
+
 
 }

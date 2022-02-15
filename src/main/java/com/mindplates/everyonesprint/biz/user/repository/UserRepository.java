@@ -13,5 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByLoginToken(String token);
 
     List<User> findAllByUseYnTrueAndEmailLikeOrAliasLike(String email, String alias);
+
+    Long countBy();
 }
 

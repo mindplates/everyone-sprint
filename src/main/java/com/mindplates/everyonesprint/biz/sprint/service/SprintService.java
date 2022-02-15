@@ -245,5 +245,9 @@ public class SprintService {
         return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndDateEquals(sprintId, meetingId, date);
     }
 
+    public Long selectAllSprintCount() {
+        return sprintRepository.countBy();
+    }
+
 
 }

@@ -64,9 +64,11 @@ const Home = ({ t, user }) => {
   };
 
   useEffect(() => {
-    getMeetings();
-    getSprints();
-  }, []);
+    if (user?.id) {
+      getMeetings();
+      getSprints();
+    }
+  }, [user]);
 
   const onMessage = useCallback(
     (info) => {
@@ -147,16 +149,23 @@ const Home = ({ t, user }) => {
 
   return (
     <div className="home-wrapper g-content g-has-no-title">
-      <SocketClient
-        topics={['/sub/conferences/notify']}
-        onMessage={onMessage}
-        onConnect={() => {}}
-        setRef={(client) => {
-          socket.current = client;
-        }}
-      />
-      <PageContent border padding="0">
-        {user?.id && (
+      {user?.id && (
+        <SocketClient
+          topics={['/sub/conferences/notify']}
+          onMessage={onMessage}
+          onConnect={() => {}}
+          setRef={(client) => {
+            socket.current = client;
+          }}
+        />
+      )}
+      {!user?.id && (
+        <PageContent className="not-login-content" border={false} padding="0">
+          <div>로그인이 필요 합니다</div>
+        </PageContent>
+      )}
+      {user?.id && (
+        <PageContent className="home-page-content" border padding="0">
           <div className="home-layout">
             <Tabs
               className="tabs"
@@ -170,14 +179,14 @@ const Home = ({ t, user }) => {
             />
             <div className={`home-content ${tab}`}>
               <div className="timeline-content">
-                <BlockTitle className="content-title mb-3">오늘의 미팅</BlockTitle>
+                <BlockTitle className="content-title mb-3">{t('오늘의 미팅')}</BlockTitle>
                 <div className="timeline-meeting">
                   <MeetingTimeLine user={user} meetings={meetings} date={today} />
                 </div>
               </div>
               <div className="my-sprints">
                 <BlockTitle className="content-title mb-3">
-                  오늘의 스프린트
+                  {t('오늘의 스프린트')}
                   <span className="today">{dateUtil.getDateString(today, DATE_FORMATS_TYPES.days)}</span>
                 </BlockTitle>
                 <div className="my-sprints-content">
@@ -191,8 +200,8 @@ const Home = ({ t, user }) => {
               </div>
             </div>
           </div>
-        )}
-      </PageContent>
+        </PageContent>
+      )}
       {scrumInfo.isOpen && (
         <ScrumInfoEditorPopup
           setOpen={() => {
