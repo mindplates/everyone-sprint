@@ -7,8 +7,9 @@ import { Link, withRouter } from 'react-router-dom';
 import { Button, PageContent, ProductLogo } from '@/components';
 import request from '@/utils/request';
 import './Stats.scss';
+import { UserPropTypes } from '@/proptypes';
 
-const Stats = ({ t }) => {
+const Stats = ({ t, user }) => {
   const [stats, setStats] = useState({});
 
   const getStats = () => {
@@ -63,16 +64,18 @@ const Stats = ({ t }) => {
               <div className="label">{t('사용자')}</div>
             </div>
           </div>
-          <div className="login-need-message">
-            <div className="login">
-              <Link to="/starting-line">
-                <span>{t('로그인')}</span>
-              </Link>
+          {!user?.id && (
+            <div className="login-need-message">
+              <div className="login">
+                <Link to="/starting-line">
+                  <span>{t('로그인')}</span>
+                </Link>
+              </div>
+              <div>
+                <Link to="/entry">{t('새로운 사용자를 등록합니다.')}</Link>
+              </div>
             </div>
-            <div>
-              <Link to="/entry">{t('새로운 사용자를 등록합니다.')}</Link>
-            </div>
-          </div>
+          )}
         </div>
         <div className="relation-sites">
           <div>
@@ -125,4 +128,5 @@ export default compose(connect(mapStateToProps, undefined), withRouter, withTran
 
 Stats.propTypes = {
   t: PropTypes.func,
+  user: UserPropTypes,
 };

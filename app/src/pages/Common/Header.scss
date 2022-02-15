@@ -103,10 +103,10 @@
           top: -7px;
           right: 85px;
           @media (max-width: 992px) {
-            right: 62px;
+            right: 70px;
           }
           @media (max-width: 576px) {
-            right: 54px;
+            right: 62px;
           }
           > div {
             width: 12px;
@@ -404,12 +404,13 @@
                   width: 24px;
                   height: 24px;
                   background-color: $point;
-                  background-color: rgb(247, 52, 94);
+                  background-color: $point;
                   border-radius: 50%;
                   color: $white;
+                  justify-content: center;
 
                   > span {
-                    width: 100%;
+                    line-height: 0;
                     align-self: center;
                     text-align: center;
                   }
@@ -454,6 +455,8 @@
                   > div {
                     background-color: #1d88ea;
                     background-color: $black;
+                    background-color: $point;
+                    background-color: rgb(247, 52, 94);
                     color: $white;
                   }
                 }

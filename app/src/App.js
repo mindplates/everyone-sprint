@@ -14,6 +14,7 @@ import {
   Header,
   Home,
   Meetings,
+  Message,
   PublicPark,
   Sprint,
   SprintBoard,
@@ -57,6 +58,7 @@ function App({ history, setting }) {
           <Route exact path="/conferences" component={Conference} />
           <Route exact path="/starting-line" component={StartingLine} />
           <Route exact path="/entry" component={Entry} />
+          <Route render={() => <Message code="404" />} />
         </Switch>
       </div>
       {setting.footer && (

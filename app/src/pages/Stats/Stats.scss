@@ -73,6 +73,7 @@
       bottom: 0;
       right: 0;
       display: inline-flex;
+
       > div {
         align-self: center;
         margin-right: 1rem;
@@ -88,6 +89,22 @@
           border-radius: 20px;
         }
       }
+
+      @media (max-width: 576px) {
+        bottom: 1rem;
+        right: 0;
+        left: 0;
+        text-align: center;
+        width: 100%;
+        display: block;
+        > div {
+          display: inline-block;
+
+          .msg {
+            display: none;
+          }
+        }
+      }
     }
 
     > div.summary-content {
@@ -98,8 +115,22 @@
         text-align: center;
         margin-bottom: 6rem;
 
+        @media (max-width: 768px) {
+          margin-bottom: 4rem;
+        }
+
+        @media (max-height: 800px) {
+          display: none;
+        }
+
         .product-logo-wrapper {
           transform: scale(4);
+          transition: all 0.5s;
+
+          @media (max-width: 768px) {
+            transform: scale(3);
+            transition: all 0.5s;
+          }
         }
       }
 
@@ -108,13 +139,30 @@
         flex-direction: row;
         max-width: 800px;
         margin: 0 auto;
+
+        @media (max-width: 768px) {
+          flex-direction: column;
+        }
+
         > div {
           flex: 1 1 0;
           text-align: center;
 
+          @media (max-width: 768px) {
+            margin-bottom: 1rem;
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+
           .icon {
             font-size: 2rem;
             position: relative;
+
+            @media (max-width: 768px) {
+              line-height: 100%;
+              font-size: 1.5rem;
+            }
 
             .horizontal {
               display: inline-block;
@@ -133,6 +181,10 @@
             font-size: 3rem;
             font-family: pretendard, sans-serif;
             font-weight: bold;
+            @media (max-width: 768px) {
+              font-size: 2.5rem;
+              line-height: 100%;
+            }
           }
 
           .label {
@@ -148,6 +200,10 @@
         font-family: pretendard, sans-serif;
         font-weight: bold;
         margin-top: 3rem;
+
+        @media (max-width: 768px) {
+          margin-top: 1rem;
+        }
 
         > div {
           margin-bottom: 1rem;
