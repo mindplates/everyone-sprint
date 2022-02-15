@@ -12,6 +12,7 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
 
     List<Sprint> findAllByUsersUserId(Long userId);
 
+    Long countBy();
 
 }
 

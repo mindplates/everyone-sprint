@@ -15,6 +15,7 @@ import SprintBoard from './Sprints/SprintBoard';
 import SprintDeactivate from './Sprints/SprintDeactivate';
 import ConferenceHeader from './Common/ConferenceHeader';
 import Home from './Home/Home';
+import Stats from './Stats/Stats';
 
 export {
   PublicPark,
@@ -34,4 +35,5 @@ export {
   SprintDeactivate,
   ConferenceHeader,
   Home,
+  Stats,
 };

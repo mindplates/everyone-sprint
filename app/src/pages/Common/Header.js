@@ -114,7 +114,7 @@ const Header = (props) => {
               .map((topMenuKey) => {
                 const menu = MENU[topMenuKey];
                 return (
-                  <li key={topMenuKey} className={`${(menuAlias || 'home') === topMenuKey ? 'selected' : 'no-selected'}`}>
+                  <li key={topMenuKey} className={`${menuAlias === topMenuKey ? 'selected' : 'no-selected'}`}>
                     <Link
                       to={`/${topMenuKey}`}
                       onClick={() => {
@@ -144,6 +144,7 @@ const Header = (props) => {
           <div>
             <div className={`user-icon ${user.id ? 'logged-in' : ''}`}>
               <Button
+                className='config-or-user-button'
                 size="lg"
                 outline
                 onClick={() => {
@@ -154,13 +155,9 @@ const Header = (props) => {
                 {!(user && user.id) && <i className="fas fa-cog" />}
               </Button>
             </div>
-
             {!(user && user.id) && (
               <div className="login">
                 <div className={currentTopMenu === 'starting-line' ? 'selected' : ''}>
-                  <div className="arrow">
-                    <div />
-                  </div>
                   <Link to="/starting-line">
                     <span>{t('로그인')}</span>
                   </Link>

@@ -233,5 +233,9 @@ public class MeetingService {
         });
     }
 
+    public Long selectAllMeetingCount() {
+        return meetingRepository.countBy();
+    }
+
 
 }

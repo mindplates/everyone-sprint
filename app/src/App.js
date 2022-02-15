@@ -20,6 +20,7 @@ import {
   SprintDeactivate,
   Sprints,
   StartingLine,
+  Stats,
 } from './pages';
 import './App.scss';
 import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
@@ -39,7 +40,7 @@ function App({ history, setting }) {
       </div>
       <div className={`app-content ${noMaxWidth ? 'no-max-width' : ''}`}>
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={Stats} />
           <Route exact path="/home" component={Home} />
           <Route exact path="/public-park" component={PublicPark} />
           <Route exact path="/groups" component={Groups} />

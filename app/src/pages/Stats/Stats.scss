@@ -63,16 +63,119 @@
   }
 }
 
-.home-wrapper {
-  .not-login-content {
+.stats-wrapper {
+  .intro-page-content {
     display: flex;
     position: relative;
-    justify-content: center;
-    > div {
+
+    .relation-sites {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      display: inline-flex;
+      > div {
+        align-self: center;
+        margin-right: 1rem;
+        > button {
+          font-size: 24px;
+        }
+
+        .msg {
+          background-color: #111;
+          color: $white;
+          display: inline-block;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+        }
+      }
+    }
+
+    > div.summary-content {
       align-self: center;
-      font-size: 1.2rem;
-      font-family: pretendard, sans-serif;
-      font-weight: bold;
+      width: 100%;
+
+      .logo {
+        text-align: center;
+        margin-bottom: 6rem;
+
+        .product-logo-wrapper {
+          transform: scale(4);
+        }
+      }
+
+      .stats {
+        display: flex;
+        flex-direction: row;
+        max-width: 800px;
+        margin: 0 auto;
+        > div {
+          flex: 1 1 0;
+          text-align: center;
+
+          .icon {
+            font-size: 2rem;
+            position: relative;
+
+            .horizontal {
+              display: inline-block;
+              _animation: horizontal 2.5s infinite cubic-bezier(0.02, 0.01, 0.21, 1);
+              animation: horizontal 5s infinite;
+
+              .vertical {
+                display: inline-block;
+                _animation: vertical 2.5s infinite cubic-bezier(0.3, 0.27, 0.07, 1.64);
+                animation: vertical 5s infinite;
+              }
+            }
+          }
+
+          .count {
+            font-size: 3rem;
+            font-family: pretendard, sans-serif;
+            font-weight: bold;
+          }
+
+          .label {
+            font-family: pretendard, sans-serif;
+            font-weight: bold;
+          }
+        }
+      }
+
+      .login-need-message {
+        padding: 1rem;
+        text-align: center;
+        font-family: pretendard, sans-serif;
+        font-weight: bold;
+        margin-top: 3rem;
+
+        > div {
+          margin-bottom: 1rem;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          &.login {
+            > a {
+              display: inline-flex;
+              width: 60px;
+              height: 60px;
+              background-color: $point;
+              justify-content: center;
+              border-radius: 50%;
+              color: $white;
+              text-decoration: none;
+              &:hover {
+                background-color: darken($point, 5%);
+              }
+              > span {
+                align-self: center;
+              }
+            }
+          }
+        }
+      }
     }
   }
 
