@@ -205,6 +205,16 @@
       flex-grow: 0;
       padding: 0 1rem;
 
+      @media (max-width: 768px) {
+        .product-logo-wrapper {
+          min-width: auto;
+          margin: 0 auto;
+          text-align: center;
+          width: 100%;
+          flex-grow: 1;
+        }
+      }
+
       @media (max-width: 576px) {
         padding: 0;
       }
@@ -247,6 +257,11 @@
 
         @media (max-width: 992px) {
           display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+          min-width: 110px;
+          text-align: left;
         }
       }
 
@@ -478,6 +493,10 @@
 
       @media (max-width: 992px) {
         padding-right: 0;
+      }
+
+      @media (max-width: 768px) {
+        min-width: 110px;
       }
 
       > div {

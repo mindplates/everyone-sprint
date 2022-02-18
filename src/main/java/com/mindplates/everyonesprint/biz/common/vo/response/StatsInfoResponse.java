@@ -6,6 +6,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class StatsInfoResponse {
+    private Long projectCount;
     private Long sprintCount;
     private Long meetingCount;
     private Long userCount;

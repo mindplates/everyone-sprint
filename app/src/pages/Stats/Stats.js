@@ -33,15 +33,22 @@ const Stats = ({ t, user }) => {
       <PageContent className="intro-page-content" border={false} padding="0">
         <div className="summary-content">
           <div className="logo">
-            <ProductLogo className="bg-transparent d-inline-block" name={false} width="auto" />
+            <ProductLogo className="bg-transparent d-inline-block" name={false} width="auto"/>
           </div>
           <div className="stats">
             <div>
               <div className="icon">
+                <i className="fas fa-archive"/>
+              </div>
+              <div className="count">{stats.projectCount}</div>
+              <div className="label">{t('프로젝트')}</div>
+            </div>
+            <div>
+              <div className="icon plane">
                 <span className="horizontal">
                   <span className="vertical">
                     <span className="plane">
-                      <i className="fas fa-plane" />
+                      <i className="fas fa-plane"/>
                     </span>
                   </span>
                 </span>
@@ -51,14 +58,14 @@ const Stats = ({ t, user }) => {
             </div>
             <div>
               <div className="icon">
-                <i className="fas fa-comment-dots" />
+                <i className="fas fa-comment-dots"/>
               </div>
               <div className="count">{stats.meetingCount}</div>
               <div className="label">{t('미팅')}</div>
             </div>
             <div>
               <div className="icon">
-                <i className="fas fa-child" />
+                <i className="fas fa-child"/>
               </div>
               <div className="count">{stats.userCount}</div>
               <div className="label">{t('사용자')}</div>
@@ -94,7 +101,7 @@ const Stats = ({ t, user }) => {
                 window.open('https://github.com/mindplates/everyone-sprint');
               }}
             >
-              <i className="fab fa-github" />
+              <i className="fab fa-github"/>
             </Button>
           </div>
           <div>
@@ -108,7 +115,7 @@ const Stats = ({ t, user }) => {
                 window.open('https://app.slack.com/client/T033JSUBQ7K/C0333BNJZ9T');
               }}
             >
-              <i className="fab fa-slack" />
+              <i className="fab fa-slack"/>
             </Button>
           </div>
         </div>

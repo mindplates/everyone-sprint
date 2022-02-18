@@ -249,5 +249,9 @@ public class SprintService {
         return sprintRepository.countBy();
     }
 
+    public Long selectProjectActivatedSprintCount(Long projectId) {
+        return sprintRepository.countByProjectIdAndActivatedTrue(projectId);
+    }
+
 
 }

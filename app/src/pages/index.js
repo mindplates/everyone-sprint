@@ -17,6 +17,9 @@ import ConferenceHeader from './Common/ConferenceHeader';
 import Home from './Home/Home';
 import Stats from './Stats/Stats';
 import Message from './Message/Message';
+import Projects from './Projects/Projects';
+import EditProject from './Projects/EditProject';
+import Project from './Projects/Project';
 
 export {
   PublicPark,
@@ -38,4 +41,7 @@ export {
   Home,
   Stats,
   Message,
+  Projects,
+  EditProject,
+  Project,
 };
