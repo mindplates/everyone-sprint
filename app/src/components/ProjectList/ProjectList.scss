@@ -1,0 +1,130 @@
+.project-list-wrapper {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+
+  > li {
+    padding: 1.5rem;
+    background-color: $white;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    width: calc((100% - 3rem) / 4);
+
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.6);
+    }
+
+    &:nth-child(4n) {
+      margin-right: 0;
+    }
+
+    @media (max-width: 1400px) {
+      width: calc((100% - 2rem) / 3);
+
+      &:nth-child(4n) {
+        margin-right: 1rem;
+      }
+
+      &:nth-child(3n) {
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: 992px) {
+      width: calc((100% - 1rem) / 2);
+
+      &:nth-child(4n) {
+        margin-right: 1rem;
+      }
+
+      &:nth-child(3n) {
+        margin-right: 1rem;
+      }
+
+      &:nth-child(2n) {
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      width: 100%;
+      margin-right: 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    > div {
+      .name {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 0.5rem;
+        > div {
+          align-self: center;
+        }
+        > .text {
+          font-weight: bold;
+          margin-bottom: 0;
+          font-size: 20px;
+          flex-grow: 1;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        > .controls {
+          margin-left: 0.5rem;
+        }
+      }
+
+      .status {
+        font-size: 12px;
+        margin-bottom: 0.5rem;
+        > span {
+          display: inline-block;
+          padding: 0.25rem;
+          font-weight: bold;
+
+          &.activated {
+            color: $green;
+          }
+
+          &.deactivated {
+            color: $warning;
+          }
+        }
+      }
+
+      .counts {
+        display: flex;
+        flex-direction: row;
+        > div {
+          text-align: center;
+          margin-right: 1rem;
+
+          > div {
+            background-color: $light;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+            padding: 0.5rem;
+            min-width: 80px;
+            .label {
+              font-family: pretendard, sans-serif;
+              font-size: 14px;
+            }
+
+            .value {
+              font-family: righteous, sans-serif;
+              font-size: 20px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

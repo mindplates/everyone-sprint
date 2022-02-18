@@ -3,6 +3,7 @@ package com.mindplates.everyonesprint.biz.common.controller;
 import com.mindplates.everyonesprint.biz.common.vo.response.StatsInfoResponse;
 import com.mindplates.everyonesprint.biz.common.vo.response.SystemInfo;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
+import com.mindplates.everyonesprint.biz.project.service.ProjectService;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
@@ -20,12 +21,14 @@ public class CommonController {
     final private SprintService sprintService;
     final private MeetingService meetingService;
     final private UserService userService;
+    final private ProjectService projectService;
 
-    public CommonController(BuildProperties buildProperties, SprintService sprintService, MeetingService meetingService, UserService userService) {
+    public CommonController(BuildProperties buildProperties, SprintService sprintService, MeetingService meetingService, UserService userService, ProjectService projectService) {
         this.buildProperties = buildProperties;
         this.sprintService = sprintService;
         this.meetingService = meetingService;
         this.userService = userService;
+        this.projectService = projectService;
     }
 
     @DisableLogin
@@ -43,6 +46,7 @@ public class CommonController {
                 .sprintCount(sprintService.selectAllSprintCount())
                 .meetingCount(meetingService.selectAllMeetingCount())
                 .userCount(userService.selectAllUserCount())
+                .projectCount(projectService.selectAllProjectCount())
                 .build();
     }
 

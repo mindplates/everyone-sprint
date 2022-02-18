@@ -44,6 +44,16 @@ const SprintDailyMeetingPropTypes = PropTypes.shape({
   sprintDailyMeetingQuestions: PropTypes.arrayOf(SprintDailyMeetingQuestionPropTypes),
 });
 
+const ProjectPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+  allowSearch: PropTypes.bool,
+  allowAutoJoin: PropTypes.bool,
+  activated: PropTypes.bool,
+  users: PropTypes.arrayOf(UserPropTypes),
+  activatedSprintCount: PropTypes.number,
+});
+
 const SprintPropTypes = PropTypes.shape({
   id: PropTypes.number,
   name: PropTypes.string,
@@ -116,6 +126,7 @@ export {
   SettingPropTypes,
   UserPropTypes,
   LocationPropTypes,
+  ProjectPropTypes,
   SprintDailyMeetingQuestionPropTypes,
   SprintDailyMeetingPropTypes,
   SprintPropTypes,

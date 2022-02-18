@@ -43,6 +43,7 @@ import FadeMessage from '@/components/FadeMessage/FadeMessage';
 import TimeLineItem from '@/components/TimeLineItem/TimeLineItem';
 import MeetingTimeLine from '@/components/MeetingTimeLine/MeetingTimeLine';
 import MySprintSummaryList from '@/components/MySprintSummaryList/MySprintSummaryList';
+import ProjectList from '@/components/ProjectList/ProjectList';
 
 export {
   MessageDialog,
@@ -91,4 +92,5 @@ export {
   TimeLineItem,
   MeetingTimeLine,
   MySprintSummaryList,
+  ProjectList,
 };

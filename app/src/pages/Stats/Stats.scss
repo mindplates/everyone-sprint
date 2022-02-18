@@ -141,7 +141,8 @@
         margin: 0 auto;
 
         @media (max-width: 768px) {
-          flex-direction: column;
+          display: block;
+          margin: 0 1rem;
         }
 
         > div {
@@ -149,10 +150,9 @@
           text-align: center;
 
           @media (max-width: 768px) {
-            margin-bottom: 1rem;
-            &:last-child {
-              margin-bottom: 0;
-            }
+            display: inline-block;
+            width: 50%;
+            margin-bottom: 3rem;
           }
 
           .icon {
@@ -161,18 +161,19 @@
 
             @media (max-width: 768px) {
               line-height: 100%;
-              font-size: 1.5rem;
             }
 
-            .horizontal {
-              display: inline-block;
-              _animation: horizontal 2.5s infinite cubic-bezier(0.02, 0.01, 0.21, 1);
-              animation: horizontal 5s infinite;
-
-              .vertical {
+            &.plane {
+              .horizontal {
                 display: inline-block;
-                _animation: vertical 2.5s infinite cubic-bezier(0.3, 0.27, 0.07, 1.64);
-                animation: vertical 5s infinite;
+                _animation: horizontal 2.5s infinite cubic-bezier(0.02, 0.01, 0.21, 1);
+                animation: horizontal 5s infinite;
+
+                .vertical {
+                  display: inline-block;
+                  _animation: vertical 2.5s infinite cubic-bezier(0.3, 0.27, 0.07, 1.64);
+                  animation: vertical 5s infinite;
+                }
               }
             }
           }
@@ -190,6 +191,10 @@
           .label {
             font-family: pretendard, sans-serif;
             font-weight: bold;
+
+            @media (max-width: 768px) {
+              font-size: 14px;
+            }
           }
         }
       }
@@ -202,7 +207,8 @@
         margin-top: 3rem;
 
         @media (max-width: 768px) {
-          margin-top: 1rem;
+          margin-top: 0;
+          margin-bottom: 2rem;
         }
 
         > div {

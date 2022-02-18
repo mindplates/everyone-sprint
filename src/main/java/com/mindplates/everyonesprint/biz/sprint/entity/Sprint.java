@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.sprint.entity;
 
+import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -66,5 +67,9 @@ public class Sprint extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<SprintDailyMeeting> sprintDailyMeetings;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_id")
+    private Project project;
 
 }

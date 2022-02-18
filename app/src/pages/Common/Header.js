@@ -141,9 +141,10 @@ const Header = (props) => {
               })}
           </ul>
         </div>
-        <div className="product-logo">
+        <div className={`product-logo ${user.id ? 'logged-in' : ''}`}>
           <Link to="/">
-            <ProductLogo hover collapsed={setting.collapsed} />
+            <ProductLogo className="d-inline-flex d-sm-none" hover collapsed={setting.collapsed} name={false} width="auto" />
+            <ProductLogo className="d-none d-sm-inline-flex" hover collapsed={setting.collapsed} name />
           </Link>
         </div>
         <div className="top-button">
