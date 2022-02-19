@@ -1,0 +1,49 @@
+.with-login-wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  > div {
+    align-self: center;
+
+    > .logo {
+      text-align: center;
+      margin-bottom: 6rem;
+
+      .product-logo-wrapper {
+        transform: scale(3);
+        transition: all 0.5s;
+
+        @media (max-width: 768px) {
+          transform: scale(2);
+          transition: all 0.5s;
+        }
+      }
+    }
+
+    > .message {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    > .login {
+      text-align: center;
+      > a {
+        display: inline-flex;
+        width: 60px;
+        height: 60px;
+        background-color: $point;
+        justify-content: center;
+        border-radius: 50%;
+        color: $white;
+        text-decoration: none;
+        &:hover {
+          background-color: darken($point, 5%);
+        }
+        > span {
+          align-self: center;
+        }
+      }
+    }
+  }
+}

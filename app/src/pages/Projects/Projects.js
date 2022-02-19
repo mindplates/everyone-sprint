@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { Button, EmptyContent, Page, PageTitle, ProjectList } from '@/components';
+import { Button, EmptyContent, Page, PageTitle, ProjectList, withLogin } from '@/components';
 import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 
@@ -69,7 +69,7 @@ const Projects = ({ t, history }) => {
   );
 };
 
-export default compose(withRouter, withTranslation())(Projects);
+export default compose(withLogin, withRouter, withTranslation())(Projects);
 
 Projects.propTypes = {
   t: PropTypes.func,

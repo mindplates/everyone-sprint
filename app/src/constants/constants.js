@@ -16,6 +16,7 @@ const USER_STUB = {
   name: '',
   tel: '',
   timezone: 'Asia/Seoul',
+  tried : false,
 };
 
 const DATE_FORMATS_TYPES = {

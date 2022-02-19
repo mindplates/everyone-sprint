@@ -44,6 +44,7 @@ import TimeLineItem from '@/components/TimeLineItem/TimeLineItem';
 import MeetingTimeLine from '@/components/MeetingTimeLine/MeetingTimeLine';
 import MySprintSummaryList from '@/components/MySprintSummaryList/MySprintSummaryList';
 import ProjectList from '@/components/ProjectList/ProjectList';
+import withLogin from '@/components/Common/withLogin';
 
 export {
   MessageDialog,
@@ -93,4 +94,5 @@ export {
   MeetingTimeLine,
   MySprintSummaryList,
   ProjectList,
+  withLogin,
 };
