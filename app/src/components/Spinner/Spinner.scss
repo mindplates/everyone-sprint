@@ -20,6 +20,12 @@
     margin: -4px 0 0 -4px;
   }
 
+  &.spinner-color-primary {
+    div:after {
+      background: $primary;
+    }
+  }
+
   div:nth-child(1) {
     animation-delay: -0.036s;
   }

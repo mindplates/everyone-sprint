@@ -23,6 +23,7 @@ const user = (state = userState, action) => {
     case SET_USER:
       return {
         ...action.user,
+        tried: true,
         isAdmin: action.user.activeRoleCode === 'SUPER_MAN',
       };
 
