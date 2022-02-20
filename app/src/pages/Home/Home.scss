@@ -64,18 +64,6 @@
 }
 
 .home-wrapper {
-  .not-login-content {
-    display: flex;
-    position: relative;
-    justify-content: center;
-    > div {
-      align-self: center;
-      font-size: 1.2rem;
-      font-family: pretendard, sans-serif;
-      font-weight: bold;
-    }
-  }
-
   .home-page-content {
     .home-layout {
       flex-grow: 1;
