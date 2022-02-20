@@ -2,9 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
-import { Block, BlockTitle, Button, DatePicker, Liner, Page, PageContent, PageTitle, Placeholder, Tabs, TextArea, UserImage } from '@/components';
+import {
+  Block,
+  BlockTitle,
+  Button,
+  DatePicker,
+  Liner,
+  Page,
+  PageContent,
+  PageTitle,
+  Placeholder,
+  Tabs,
+  TextArea,
+  UserImage,
+  withLogin,
+} from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
@@ -14,7 +29,7 @@ import { DATE_FORMATS, MESSAGE_CATEGORY } from '@/constants/constants';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import dialog from '@/utils/dialog';
 import SprintBoardSummary from './SprintBoardSummary';
-import './SprintCommon.scss';
+import '../SprintCommon.scss';
 import './SprintBoard.scss';
 
 const SprintBoard = ({
@@ -791,7 +806,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(SprintBoard)));
+export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(SprintBoard);
 
 SprintBoard.propTypes = {
   t: PropTypes.func,

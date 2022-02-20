@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import {
   Block,
   BlockRow,
@@ -16,6 +17,7 @@ import {
   PageTitle,
   Text,
   UserList,
+  withLogin,
 } from '@/components';
 import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
@@ -67,7 +69,7 @@ const Sprint = ({
   const sprintSpan = dateUtil.getSpan(sprint?.startDate, sprint?.endDate);
 
   return (
-    <Page className='sprint-common'>
+    <Page className="sprint-common">
       <PageTitle>{t('스프린트 정보')}</PageTitle>
       {sprint && (
         <PageContent>
@@ -163,7 +165,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(Sprint)));
+export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(Sprint);
 
 Sprint.propTypes = {
   t: PropTypes.func,

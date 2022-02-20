@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Block, BlockRow, BlockTitle, DateRangeText, Label, Table, Text, UserImage } from '@/components';
 import { SprintPropTypes, SprintSummaryPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
-import './SprintCommon.scss';
+import '../SprintCommon.scss';
 import './SprintBoardSummary.scss';
 
 const labelMinWidth = '140px';
