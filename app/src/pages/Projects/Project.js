@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { BlockTitle, BottomButtons, Page, PageContent, SprintTimeLine, UserList, withLogin } from '@/components';
+import { BlockTitle, BottomButtons, Page, PageContent, SprintTimeLine, Tabs, UserList, withLogin } from '@/components';
 import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
@@ -17,13 +17,23 @@ const Project = ({
     params: { id },
   },
 }) => {
+  const tabs = [
+    {
+      key: 'project',
+      value: t('프로젝트'),
+    },
+    {
+      key: 'timeline',
+      value: t('스프린트 타임라인'),
+    },
+  ];
+
   const [project, setProject] = useState(null);
+  const [tab, setTab] = useState('project');
 
   useEffect(() => {
     request.get(`/api/projects/${id}`, null, setProject, null, t('프로젝트 정보를 가져오고 있습니다.'));
   }, [id]);
-
-  console.log(project);
 
   const onDelete = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('데이터 삭제 경고'), t('프로젝트를 삭제하시겠습니까?'), () => {
@@ -47,7 +57,7 @@ const Project = ({
   return (
     <Page
       className="project-wrapper"
-      listLayout
+      title={false}
       breadcrumbs={[
         {
           link: '/',
@@ -60,11 +70,13 @@ const Project = ({
         {
           link: `/projects/${project?.id}`,
           name: project?.name,
+          current: true,
         },
       ]}
     >
       {project && (
-        <PageContent className="project-content" padding="0">
+        <PageContent className={`project-content ${tab}`} padding="0">
+          <Tabs className="tabs" tab={tab} tabs={tabs} onChange={setTab} border={false} cornered size="sm" />
           <div className="project-info">
             <div className="general-info">
               <BlockTitle className="content-title mb-3">{t('프로젝트')}</BlockTitle>
@@ -75,7 +87,7 @@ const Project = ({
                   <span className={allowAutoJoin.key ? 'allowed' : ''}>{allowAutoJoin.value}</span>
                 </div>
               </div>
-              <BlockTitle className="content-title mb-3">
+              <BlockTitle className="mb-3">
                 {t('프로젝트 멤버')} ({project.users.length}
                 {t('명')})
               </BlockTitle>

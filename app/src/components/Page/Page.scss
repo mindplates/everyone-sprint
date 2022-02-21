@@ -1,9 +1,26 @@
 .page-wrapper {
-  padding: 1rem 2rem 2rem;
+  padding: 2rem 2rem 2rem;
   height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
+
+  &.has-title {
+    padding: 1rem 2rem 2rem;
+
+    @media (max-width: 992px) {
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: 992px) {
+    padding: 1rem;
+  }
+
+  @media (max-width: 576px) {
+    padding: 0;
+    background-color: $white;
+  }
 
   .page-breadcrumbs {
     position: absolute;
@@ -14,14 +31,19 @@
   &.list-layout {
     padding: 2rem;
 
+    @media (max-width: 992px) {
+      padding: 1rem;
+    }
+
+    @media (max-width: 576px) {
+      padding: 1rem;
+      background-color: transparent;
+    }
+
     .page-breadcrumbs {
       position: absolute;
-      top: 0.25rem;
+      top: 0.5rem;
       right: 2.5rem;
     }
-  }
-
-  @media (max-width: 992px) {
-    padding: 1rem;
   }
 }

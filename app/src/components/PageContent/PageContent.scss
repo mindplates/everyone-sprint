@@ -1,6 +1,7 @@
 .page-content-wrapper {
   flex-grow: 1;
   position: relative;
+  _padding: 1rem;
 
   &.has-border {
     border-radius: 4px;
@@ -9,7 +10,14 @@
 
     @media (max-width: 576px) {
       border: none;
+      border-left: 0;
     }
+  }
+
+  &.list-layout {
+    border: none;
+    background-color: transparent;
+    padding: 0;
   }
 
   @media (max-width: 992px) {

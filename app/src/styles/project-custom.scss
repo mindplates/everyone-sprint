@@ -192,6 +192,13 @@
   }
 }
 
+.g-form {
+  padding: 1rem;
+  @media (max-width: 576px) {
+    padding-bottom: 0;
+    padding: 0;
+  }
+}
 .g-popup-bottom-button {
   background-color: $gray-200;
   border-top: 1px solid rgba(0, 0, 0, 0.1);

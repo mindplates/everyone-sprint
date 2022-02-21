@@ -127,6 +127,7 @@ const EditProject = ({
                 {
                   link: '/projects/new',
                   name: t('새 프로젝트'),
+                  current: true,
                 },
               ]
             : [
@@ -145,6 +146,7 @@ const EditProject = ({
                 {
                   link: `/projects/${project?.id}/edit`,
                   name: t('변경'),
+                  current: true,
                 },
               ]
         }
@@ -152,7 +154,7 @@ const EditProject = ({
         {type === 'edit' ? t('프로젝트 변경') : t('새로운 프로젝트')}
       </PageTitle>
       <PageContent>
-        <Form className="new-project-content" onSubmit={onSubmit}>
+        <Form className="new-project-content g-form" onSubmit={onSubmit}>
           <Block className="pt-0">
             <BlockTitle>{t('프로젝트 정보')}</BlockTitle>
             <BlockRow>
@@ -204,8 +206,7 @@ const EditProject = ({
               history.goBack();
             }}
             onSubmit
-            onSubmitIcon={<i className="fas fa-plane" />}
-            onSubmitText={type === 'edit' ? t('프로젝트 변경') : t('프로젝트 등록')}
+            onSubmitText={type === 'edit' ? t('변경') : t('등록')}
             onCancelIcon=""
           />
         </Form>

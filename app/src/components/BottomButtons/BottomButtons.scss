@@ -1,14 +1,26 @@
+form > .bottom-buttons-wrapper {
+  margin: 1.5rem 1rem 1.5rem;
+
+  @media (max-width: 992px) {
+    margin: 2rem 0.5rem 1rem;
+  }
+
+  @media (max-width: 576px) {
+    margin: 1.5rem 0 0;
+  }
+}
+
 .bottom-buttons-wrapper {
   text-align: right;
   padding: 0;
   margin: 1.5rem 2rem 1.5rem;
 
   @media (max-width: 992px) {
-    margin: 1rem 0.5rem 0;
+    margin: 1rem 1rem 1rem;
   }
 
   @media (max-width: 576px) {
-    margin: 1rem 0 0;
+    margin: 0 1rem 1rem;
   }
 
   &.has-border {
@@ -34,6 +46,14 @@
       rgba(238, 251, 10, 1) 100%
     );
     opacity: 0.7;
+
+    @media (max-width: 992px) {
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 576px) {
+      margin-bottom: 1rem;
+    }
   }
 
   .button-content {

@@ -78,7 +78,7 @@ const BottomButtons = (props) => {
             </Button>
           )}
           {onSubmit && (
-            <Button type="submit" size={size} outline color="black">
+            <Button type="submit" size={size} color="primary">
               <div>
                 {onSubmitIcon && (
                   <div className="icon">

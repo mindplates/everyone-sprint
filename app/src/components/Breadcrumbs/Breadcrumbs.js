@@ -14,7 +14,9 @@ const Breadcrumbs = ({ className, list }) => {
         {list.map((breadcrumb, inx) => {
           return (
             <li key={inx}>
-              <Link to={breadcrumb.link}>{breadcrumb.name}</Link>
+              <Link className={breadcrumb.current ? 'current' : ''} to={breadcrumb.link}>
+                {breadcrumb.name}
+              </Link>
               {inx < list.length - 1 && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0 0 0.5rem" />}
             </li>
           );
@@ -37,6 +39,7 @@ Breadcrumbs.propTypes = {
     PropTypes.shape({
       link: PropTypes.string,
       name: PropTypes.string,
+      current: PropTypes.bool,
     }),
   ),
 };

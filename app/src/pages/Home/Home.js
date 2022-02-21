@@ -148,7 +148,21 @@ const Home = ({ t, user }) => {
   };
 
   return (
-    <Page className="home-wrapper" listLayout>
+    <Page
+      className="home-wrapper"
+      title={false}
+      breadcrumbs={[
+        {
+          link: '/',
+          name: t('TOP'),
+        },
+        {
+          link: '/home',
+          name: t('HOME'),
+          current: true,
+        },
+      ]}
+    >
       <SocketClient
         topics={['/sub/conferences/notify']}
         onMessage={onMessage}
@@ -157,7 +171,7 @@ const Home = ({ t, user }) => {
           socket.current = client;
         }}
       />
-      <PageContent className="home-page-content" border padding="0">
+      <PageContent className="home-page-content">
         <div className="home-layout">
           <Tabs
             className="tabs"
