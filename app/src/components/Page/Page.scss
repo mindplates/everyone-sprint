@@ -3,6 +3,23 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+
+  .page-breadcrumbs {
+    position: absolute;
+    top: 0.5rem;
+    right: 2rem;
+  }
+
+  &.list-layout {
+    padding: 2rem;
+
+    .page-breadcrumbs {
+      position: absolute;
+      top: 0.25rem;
+      right: 2.5rem;
+    }
+  }
 
   @media (max-width: 992px) {
     padding: 1rem;

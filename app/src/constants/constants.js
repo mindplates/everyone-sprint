@@ -21,6 +21,7 @@ const USER_STUB = {
 
 const DATE_FORMATS_TYPES = {
   full: 'full',
+  yearsDays : 'yearsDays',
   days: 'days',
   hoursMinutes: 'hoursMinutes',
   hours: 'hours',

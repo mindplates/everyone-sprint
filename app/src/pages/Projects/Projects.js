@@ -38,6 +38,16 @@ const Projects = ({ t, history }) => {
             },
           },
         ]}
+        breadcrumbs={[
+          {
+            link: '/',
+            name: t('TOP'),
+          },
+          {
+            link: '/projects',
+            name: t('프로젝트 목록'),
+          },
+        ]}
       >
         {t('프로젝트')}
       </PageTitle>

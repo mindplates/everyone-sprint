@@ -3,13 +3,12 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, BottomButtons, Label, Page, PageContent, PageTitle, Text, UserList, withLogin } from '@/components';
+import { BlockTitle, BottomButtons, Page, PageContent, SprintTimeLine, UserList, withLogin } from '@/components';
 import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes } from '@/proptypes';
-
-const labelMinWidth = '140px';
+import './Project.scss';
 
 const Project = ({
   t,
@@ -23,6 +22,8 @@ const Project = ({
   useEffect(() => {
     request.get(`/api/projects/${id}`, null, setProject, null, t('프로젝트 정보를 가져오고 있습니다.'));
   }, [id]);
+
+  console.log(project);
 
   const onDelete = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('데이터 삭제 경고'), t('프로젝트를 삭제하시겠습니까?'), () => {
@@ -40,39 +41,65 @@ const Project = ({
     });
   };
 
+  const allowSearch = ALLOW_SEARCHES.find((d) => d.key === project?.allowSearch) || {};
+  const allowAutoJoin = JOIN_POLICIES.find((d) => d.key === project?.allowAutoJoin) || {};
+
   return (
-    <Page className="project-common">
-      <PageTitle>{t('프로젝트 정보')}</PageTitle>
+    <Page
+      className="project-wrapper"
+      listLayout
+      breadcrumbs={[
+        {
+          link: '/',
+          name: t('TOP'),
+        },
+        {
+          link: '/projects',
+          name: t('프로젝트 목록'),
+        },
+        {
+          link: `/projects/${project?.id}`,
+          name: project?.name,
+        },
+      ]}
+    >
       {project && (
-        <PageContent>
-          <Block className="pt-0">
-            <BlockTitle>{t('프로젝트 정보')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('이름')}</Label>
-              <Text>{project.name}</Text>
-            </BlockRow>
-          </Block>
-          <Block>
-            <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
-              <Text>{(ALLOW_SEARCHES.find((d) => d.key === project.allowSearch) || {}).value}</Text>
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
-              <Text>{(JOIN_POLICIES.find((d) => d.key === project.allowAutoJoin) || {}).value}</Text>
-            </BlockRow>
-          </Block>
-          <Block>
-            <BlockTitle>{t('멤버')}</BlockTitle>
-            <UserList
-              users={project.users}
-              editable={{
-                role: false,
-                member: false,
-              }}
-            />
-          </Block>
+        <PageContent className="project-content" padding="0">
+          <div className="project-info">
+            <div className="general-info">
+              <BlockTitle className="content-title mb-3">{t('프로젝트')}</BlockTitle>
+              <div className="project-card">
+                <div className="project-name">{project.name}</div>
+                <div className="project-info-tag">
+                  <span className={allowSearch.key ? 'allowed' : ''}>{allowSearch.value}</span>
+                  <span className={allowAutoJoin.key ? 'allowed' : ''}>{allowAutoJoin.value}</span>
+                </div>
+              </div>
+              <BlockTitle className="content-title mb-3">
+                {t('프로젝트 멤버')} ({project.users.length}
+                {t('명')})
+              </BlockTitle>
+              <div className="project-user-list">
+                <div className="g-scroller">
+                  <UserList
+                    icon={false}
+                    type="list"
+                    users={project.users}
+                    editable={{
+                      role: false,
+                      member: false,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="sprint-timeline">
+              <BlockTitle className="content-title mb-3">{t('스프린트 타임라인')}</BlockTitle>
+              <div className="sprint-timeline-content">
+                <SprintTimeLine project={project} />
+              </div>
+            </div>
+          </div>
           <BottomButtons
             onList={() => {
               history.push('/projects');
@@ -80,9 +107,9 @@ const Project = ({
             onEdit={() => {
               history.push(`/projects/${id}/edit`);
             }}
-            onEditText="프로젝트 변경"
+            onEditText="변경"
             onDelete={onDelete}
-            onDeleteText="프로젝트 삭제"
+            onDeleteText="삭제"
           />
         </PageContent>
       )}

@@ -112,7 +112,45 @@ const EditProject = ({
 
   return (
     <Page className="edit-project-wrapper">
-      <PageTitle>{type === 'edit' ? t('프로젝트 변경') : t('새로운 프로젝트')}</PageTitle>
+      <PageTitle
+        breadcrumbs={
+          type === 'new'
+            ? [
+                {
+                  link: '/',
+                  name: t('TOP'),
+                },
+                {
+                  link: '/projects',
+                  name: t('프로젝트 목록'),
+                },
+                {
+                  link: '/projects/new',
+                  name: t('새 프로젝트'),
+                },
+              ]
+            : [
+                {
+                  link: '/',
+                  name: t('TOP'),
+                },
+                {
+                  link: '/projects',
+                  name: t('프로젝트 목록'),
+                },
+                {
+                  link: `/projects/${project?.id}`,
+                  name: project?.name,
+                },
+                {
+                  link: `/projects/${project?.id}/edit`,
+                  name: t('변경'),
+                },
+              ]
+        }
+      >
+        {type === 'edit' ? t('프로젝트 변경') : t('새로운 프로젝트')}
+      </PageTitle>
       <PageContent>
         <Form className="new-project-content" onSubmit={onSubmit}>
           <Block className="pt-0">

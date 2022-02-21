@@ -68,7 +68,7 @@ public class Sprint extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<SprintDailyMeeting> sprintDailyMeetings;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 

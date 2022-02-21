@@ -3,6 +3,7 @@ package com.mindplates.everyonesprint.biz.project.controller;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.project.service.ProjectService;
 import com.mindplates.everyonesprint.biz.project.vo.request.ProjectRequest;
+import com.mindplates.everyonesprint.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.everyonesprint.biz.project.vo.response.ProjectResponse;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
@@ -37,9 +38,9 @@ public class ProjectController {
 
     @Operation(description = "사용자의 프로젝트 목록 조회")
     @GetMapping("")
-    public List<ProjectResponse> selectUserProjectList(@ApiIgnore UserSession userSession) {
+    public List<ProjectListResponse> selectUserProjectList(@ApiIgnore UserSession userSession) {
         List<Project> projects = projectService.selectUserPrjectList(userSession);
-        return projects.stream().map((project -> new ProjectResponse(project, userSession))).collect(Collectors.toList());
+        return projects.stream().map((project -> new ProjectListResponse(project, userSession))).collect(Collectors.toList());
     }
 
     @Operation(description = "프로젝트 생성")
@@ -79,7 +80,7 @@ public class ProjectController {
     }
 
 
-    @Operation(description = "스프린트 조회")
+    @Operation(description = "프로젝트 조회")
     @GetMapping("/{id}")
     public ProjectResponse selectProjectInfo(@PathVariable Long id, @ApiIgnore UserSession userSession) {
         Project project = projectService.selectProjectInfo(id);

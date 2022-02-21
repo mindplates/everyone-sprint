@@ -76,6 +76,10 @@ const Sprint = ({
           <Block className="pt-0">
             <BlockTitle>{t('스프린트 정보')}</BlockTitle>
             <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
+              <Text>{sprint.projectName}</Text>
+            </BlockRow>
+            <BlockRow>
               <Label minWidth={labelMinWidth}>{t('이름')}</Label>
               <Text>{sprint.name}</Text>
             </BlockRow>
@@ -92,7 +96,7 @@ const Sprint = ({
             <BlockTitle>{t('데일리 스크럼')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
-              <Text>{sprint.doDailyScrumMeeting ? 'Y' : 'M'}</Text>
+              <Text>{sprint.doDailyScrumMeeting ? 'Y' : 'N'}</Text>
             </BlockRow>
           </Block>
           {sprint.doDailyScrumMeeting && (

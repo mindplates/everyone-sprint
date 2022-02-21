@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Breadcrumbs, Button, Liner } from '@/components';
 import './PageTitle.scss';
-import { Button, Liner } from '@/components';
 
-const PageTitle = ({ className, children, control, buttons, tabs, tab, onChangeTab }) => {
+const PageTitle = ({ className, children, control, buttons, tabs, tab, onChangeTab, breadcrumbs }) => {
   return (
     <div className={`page-title-wrapper ${className}`}>
       <div className="bullet">
@@ -52,6 +52,7 @@ const PageTitle = ({ className, children, control, buttons, tabs, tab, onChangeT
           </div>
         </div>
       )}
+      {breadcrumbs && <Breadcrumbs className='flex-grow-1' list={breadcrumbs} />}
     </div>
   );
 };
@@ -82,4 +83,10 @@ PageTitle.propTypes = {
   ),
   tab: PropTypes.string,
   onChangeTab: PropTypes.func,
+  breadcrumbs: PropTypes.arrayOf(
+    PropTypes.shape({
+      link: PropTypes.string,
+      name: PropTypes.string,
+    }),
+  ),
 };

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { BlockTitle, MeetingTimeLine, MySprintSummaryList, PageContent, SocketClient, Tabs, withLogin } from '@/components';
+import { BlockTitle, MeetingTimeLine, MySprintSummaryList, Page, PageContent, SocketClient, Tabs, withLogin } from '@/components';
 import { UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import dateUtil from '@/utils/dateUtil';
@@ -148,7 +148,7 @@ const Home = ({ t, user }) => {
   };
 
   return (
-    <div className="home-wrapper g-content g-has-no-title">
+    <Page className="home-wrapper" listLayout>
       <SocketClient
         topics={['/sub/conferences/notify']}
         onMessage={onMessage}
@@ -212,7 +212,7 @@ const Home = ({ t, user }) => {
           }}
         />
       )}
-    </div>
+    </Page>
   );
 };
 

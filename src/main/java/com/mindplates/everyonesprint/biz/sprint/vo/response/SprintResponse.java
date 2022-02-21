@@ -29,6 +29,9 @@ public class SprintResponse {
     private List<User> users;
     private List<SprintDailyMeeting> sprintDailyMeetings;
 
+    private Long projectId;
+    private String projectName;
+
     public SprintResponse(Sprint sprint) {
         this.id = sprint.getId();
         this.name = sprint.getName();
@@ -73,6 +76,12 @@ public class SprintResponse {
                                         .collect(Collectors.toList())))
                                 .build()
                 ).collect(Collectors.toList());
+
+        if (sprint.getProject() != null) {
+            this.projectId = sprint.getProject().getId();
+            this.projectName = sprint.getProject().getName();
+        }
+
     }
 
     @Data

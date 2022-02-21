@@ -1,7 +1,7 @@
 .bottom-buttons-wrapper {
   text-align: right;
   padding: 0;
-  margin: 1rem 1rem 0.5rem;
+  margin: 1.5rem 2rem 1.5rem;
 
   @media (max-width: 992px) {
     margin: 1rem 0.5rem 0;
@@ -39,29 +39,25 @@
   .button-content {
     display: flex;
     > .delete-buttons {
-      flex: 1 1 0;
-
-      .delete-button {
-        float: left;
-      }
+      flex-grow: 0;
+      align-self: center;
     }
 
     > .other-buttons {
-      flex-grow: 0;
-      text-align: center;
-      padding: 0 1rem;
-    }
-
-    > .list-buttons {
-      flex: 1 1 0;
-      text-align: left;
+      flex-grow: 1;
+      text-align: right;
+      padding: 0;
     }
 
     > div > button {
-      margin-right: 0.5rem;
+      margin-right: 1rem;
+      min-width: 70px;
+      height: 36px;
+      padding: 0;
 
       > div {
         display: flex;
+        justify-content: center;
         > div {
           align-self: center;
 
