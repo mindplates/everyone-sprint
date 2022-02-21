@@ -1,0 +1,33 @@
+.breadcrumbs-wrapper {
+  @media (max-width: 992px) {
+    display: none;
+  }
+  > ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-align: right;
+
+    > li {
+      display: inline-block;
+      font-size: 13px;
+      margin-right: 0.5rem;
+      &:last-child {
+        margin-right: 0;
+      }
+      a {
+        text-decoration: none;
+        display: inline-block;
+        font-family: pretendard, sans-serif;
+        &.current {
+          font-weight: bold;
+        }
+
+        &:hover {
+          color: $blue;
+          _border-bottom: 1px solid $blue;
+        }
+      }
+    }
+  }
+}

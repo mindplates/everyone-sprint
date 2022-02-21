@@ -69,8 +69,7 @@ public class SprintController {
     @PostMapping("")
     public SprintResponse createSprintInfo(@Valid @RequestBody SprintRequest sprintRequest, @ApiIgnore UserSession userSession) {
 
-        Sprint alreadySprint = sprintService.selectByName(sprintRequest.getName());
-        if (alreadySprint != null) {
+        if (sprintService.selectIsExistProjectSprintName(sprintRequest.getProjectId(), sprintRequest.getId(), sprintRequest.getName())) {
             throw new ServiceException("sprint.duplicated");
         }
 
@@ -84,6 +83,10 @@ public class SprintController {
 
         if (!id.equals(sprintRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
+        if (sprintService.selectIsExistProjectSprintName(sprintRequest.getProjectId(), sprintRequest.getId(), sprintRequest.getName())) {
+            throw new ServiceException("sprint.duplicated");
         }
 
         Sprint sprint = sprintService.selectSprintInfo(id);

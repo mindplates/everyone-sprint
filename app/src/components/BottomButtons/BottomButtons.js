@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './BottomButtons.scss';
-import { Button, Liner } from '@/components';
+import { Button } from '@/components';
 
 const BottomButtons = (props) => {
   const { className, size, border } = props;
@@ -26,17 +26,21 @@ const BottomButtons = (props) => {
     <div className={`bottom-buttons-wrapper ${className} ${border ? 'has-border' : ''}`}>
       <div className="bottom-liner" />
       <div className="button-content">
-        <div className="delete-buttons">
-          {onDelete && (
-            <Button className="delete-button" type="button" size={size} color="danger" onClick={onDelete}>
+        {onDelete && (
+          <div className="delete-buttons">
+            <Button className="delete-button" type="button" size={size} color="danger" outline onClick={onDelete}>
               <div>
-                <div className="icon delete-icon">
-                  <span>{onDeleteIcon}</span>
-                </div>
+                {onDeleteIcon && (
+                  <div className="icon delete-icon">
+                    <span>{onDeleteIcon}</span>
+                  </div>
+                )}
                 <div>{onDeleteText}</div>
               </div>
             </Button>
-          )}
+          </div>
+        )}
+        <div className="other-buttons">
           {onCancel && (
             <Button type="button" size={size} color="white" outline onClick={onCancel}>
               <div>
@@ -49,13 +53,18 @@ const BottomButtons = (props) => {
               </div>
             </Button>
           )}
-          {onDelete && (
-            <div className="align-self-center h-100 d-inline-flex">
-              <Liner className="align-self-center" display="inline-block" width="1px" height="12px" color="light" margin="0 0 0 0.5rem" />
-            </div>
+          {onList && (
+            <Button type="button" size={size} color="white" outline onClick={onList}>
+              <div>
+                {onListIcon && (
+                  <div className="icon">
+                    <span>{onListIcon}</span>
+                  </div>
+                )}
+                <div>{onListText}</div>
+              </div>
+            </Button>
           )}
-        </div>
-        <div className="other-buttons">
           {onEdit && (
             <Button type="button" size={size} color="white" outline onClick={onEdit}>
               <div>
@@ -69,7 +78,7 @@ const BottomButtons = (props) => {
             </Button>
           )}
           {onSubmit && (
-            <Button type="submit" size={size} outline color="black">
+            <Button type="submit" size={size} color="primary">
               <div>
                 {onSubmitIcon && (
                   <div className="icon">
@@ -77,25 +86,6 @@ const BottomButtons = (props) => {
                   </div>
                 )}
                 <div>{onSubmitText}</div>
-              </div>
-            </Button>
-          )}
-        </div>
-        <div className="list-buttons">
-          {onList && (
-            <div className="align-self-center h-100 d-inline-flex">
-              <Liner className="align-self-center" display="inline-block" width="1px" height="12px" color="light" margin="0 1rem 0 0" />
-            </div>
-          )}
-          {onList && (
-            <Button type="button" size={size} color="white" outline onClick={onList}>
-              <div>
-                {onListIcon && (
-                  <div className="icon">
-                    <span>{onListIcon}</span>
-                  </div>
-                )}
-                <div>{onListText}</div>
               </div>
             </Button>
           )}
@@ -112,15 +102,15 @@ BottomButtons.defaultProps = {
   size: 'md',
   border: true,
   onListText: '목록',
-  onListIcon: <i className="far fa-file-alt" />,
+  onListIcon: '', // <i className="far fa-file-alt" />,
   onDeleteText: '삭제',
-  onDeleteIcon: <i className="far fa-trash-alt" />,
+  onDeleteIcon: '', // <i className="far fa-trash-alt" />,
   onSubmitText: '등록',
-  onSubmitIcon: <i className="far fa-paper-plane" />,
+  onSubmitIcon: '', // <i className="far fa-paper-plane" />,
   onEditText: '변경',
-  onEditIcon: <i className="fas fa-pen-nib" />,
+  onEditIcon: '', // <i className="fas fa-pen-nib" />,
   onCancelText: '취소',
-  onCancelIcon: <i className="fas fa-chevron-left" />,
+  onCancelIcon: '', // <i className="fas fa-chevron-left" />,
 };
 
 BottomButtons.propTypes = {

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import {
   Block,
   BlockRow,
@@ -12,13 +13,16 @@ import {
   CheckBox,
   DailyScrumMeeting,
   DateRange,
+  EmptyContent,
   Form,
   Input,
   Label,
   Page,
   PageContent,
   PageTitle,
+  Selector,
   UserList,
+  withLogin,
 } from '@/components';
 import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
@@ -52,6 +56,7 @@ const EditSprint = ({
     params: { id },
   },
 }) => {
+  const [projects, setProjects] = useState(null);
   const [sprint, setSprint] = useState({
     name: '',
     startDate: start.getTime(),
@@ -65,6 +70,7 @@ const EditSprint = ({
     doDailyScrumMeeting: false,
     users: [],
     sprintDailyMeetings: [],
+    projectId: null,
   });
 
   useEffect(() => {
@@ -80,27 +86,42 @@ const EditSprint = ({
       );
   }, [id, type]);
 
-  useEffect(() => {
-    if (type === 'new') {
-      const users = sprint.users.splice(0);
-      if (user && user.id && users.length < 1) {
-        users.push({
-          userId: user.id,
-          email: user.email,
-          alias: user.alias,
-          name: user.name,
-          imageType: user.imageType,
-          imageData: user.imageData,
-          role: 'ADMIN',
-          CRUD: 'C',
-        });
+  const getProjects = () => {
+    request.get(
+      '/api/projects',
+      null,
+      (list) => {
+        setProjects(list);
 
-        setSprint({
-          ...sprint,
-          users,
-        });
-      }
-    }
+        if (type === 'new' && list.filter((d) => d.activated).length > 0) {
+          const [first] = list;
+          const users = first.users.map((d) => {
+            return {
+              userId: d.userId,
+              email: d.email,
+              alias: d.alias,
+              name: d.name,
+              imageType: d.imageType,
+              imageData: d.imageData,
+              role: d.role,
+              CRUD: 'C',
+            };
+          });
+
+          setSprint({
+            ...sprint,
+            users,
+            projectId: first.id,
+          });
+        }
+      },
+      null,
+      t('사용자의 프로젝트 목록을 모으고 있습니다.'),
+    );
+  };
+
+  useEffect(() => {
+    getProjects();
   }, [user]);
 
   const changeInfo = (key, value) => {
@@ -314,163 +335,208 @@ const EditSprint = ({
     <Page className="edit-sprint-wrapper">
       <PageTitle>{type === 'edit' ? t('스프린트 변경') : t('새로운 스프린트')}</PageTitle>
       <PageContent>
-        <Form className="new-sprint-content" onSubmit={onSubmit}>
-          <Block className="pt-0">
-            <BlockTitle>{t('스프린트 정보')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('이름')}
-              </Label>
-              <Input type="name" size="md" value={sprint.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('기간')}
-              </Label>
-              <DateRange country={user.country} language={user.language} startDate={sprint.startDate} endDate={sprint.endDate} onChange={changeInfo} />
-            </BlockRow>
-          </Block>
-          <Block className="pb-0">
-            <BlockTitle>{t('데일리 스크럼')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
-              <CheckBox
-                size="md"
-                type="checkbox"
-                value={sprint.doDailyScrumMeeting}
-                onChange={(val) => changeInfo('doDailyScrumMeeting', val)}
-                label={t('스프린트 기간 데일리 스크럼 미팅을 진행합니다.')}
-              />
-            </BlockRow>
-          </Block>
-          {sprint.doDailyScrumMeeting && (
-            <Block className="sprint-daily-meetings">
-              {sprint.sprintDailyMeetings.map((sprintDailyMeeting, inx) => {
-                return (
-                  <DailyScrumMeeting
-                    className={sprintDailyMeeting.CRUD === 'D' ? 'd-none' : ''}
-                    key={inx}
-                    edit
-                    no={inx + 1}
-                    sprintDailyMeeting={sprintDailyMeeting}
-                    onRemove={() => {
-                      removeSprintDailyMeeting(inx);
-                    }}
-                    onChangeInfo={(key, value) => {
-                      changeSprintDailyMeeting(inx, key, value);
-                    }}
-                    onChangeMeetingDays={(dayIndex) => {
-                      changeSprintDailyMeetingDays(inx, dayIndex, sprintDailyMeeting.days[dayIndex] === '1' ? '0' : '1');
-                    }}
-                    onChangeQuestionOrder={(dayIndex, dir) => {
-                      changeOrderSprintDailyMeetingQuestions(dir, inx, dayIndex);
-                    }}
-                    onChangeQuestion={(questionIndex, key, value) => {
-                      changeSprintDailyMeetingQuestions(inx, questionIndex, key, value);
-                    }}
-                    user={user}
-                  />
-                );
-              })}
+        {projects && projects.length < 1 && (
+          <EmptyContent
+            height="100%"
+            message={t('스프린트를 만들기 위해서는 프로젝트가 필요합니다.')}
+            additionalContent={
+              <div className="mt-3">
+                <Button
+                  size="md"
+                  color="primary"
+                  onClick={() => {
+                    history.push('/projects/new');
+                  }}
+                >
+                  <i className="fas fa-plus" /> {t('새 프로젝트')}
+                </Button>
+              </div>
+            }
+          />
+        )}
+        {projects && projects.length > 0 && (
+          <Form className="new-sprint-content" onSubmit={onSubmit}>
+            <Block className="pt-0">
+              <BlockTitle>{t('스프린트 정보')}</BlockTitle>
               <BlockRow>
-                <div className="flex-grow-1 text-center">
-                  <Button size="sm" color="white" outline onClick={addSprintDailyMeeting}>
-                    미팅 추가
-                  </Button>
-                </div>
+                <Label minWidth={labelMinWidth} required>
+                  {t('프로젝트')}
+                </Label>
+                {projects && (
+                  <Selector
+                    outline
+                    size="md"
+                    items={projects
+                      .filter((d) => d.activated)
+                      .map((project) => {
+                        return {
+                          key: project.id,
+                          value: project.name,
+                        };
+                      })}
+                    value={sprint.projectId}
+                    onChange={(val) => {
+                      changeInfo('projectId', val);
+                    }}
+                    minWidth="220px"
+                  />
+                )}
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('이름')}
+                </Label>
+                <Input type="name" size="md" value={sprint.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('기간')}
+                </Label>
+                <DateRange country={user.country} language={user.language} startDate={sprint.startDate} endDate={sprint.endDate} onChange={changeInfo} />
               </BlockRow>
             </Block>
-          )}
-          <Block>
-            <BlockTitle>{t('지라 연동')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('지라 연동')}</Label>
-              <CheckBox
-                size="md"
-                type="checkbox"
-                value={sprint.isJiraSprint}
-                onChange={(val) => changeInfo('isJiraSprint', val)}
-                label={t('이 스프린트를 지라 스프린트와 연결합니다.')}
-              />
-            </BlockRow>
-            {sprint.isJiraSprint && (
-              <>
-                <BlockRow expand>
-                  <Label minWidth={labelMinWidth}>{t('지라 스트린트 URL')}</Label>
-                  <Input
-                    type="name"
-                    size="md"
-                    value={sprint.jiraSprintUrl}
-                    onChange={(val) => changeInfo('jiraSprintUrl', val)}
-                    outline
-                    simple
-                    display="block"
-                    disabled={!sprint.isJiraSprint}
-                  />
+            <Block className="pb-0">
+              <BlockTitle>{t('데일리 스크럼')}</BlockTitle>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
+                <CheckBox
+                  size="md"
+                  type="checkbox"
+                  value={sprint.doDailyScrumMeeting}
+                  onChange={(val) => changeInfo('doDailyScrumMeeting', val)}
+                  label={t('스프린트 기간 데일리 스크럼 미팅을 진행합니다.')}
+                />
+              </BlockRow>
+            </Block>
+            {sprint.doDailyScrumMeeting && (
+              <Block className="sprint-daily-meetings">
+                {sprint.sprintDailyMeetings.map((sprintDailyMeeting, inx) => {
+                  return (
+                    <DailyScrumMeeting
+                      className={sprintDailyMeeting.CRUD === 'D' ? 'd-none' : ''}
+                      key={inx}
+                      edit
+                      no={inx + 1}
+                      sprintDailyMeeting={sprintDailyMeeting}
+                      onRemove={() => {
+                        removeSprintDailyMeeting(inx);
+                      }}
+                      onChangeInfo={(key, value) => {
+                        changeSprintDailyMeeting(inx, key, value);
+                      }}
+                      onChangeMeetingDays={(dayIndex) => {
+                        changeSprintDailyMeetingDays(inx, dayIndex, sprintDailyMeeting.days[dayIndex] === '1' ? '0' : '1');
+                      }}
+                      onChangeQuestionOrder={(dayIndex, dir) => {
+                        changeOrderSprintDailyMeetingQuestions(dir, inx, dayIndex);
+                      }}
+                      onChangeQuestion={(questionIndex, key, value) => {
+                        changeSprintDailyMeetingQuestions(inx, questionIndex, key, value);
+                      }}
+                      user={user}
+                    />
+                  );
+                })}
+                <BlockRow>
+                  <div className="flex-grow-1 text-center">
+                    <Button size="sm" color="white" outline onClick={addSprintDailyMeeting}>
+                      미팅 추가
+                    </Button>
+                  </div>
                 </BlockRow>
-                <BlockRow expand>
-                  <Label minWidth={labelMinWidth}>{t('지라 인증 키')}</Label>
-                  <Input
-                    type="name"
-                    size="md"
-                    value={sprint.jiraAuthKey}
-                    onChange={(val) => changeInfo('jiraAuthKey', val)}
-                    outline
-                    simple
-                    display="block"
-                    disabled={!sprint.isJiraSprint}
-                  />
-                </BlockRow>
-              </>
+              </Block>
             )}
-          </Block>
-          <Block>
-            <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
-              <RadioButton
-                size="sm"
-                items={ALLOW_SEARCHES}
-                value={sprint.allowSearch}
-                onClick={(val) => {
-                  changeInfo('allowSearch', val);
+            <Block>
+              <BlockTitle>{t('지라 연동')}</BlockTitle>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('지라 연동')}</Label>
+                <CheckBox
+                  size="md"
+                  type="checkbox"
+                  value={sprint.isJiraSprint}
+                  onChange={(val) => changeInfo('isJiraSprint', val)}
+                  label={t('이 스프린트를 지라 스프린트와 연결합니다.')}
+                />
+              </BlockRow>
+              {sprint.isJiraSprint && (
+                <>
+                  <BlockRow expand>
+                    <Label minWidth={labelMinWidth}>{t('지라 스트린트 URL')}</Label>
+                    <Input
+                      type="name"
+                      size="md"
+                      value={sprint.jiraSprintUrl}
+                      onChange={(val) => changeInfo('jiraSprintUrl', val)}
+                      outline
+                      simple
+                      display="block"
+                      disabled={!sprint.isJiraSprint}
+                    />
+                  </BlockRow>
+                  <BlockRow expand>
+                    <Label minWidth={labelMinWidth}>{t('지라 인증 키')}</Label>
+                    <Input
+                      type="name"
+                      size="md"
+                      value={sprint.jiraAuthKey}
+                      onChange={(val) => changeInfo('jiraAuthKey', val)}
+                      outline
+                      simple
+                      display="block"
+                      disabled={!sprint.isJiraSprint}
+                    />
+                  </BlockRow>
+                </>
+              )}
+            </Block>
+            <Block>
+              <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
+                <RadioButton
+                  size="sm"
+                  items={ALLOW_SEARCHES}
+                  value={sprint.allowSearch}
+                  onClick={(val) => {
+                    changeInfo('allowSearch', val);
+                  }}
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
+                <RadioButton
+                  size="sm"
+                  items={JOIN_POLICIES}
+                  value={sprint.allowAutoJoin}
+                  onClick={(val) => {
+                    changeInfo('allowAutoJoin', val);
+                  }}
+                />
+              </BlockRow>
+            </Block>
+            <Block>
+              <BlockTitle>{t('멤버')}</BlockTitle>
+              <UserList
+                users={sprint.users}
+                onChange={(val) => changeInfo('users', val)}
+                onChangeUsers={changeUsers}
+                editable={{
+                  role: true,
+                  member: true,
                 }}
               />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
-              <RadioButton
-                size="sm"
-                items={JOIN_POLICIES}
-                value={sprint.allowAutoJoin}
-                onClick={(val) => {
-                  changeInfo('allowAutoJoin', val);
-                }}
-              />
-            </BlockRow>
-          </Block>
-          <Block>
-            <BlockTitle>{t('멤버')}</BlockTitle>
-            <UserList
-              users={sprint.users}
-              onChange={(val) => changeInfo('users', val)}
-              onChangeUsers={changeUsers}
-              editable={{
-                role: true,
-                member: true,
+            </Block>
+            <BottomButtons
+              onCancel={() => {
+                history.goBack();
               }}
+              onSubmit
+              onSubmitIcon={<i className="fas fa-plane" />}
+              onSubmitText={type === 'edit' ? t('스프린트 변경') : t('스프린트 등록')}
+              onCancelIcon=""
             />
-          </Block>
-          <BottomButtons
-            onCancel={() => {
-              history.goBack();
-            }}
-            onSubmit
-            onSubmitIcon={<i className="fas fa-plane" />}
-            onSubmitText={type === 'edit' ? t('스프린트 변경') : t('스프린트 등록')}
-            onCancelIcon=""
-          />
-        </Form>
+          </Form>
+        )}
       </PageContent>
     </Page>
   );
@@ -482,7 +548,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(EditSprint)));
+export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(EditSprint);
 
 EditSprint.propTypes = {
   t: PropTypes.func,

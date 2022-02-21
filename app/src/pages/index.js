@@ -11,7 +11,7 @@ import Conference from './Meetings/Conference/Conference';
 import Common from './Common/Common';
 import Header from './Common/Header';
 import Footer from './Common/Footer';
-import SprintBoard from './Sprints/SprintBoard';
+import SprintBoard from './Sprints/SprintBoard/SprintBoard';
 import SprintDeactivate from './Sprints/SprintDeactivate';
 import ConferenceHeader from './Common/ConferenceHeader';
 import Home from './Home/Home';

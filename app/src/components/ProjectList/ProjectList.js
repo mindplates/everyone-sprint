@@ -16,7 +16,7 @@ const ProjectList = ({ className, t, history, projects }) => {
           <li
             key={project.id}
             onClick={() => {
-              history.push(`/projects/${project.id}/board/daily`);
+              history.push(`/projects/${project.id}`);
             }}
           >
             <div>

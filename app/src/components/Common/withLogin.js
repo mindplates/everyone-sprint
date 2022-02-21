@@ -64,6 +64,9 @@ const withLogin = (WrappedComponent) => {
                   <span>{t('로그인')}</span>
                 </Link>
               </div>
+              <div className="new-user">
+                <Link to="/entry">{t('새로운 사용자를 등록합니다.')}</Link>
+              </div>
             </div>
           )}
         </div>

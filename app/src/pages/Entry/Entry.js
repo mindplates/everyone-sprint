@@ -159,7 +159,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
             <div />
           </div>
           <div className="layout-3">
-            <div className="general-info">
+            <div className="general-info pb-0">
               <BlockTitle>로그인 정보</BlockTitle>
               <div className="row-input">
                 <div>

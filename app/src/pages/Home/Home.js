@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { BlockTitle, MeetingTimeLine, MySprintSummaryList, PageContent, SocketClient, Tabs } from '@/components';
+import { BlockTitle, MeetingTimeLine, MySprintSummaryList, Page, PageContent, SocketClient, Tabs, withLogin } from '@/components';
 import { UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import dateUtil from '@/utils/dateUtil';
@@ -148,60 +148,66 @@ const Home = ({ t, user }) => {
   };
 
   return (
-    <div className="home-wrapper g-content g-has-no-title">
-      {user?.id && (
-        <SocketClient
-          topics={['/sub/conferences/notify']}
-          onMessage={onMessage}
-          onConnect={() => {}}
-          setRef={(client) => {
-            socket.current = client;
-          }}
-        />
-      )}
-      {!user?.id && (
-        <PageContent className="not-login-content" border={false} padding="0">
-          <div>로그인이 필요 합니다</div>
-        </PageContent>
-      )}
-      {user?.id && (
-        <PageContent className="home-page-content" border padding="0">
-          <div className="home-layout">
-            <Tabs
-              className="tabs"
-              tab={tab}
-              tabs={tabs}
-              onChange={setTab}
-              border={false}
-              cornered
-              size="sm"
-              content={<span className="today">{dateUtil.getDateString(today, DATE_FORMATS_TYPES.days)}</span>}
-            />
-            <div className={`home-content ${tab}`}>
-              <div className="timeline-content">
-                <BlockTitle className="content-title mb-3">{t('오늘의 미팅')}</BlockTitle>
-                <div className="timeline-meeting">
-                  <MeetingTimeLine user={user} meetings={meetings} date={today} />
-                </div>
+    <Page
+      className="home-wrapper"
+      title={false}
+      breadcrumbs={[
+        {
+          link: '/',
+          name: t('TOP'),
+        },
+        {
+          link: '/home',
+          name: t('HOME'),
+          current: true,
+        },
+      ]}
+    >
+      <SocketClient
+        topics={['/sub/conferences/notify']}
+        onMessage={onMessage}
+        onConnect={() => {}}
+        setRef={(client) => {
+          socket.current = client;
+        }}
+      />
+      <PageContent className="home-page-content">
+        <div className="home-layout">
+          <Tabs
+            className="tabs"
+            tab={tab}
+            tabs={tabs}
+            onChange={setTab}
+            border={false}
+            cornered
+            size="sm"
+            content={<span className="today">{dateUtil.getDateString(today, DATE_FORMATS_TYPES.days)}</span>}
+          />
+          <div className={`home-content ${tab}`}>
+            <div className="timeline-content">
+              <BlockTitle className="content-title mb-3">{t('오늘의 미팅')}</BlockTitle>
+              <div className="timeline-meeting">
+                <MeetingTimeLine user={user} meetings={meetings} date={today} />
               </div>
-              <div className="my-sprints">
-                <BlockTitle className="content-title mb-3">
-                  {t('오늘의 스프린트')}
-                  <span className="today">{dateUtil.getDateString(today, DATE_FORMATS_TYPES.days)}</span>
-                </BlockTitle>
-                <div className="my-sprints-content">
-                  <MySprintSummaryList
-                    sprints={sprints}
-                    onClickScrumInfo={(sprintId) => {
-                      onChangeScrumInfo(sprintId, true);
-                    }}
-                  />
-                </div>
+            </div>
+            <div className="my-sprints">
+              <BlockTitle className="content-title mb-3">
+                {t('오늘의 스프린트')}
+                <span className="today">{dateUtil.getDateString(today, DATE_FORMATS_TYPES.days)}</span>
+              </BlockTitle>
+              <div className="my-sprints-content">
+                <MySprintSummaryList
+                  sprints={sprints}
+                  onClickScrumInfo={(sprintId) => {
+                    onChangeScrumInfo(sprintId, true);
+                  }}
+                />
               </div>
             </div>
           </div>
-        </PageContent>
-      )}
+        </div>
+      </PageContent>
+
       {scrumInfo.isOpen && (
         <ScrumInfoEditorPopup
           setOpen={() => {
@@ -220,7 +226,7 @@ const Home = ({ t, user }) => {
           }}
         />
       )}
-    </div>
+    </Page>
   );
 };
 
@@ -231,7 +237,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(Home);
+export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(Home);
 
 Home.propTypes = {
   t: PropTypes.func,

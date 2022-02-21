@@ -1,0 +1,135 @@
+.project-wrapper {
+  .project-content {
+    display: flex;
+    flex-direction: column;
+
+    .tabs {
+      flex-grow: 0;
+      padding: 1.5rem 2rem 0;
+      display: none;
+
+      @media (max-width: 1200px) {
+        display: block;
+      }
+
+      @media (max-width: 576px) {
+        padding: 1rem 1rem 0;
+      }
+    }
+
+    .project-info {
+      display: flex;
+      flex-grow: 1;
+      flex-direction: row;
+      > div {
+        &.general-info {
+          padding: 1rem 0 0 2rem;
+          min-width: 400px;
+          max-width: 400px;
+          display: flex;
+          flex-direction: column;
+
+          @media (max-width: 1200px) {
+            display: none;
+          }
+
+          .project-card {
+            border: $border;
+            padding: 1rem;
+            margin-bottom: 1rem;
+
+            .project-name {
+              font-family: pretendard, sans-serif;
+              font-weight: bold;
+              font-size: 1.2rem;
+            }
+
+            .project-info-tag {
+              margin-top: 0.5rem;
+              line-height: 100%;
+              > span {
+                display: inline-block;
+                font-size: 12px;
+                margin-right: 0.5rem;
+                padding: 0.4rem;
+                line-height: 100%;
+                border-radius: 2px;
+                &.allowed {
+                  background-color: $green;
+                  color: $white;
+                }
+              }
+            }
+          }
+
+          .project-user-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            position: relative;
+            border: $border;
+          }
+        }
+
+        &.sprint-timeline {
+          padding: 1rem 2rem 0;
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+
+          @media (max-width: 1200px) {
+            display: none;
+          }
+
+          @media (max-width: 992px) {
+            padding: 1rem 1rem 0;
+          }
+
+          @media (max-width: 576px) {
+            margin-bottom: 1rem;
+          }
+
+          .sprint-timeline-content {
+            flex-grow: 1;
+            position: relative;
+          }
+        }
+      }
+    }
+
+    .content-title {
+      position: relative;
+
+      @media (max-width: 1200px) {
+        display: none;
+      }
+    }
+
+    &.project {
+      .project-info {
+        .general-info {
+          @media (max-width: 1200px) {
+            display: flex;
+            flex-grow: 1;
+            min-width: auto;
+            max-width: none;
+            padding-right: 2rem;
+          }
+
+          @media (max-width: 576px) {
+            padding: 1rem;
+          }
+        }
+      }
+    }
+
+    &.timeline {
+      .project-info {
+        .sprint-timeline {
+          @media (max-width: 1200px) {
+            display: flex;
+          }
+        }
+      }
+    }
+  }
+}

@@ -2,10 +2,10 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import './UserList.scss';
 import { UserPropTypes } from '@/proptypes';
-import { Popup, UserCard } from '@/components';
+import { Popup, UserCard, UserListItem } from '@/components';
 import UserSelector from '@/components/UserList/UserSelector';
 
-const UserList = ({ className, users, editable, onChange, onChangeUsers }) => {
+const UserList = ({ className, users, editable, onChange, onChangeUsers, type, icon }) => {
   const [popup, setPopup] = useState(false);
 
   const changeUser = useCallback(
@@ -32,29 +32,49 @@ const UserList = ({ className, users, editable, onChange, onChangeUsers }) => {
   );
 
   return (
-    <div className={`user-list-wrapper ${className}`}>
+    <div className={`user-list-wrapper ${className} type-${type}`}>
       {!editable.member && users.length < 1 && (
         <div className="empty-message">
           <div>등록된 멤버가 없습니다.</div>
         </div>
       )}
       {(editable.member || users.length > 0) && (
-        <div className="sprint-user-list">
+        <div className="user-list">
           {users.map((user, index) => {
+            if (type === 'card') {
+              return (
+                <div key={index} className="user-card">
+                  <UserCard icon={icon} userIndex={index} user={user} editable={editable} onChange={changeUser} />
+                </div>
+              );
+            }
+
             return (
               <div key={index} className="user-card">
-                <UserCard userIndex={index} user={user} editable={editable} onChange={changeUser} />
+                <UserListItem icon={icon} userIndex={index} user={user} editable={editable} onChange={changeUser} />
               </div>
             );
           })}
           {editable.member && (
             <div className="user-card">
-              <UserCard
-                addCard
-                onClick={() => {
-                  setPopup(true);
-                }}
-              />
+              {type === 'card' && (
+                <UserCard
+                  icon={icon}
+                  addCard
+                  onClick={() => {
+                    setPopup(true);
+                  }}
+                />
+              )}
+              {type === 'type' && (
+                <UserListItem
+                  icon={icon}
+                  addCard
+                  onClick={() => {
+                    setPopup(true);
+                  }}
+                />
+              )}
             </div>
           )}
         </div>
@@ -91,6 +111,8 @@ UserList.defaultProps = {
     role: true,
     member: true,
   },
+  type: 'card',
+  icon: true,
 };
 
 UserList.propTypes = {
@@ -102,4 +124,6 @@ UserList.propTypes = {
   }),
   onChange: PropTypes.func,
   onChangeUsers: PropTypes.func,
+  type: PropTypes.string,
+  icon: PropTypes.bool,
 };

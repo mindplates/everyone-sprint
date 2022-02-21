@@ -7,6 +7,12 @@ function getUserLocale() {
   return `${state.user.language || 'ko'}_${state.user.country || 'KR'}`;
 }
 
+/**
+ * 서버의 UTC 시간을 사용자 시간에 맞도록 표현
+ * @param val
+ * @param format
+ * @returns {string}
+ */
 function getDateString(val, format) {
   return moment
     .utc(val)
@@ -26,6 +32,11 @@ function getDate(val) {
   return new Date(`${val}Z`);
 }
 
+/**
+ * 서버 문자열을 사용자 시간의 time으로 변환
+ * @param val
+ * @returns {number}
+ */
 function getTime(val) {
   return getDate(val).getTime();
 }

@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.sprint.vo.request;
 
+import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintUser;
 import com.mindplates.everyonesprint.common.code.RoleCode;
@@ -28,6 +29,9 @@ public class SprintRequest {
     private List<SprintRequest.User> users;
     private List<SprintRequest.SprintDailyMeeting> sprintDailyMeetings;
 
+    private Long projectId;
+
+
     public Sprint buildEntity() {
 
         Sprint sprint = Sprint.builder()
@@ -43,6 +47,8 @@ public class SprintRequest {
                 .activated(activated)
                 .doDailyScrumMeeting(doDailyScrumMeeting)
                 .build();
+
+        sprint.setProject(Project.builder().id(this.projectId).build());
 
         List<SprintUser> sprintUsers = users.stream().map(
                 (user) -> SprintUser.builder()

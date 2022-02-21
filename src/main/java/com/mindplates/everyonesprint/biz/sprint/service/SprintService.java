@@ -34,8 +34,12 @@ public class SprintService {
         this.sprintDailyMeetingAnswerRepository = sprintDailyMeetingAnswerRepository;
     }
 
-    public Sprint selectByName(String name) {
-        return sprintRepository.findByName(name).orElse(null);
+    public boolean selectIsExistProjectSprintName(Long projectId, Long sprintId, String name) {
+        if (sprintId == null) {
+            return sprintRepository.countByProjectIdAndName(projectId, name) > 0L;
+        }
+
+        return sprintRepository.countByProjectIdAndIdNotAndName(projectId, sprintId, name) > 0L;
     }
 
     public Sprint createSprintInfo(Sprint sprint, UserSession userSession) {

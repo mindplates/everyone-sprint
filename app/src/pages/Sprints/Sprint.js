@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import {
   Block,
   BlockRow,
@@ -16,6 +17,7 @@ import {
   PageTitle,
   Text,
   UserList,
+  withLogin,
 } from '@/components';
 import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
@@ -67,12 +69,16 @@ const Sprint = ({
   const sprintSpan = dateUtil.getSpan(sprint?.startDate, sprint?.endDate);
 
   return (
-    <Page className='sprint-common'>
+    <Page className="sprint-common">
       <PageTitle>{t('스프린트 정보')}</PageTitle>
       {sprint && (
         <PageContent>
           <Block className="pt-0">
             <BlockTitle>{t('스프린트 정보')}</BlockTitle>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
+              <Text>{sprint.projectName}</Text>
+            </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('이름')}</Label>
               <Text>{sprint.name}</Text>
@@ -90,7 +96,7 @@ const Sprint = ({
             <BlockTitle>{t('데일리 스크럼')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
-              <Text>{sprint.doDailyScrumMeeting ? 'Y' : 'M'}</Text>
+              <Text>{sprint.doDailyScrumMeeting ? 'Y' : 'N'}</Text>
             </BlockRow>
           </Block>
           {sprint.doDailyScrumMeeting && (
@@ -163,7 +169,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(Sprint)));
+export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(Sprint);
 
 Sprint.propTypes = {
   t: PropTypes.func,

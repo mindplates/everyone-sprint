@@ -73,6 +73,8 @@ const SprintPropTypes = PropTypes.shape({
   userCount: PropTypes.number,
   hasScrumMeeting: PropTypes.bool,
   isUserScrumInfoRegistered: PropTypes.bool,
+  projectId: PropTypes.number,
+  projectName: PropTypes.string,
 });
 
 const MeetingPropTypes = PropTypes.shape({
