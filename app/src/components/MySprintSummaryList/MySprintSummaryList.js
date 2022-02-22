@@ -105,7 +105,7 @@ const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo 
                         <Button
                           size="xs"
                           className="daily-scrum-button"
-                          color='point'
+                          color="point"
                           onClick={(e) => {
                             e.stopPropagation();
                             onClickScrumInfo(sprint.id);

@@ -1,8 +1,9 @@
 .with-loader-wrapper {
-  height: 100%;
   display: flex;
   justify-content: center;
   background-color: $light;
+  flex-grow: 1;
+  height: 100%;
   > div {
     align-self: center;
   }

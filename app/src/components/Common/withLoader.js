@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import Spinner from '@/components/Spinner/Spinner';
 import './withLoader.scss';
 
-const withLoader = (WrappedComponent, name) => {
+const withLoader = (WrappedComponent, name, delay = 500) => {
   class NeedLogin extends React.Component {
     timer = null;
 
@@ -24,7 +24,7 @@ const withLoader = (WrappedComponent, name) => {
         this.setState({
           delayed: true,
         });
-      }, 500);
+      }, delay);
     }
 
     componentWillUnmount() {

@@ -8,6 +8,8 @@ import { HistoryPropTypes, ProjectPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './SprintTimeLine.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
+import withLoader from '@/components/Common/withLoader';
+import { Button } from '@/components';
 
 const SprintTimeLine = ({ className, t, history, project }) => {
   const now = Date.now();
@@ -68,79 +70,100 @@ const SprintTimeLine = ({ className, t, history, project }) => {
   }, []);
 
   return (
-    <div className={`sprint-time-line-wrapper g-scroller ${className}`} ref={element}>
-      <ul>
-        <li>
+    <div className={`sprint-time-line-wrapper g-scroller  ${className}`} ref={element}>
+      <div className="project-start-info">
+        <div className="date">{dateUtil.getDateString(project.creationDate, DATE_FORMATS_TYPES.yearsDays)}</div>
+        <div className="project-text">{t('프로젝트 시작')}</div>
+      </div>
+      {summary.length < 1 && (
+        <div className="no-sprint">
           <div>
-            <div className="date">{dateUtil.getDateString(project.creationDate, DATE_FORMATS_TYPES.yearsDays)}</div>
+            <div className="mb-2">{t('아직 만들어진 스프린트가 없습니다')}</div>
+            <div>
+              <Button
+                size="sm"
+                color="point"
+                onClick={() => {
+                  history.push(`/sprints/new?projectId=${project.id}`);
+                }}
+              >
+                <i className="fas fa-plane" /> {t('스프린트 생성')}
+              </Button>
+            </div>
           </div>
-        </li>
-        {summary.map((sprintSummary, inx) => {
-          const current = sprintSummary.startTime < now && sprintSummary.endTime > now;
-          let isNextCurrent = false;
-          if (inx < summary.length - 1) {
-            isNextCurrent = summary[inx + 1].startTime < now && summary[inx + 1].endTime > now;
-          }
+        </div>
+      )}
+      {summary.length > 0 && (
+        <div className="sprint-info">
+          <ul>
+            {summary.map((sprintSummary, inx) => {
+              const current = sprintSummary.startTime < now && sprintSummary.endTime > now;
+              let isNextCurrent = false;
+              if (inx < summary.length - 1) {
+                isNextCurrent = summary[inx + 1].startTime < now && summary[inx + 1].endTime > now;
+              }
 
-          return (
-            <li key={inx} className={`${current ? 'current' : ''} ${isNextCurrent ? 'prev' : ''}`}>
-              <div>
-                <div className="date">
-                  <div className="start-date">{sprintSummary.startDate}</div>
-                  <div className="duration">
-                    <div>
-                      <span>
-                        <span className="text">{t(`${sprintSummary.duration?.days}일`)}</span>
-                        <span className="arrow arrow-up">
-                          <span />
-                        </span>
-                        <span className="arrow arrow-down">
-                          <span />
-                        </span>
-                      </span>
+              return (
+                <li key={inx} className={`${current ? 'current' : ''} ${isNextCurrent ? 'prev' : ''}`}>
+                  <div>
+                    <div className="date">
+                      <div className="start-date">{sprintSummary.startDate}</div>
+                      <div className="duration">
+                        <div>
+                          <span>
+                            <span className="text">{t(`${sprintSummary.duration?.days}일`)}</span>
+                            <span className="arrow arrow-up">
+                              <span />
+                            </span>
+                            <span className="arrow arrow-down">
+                              <span />
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                      <div className="end-date">{sprintSummary.endDate}</div>
+                    </div>
+                    <div className="sprint-list">
+                      <div>
+                        <ul>
+                          {sprintSummary.sprints.map((sprint) => {
+                            const sprintStartTime = dateUtil.getTime(sprint.startDate);
+                            const sprintEndTime = dateUtil.getTime(sprint.endDate);
+                            let point = 'past';
+                            if (now >= sprintStartTime && now <= sprintEndTime) {
+                              point = 'current';
+                            } else if (now < sprintStartTime) {
+                              point = 'future';
+                            }
+
+                            return (
+                              <li
+                                key={sprint.id}
+                                className={`point-${point}`}
+                                onClick={() => {
+                                  if (point === 'past') {
+                                    history.push(`/sprints/${sprint.id}/board/summary`);
+                                  } else if (point === 'current') {
+                                    history.push(`/sprints/${sprint.id}/board/daily`);
+                                  } else {
+                                    history.push(`/sprints/${sprint.id}`);
+                                  }
+                                }}
+                              >
+                                {sprint.name}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
                     </div>
                   </div>
-                  <div className="end-date">{sprintSummary.endDate}</div>
-                </div>
-                <div className="sprint-list">
-                  <div>
-                    <ul>
-                      {sprintSummary.sprints.map((sprint) => {
-                        const sprintStartTime = dateUtil.getTime(sprint.startDate);
-                        const sprintEndTime = dateUtil.getTime(sprint.endDate);
-                        let point = 'past';
-                        if (now >= sprintStartTime && now <= sprintEndTime) {
-                          point = 'current';
-                        } else if (now < sprintStartTime) {
-                          point = 'future';
-                        }
-
-                        return (
-                          <li
-                            key={sprint.id}
-                            className={`point-${point}`}
-                            onClick={() => {
-                              if (point === 'past') {
-                                history.push(`/sprints/${sprint.id}/board/summary`);
-                              } else if (point === 'current') {
-                                history.push(`/sprints/${sprint.id}/board/daily`);
-                              } else {
-                                history.push(`/sprints/${sprint.id}`);
-                              }
-                            }}
-                          >
-                            {sprint.name}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
@@ -151,7 +174,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(SprintTimeLine);
+export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(withLoader(SprintTimeLine, 'project'));
 
 SprintTimeLine.defaultProps = {
   className: '',

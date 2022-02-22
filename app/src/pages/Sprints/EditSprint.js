@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import qs from 'qs';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -28,7 +29,7 @@ import dialog from '@/utils/dialog';
 import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { HistoryPropTypes, LocationPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 
@@ -55,6 +56,7 @@ const EditSprint = ({
   match: {
     params: { id },
   },
+  location,
 }) => {
   const [projects, setProjects] = useState(null);
   const [sprint, setSprint] = useState({
@@ -72,6 +74,8 @@ const EditSprint = ({
     sprintDailyMeetings: [],
     projectId: null,
   });
+
+  const search = qs.parse(location.search, { ignoreQueryPrefix: true });
 
   useEffect(() => {
     if (id && type === 'edit')
@@ -95,7 +99,15 @@ const EditSprint = ({
 
         if (type === 'new' && list.filter((d) => d.activated).length > 0) {
           const [first] = list;
-          const users = first.users.map((d) => {
+          let project = first;
+          if (search.projectId) {
+            const p = list.find((d) => d.id === Number(search.projectId));
+            if (p) {
+              project = p;
+            }
+          }
+
+          const users = project.users.map((d) => {
             return {
               userId: d.userId,
               email: d.email,
@@ -111,7 +123,7 @@ const EditSprint = ({
           setSprint({
             ...sprint,
             users,
-            projectId: first.id,
+            projectId: project.id,
           });
         }
       },
@@ -560,4 +572,5 @@ EditSprint.propTypes = {
       id: PropTypes.string,
     }),
   }),
+  location: LocationPropTypes,
 };

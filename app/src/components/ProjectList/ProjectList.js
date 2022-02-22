@@ -6,6 +6,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button } from '@/components';
 import { HistoryPropTypes, ProjectPropTypes } from '@/proptypes';
+import withLoader from '@/components/Common/withLoader';
 import './ProjectList.scss';
 
 const ProjectList = ({ className, t, history, projects }) => {
@@ -32,7 +33,7 @@ const ProjectList = ({ className, t, history, projects }) => {
                       data-tip={t('')}
                       onClick={(e) => {
                         e.stopPropagation();
-                        history.push(`/projects/${project.id}`);
+                        history.push(`/projects/${project.id}/edit`);
                       }}
                     >
                       <i className="fas fa-cog" />
@@ -71,7 +72,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(ProjectList);
+export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(withLoader(ProjectList, 'projects'));
 
 ProjectList.defaultProps = {
   className: '',
