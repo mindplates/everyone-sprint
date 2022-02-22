@@ -8,6 +8,7 @@ import { DATE_FORMATS_TYPES } from '@/constants/constants';
 import { HistoryPropTypes, MeetingPropTypes, UserPropTypes } from '@/proptypes';
 import './MeetingTimeLine.scss';
 import { TimeLineItem } from '@/components';
+import withLoader from '@/components/Common/withLoader';
 
 const MeetingTimeLine = ({ className, date, user, meetings, history, height }) => {
   let meetingCount = 0;
@@ -107,7 +108,7 @@ const MeetingTimeLine = ({ className, date, user, meetings, history, height }) =
   );
 };
 
-export default withRouter(withResizeDetector(MeetingTimeLine));
+export default withRouter(withResizeDetector(withLoader(MeetingTimeLine, 'meetings')));
 
 MeetingTimeLine.defaultProps = {
   className: '',

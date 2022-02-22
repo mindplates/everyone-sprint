@@ -5,6 +5,7 @@ import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button, EmptyContent, Liner } from '@/components';
+import withLoader from '@/components/Common/withLoader';
 import { HistoryPropTypes, SprintPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './MySprintSummaryList.scss';
@@ -14,7 +15,7 @@ const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo 
   const now = Date.now();
   return (
     <div className={`my-sprint-summary-list-wrapper ${className} ${sprints && sprints?.length > 0 ? 'g-list-content' : 'g-page-content'}`}>
-      {!(sprints && sprints?.length > 0) && (
+      {sprints && sprints.length < 1 && (
         <EmptyContent
           height="100%"
           message={t('스프린트가 없습니다.')}
@@ -104,6 +105,7 @@ const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo 
                         <Button
                           size="xs"
                           className="daily-scrum-button"
+                          color='point'
                           onClick={(e) => {
                             e.stopPropagation();
                             onClickScrumInfo(sprint.id);
@@ -132,7 +134,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(MySprintSummaryList);
+export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(withLoader(MySprintSummaryList, 'sprints'));
 
 MySprintSummaryList.defaultProps = {
   className: '',
@@ -143,5 +145,5 @@ MySprintSummaryList.propTypes = {
   t: PropTypes.func,
   sprints: PropTypes.arrayOf(SprintPropTypes),
   history: HistoryPropTypes,
-  onClickScrumInfo : PropTypes.func,
+  onClickScrumInfo: PropTypes.func,
 };

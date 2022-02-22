@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { Breadcrumbs, Button, Liner } from '@/components';
 import './PageTitle.scss';
 
-const PageTitle = ({ className, children, control, buttons, tabs, tab, onChangeTab, breadcrumbs }) => {
+const PageTitle = ({ className, children, control, buttons, tabs, tab, onChangeTab, breadcrumbs, isListPageTitle }) => {
   return (
-    <div className={`page-title-wrapper ${className}`}>
+    <div className={`page-title-wrapper ${className} ${isListPageTitle ? 'is-list-page-title' : ''}`}>
       <div className="bullet">
         <span />
       </div>
@@ -52,7 +52,7 @@ const PageTitle = ({ className, children, control, buttons, tabs, tab, onChangeT
           </div>
         </div>
       )}
-      {breadcrumbs && <Breadcrumbs className='flex-grow-1' list={breadcrumbs} />}
+      {breadcrumbs && <Breadcrumbs className="flex-grow-1" list={breadcrumbs} />}
     </div>
   );
 };
@@ -89,4 +89,5 @@ PageTitle.propTypes = {
       name: PropTypes.string,
     }),
   ),
+  isListPageTitle: PropTypes.bool,
 };

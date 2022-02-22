@@ -150,7 +150,6 @@ const Home = ({ t, user }) => {
   return (
     <Page
       className="home-wrapper"
-      title={false}
       breadcrumbs={[
         {
           link: '/',
@@ -207,7 +206,6 @@ const Home = ({ t, user }) => {
           </div>
         </div>
       </PageContent>
-
       {scrumInfo.isOpen && (
         <ScrumInfoEditorPopup
           setOpen={() => {
@@ -237,7 +235,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(Home);
+export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation(), withLogin)(Home);
 
 Home.propTypes = {
   t: PropTypes.func,

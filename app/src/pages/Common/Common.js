@@ -11,6 +11,7 @@ import { MessageDialog } from '@/components';
 import request from '@/utils/request';
 import storage from '@/utils/storage';
 import './Common.scss';
+import Spinner from '@/components/Spinner/Spinner';
 
 class Common extends React.Component {
   componentDidMount() {
@@ -48,13 +49,7 @@ class Common extends React.Component {
     return (
       <div className="common-wrapper">
         {message && message.content && (
-          <MessageDialog
-            type="message"
-            category={message.category}
-            title={message.title}
-            message={message.content}
-            okHandler={message.okHandler}
-          />
+          <MessageDialog type="message" category={message.category} title={message.title} message={message.content} okHandler={message.okHandler} />
         )}
         {confirm && confirm.content && (
           <MessageDialog
@@ -67,16 +62,12 @@ class Common extends React.Component {
           />
         )}
         <div className={`g-overlay loader ${requests.length > 0 ? 'show-loading' : 'hide-loading'}`}>
-          <div>
+          <div className='loading-message-content'>
             {requests.map((info, inx) => {
               return (
                 <div key={inx}>
                   <div className="loading-message show-loading">
-                    <div className="spinner">
-                      <div>
-                        <div />
-                      </div>
-                    </div>
+                    <Spinner className='spinner' color="yellow" type="bar" size="40px" />
                     <div>{info.text}</div>
                   </div>
                 </div>

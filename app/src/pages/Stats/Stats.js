@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { Link, withRouter } from 'react-router-dom';
-import { Button, PageContent, ProductLogo } from '@/components';
+import { Button, Page, PageContent, ProductLogo } from '@/components';
 import request from '@/utils/request';
 import './Stats.scss';
 import { UserPropTypes } from '@/proptypes';
@@ -34,8 +34,8 @@ const Stats = ({ t, user }) => {
   }, []);
 
   return (
-    <div className="stats-wrapper g-content g-has-no-title">
-      <PageContent className="intro-page-content" border={false} padding="0">
+    <Page className="stats-wrapper">
+      <PageContent className="page-content" border={false}>
         <div className="summary-content">
           <div className="logo">
             <ProductLogo className="bg-transparent d-inline-block" name={false} width="auto" />
@@ -125,7 +125,7 @@ const Stats = ({ t, user }) => {
           </div>
         </div>
       </PageContent>
-    </div>
+    </Page>
   );
 };
 

@@ -65,6 +65,19 @@ button.btn {
     }
   }
 
+  &.btn-point {
+    background-color: $point;
+    color: $white;
+
+    &:hover {
+      background-color: darken($point, 8%);
+    }
+
+    &.disabled:hover {
+      background-color: $point;
+    }
+  }
+
   &.btn-primary {
     &:hover {
       background-color: lighten($primary, 8%);

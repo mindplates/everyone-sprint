@@ -27,57 +27,54 @@ const Projects = ({ t, history }) => {
   }, []);
 
   return (
-    <Page listLayout>
-      {projects != null && (
-        <>
-          <PageTitle
-            buttons={[
-              {
-                icon: <i className="fas fa-plus" />,
-                text: t('새 프로젝트'),
-                handler: () => {
-                  history.push('/projects/new');
-                },
-              },
-            ]}
-            breadcrumbs={[
-              {
-                link: '/',
-                name: t('TOP'),
-              },
-              {
-                link: '/projects',
-                name: t('프로젝트 목록'),
-                current: true,
-              },
-            ]}
-          >
-            {t('프로젝트')}
-          </PageTitle>
-          <PageContent listLayout>
-            {projects && projects.length > 0 && <ProjectList projects={projects} />}
-            {!(projects && projects.length > 0) && (
-              <EmptyContent
-                height="100%"
-                message={t('프로젝트가 없습니다.')}
-                additionalContent={
-                  <div className="mt-3">
-                    <Button
-                      size="md"
-                      color="primary"
-                      onClick={() => {
-                        history.push('/projects/new');
-                      }}
-                    >
-                      <i className="fas fa-plus" /> {t('새 프로젝트')}
-                    </Button>
-                  </div>
-                }
-              />
-            )}
-          </PageContent>
-        </>
-      )}
+    <Page>
+      <PageTitle
+        isListPageTitle
+        buttons={[
+          {
+            icon: <i className="fas fa-plus" />,
+            text: t('새 프로젝트'),
+            handler: () => {
+              history.push('/projects/new');
+            },
+          },
+        ]}
+        breadcrumbs={[
+          {
+            link: '/',
+            name: t('TOP'),
+          },
+          {
+            link: '/projects',
+            name: t('프로젝트 목록'),
+            current: true,
+          },
+        ]}
+      >
+        {t('프로젝트')}
+      </PageTitle>
+      <PageContent listLayout>
+        {projects && projects.length > 0 && <ProjectList projects={projects} />}
+        {projects && projects.length < 1 && (
+          <EmptyContent
+            height="100%"
+            message={t('프로젝트가 없습니다.')}
+            additionalContent={
+              <div className="mt-3">
+                <Button
+                  size="md"
+                  color="primary"
+                  onClick={() => {
+                    history.push('/projects/new');
+                  }}
+                >
+                  <i className="fas fa-plus" /> {t('새 프로젝트')}
+                </Button>
+              </div>
+            }
+          />
+        )}
+      </PageContent>
     </Page>
   );
 };
