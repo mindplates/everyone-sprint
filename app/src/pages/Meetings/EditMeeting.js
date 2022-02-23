@@ -238,7 +238,7 @@ const EditMeeting = ({
               <Label minWidth={labelMinWidth} required>
                 {t('이름')}
               </Label>
-              <Input type="name" size="md" value={info.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
+              <Input type="text" size="md" value={info.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>

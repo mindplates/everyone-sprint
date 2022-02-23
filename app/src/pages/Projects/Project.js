@@ -55,6 +55,8 @@ const Project = ({
   const allowAutoJoin = JOIN_POLICIES.find((d) => d.key === project?.allowAutoJoin) || {};
   const activated = ACTIVATES.find((d) => d.key === project?.activated) || {};
 
+  console.log(project);
+
   return (
     <Page
       className="project-wrapper"
@@ -82,11 +84,11 @@ const Project = ({
             <div className="general-info">
               <BlockTitle className="content-title mb-3">{t('프로젝트')}</BlockTitle>
               <div className="project-card">
-                <div className={`${project.deactivate ? '' : 'deactivate'} project-name`}>{project.name}</div>
+                <div className={`${project.activated ? '' : 'deactivate'} project-name`}>{project.name}</div>
                 <div className="project-info-tag">
                   <span className={allowSearch.key ? 'allowed' : ''}>{allowSearch.value}</span>
                   <span className={allowAutoJoin.key ? 'allowed' : ''}>{allowAutoJoin.value}</span>
-                  <span className={activated.key ? '' : 'deactivated'}>{activated.value}</span>
+                  {!project.activated && <span className={activated.key ? '' : 'deactivated'}>{activated.value}</span>}
                 </div>
               </div>
               <BlockTitle className="mb-3">

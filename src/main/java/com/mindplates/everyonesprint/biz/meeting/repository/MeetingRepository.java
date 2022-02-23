@@ -24,6 +24,10 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     void deleteAllBySprintDailyMeetingId(Long sprintDailyMeetingId);
 
+    void deleteAllBySprintDailySmallTalkMeetingId(Long sprintDailySmallTalkId);
+
+    List<Meeting> findAllBySprintIdAndSprintDailySmallTalkMeetingId(Long sprintId, Long sprintDailySmallTalkId);
+
     List<Meeting> findAllByUsersUserIdAndSprintDailyMeetingIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(Long userId, List<Long> sprintDailyMeetingIds, LocalDateTime startTime, LocalDateTime endTime);
 
     long countBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNotNull(Long sprintId, LocalDateTime startTime, LocalDateTime endTime);
@@ -34,6 +38,7 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     Long countBy();
 
+    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndSprintDailySmallTalkMeetingIsNotNull(LocalDateTime date, LocalDateTime nextDay, Long userId);
 
 }
 

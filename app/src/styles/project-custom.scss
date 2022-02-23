@@ -193,10 +193,19 @@
 }
 
 .g-form {
-  padding: 1rem;
+  padding: 1rem 1rem 0;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
   @media (max-width: 576px) {
-    padding-bottom: 0;
     padding: 0;
+  }
+
+  .g-last-block {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 }
 .g-popup-bottom-button {

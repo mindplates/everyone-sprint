@@ -180,14 +180,14 @@ const EditProject = ({
         {type === 'edit' ? t('프로젝트 변경') : t('새로운 프로젝트')}
       </PageTitle>
       <PageContent className="d-flex">
-        <Form className="new-project-content g-form flex-grow-1 d-flex flex-column pb-0" onSubmit={onSubmit}>
+        <Form className="new-project-content g-form" onSubmit={onSubmit}>
           <Block className="pt-0">
             <BlockTitle>{t('프로젝트 정보')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
                 {t('이름')}
               </Label>
-              <Input type="name" size="md" value={project.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
+              <Input type="text" size="md" value={project.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('활성화')}</Label>
@@ -226,7 +226,7 @@ const EditProject = ({
               />
             </BlockRow>
           </Block>
-          <Block className="flex-grow-1 position-relative d-flex flex-column">
+          <Block className="g-last-block">
             <BlockTitle>{t('멤버')}</BlockTitle>
             <div className="flex-grow-1">
               <UserList

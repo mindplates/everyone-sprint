@@ -7,6 +7,7 @@ import com.mindplates.everyonesprint.common.code.RoleCode;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -26,9 +27,12 @@ public class SprintRequest {
     private Boolean allowAutoJoin;
     private Boolean activated;
     private Boolean doDailyScrumMeeting;
+    private Boolean doDailySmallTalkMeeting;
     private List<SprintRequest.User> users;
     private List<SprintRequest.SprintDailyMeeting> sprintDailyMeetings;
+    private List<SprintRequest.SprintDailySmallTalkMeeting> sprintDailySmallTalkMeetings;
 
+    @NotNull
     private Long projectId;
 
 
@@ -46,6 +50,7 @@ public class SprintRequest {
                 .allowAutoJoin(allowAutoJoin)
                 .activated(activated)
                 .doDailyScrumMeeting(doDailyScrumMeeting)
+                .doDailySmallTalkMeeting(doDailySmallTalkMeeting)
                 .build();
 
         sprint.setProject(Project.builder().id(this.projectId).build());
@@ -66,8 +71,8 @@ public class SprintRequest {
                                     .CRUD(sprintDailyMeeting.getCRUD())
                                     .sprint(sprint)
                                     .name(sprintDailyMeeting.getName())
-                                    .startTime(LocalTime.parse(sprintDailyMeeting.getStartTime()))
-                                    .endTime(LocalTime.parse(sprintDailyMeeting.getEndTime()))
+                                    .startTime(sprintDailyMeeting.getStartTime().toLocalTime())
+                                    .endTime(sprintDailyMeeting.getEndTime().toLocalTime())
                                     .useQuestion(sprintDailyMeeting.getUseQuestion())
                                     .onHoliday(sprintDailyMeeting.getOnHoliday())
                                     .days(sprintDailyMeeting.getDays())
@@ -90,8 +95,32 @@ public class SprintRequest {
                 ).collect(Collectors.toList());
 
 
+        List<com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting> smallTalkMeetings = sprintDailySmallTalkMeetings
+                .stream()
+                .map((sprintDailySmallTalkMeeting) -> {
+                            com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting meeting = com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting.builder()
+                                    .id(sprintDailySmallTalkMeeting.getId())
+                                    .CRUD(sprintDailySmallTalkMeeting.getCRUD())
+                                    .sprint(sprint)
+                                    .name(sprintDailySmallTalkMeeting.getName())
+                                    .startTime(sprintDailySmallTalkMeeting.getStartTime().toLocalTime())
+                                    .endTime(sprintDailySmallTalkMeeting.getEndTime().toLocalTime())
+                                    .limitUserCount(sprintDailySmallTalkMeeting.getLimitUserCount())
+                                    .onHoliday(sprintDailySmallTalkMeeting.getOnHoliday())
+                                    .days(sprintDailySmallTalkMeeting.getDays())
+                                    .build();
+
+
+                            return meeting;
+
+
+                        }
+                ).collect(Collectors.toList());
+
+
         sprint.setUsers(sprintUsers);
         sprint.setSprintDailyMeetings(meetings);
+        sprint.setSprintDailySmallTalkMeetings(smallTalkMeetings);
 
         return sprint;
     }
@@ -109,13 +138,25 @@ public class SprintRequest {
         private Long id;
         private String CRUD;
         private String name;
-        private String startTime;
-        private String endTime;
+        private LocalDateTime startTime;
+        private LocalDateTime endTime;
         private Boolean useQuestion;
         private Boolean onHoliday;
         private String days;
         private List<SprintRequest.SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
+    }
 
+    @Data
+    @Builder
+    public static class SprintDailySmallTalkMeeting {
+        private Long id;
+        private String CRUD;
+        private String name;
+        private LocalDateTime startTime;
+        private LocalDateTime endTime;
+        private Boolean onHoliday;
+        private String days;
+        private Integer limitUserCount;
     }
 
     @Data

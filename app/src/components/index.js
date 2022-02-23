@@ -48,6 +48,7 @@ import ProjectList from '@/components/ProjectList/ProjectList';
 import SprintTimeLine from '@/components/SprintTimeLine/SprintTimeLine';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 import withLogin from '@/components/Common/withLogin';
+import DailySmallTalkMeeting from '@/components/DailySmallTalkMeeting/DailySmallTalkMeeting';
 
 export {
   MessageDialog,
@@ -101,4 +102,5 @@ export {
   SprintTimeLine,
   Breadcrumbs,
   withLogin,
+  DailySmallTalkMeeting,
 };

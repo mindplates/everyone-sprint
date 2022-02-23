@@ -26,8 +26,10 @@ public class SprintResponse {
     private Boolean allowAutoJoin;
     private Boolean activated;
     private Boolean doDailyScrumMeeting;
+    private Boolean doDailySmallTalkMeeting;
     private List<User> users;
     private List<SprintDailyMeeting> sprintDailyMeetings;
+    private List<SprintDailySmallTalkMeeting> sprintDailySmallTalkMeetings;
 
     private Long projectId;
     private String projectName;
@@ -45,6 +47,7 @@ public class SprintResponse {
         this.allowAutoJoin = sprint.getAllowAutoJoin();
         this.activated = sprint.getActivated();
         this.doDailyScrumMeeting = sprint.getDoDailyScrumMeeting();
+        this.doDailySmallTalkMeeting = sprint.getDoDailySmallTalkMeeting();
         this.users = sprint.getUsers().stream().map(
                 (sprintUser) -> User.builder()
                         .id(sprintUser.getId())
@@ -74,6 +77,20 @@ public class SprintResponse {
                                                 .sortOrder(sprintDailyMeetingQuestion.getSortOrder())
                                                 .build()))
                                         .collect(Collectors.toList())))
+                                .build()
+                ).collect(Collectors.toList());
+
+        this.sprintDailySmallTalkMeetings = sprint.getSprintDailySmallTalkMeetings()
+                .stream()
+                .map(
+                        (sprintDailySmallTalkMeeting) -> SprintDailySmallTalkMeeting.builder()
+                                .id(sprintDailySmallTalkMeeting.getId())
+                                .name(sprintDailySmallTalkMeeting.getName())
+                                .limitUserCount(sprintDailySmallTalkMeeting.getLimitUserCount())
+                                .startTime(sprintDailySmallTalkMeeting.getStartTime())
+                                .endTime(sprintDailySmallTalkMeeting.getEndTime())
+                                .onHoliday(sprintDailySmallTalkMeeting.getOnHoliday())
+                                .days(sprintDailySmallTalkMeeting.getDays())
                                 .build()
                 ).collect(Collectors.toList());
 
@@ -109,6 +126,18 @@ public class SprintResponse {
         private String days;
         private List<SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
 
+    }
+
+    @Data
+    @Builder
+    public static class SprintDailySmallTalkMeeting {
+        private Long id;
+        private String name;
+        private LocalTime startTime;
+        private LocalTime endTime;
+        private Boolean onHoliday;
+        private String days;
+        private Integer limitUserCount;
     }
 
     @Data
