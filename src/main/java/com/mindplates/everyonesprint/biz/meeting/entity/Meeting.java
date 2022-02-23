@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.meeting.entity;
 
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
+import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -57,6 +58,10 @@ public class Meeting extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sprint_daily_meeting_id")
     private SprintDailyMeeting sprintDailyMeeting;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sprint_daily_small_talk_meeting_id")
+    private SprintDailySmallTalkMeeting sprintDailySmallTalkMeeting;
 
     @Column(name = "current_max_order")
     private Integer currentMaxOrder;

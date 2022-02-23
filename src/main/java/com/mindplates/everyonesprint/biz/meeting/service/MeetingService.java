@@ -80,12 +80,17 @@ public class MeetingService {
 
     public List<Meeting> selectUserMeetingList(Long sprintId, LocalDateTime date, UserSession userSession) {
 
+
         LocalDateTime nextDay = date.plusDays(1);
+
+        List<Meeting> sprintDailySmallTalkMeetings = meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndSprintDailySmallTalkMeetingIsNotNull(date, nextDay, userSession.getId());
         if (sprintId != null) {
-            return meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(sprintId, date, nextDay, userSession.getId());
+            sprintDailySmallTalkMeetings.addAll(meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(sprintId, date, nextDay, userSession.getId()));
+            return sprintDailySmallTalkMeetings;
         }
 
-        return meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(date, nextDay, userSession.getId());
+        sprintDailySmallTalkMeetings.addAll(meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(date, nextDay, userSession.getId()));
+        return sprintDailySmallTalkMeetings;
     }
 
     public Optional<Meeting> selectMeetingInfo(Long id) {

@@ -4,6 +4,7 @@ import './UserList.scss';
 import { UserPropTypes } from '@/proptypes';
 import { Popup, UserCard, UserListItem } from '@/components';
 import UserSelector from '@/components/UserList/UserSelector';
+import withLoader from '@/components/Common/withLoader';
 
 const UserList = ({ className, users, editable, onChange, onChangeUsers, type, icon }) => {
   const [popup, setPopup] = useState(false);
@@ -103,7 +104,7 @@ const UserList = ({ className, users, editable, onChange, onChangeUsers, type, i
   );
 };
 
-export default UserList;
+export default withLoader(UserList, 'users');
 
 UserList.defaultProps = {
   className: '',

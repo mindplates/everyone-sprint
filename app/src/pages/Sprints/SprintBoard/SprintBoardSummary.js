@@ -16,9 +16,6 @@ const SprintBoardSummary = ({ t, user, sprint, sprintSummary }) => {
 
   const sprintSpan = dateUtil.getSpan(now.getTime(), sprint?.endDate);
 
-  console.log(sprintSummary);
-  console.log(sprint);
-
   const meetingSpan = sprintSummary?.meetings?.reduce((prev, current, currentIndex) => {
     let planSum = 0;
     let realSum = 0;
@@ -40,8 +37,6 @@ const SprintBoardSummary = ({ t, user, sprint, sprintSummary }) => {
 
     return [planSum, realSum, realCount];
   }) || [0, 0, 0];
-
-  console.log(meetingSpan);
 
   return (
     <div className="sprint-board-summary-wrapper">

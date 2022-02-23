@@ -1,6 +1,17 @@
 .page-title-wrapper {
   display: flex;
-  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+
+  @media (max-width: 576px) {
+    padding: 1rem 1rem 0;
+    background-color: $white;
+  }
+
+  &.is-list-page-title {
+    @media (max-width: 576px) {
+      background-color: transparent;
+    }
+  }
 
   > div {
     align-self: center;

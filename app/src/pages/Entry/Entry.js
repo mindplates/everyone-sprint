@@ -221,7 +221,7 @@ const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
                   <span>이름</span>
                 </div>
                 <div>
-                  <Input type="name" size="md" value={info.name} onChange={(val) => changeInfo('name', val)} outline simple />
+                  <Input type="text" size="md" value={info.name} onChange={(val) => changeInfo('name', val)} outline simple />
                 </div>
                 <div>
                   <CheckBox

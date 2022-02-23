@@ -60,6 +60,9 @@ public class Sprint extends CommonEntity {
     @Column(name = "do_daily_scrum_meeting")
     private Boolean doDailyScrumMeeting;
 
+    @Column(name = "do_daily_small_talk_meeting")
+    private Boolean doDailySmallTalkMeeting;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<SprintUser> users;
@@ -67,6 +70,10 @@ public class Sprint extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<SprintDailyMeeting> sprintDailyMeetings;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<SprintDailySmallTalkMeeting> sprintDailySmallTalkMeetings;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")

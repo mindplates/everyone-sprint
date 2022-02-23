@@ -97,52 +97,37 @@
       animation-fill-mode: forwards;
     }
 
-    > div {
+    > div.loading-message-content {
+      background-color: $point;
+      color: $white;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 0;
+      padding: 0.5rem 0;
+      border-radius: 20px;
       > div {
         text-align: left;
-        max-width: 600px;
-        margin: 0 auto 0.5rem;
+        margin-bottom: 0.5rem;
+        line-height: 0;
+        &:last-child {
+          margin-bottom: 0;
+        }
         > div.loading-message {
           width: 100%;
           font-family: pretendard, sans-serif;
           text-transform: uppercase;
           font-size: 16px;
-          background-color: $primary;
           display: inline-flex;
-          color: $white;
-          padding: 0.5rem 1rem;
+
+          padding: 0 1rem;
           border-radius: 4px;
+
+          .spinner {
+            margin-right: 1rem;
+          }
 
           > div {
             align-self: center;
-            &.spinner {
-              width: 29px;
-              height: 29px;
-              border-radius: 50%;
-              background-color: $gray-300;
-              display: inline-block;
-              margin-right: 0.5rem;
-              position: relative;
-
-              > div {
-                display: inline-block;
-                position: absolute;
-                width: 6px;
-                height: 15px;
-                top: 0;
-                left: 12px;
-                background-color: $primary;
-                border-radius: 0 0 5px 5px;
-                transition: none;
-                animation: rotating 1s;
-                -moz-animation: rotating 1s;
-                -webkit-animation: rotating 1s;
-                -o-animation: rotating 1s;
-                animation-iteration-count: infinite;
-                animation-timing-function: ease-in-out;
-                transform-origin: 3px 15px;
-              }
-            }
           }
         }
       }

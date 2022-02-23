@@ -1,0 +1,110 @@
+.daily-scrum-meeting-wrapper {
+  padding: 1.5rem 1.5rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: $border;
+  margin-bottom: 1.5rem;
+  position: relative;
+  background-color: $white;
+
+  &.edit {
+    background-color: rgba(0, 0, 0, 0.025);
+  }
+
+  .meeting-index {
+    position: absolute;
+    top: -15px;
+    left: 8px;
+    > span {
+      display: inline-flex;
+      width: 30px;
+      height: 30px;
+      justify-content: center;
+      background-color: $white;
+      border: $border;
+      border-radius: 50%;
+      > span {
+        align-self: center;
+      }
+    }
+  }
+
+  .day-of-weeks {
+    button {
+      margin-right: 0.25rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      &.selected {
+        background-color: $yellow;
+      }
+    }
+
+    .day-text {
+      display: inline-flex;
+      width: 35px;
+      height: 35px;
+      background-color: $white;
+      margin-right: 0.25rem;
+      justify-content: center;
+      align-self: center;
+      border: $border;
+      border-radius: 50%;
+      > span {
+        align-self: center;
+      }
+    }
+
+    .holiday-text {
+      height: 35px;
+      padding: 0 1rem;
+      display: inline-flex;
+      background-color: $white;
+      border: $border;
+      > span {
+        align-self: center;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .meeting-remove-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .question-item {
+    display: flex;
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    > div {
+      align-self: center;
+    }
+
+    .question {
+      flex-grow: 1;
+    }
+
+    .dir-button {
+      &.up,
+      &.down {
+        margin-right: 0.5rem;
+      }
+
+      &.delete {
+        margin-left: 0.5rem;
+      }
+    }
+  }
+
+  .add-button {
+    text-align: center;
+    margin-top: 1rem;
+  }
+}

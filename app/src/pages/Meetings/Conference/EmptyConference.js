@@ -15,7 +15,7 @@ class EmptyConference extends React.PureComponent {
 
     return (
       <Page className="empty-conference-wrapper">
-        <PageContent className='empty-conference-content'>
+        <PageContent className="empty-conference-content">
           <div className="h-100 d-flex justify-content-center">
             <div className="align-self-center ">
               <div>{t('미팅 정보를 찾을 수 없습니다.')}</div>

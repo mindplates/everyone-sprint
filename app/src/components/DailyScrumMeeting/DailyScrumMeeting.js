@@ -46,7 +46,7 @@ const DailyScrumMeeting = ({
       <BlockRow>
         <Label minWidth={labelMinWidth}>{t('미팅 이름')}</Label>
         {edit && (
-          <Input type="name" size="md" value={sprintDailyMeeting.name} onChange={(val) => onChangeInfo('name', val)} outline simple required minLength={1} />
+          <Input type="text" size="md" value={sprintDailyMeeting.name} onChange={(val) => onChangeInfo('name', val)} outline simple required minLength={1} />
         )}
         {!edit && <Text>{sprintDailyMeeting.name}</Text>}
       </BlockRow>
@@ -183,7 +183,7 @@ const DailyScrumMeeting = ({
                   <div className="question">
                     {edit && (
                       <Input
-                        type="name"
+                        type="text"
                         size="md"
                         value={sprintDailyMeetingQuestion.question}
                         onChange={(val) => onChangeQuestion(jnx, 'question', val)}
