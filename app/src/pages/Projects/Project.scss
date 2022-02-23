@@ -41,6 +41,10 @@
               font-family: pretendard, sans-serif;
               font-weight: bold;
               font-size: 1.2rem;
+
+              &.deactivate {
+                text-decoration: line-through;
+              }
             }
 
             .project-info-tag {
@@ -55,6 +59,11 @@
                 border-radius: 2px;
                 &.allowed {
                   background-color: $green;
+                  color: $white;
+                }
+
+                &.deactivated {
+                  background-color: $warning;
                   color: $white;
                 }
               }

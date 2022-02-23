@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Block, BlockRow, BlockTitle, BottomButtons, Form, Input, Label, Page, PageContent, PageTitle, UserList, withLogin } from '@/components';
 import dialog from '@/utils/dialog';
-import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
+import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
@@ -188,6 +188,17 @@ const EditProject = ({
                 {t('이름')}
               </Label>
               <Input type="name" size="md" value={project.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('활성화')}</Label>
+              <RadioButton
+                size="sm"
+                items={ACTIVATES}
+                value={project.activated}
+                onClick={(val) => {
+                  changeInfo('activated', val);
+                }}
+              />
             </BlockRow>
           </Block>
           <Block>

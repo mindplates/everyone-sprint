@@ -16,12 +16,12 @@ const USER_STUB = {
   name: '',
   tel: '',
   timezone: 'Asia/Seoul',
-  tried : false,
+  tried: false,
 };
 
 const DATE_FORMATS_TYPES = {
   full: 'full',
-  yearsDays : 'yearsDays',
+  yearsDays: 'yearsDays',
   days: 'days',
   hoursMinutes: 'hoursMinutes',
   hours: 'hours',
@@ -180,6 +180,17 @@ const ALLOW_SEARCHES = [
   },
 ];
 
+const ACTIVATES = [
+  {
+    key: true,
+    value: '활성',
+  },
+  {
+    key: false,
+    value: '비활성',
+  },
+];
+
 const JOIN_POLICIES = [
   {
     key: true,
@@ -312,4 +323,5 @@ export {
   TIMEZONES,
   CAPABILITIES,
   BODY_PIX,
+  ACTIVATES,
 };

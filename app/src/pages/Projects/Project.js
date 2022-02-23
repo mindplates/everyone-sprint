@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { BlockTitle, BottomButtons, Page, PageContent, SprintTimeLine, Tabs, UserList, withLogin } from '@/components';
 import dialog from '@/utils/dialog';
-import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
+import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes } from '@/proptypes';
 import './Project.scss';
@@ -53,6 +53,7 @@ const Project = ({
 
   const allowSearch = ALLOW_SEARCHES.find((d) => d.key === project?.allowSearch) || {};
   const allowAutoJoin = JOIN_POLICIES.find((d) => d.key === project?.allowAutoJoin) || {};
+  const activated = ACTIVATES.find((d) => d.key === project?.activated) || {};
 
   return (
     <Page
@@ -81,10 +82,11 @@ const Project = ({
             <div className="general-info">
               <BlockTitle className="content-title mb-3">{t('프로젝트')}</BlockTitle>
               <div className="project-card">
-                <div className="project-name">{project.name}</div>
+                <div className={`${project.deactivate ? '' : 'deactivate'} project-name`}>{project.name}</div>
                 <div className="project-info-tag">
                   <span className={allowSearch.key ? 'allowed' : ''}>{allowSearch.value}</span>
                   <span className={allowAutoJoin.key ? 'allowed' : ''}>{allowAutoJoin.value}</span>
+                  <span className={activated.key ? '' : 'deactivated'}>{activated.value}</span>
                 </div>
               </div>
               <BlockTitle className="mb-3">

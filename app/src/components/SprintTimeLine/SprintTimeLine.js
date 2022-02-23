@@ -75,7 +75,8 @@ const SprintTimeLine = ({ className, t, history, project }) => {
         <div className="date">{dateUtil.getDateString(project.creationDate, DATE_FORMATS_TYPES.yearsDays)}</div>
         <div className="project-text">{t('프로젝트 시작')}</div>
       </div>
-      {summary.length < 1 && (
+
+      {project.activated && summary.length < 1 && (
         <div className="no-sprint">
           <div>
             <div className="mb-2">{t('아직 만들어진 스프린트가 없습니다')}</div>
@@ -90,6 +91,14 @@ const SprintTimeLine = ({ className, t, history, project }) => {
                 <i className="fas fa-plane" /> {t('스프린트 생성')}
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+      {!project.activated && summary.length < 1 && (
+        <div className="no-sprint">
+          <div>
+            <div className="mb-2">{t('프로젝트가 비활성화되어 있습니다.')}</div>
+            <div className="mb-2">{t('스프린트를 생성하기 위해서는 프로젝트를 먼저 활성화해주세요.')}</div>
           </div>
         </div>
       )}
