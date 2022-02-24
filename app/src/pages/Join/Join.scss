@@ -1,8 +1,8 @@
-.entry-wrapper {
-  .entry-content {
+.join-wrapper {
+  .join-content {
     display: flex;
     flex-direction: column;
-    .entry-info {
+    .join-info {
       display: flex;
       flex-direction: row;
       flex-grow: 1;
@@ -101,125 +101,6 @@
               }
             }
           }
-        }
-
-        .picture-buttons {
-          text-align: center;
-        }
-      }
-
-      .general-info {
-        padding: 1rem;
-        @media (max-width: 992px) {
-          padding: 0 0.5rem;
-          margin-bottom: 1rem;
-        }
-
-        @media (max-width: 576px) {
-          padding: 0;
-        }
-
-        .sub-label {
-          margin-bottom: 1rem;
-          font-family: pretendard, sans-serif;
-        }
-
-        .row-input {
-          > div {
-            align-self: center;
-
-            &:first-child {
-              min-width: 100px;
-            }
-          }
-        }
-
-        .row-input {
-          display: flex;
-          margin-bottom: 0.5rem;
-
-          @media (max-width: 768px) {
-            display: block;
-            margin-bottom: 1rem;
-          }
-
-          > div {
-            align-self: center;
-
-            &:first-child {
-              margin-right: 1rem;
-              font-family: pretendard, sans-serif;
-              padding-left: 0.5rem;
-
-              > span {
-                position: relative;
-                .required {
-                  position: absolute;
-                  font-size: 10px;
-                  top: -8px;
-                  left: -12px;
-                  color: $warning;
-                }
-              }
-
-              @media (max-width: 768px) {
-                width: 120px;
-                display: inline-block;
-                margin-right: 0;
-              }
-
-              @media (max-width: 576px) {
-                width: auto;
-                display: block;
-              }
-            }
-
-            &:nth-child(2n) {
-              @media (max-width: 768px) {
-                display: inline-block;
-                width: calc(100% - 120px);
-                > div {
-                  width: 100%;
-                }
-              }
-
-              @media (max-width: 576px) {
-                display: block;
-                width: auto;
-              }
-            }
-
-            &:nth-child(3n) {
-              margin-left: 0.5rem;
-              @media (max-width: 768px) {
-                display: block;
-                margin-left: 120px;
-              }
-
-              @media (max-width: 576px) {
-                margin-left: 0;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    .submit-buttons {
-      text-align: right;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      padding-top: 1.5rem;
-      padding-bottom: 0.5rem;
-      margin: 1rem 1rem 0;
-
-      @media (max-width: 576px) {
-        text-align: center;
-      }
-      > button {
-        margin-right: 1rem;
-
-        &:last-child {
-          margin-right: 0;
         }
       }
     }

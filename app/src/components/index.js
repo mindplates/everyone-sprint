@@ -49,6 +49,10 @@ import SprintTimeLine from '@/components/SprintTimeLine/SprintTimeLine';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 import withLogin from '@/components/Common/withLogin';
 import DailySmallTalkMeeting from '@/components/DailySmallTalkMeeting/DailySmallTalkMeeting';
+import IconSelector from '@/components/IconMaker/IconSelector/IconSelector';
+import ImageMaker from '@/components/IconMaker/ImageMaker/ImageMaker';
+import PictureMaker from '@/components/IconMaker/PictureMaker/PictureMaker';
+import TextMaker from '@/components/IconMaker/TextMaker/TextMaker';
 
 export {
   MessageDialog,
@@ -103,4 +107,8 @@ export {
   Breadcrumbs,
   withLogin,
   DailySmallTalkMeeting,
+  IconSelector,
+  ImageMaker,
+  PictureMaker,
+  TextMaker,
 };
