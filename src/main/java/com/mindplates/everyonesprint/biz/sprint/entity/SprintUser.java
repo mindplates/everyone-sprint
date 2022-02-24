@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.sprint.entity;
 
+import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
@@ -21,15 +22,15 @@ public class SprintUser extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "role")
+    @Column(name = "role", length = ColumnsDef.CODE)
     @Enumerated(EnumType.STRING)
     private RoleCode role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="FK_SPRINT_USER__USER"))
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_id")
+    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name="FK_SPRINT_USER__SPRINT"))
     private Sprint sprint;
 }

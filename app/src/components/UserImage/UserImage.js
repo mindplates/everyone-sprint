@@ -1,8 +1,19 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import './UserImage.scss';
 
 const UserImage = ({ className, imageType, border, imageData, rounded, size, iconFontSize }) => {
+  const userImageData = useMemo(() => {
+    let result = imageData;
+    if (imageType === 'icon' && imageData) {
+      result = JSON.parse(imageData);
+    }
+
+    return result;
+  }, [imageType, imageData]);
+
+  console.log(imageType, userImageData);
+
   return (
     <div
       className={`user-image-wrapper ${className} ${rounded ? 'image-rounded' : ''} ${border ? 'has-border' : ''}`}
@@ -11,8 +22,28 @@ const UserImage = ({ className, imageType, border, imageData, rounded, size, ico
         height: size,
       }}
     >
-      {imageType === 'image' && <img src={imageData} alt="USER" />}
-      {imageType !== 'image' && (
+      {imageData && imageType === 'image' && <img src={imageData} alt="USER" />}
+      {imageData && imageType === 'icon' && userImageData.type === 'fontAwesome' && (
+        <span
+          style={{
+            fontSize: iconFontSize,
+          }}
+        >
+          <span>
+            <i className={userImageData.icon} />
+          </span>
+        </span>
+      )}
+      {imageData && imageType === 'text' && (
+        <span
+          style={{
+            fontSize: iconFontSize,
+          }}
+        >
+          <span>{userImageData}</span>
+        </span>
+      )}
+      {!imageData && (
         <div className="icon-text bg-white">
           <div
             style={{

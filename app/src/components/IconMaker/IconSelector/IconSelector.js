@@ -280,10 +280,10 @@ const IconSelector = ({ t, close, onChange }) => {
       <div className="g-popup-content">
         <div className="icon-list g-scrollbar">
           <ul>
-            {icons.map((info) => {
+            {icons.map((info, inx) => {
               if (info.type === 'fontAwesome') {
                 return (
-                  <li className={info.type === icon.type && info.icon === icon.icon ? 'selected' : ''}>
+                  <li key={inx} className={info.type === icon.type && info.icon === icon.icon ? 'selected' : ''}>
                     <div
                       onClick={() => {
                         setIcon(info);

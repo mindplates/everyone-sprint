@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.sprint.entity;
 
+import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
@@ -25,7 +26,7 @@ public class Sprint extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
 
     @Column(name = "start_date", nullable = false)
@@ -41,11 +42,11 @@ public class Sprint extends CommonEntity {
     private Boolean isJiraSprint;
 
     @Length(max = 1000)
-    @Column(name = "jira_sprint_url")
+    @Column(name = "jira_sprint_url", length = ColumnsDef.URL)
     private String jiraSprintUrl;
 
     @Length(max = 1000)
-    @Column(name = "jira_auth_key")
+    @Column(name = "jira_auth_key", length = ColumnsDef.TOKEN)
     private String jiraAuthKey;
 
     @Column(name = "allow_search")
@@ -76,7 +77,7 @@ public class Sprint extends CommonEntity {
     private List<SprintDailySmallTalkMeeting> sprintDailySmallTalkMeetings;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name="FK_SPRINT__PROJECT"))
     private Project project;
 
 }

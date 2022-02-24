@@ -163,7 +163,7 @@ const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer })
             </Button>
           </div>
           <div className="message">
-            <Link to="/entry">새로운 사용자를 등록합니다.</Link>
+            <Link to="/join">새로운 사용자를 등록합니다.</Link>
           </div>
         </Form>
       </PageContent>

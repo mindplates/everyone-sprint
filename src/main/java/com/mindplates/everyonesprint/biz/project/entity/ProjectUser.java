@@ -26,10 +26,10 @@ public class ProjectUser extends CommonEntity {
     private RoleCode role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="FK_USER__PROJECT"))
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name="FK_PROJECT__USER"))
     private Project project;
 }

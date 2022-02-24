@@ -7,10 +7,6 @@ import './ImageMaker.scss';
 const imagePreviewWidth = 300;
 const frameBorderWidth = 3;
 
-const canvas = React.createRef();
-const image = React.createRef();
-const fileInput = React.createRef();
-
 const moveInfo = {
   isMoveStarted: false,
   start: {
@@ -28,6 +24,10 @@ const sizerInfo = {
 };
 
 const ImageMaker = ({ t, close, onChange }) => {
+  const canvas = React.createRef();
+  const image = React.createRef();
+  const fileInput = React.createRef();
+
   const [step, setStep] = useState(0);
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const [frameInfo, setFrameInfo] = useState({ top: 0, left: 0, width: 120, height: 120 });
@@ -171,9 +171,7 @@ const ImageMaker = ({ t, close, onChange }) => {
         const height = Math.round(r * img.height);
         canvas.current.width = width; // img.width;
         canvas.current.height = height; // img.height;
-        canvas.current
-          .getContext('2d')
-          .drawImage(this, 0, 0, img.width, img.height, 0, 0, canvas.current.width, canvas.current.height);
+        canvas.current.getContext('2d').drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.current.width, canvas.current.height);
 
         setImageSize({
           width,

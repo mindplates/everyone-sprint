@@ -1,9 +1,9 @@
 package com.mindplates.everyonesprint.biz.user.entity;
 
+import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 
@@ -21,20 +21,19 @@ public class User extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, length = ColumnsDef.EMAIL)
     private String email;
 
-    @Column(name = "name")
+    @Column(name = "name", length = ColumnsDef.NAME)
     private String name;
 
     @Column(name = "is_name_opened")
     private Boolean isNameOpened;
 
-    @Length(min = 2, max = 100)
-    @Column(name = "alias", nullable = false)
+    @Column(name = "alias", nullable = false, length = ColumnsDef.NAME)
     private String alias;
 
-    @Column(name = "tel")
+    @Column(name = "tel", length = ColumnsDef.TEL)
     private String tel;
 
     @Column(name = "is_tel_opened")
@@ -46,11 +45,10 @@ public class User extends CommonEntity {
     @Column(columnDefinition = "text", name = "image_data")
     private String imageData;
 
-    @Length(min = 2, max = 100)
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = ColumnsDef.PASSWORD)
     private String password;
 
-    @Column(name = "salt", nullable = false)
+    @Column(name = "salt", nullable = false, length = ColumnsDef.TOKEN)
     private String salt;
 
     @Column(name = "activate_yn", nullable = false)
@@ -59,39 +57,39 @@ public class User extends CommonEntity {
     @Column(name = "use_yn", nullable = false)
     private Boolean useYn;
 
-    @Column(name = "language")
+    @Column(name = "language", length = ColumnsDef.CODE)
     private String language;
 
-    @Column(name = "country")
+    @Column(name = "country", length = ColumnsDef.CODE)
     private String country;
 
-    @Column(name = "activation_token")
+    @Column(name = "activation_token", length = ColumnsDef.TOKEN)
     private String activationToken;
 
     @Column(name = "activate_mail_send_result")
     private Boolean activateMailSendResult;
 
-    @Column(name = "recovery_token")
+    @Column(name = "recovery_token", length = ColumnsDef.TOKEN)
     private String recoveryToken;
 
     @Column(name = "recovery_mail_send_result")
     private Boolean recoveryMailSendResult;
 
-    @Column(name = "role_code", columnDefinition = "VARCHAR(15)")
+    @Column(name = "role_code", length = ColumnsDef.CODE)
     @Enumerated(EnumType.STRING)
     private RoleCode roleCode;
 
-    @Column(name = "active_role_code", columnDefinition = "VARCHAR(15)")
+    @Column(name = "active_role_code", length = ColumnsDef.CODE)
     @Enumerated(EnumType.STRING)
     private RoleCode activeRoleCode;
 
     @Column(name = "auto_login")
     private Boolean autoLogin;
 
-    @Column(name = "loginToken")
+    @Column(name = "loginToken", length = ColumnsDef.TOKEN)
     private String loginToken;
 
-    @Column(name = "timezone")
+    @Column(name = "timezone", length = ColumnsDef.CODE)
     private String timezone;
 
 }

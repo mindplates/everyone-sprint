@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.meeting.entity;
 
+import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting;
@@ -27,13 +28,13 @@ public class Meeting extends CommonEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_id")
+    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name = "FK_MEETING__SPRINT"))
     private Sprint sprint;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
 
-    @Column(name = "code", nullable = false)
+    @Column(name = "code", nullable = false, length = ColumnsDef.CODE)
     private String code;
 
     @Column(name = "start_date", nullable = false)
@@ -56,11 +57,11 @@ public class Meeting extends CommonEntity {
     private List<MeetingUser> users;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_daily_meeting_id")
+    @JoinColumn(name = "sprint_daily_meeting_id", foreignKey = @ForeignKey(name = "FK_MEETING__SPRINT_DAILY_MEETING"))
     private SprintDailyMeeting sprintDailyMeeting;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_daily_small_talk_meeting_id")
+    @JoinColumn(name = "sprint_daily_small_talk_meeting_id", foreignKey = @ForeignKey(name = "FK_MEETING__SPRINT_DAILY_SMALL_TALK_MEETING"))
     private SprintDailySmallTalkMeeting sprintDailySmallTalkMeeting;
 
     @Column(name = "current_max_order")

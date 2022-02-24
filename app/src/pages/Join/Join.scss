@@ -1,0 +1,108 @@
+.join-wrapper {
+  .join-content {
+    display: flex;
+    flex-direction: column;
+    .join-info {
+      display: flex;
+      flex-direction: row;
+      flex-grow: 1;
+
+      @media (max-width: 992px) {
+        flex-direction: column;
+      }
+
+      .layout-1 {
+        flex-grow: 0;
+        min-width: 320px;
+      }
+
+      .layout-2 {
+        flex-grow: 0;
+        display: flex;
+        padding: 1rem;
+        @media (max-width: 992px) {
+          display: none;
+        }
+        > div {
+          width: 1px;
+          height: 100%;
+          border-right: 1px dashed rgba(0, 0, 0, 0.4);
+          border-right: 1px solid rgba(0, 0, 0, 0.1);
+          align-self: center;
+        }
+      }
+
+      .layout-3 {
+        flex-grow: 1;
+      }
+
+      .picture-info {
+        .user-picture {
+          display: flex;
+          flex-direction: column;
+
+          > .preview {
+            flex-grow: 0;
+            margin-bottom: 0.5rem;
+            > div.preview-content {
+              width: 120px;
+              height: 120px;
+              background-color: $gray-100;
+              border: 1px solid rgba(0, 0, 0, 0.2);
+              display: flex;
+              border-radius: 2px;
+              position: relative;
+              margin: 0 auto;
+
+              .remove-image-button {
+                position: absolute;
+                top: 0;
+                right: -24px;
+              }
+
+              > div.preview-image {
+                align-self: center;
+                width: 100%;
+                text-align: center;
+                font-size: 50px;
+                color: $gray-400;
+
+                > img {
+                  width: 100%;
+                }
+              }
+
+              > .avatar-text {
+                color: $black;
+                font-size: 30px;
+                align-self: center;
+                width: 100%;
+                text-align: center;
+              }
+
+              > .avatar-icon {
+                color: $black;
+                font-size: 40px;
+                align-self: center;
+                width: 100%;
+                text-align: center;
+              }
+            }
+          }
+
+          > .picture-controls {
+            flex-grow: 1;
+            text-align: center;
+
+            > button {
+              margin-right: calc(8px / 3);
+              &:last-child {
+                margin-right: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

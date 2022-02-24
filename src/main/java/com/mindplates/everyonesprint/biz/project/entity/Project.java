@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.project.entity;
 
+import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
@@ -23,7 +24,7 @@ public class Project extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
 
     @Column(name = "allow_search")
@@ -35,12 +36,10 @@ public class Project extends CommonEntity {
     @Column(name = "activated")
     private Boolean activated;
 
-
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "project")
     @Column(updatable = false, insertable = false)
     @Fetch(value = FetchMode.SELECT)
     private List<Sprint> sprints;
-
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)

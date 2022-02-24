@@ -158,7 +158,7 @@ const Header = (props) => {
                   setConfigOpen(!configOpen);
                 }}
               >
-                {user && user.id && <UserImage size="36px" iconFontSize="20px" imageType={user.imageType} imageData={user.imageData} rounded />}
+                {user && user.id && <UserImage size="36px" iconFontSize="24px" imageType={user.imageType} imageData={user.imageData} rounded />}
                 {!(user && user.id) && <i className="fas fa-cog" />}
               </Button>
             </div>
@@ -207,7 +207,7 @@ const Header = (props) => {
                 {user && user.id && (
                   <div className="user-info">
                     <div>
-                      <UserImage size="50px" imageType={user.imageType} imageData={user.imageData} rounded border />
+                      <UserImage size="50px" iconFontSize="30px" imageType={user.imageType} imageData={user.imageData} rounded border />
                     </div>
                     <div>
                       <div className="name">
