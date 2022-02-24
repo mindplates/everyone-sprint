@@ -1,6 +1,6 @@
 import PublicPark from './PublicPark/PublicPark';
 import StartingLine from './StartingLine/StartingLine';
-import Entry from './Entry/Entry';
+import Join from './Join/Join';
 import Groups from './Groups/Groups';
 import Sprints from './Sprints/Sprints';
 import EditSprint from './Sprints/EditSprint';
@@ -33,7 +33,7 @@ export {
   Meetings,
   EditMeeting,
   StartingLine,
-  Entry,
+  Join,
   Conference,
   SprintBoard,
   SprintDeactivate,

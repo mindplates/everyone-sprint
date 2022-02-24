@@ -11,13 +11,13 @@ import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes } from '@/proptypes';
 import { setUserInfo } from '@/store/actions';
-import PictureMaker from '@/pages/Entry/PictureMaker';
-import ImageMaker from '@/pages/Entry/ImageMaker';
-import TextMaker from '@/pages/Entry/TextMaker';
-import IconSelector from '@/pages/Entry/IconSelector';
-import './Entry.scss';
+import PictureMaker from '@/pages/Join/PictureMaker';
+import ImageMaker from '@/pages/Join/ImageMaker';
+import TextMaker from '@/pages/Join/TextMaker';
+import IconSelector from '@/pages/Join/IconSelector';
+import './Join.scss';
 
-const Entry = ({ t, history, setUserInfo: setUserInfoReducer }) => {
+const Join = ({ t, history, setUserInfo: setUserInfoReducer }) => {
   const [info, setInfo] = useState({
     ...USER_STUB,
     password: '',
@@ -429,9 +429,9 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(Entry)));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(Join)));
 
-Entry.propTypes = {
+Join.propTypes = {
   t: PropTypes.func,
   systemInfo: PropTypes.shape({
     version: PropTypes.string,

@@ -9,7 +9,7 @@ import {
   EditMeeting,
   EditProject,
   EditSprint,
-  Entry,
+  Join,
   Footer,
   Groups,
   Header,
@@ -64,7 +64,7 @@ function App({ history, setting }) {
           <Route exact path="/conferences/:code" component={Conference} />
           <Route exact path="/conferences" component={Conference} />
           <Route exact path="/starting-line" component={StartingLine} />
-          <Route exact path="/entry" component={Entry} />
+          <Route exact path="/join" component={Join} />
           <Route render={() => <Message code="404" />} />
         </Switch>
       </div>

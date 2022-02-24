@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.sprint.entity;
 
+import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
@@ -22,20 +23,20 @@ public class SprintDailyMeetingAnswer extends CommonEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_daily_meeting_question_id")
+    @JoinColumn(name = "sprint_daily_meeting_question_id", foreignKey = @ForeignKey(name="FK_SPRINT_DAILY_MEETING_QUESTION__SPRINT_DAILY_MEETING"))
     private SprintDailyMeetingQuestion sprintDailyMeetingQuestion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_id")
+    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name="FK_SPRINT_DAILY_MEETING_ANSWER__SPRINT"))
     private Sprint sprint;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="FK_SPRINT_DAILY_MEETING_ANSWER__USER"))
     private User user;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(columnDefinition = "text", name = "answer")
+    @Column(name = "answer", length = ColumnsDef.TEXT)
     private String answer;
 }
