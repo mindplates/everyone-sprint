@@ -13,6 +13,7 @@ import { DATE_FORMATS } from '@/constants/constants';
 import './Meetings.scss';
 import dateUtil from '@/utils/dateUtil';
 import commonUtil from '@/utils/commonUtil';
+import sprintUtil from '@/pages/Sprints/sprintUtil';
 
 const ranges = [
   {
@@ -55,7 +56,11 @@ const Meetings = ({ t, user, history }) => {
       '/api/sprints',
       null,
       (list) => {
-        setSprints(list);
+        setSprints(
+          list.map((d) => {
+            return sprintUtil.getSprint(d);
+          }),
+        );
       },
       null,
       t('사용자의 스프린트 목록을 모으고 있습니다.'),

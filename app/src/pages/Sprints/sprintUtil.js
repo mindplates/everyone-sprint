@@ -5,7 +5,7 @@ function getSprint(sprint) {
     ...sprint,
   };
 
-  result.sprintDailyMeetings.forEach((sprintDailyMeeting) => {
+  result.sprintDailyMeetings?.forEach((sprintDailyMeeting) => {
     sprintDailyMeeting.CRUD = 'R';
     const starts = sprintDailyMeeting.startTime.split(':');
     const ends = sprintDailyMeeting.endTime.split(':');
@@ -26,7 +26,7 @@ function getSprint(sprint) {
     });
   });
 
-  result.sprintDailySmallTalkMeetings.forEach((sprintDailySmallTalkMeeting) => {
+  result.sprintDailySmallTalkMeetings?.forEach((sprintDailySmallTalkMeeting) => {
     sprintDailySmallTalkMeeting.CRUD = 'R';
     const starts = sprintDailySmallTalkMeeting.startTime.split(':');
     const ends = sprintDailySmallTalkMeeting.endTime.split(':');
