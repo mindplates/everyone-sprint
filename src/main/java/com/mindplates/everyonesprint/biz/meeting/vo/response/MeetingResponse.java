@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.meeting.vo.response;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
+import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintDailyMeetingQuestionResponse;
 import lombok.*;
 
@@ -27,6 +28,8 @@ public class MeetingResponse {
     private Long sprintDailyMeetingId;
     private List<SprintDailyMeetingQuestionResponse> sprintDailyMeetingQuestions;
     private Long connectedUserCount;
+    private Long sprintDailySmallTalkMeetingId;
+
 
     public MeetingResponse(Meeting meeting) {
         this.id = meeting.getId();
@@ -37,6 +40,7 @@ public class MeetingResponse {
         this.sprintId = meeting.getSprint().getId();
         this.sprintName = meeting.getSprint().getName();
         this.sprintDailyMeetingId = Optional.ofNullable(meeting.getSprintDailyMeeting()).map(SprintDailyMeeting::getId).orElse(null);
+        this.sprintDailySmallTalkMeetingId = Optional.ofNullable(meeting.getSprintDailySmallTalkMeeting()).map(SprintDailySmallTalkMeeting::getId).orElse(null);
         this.users = meeting.getUsers().stream().map(
                 (meetingUser) -> User.builder()
                         .id(meetingUser.getId())

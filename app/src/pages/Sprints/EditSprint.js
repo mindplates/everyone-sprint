@@ -139,6 +139,28 @@ const EditSprint = ({
     const next = { ...sprint };
     next[key] = value;
 
+    if (key === 'startDate' && next.startDate > next.endDate) {
+      const nextEnd = new Date(next.startDate);
+      nextEnd.setHours(18);
+      nextEnd.setMinutes(0);
+      nextEnd.setSeconds(0);
+      nextEnd.setMilliseconds(0);
+      nextEnd.setDate(nextEnd.getDate() + 14);
+
+      next.endDate = nextEnd.getTime();
+    }
+
+    if (key === 'endDate' && next.startDate > next.endDate) {
+      const nextStart = new Date(next.endDate);
+      nextStart.setHours(9);
+      nextStart.setMinutes(0);
+      nextStart.setSeconds(0);
+      nextStart.setMilliseconds(0);
+      nextStart.setDate(nextStart.getDate() - 14);
+
+      next.startDate = nextStart.getTime();
+    }
+
     if (key === 'startDate' || key === 'endDate' || key === 'users') {
       const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
       nextSprintDailyMeetings.forEach((sprintDailyMeeting) => {
@@ -153,15 +175,22 @@ const EditSprint = ({
   };
 
   const changeSprintDailyMeeting = (inx, key, value) => {
-    console.log(111111);
     const next = { ...sprint };
     const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
     nextSprintDailyMeetings[inx] = { ...nextSprintDailyMeetings[inx], [key]: value };
+
+    if (key === 'startTime' && nextSprintDailyMeetings[inx].startTime >= nextSprintDailyMeetings[inx].endTime) {
+      nextSprintDailyMeetings[inx].endTime = nextSprintDailyMeetings[inx].startTime + 1000 * 60 * 30;
+    }
+
+    if (key === 'endTime' && nextSprintDailyMeetings[inx].startTime >= nextSprintDailyMeetings[inx].endTime) {
+      nextSprintDailyMeetings[inx].startTime = nextSprintDailyMeetings[inx].endTime - 1000 * 60 * 30;
+    }
+
     if (nextSprintDailyMeetings[inx].CRUD === 'R') {
       nextSprintDailyMeetings[inx].CRUD = 'U';
     }
 
-    console.log(nextSprintDailyMeetings[inx]);
     next.sprintDailyMeetings = nextSprintDailyMeetings;
     setSprint(next);
   };
@@ -304,6 +333,15 @@ const EditSprint = ({
     const next = { ...sprint };
     const nextSprintDailySmallTalkMeetings = next.sprintDailySmallTalkMeetings.slice(0);
     nextSprintDailySmallTalkMeetings[inx] = { ...nextSprintDailySmallTalkMeetings[inx], [key]: value };
+
+    if (key === 'startTime' && nextSprintDailySmallTalkMeetings[inx].startTime >= nextSprintDailySmallTalkMeetings[inx].endTime) {
+      nextSprintDailySmallTalkMeetings[inx].endTime = nextSprintDailySmallTalkMeetings[inx].startTime + 1000 * 60 * 30;
+    }
+
+    if (key === 'endTime' && nextSprintDailySmallTalkMeetings[inx].startTime >= nextSprintDailySmallTalkMeetings[inx].endTime) {
+      nextSprintDailySmallTalkMeetings[inx].startTime = nextSprintDailySmallTalkMeetings[inx].endTime - 1000 * 60 * 30;
+    }
+
     if (nextSprintDailySmallTalkMeetings[inx].CRUD === 'R') {
       nextSprintDailySmallTalkMeetings[inx].CRUD = 'U';
     }
@@ -434,7 +472,7 @@ const EditSprint = ({
   return (
     <Page className="edit-sprint-wrapper">
       <PageTitle>{type === 'edit' ? t('스프린트 변경') : t('새로운 스프린트')}</PageTitle>
-      <PageContent>
+      <PageContent info>
         {projects && projects.length < 1 && (
           <EmptyContent
             height="100%"
@@ -455,7 +493,7 @@ const EditSprint = ({
           />
         )}
         {projects && projects.length > 0 && (
-          <Form className="new-sprint-content g-form" onSubmit={onSubmit}>
+          <Form className="new-sprint-content" onSubmit={onSubmit}>
             <Block className="pt-0">
               <BlockTitle>{t('스프린트 정보')}</BlockTitle>
               <BlockRow>
@@ -591,7 +629,7 @@ const EditSprint = ({
                 </BlockRow>
               </Block>
             )}
-            <Block>
+            <Block className="d-none">
               <BlockTitle>{t('지라 연동')}</BlockTitle>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('지라 연동')}</Label>

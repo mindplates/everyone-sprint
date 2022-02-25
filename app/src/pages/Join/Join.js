@@ -108,8 +108,8 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer }) => {
       >
         {t('사용자 등록')}
       </PageTitle>
-      <PageContent className="d-flex">
-        <Form className="join-content g-form" onSubmit={onSubmit}>
+      <PageContent className="d-flex" info>
+        <Form className="join-content" onSubmit={onSubmit}>
           <div className="join-info">
             <div className="layout-1">
               <Block className="general-info picture-info pt-0">

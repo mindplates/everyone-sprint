@@ -12,8 +12,6 @@ const UserImage = ({ className, imageType, border, imageData, rounded, size, ico
     return result;
   }, [imageType, imageData]);
 
-  console.log(imageType, userImageData);
-
   return (
     <div
       className={`user-image-wrapper ${className} ${rounded ? 'image-rounded' : ''} ${border ? 'has-border' : ''}`}

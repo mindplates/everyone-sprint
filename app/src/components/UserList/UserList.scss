@@ -10,20 +10,13 @@
     .user-list {
       .user-card {
         border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-        &:last-child {
-          border-bottom: none;
-        }
-
-        &:first-child {
-          border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-        }
+        background-color: $white;
       }
     }
   }
 
   &.type-card {
     .user-list {
-      margin-bottom: -1.5rem;
       line-height: 0;
       vertical-align: top;
 

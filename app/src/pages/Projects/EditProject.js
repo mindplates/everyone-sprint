@@ -179,8 +179,8 @@ const EditProject = ({
       >
         {type === 'edit' ? t('프로젝트 변경') : t('새로운 프로젝트')}
       </PageTitle>
-      <PageContent className="d-flex">
-        <Form className="new-project-content g-form" onSubmit={onSubmit}>
+      <PageContent className="d-flex" info>
+        <Form className="new-project-content" onSubmit={onSubmit}>
           <Block className="pt-0">
             <BlockTitle>{t('프로젝트 정보')}</BlockTitle>
             <BlockRow>

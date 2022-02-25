@@ -10,6 +10,14 @@
     margin-left: 0.5rem;
   }
 
+  .sprint-daily-meetings {
+    > div {
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
   .sprint-title-with-tag {
     .text {
       > span {
