@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './PageContent.scss';
 
-const PageContent = ({ className, children, border, padding, listLayout }) => {
+const PageContent = ({ className, children, border, padding, listLayout, info }) => {
   return (
     <div
-      className={`page-content-wrapper ${className} ${border ? 'has-border' : ''} ${listLayout ? 'list-layout' : ''}`}
+      className={`page-content-wrapper ${className} ${border ? 'has-border' : ''} ${listLayout ? 'list-layout' : ''} ${info ? 'info-layout' : ''}`}
       style={{
         padding,
       }}
@@ -21,6 +21,7 @@ PageContent.defaultProps = {
   className: '',
   border: true,
   padding: '',
+  info : false,
 };
 
 PageContent.propTypes = {
@@ -29,4 +30,5 @@ PageContent.propTypes = {
   border: PropTypes.bool,
   padding: PropTypes.string,
   listLayout: PropTypes.bool,
+  info : PropTypes.bool
 };

@@ -55,8 +55,6 @@ const Project = ({
   const allowAutoJoin = JOIN_POLICIES.find((d) => d.key === project?.allowAutoJoin) || {};
   const activated = ACTIVATES.find((d) => d.key === project?.activated) || {};
 
-  console.log(project);
-
   return (
     <Page
       className="project-wrapper"

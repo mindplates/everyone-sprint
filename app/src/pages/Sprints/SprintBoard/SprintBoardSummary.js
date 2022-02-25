@@ -40,7 +40,8 @@ const SprintBoardSummary = ({ t, user, sprint, sprintSummary }) => {
 
   return (
     <div className="sprint-board-summary-wrapper">
-      <Block className="">
+      <Block className="pt-0">
+        <BlockTitle>{t('미팅 요약 정보')}</BlockTitle>
         <BlockRow>
           <Label minWidth={labelMinWidth}>{t('남은 기간')}</Label>
           <Text>

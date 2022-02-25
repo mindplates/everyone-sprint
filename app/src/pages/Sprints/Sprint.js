@@ -72,7 +72,7 @@ const Sprint = ({
     <Page className="sprint-common">
       <PageTitle>{t('스프린트 정보')}</PageTitle>
       {sprint && (
-        <PageContent>
+        <PageContent info>
           <Block className="pt-0">
             <BlockTitle>{t('스프린트 정보')}</BlockTitle>
             <BlockRow>
@@ -136,7 +136,7 @@ const Sprint = ({
               <Text>{(JOIN_POLICIES.find((d) => d.key === sprint.allowAutoJoin) || {}).value}</Text>
             </BlockRow>
           </Block>
-          <Block>
+          <Block className="g-last-block">
             <BlockTitle>{t('멤버')}</BlockTitle>
             <UserList
               users={sprint.users}

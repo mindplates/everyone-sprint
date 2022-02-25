@@ -11,6 +11,7 @@ import dateUtil from '@/utils/dateUtil';
 import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
 import './Home.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
+import sprintUtil from '@/pages/Sprints/sprintUtil';
 
 const Home = ({ t, user }) => {
   const tabs = [
@@ -56,7 +57,11 @@ const Home = ({ t, user }) => {
       `/api/sprints?date=${dateUtil.getLocalDateISOString(today)}&startDate=${today.toISOString()}`,
       null,
       (list) => {
-        setSprints(list);
+        setSprints(
+          list.map((d) => {
+            return sprintUtil.getSprint(d);
+          }),
+        );
       },
       null,
       t('사용자의 스프린트 목록을 모으고 있습니다.'),

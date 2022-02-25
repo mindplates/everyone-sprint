@@ -5,21 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
-import {
-  Block,
-  BlockTitle,
-  Button,
-  DatePicker,
-  Liner,
-  Page,
-  PageContent,
-  PageTitle,
-  Placeholder,
-  Tabs,
-  TextArea,
-  UserImage,
-  withLogin,
-} from '@/components';
+import { Block, BlockTitle, Button, DatePicker, Liner, Page, PageContent, PageTitle, Placeholder, Tabs, TextArea, UserImage, withLogin } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
@@ -95,7 +81,7 @@ const SprintBoard = ({
   const [selectedDailyMeetingId, setSelectedDailyMeetingId] = useState(null);
 
   // 범위 데이터 조회 시
-  const day = dateUtil.getTimeAtStartOfDay(date || new Date().toLocaleDateString().substring(0, 10));
+  const day = dateUtil.getTimeAtStartOfDay(date || new Date().toLocaleDateString().substring(0, 11));
   const startDate = new Date(day);
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + 1);
@@ -281,7 +267,7 @@ const SprintBoard = ({
         <span className="spring-title-tag">BOARD</span>
       </PageTitle>
       {sprint && (
-        <PageContent className="page-content">
+        <PageContent className="page-content" info>
           <div className="board-content">
             {tab === 'daily' && (
               <div className="day-content">

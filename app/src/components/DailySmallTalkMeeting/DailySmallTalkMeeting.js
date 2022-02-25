@@ -10,7 +10,7 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
   const labelMinWidth = '140px';
 
   return (
-    <div className={`daily-scrum-meeting-wrapper ${className} ${edit ? 'edit' : ''}`}>
+    <div className={`daily-small-talk-meeting-wrapper ${className} ${edit ? 'edit' : ''}`}>
       <div className="meeting-index">
         <span>
           <span>{no}</span>
@@ -48,82 +48,93 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
         {!edit && <Text>{sprintDailySmallTalkMeeting.name}</Text>}
       </BlockRow>
       <BlockRow>
-        <Label minWidth={labelMinWidth}>{t('시간')}</Label>
-        {edit && (
-          <DateRange
-            country={user.country}
-            language={user.language}
-            startDate={sprintDailySmallTalkMeeting.startTime}
-            endDate={sprintDailySmallTalkMeeting.endTime}
-            showTimeSelectOnly
-            startDateKey="startTime"
-            endDateKey="endTime"
-            onChange={(key, value) => {
-              onChangeInfo(key, value);
-            }}
-          />
-        )}
-        {!edit && (
-          <DateRangeText showTimeOnly country={user.country} startDate={sprintDailySmallTalkMeeting.startTime} endDate={sprintDailySmallTalkMeeting.endTime} />
-        )}
-        {edit && (
-          <div className="day-of-weeks">
-            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-            {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')].map((day, jnx) => {
-              return (
-                <Button
-                  key={jnx}
-                  className={sprintDailySmallTalkMeeting.days[jnx] === '1' ? 'selected' : ''}
-                  size="md"
-                  color="white"
-                  outline
-                  rounded
-                  onClick={() => {
-                    onChangeMeetingDays(jnx, sprintDailySmallTalkMeeting.days[jnx] === '1' ? '0' : '1');
-                  }}
-                >
-                  {day}
-                </Button>
-              );
-            })}
-            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-            <Button
-              size="sm"
-              className={sprintDailySmallTalkMeeting.onHoliday ? 'selected' : ''}
-              color="white"
-              outline
-              onClick={() => {
-                onChangeInfo('onHoliday', !sprintDailySmallTalkMeeting.onHoliday);
-              }}
-            >
-              휴일 제외
-            </Button>
-          </div>
-        )}
-        {!edit && (
-          <div className="day-of-weeks">
-            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-            {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')]
-              .filter((d, inx) => {
-                return sprintDailySmallTalkMeeting.days[inx] === '1';
-              })
-              .map((day, jnx) => {
-                return (
-                  <span key={jnx} className="day-text">
-                    <span>{day}</span>
-                  </span>
-                );
-              })}
-            {sprintDailySmallTalkMeeting.onHoliday && (
-              <>
-                <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                <span className="holiday-text">
-                  <span>휴일 제외</span>
-                </span>
-              </>
+        <div className="date-info">
+          <div>
+            <Label minWidth={labelMinWidth}>{t('시간')}</Label>
+            {edit && (
+              <DateRange
+                country={user.country}
+                language={user.language}
+                startDate={sprintDailySmallTalkMeeting.startTime}
+                endDate={sprintDailySmallTalkMeeting.endTime}
+                showTimeSelectOnly
+                startDateKey="startTime"
+                endDateKey="endTime"
+                onChange={(key, value) => {
+                  onChangeInfo(key, value);
+                }}
+              />
             )}
           </div>
-        )}
+          <div>
+            {!edit && (
+              <DateRangeText
+                showTimeOnly
+                country={user.country}
+                startDate={sprintDailySmallTalkMeeting.startTime}
+                endDate={sprintDailySmallTalkMeeting.endTime}
+              />
+            )}
+            {edit && (
+              <div className="day-of-weeks">
+                <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+                {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')].map((day, jnx) => {
+                  return (
+                    <Button
+                      key={jnx}
+                      className={sprintDailySmallTalkMeeting.days[jnx] === '1' ? 'selected' : ''}
+                      size="md"
+                      color="white"
+                      outline
+                      rounded
+                      onClick={() => {
+                        onChangeMeetingDays(jnx, sprintDailySmallTalkMeeting.days[jnx] === '1' ? '0' : '1');
+                      }}
+                    >
+                      {day}
+                    </Button>
+                  );
+                })}
+                <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+                <Button
+                  size="sm"
+                  className={sprintDailySmallTalkMeeting.onHoliday ? 'selected' : ''}
+                  color="white"
+                  outline
+                  onClick={() => {
+                    onChangeInfo('onHoliday', !sprintDailySmallTalkMeeting.onHoliday);
+                  }}
+                >
+                  휴일 제외
+                </Button>
+              </div>
+            )}
+            {!edit && (
+              <div className="day-of-weeks">
+                <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+                {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')]
+                  .filter((d, inx) => {
+                    return sprintDailySmallTalkMeeting.days[inx] === '1';
+                  })
+                  .map((day, jnx) => {
+                    return (
+                      <span key={jnx} className="day-text">
+                        <span>{day}</span>
+                      </span>
+                    );
+                  })}
+                {sprintDailySmallTalkMeeting.onHoliday && (
+                  <>
+                    <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+                    <span className="holiday-text">
+                      <span>휴일 제외</span>
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </BlockRow>
       <BlockRow>
         <Label minWidth={labelMinWidth}>{t('최대 참여자 수')}</Label>

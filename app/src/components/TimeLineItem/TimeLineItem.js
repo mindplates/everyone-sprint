@@ -9,11 +9,13 @@ import { MeetingPropTypes, UserPropTypes } from '@/proptypes';
 import './TimeLineItem.scss';
 
 const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }) => {
+  const isSmallTalkMeeting = !!meeting.sprintDailySmallTalkMeetingId;
+
   return (
     <div
-      className={`time-line-item-wrapper ${className}`}
+      className={`time-line-item-wrapper ${className} ${isSmallTalkMeeting ? 'small-talk' : 'normal'}`}
       style={{
-        height: `${dateUtil.getSpanHours(dateUtil.getLocalDate(meeting.startDate), dateUtil.getLocalDate(meeting.endDate)) * (100 / timeSpan)}%`,
+        height: `${dateUtil.getSpanHours(dateUtil.getLocalDate(meeting.startDate), dateUtil.getLocalDate(meeting.endDate), true) * (100 / timeSpan)}%`,
       }}
       onClick={() => {
         if (onClick) {
@@ -34,20 +36,37 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
             <span className="mx-1">-</span>
             <span>{dateUtil.getDateString(meeting.endDate, DATE_FORMATS_TYPES.hoursMinutes)}</span>
           </div>
-          <div>
-            <span>{meeting.users[0].alias}</span>
-            {meeting.users.length - 1 > 0 && <span className="ml-1">외</span>}
-            {meeting.users.length - 1 > 0 && <span className="ml-1">{meeting.users.length - 1}명</span>}
-            <span className="connected-count">{meeting.connectedUserCount} 명 참가중</span>
-          </div>
+          {!meeting.sprintDailySmallTalkMeetingId && (
+            <div>
+              <span>{meeting.users[0]?.alias}</span>
+              {meeting.users.length - 1 > 0 && <span className="ml-1">외</span>}
+              {meeting.users.length - 1 > 0 && <span className="ml-1">{meeting.users.length - 1}명</span>}
+              <span className="connected-count">{meeting.connectedUserCount} 명 참가중</span>
+            </div>
+          )}
         </div>
       </div>
+      {isSmallTalkMeeting && (
+        <div className="small-talk-icon">
+          <span className="icon-1">
+            <i className="fas fa-smile" />
+          </span>
+          <span className="icon-2">
+            <i className="fab fa-gratipay" />
+          </span>
+          <span className="icon-3">
+            <i className="fas fa-comment-alt" />
+          </span>
+        </div>
+      )}
       <div className="meeting-info">
         <div className="meeting-name">
           <span>{meeting.name}</span>
-          <span className="connected-user-count">
-            <span>{meeting.connectedUserCount}</span>
-          </span>
+          {!isSmallTalkMeeting && (
+            <span className="connected-user-count">
+              <span>{meeting.connectedUserCount}</span>
+            </span>
+          )}
         </div>
         {height > 40 && (
           <div className="time-ago">

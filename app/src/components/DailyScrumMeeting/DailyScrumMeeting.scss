@@ -6,6 +6,10 @@
   position: relative;
   background-color: $white;
 
+  @media (max-width: 576px) {
+    padding: 1.5rem 1rem 1rem !important;
+  }
+
   &.edit {
     background-color: rgba(0, 0, 0, 0.025);
   }
@@ -28,9 +32,78 @@
     }
   }
 
+  .date-info {
+    display: flex;
+    flex-grow: 1;
+
+    > div {
+      align-self: center;
+      display: flex;
+
+      > div {
+        align-self: center;
+      }
+    }
+
+    @media (max-width: 1050px) {
+      display: block;
+      > div {
+        &:first-child {
+          margin-bottom: 0.5rem;
+        }
+
+        &:last-child {
+          margin-left: 156px;
+
+          .liner-wrapper {
+            &:first-child {
+              display: none !important;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      > div {
+        align-self: center;
+        display: block;
+
+        &:last-child {
+          margin-left: 0;
+        }
+
+        > div {
+          align-self: center;
+        }
+      }
+    }
+
+    @media (max-width: 576px) {
+      > div {
+        .liner-wrapper {
+          display: none !important;
+        }
+      }
+    }
+  }
+
+
+
   .day-of-weeks {
+    @media (max-width: 576px) {
+      text-align: center;
+    }
     button {
       margin-right: 0.25rem;
+
+      @media (max-width: 576px) {
+        margin-bottom: 0.5rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
 
       &:last-child {
         margin-right: 0;

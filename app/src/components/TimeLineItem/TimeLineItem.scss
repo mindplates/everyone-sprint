@@ -7,12 +7,46 @@
   position: relative;
   border: $border;
   background-color: $white;
-  border-radius: 2px;
+  _border-radius: 2px;
   padding: 0 1rem;
   min-width: 140px;
   z-index: 1;
   cursor: pointer;
   overflow: visible;
+
+  &.small-talk {
+    border-color: transparent;
+    background-color: $secondary;
+    color: $white;
+    border-radius: 4px;
+  }
+
+  .small-talk-icon {
+    font-size: 16px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: $point;
+    > span {
+      position: absolute;
+
+      &.icon-1 {
+        top: -20px;
+        left: -18px;
+      }
+
+      &.icon-2 {
+        top: -14px;
+        left: -1px;
+        transform: rotate(45deg);
+      }
+
+      &.icon-3 {
+        top: -19px;
+        left: -36px;
+      }
+    }
+  }
 
   .tooltip-info {
     position: absolute;
@@ -22,6 +56,7 @@
     font-size: 11px;
     display: none;
     line-height: 160%;
+    color: $black;
     > div {
       margin-left: 0.5rem;
       border: $border-darken;

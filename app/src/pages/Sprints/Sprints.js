@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { Button, EmptyContent, Page, PageTitle, SprintList, withLogin } from '@/components';
 import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
+import sprintUtil from '@/pages/Sprints/sprintUtil';
 
 const Sprints = ({ t, history }) => {
   const [sprints, setSprints] = useState(null);
@@ -15,7 +16,11 @@ const Sprints = ({ t, history }) => {
       '/api/sprints',
       null,
       (list) => {
-        setSprints(list);
+        setSprints(
+          list.map((d) => {
+            return sprintUtil.getSprint(d);
+          }),
+        );
       },
       null,
       t('사용자의 스프린트 목록을 모으고 있습니다.'),
