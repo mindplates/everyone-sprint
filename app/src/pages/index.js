@@ -11,7 +11,6 @@ import Conference from './Meetings/Conference/Conference';
 import Common from './Common/Common';
 import Header from './Common/Header';
 import Footer from './Common/Footer';
-import SprintBoard from './Sprints/SprintBoard/SprintBoard';
 import SprintDeactivate from './Sprints/SprintDeactivate';
 import ConferenceHeader from './Common/ConferenceHeader';
 import Home from './Home/Home';
@@ -20,6 +19,8 @@ import Message from './Message/Message';
 import Projects from './Projects/Projects';
 import EditProject from './Projects/EditProject';
 import Project from './Projects/Project';
+import SprintDaily from './Sprints/SprintDaily';
+import SprintSummary from './Sprints/SprintSummary';
 
 export {
   PublicPark,
@@ -35,7 +36,6 @@ export {
   StartingLine,
   Join,
   Conference,
-  SprintBoard,
   SprintDeactivate,
   ConferenceHeader,
   Home,
@@ -44,4 +44,6 @@ export {
   Projects,
   EditProject,
   Project,
+  SprintDaily,
+  SprintSummary,
 };

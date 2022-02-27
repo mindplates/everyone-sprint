@@ -16,16 +16,27 @@
     > div {
       display: flex;
 
-      @media (max-width: 992px) {
+      @media (max-width: 768px) {
         flex-direction: column;
       }
 
       .name-and-date {
         flex-grow: 1;
+        align-self: center;
         .name {
           font-weight: bold;
           margin-bottom: 0;
           font-size: 20px;
+          display: inline-flex;
+          > span {
+            align-self: center;
+          }
+
+          .project-name {
+            font-size: 14px;
+            margin-right: 0.5rem;
+            color: $gray-600;
+          }
         }
 
         .sprint-date {
@@ -33,6 +44,7 @@
             display: inline-flex;
             border-radius: 2px;
             font-size: 14px;
+            font-family: pretendard, sans-serif;
             @media (max-width: 576px) {
               display: block;
 
@@ -92,19 +104,22 @@
         flex-grow: 0;
         align-self: center;
 
-        @media (max-width: 992px) {
+        @media (max-width: 768px) {
           display: none;
         }
       }
 
       .status {
         align-self: center;
-        margin-right: 0.5rem;
 
-        @media (max-width: 992px) {
+        @media (max-width: 768px) {
           position: absolute;
-          right: 0.5rem;
+          right: 1rem;
           top: 1rem;
+        }
+
+        @media (max-width: 576px) {
+          display: none;
         }
       }
 
@@ -112,39 +127,37 @@
         display: flex;
         flex-grow: 0;
 
-        @media (max-width: 992px) {
-          margin-top: 0.5rem;
+        @media (max-width: 768px) {
+          margin-top: 0.75rem;
+          justify-content: center;
         }
 
         > div {
-          width: 80px;
           text-align: center;
           align-self: center;
+          margin-right: 0.5rem;
 
-          @media (max-width: 992px) {
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            margin-right: 0.5rem;
+          &:last-child {
+            margin-right: 0;
+          }
 
-            &:last-child {
-              margin-right: 0;
+          > button {
+            width: 80px;
+            height: auto;
+            line-height: 100%;
+            padding: 0.5rem;
+
+            &:hover {
+              background-color: $yellow;
             }
-          }
 
-          @media (max-width: 576px) {
-            flex: 1 1 0;
-          }
-
-          .label {
-            > span {
+            .label {
               font-size: 12px;
-              display: inline-block;
-            }
-          }
-
-          .value {
-            font-size: 20px;
-            @media (max-width: 992px) {
               margin-bottom: 0.25rem;
+            }
+
+            .icon {
+              font-size: 20px;
             }
           }
         }
@@ -152,17 +165,11 @@
 
       .controls {
         align-self: center;
-        margin-left: 0.5rem;
 
-        @media (max-width: 992px) {
+        @media (max-width: 768px) {
           position: absolute;
-          bottom: 25px;
+          bottom: 28px;
           right: 25px;
-        }
-
-        @media (max-width: 576px) {
-          bottom: auto;
-          top: 50px;
         }
       }
     }

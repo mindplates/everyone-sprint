@@ -12,7 +12,7 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
 
     Long countByProjectIdAndName(Long projectId, String name);
 
-    List<Sprint> findAllByUsersUserId(Long userId);
+    List<Sprint> findAllByUsersUserIdAndClosed(Long userId, Boolean closed);
 
     Long countBy();
 

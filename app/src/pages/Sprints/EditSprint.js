@@ -27,7 +27,7 @@ import {
   withLogin,
 } from '@/components';
 import dialog from '@/utils/dialog';
-import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
+import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, LocationPropTypes, UserPropTypes } from '@/proptypes';
@@ -66,7 +66,6 @@ const EditSprint = ({
     isJiraSprint: false,
     jiraSprintUrl: '',
     jiraAuthKey: '',
-    allowSearch: true,
     allowAutoJoin: true,
     activated: true,
     doDailyScrumMeeting: false,
@@ -471,7 +470,47 @@ const EditSprint = ({
 
   return (
     <Page className="edit-sprint-wrapper">
-      <PageTitle>{type === 'edit' ? t('스프린트 변경') : t('새로운 스프린트')}</PageTitle>
+      <PageTitle
+        breadcrumbs={
+          type === 'new'
+            ? [
+                {
+                  link: '/',
+                  name: t('TOP'),
+                },
+                {
+                  link: '/sprints',
+                  name: t('스프린트 목록'),
+                },
+                {
+                  link: '/sprints/new',
+                  name: t('새 스프린트'),
+                  current: true,
+                },
+              ]
+            : [
+                {
+                  link: '/',
+                  name: t('TOP'),
+                },
+                {
+                  link: '/sprints',
+                  name: t('스프린트 목록'),
+                },
+                {
+                  link: `/sprints/${sprint?.id}`,
+                  name: sprint?.name,
+                },
+                {
+                  link: `/sprints/${sprint?.id}/edit`,
+                  name: t('변경'),
+                  current: true,
+                },
+              ]
+        }
+      >
+        {type === 'edit' ? t('스프린트 변경') : t('새로운 스프린트')}
+      </PageTitle>
       <PageContent info>
         {projects && projects.length < 1 && (
           <EmptyContent
@@ -673,18 +712,7 @@ const EditSprint = ({
               )}
             </Block>
             <Block>
-              <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
-              <BlockRow>
-                <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
-                <RadioButton
-                  size="sm"
-                  items={ALLOW_SEARCHES}
-                  value={sprint.allowSearch}
-                  onClick={(val) => {
-                    changeInfo('allowSearch', val);
-                  }}
-                />
-              </BlockRow>
+              <BlockTitle>{t('참여 설정')}</BlockTitle>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
                 <RadioButton

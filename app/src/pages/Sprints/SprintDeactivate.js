@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Block, BlockRow, BlockTitle, BottomButtons, DateRangeText, Label, Page, PageContent, PageTitle, Text, UserList, withLogin } from '@/components';
 import dialog from '@/utils/dialog';
-import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
+import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 
@@ -105,11 +105,6 @@ const SprintDeactivate = ({
             )}
           </Block>
           <Block>
-            <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
-              <Text>{(ALLOW_SEARCHES.find((d) => d.key === sprint.allowSearch) || {}).value}</Text>
-            </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
               <Text>{(JOIN_POLICIES.find((d) => d.key === sprint.allowAutoJoin) || {}).value}</Text>

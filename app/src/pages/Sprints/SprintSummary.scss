@@ -7,6 +7,7 @@
 
   .user-list {
     flex-grow: 1;
+    width: 100%;
 
     .user-table {
       width: 100%;
@@ -21,6 +22,10 @@
         }
       }
 
+      th {
+        padding: 0.5rem 1rem;
+      }
+
       th,
       td {
         vertical-align: middle;
@@ -33,7 +38,7 @@
       }
 
       tbody {
-        border-top-color: rgba(0, 0, 0, 0.2);
+        border-top: none;
       }
 
       .number {
@@ -42,8 +47,8 @@
 
       td {
         &.number {
-          width: 130px;
-          min-width: 130px;
+          width: 120px;
+          min-width: 120px;
           font-family: righteous, plex, pretendard, sans-serif !important;
 
           > span {

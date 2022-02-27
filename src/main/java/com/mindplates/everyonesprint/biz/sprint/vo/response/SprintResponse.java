@@ -22,7 +22,6 @@ public class SprintResponse {
     private Boolean isJiraSprint;
     private String jiraSprintUrl;
     private String jiraAuthKey;
-    private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean activated;
     private Boolean doDailyScrumMeeting;
@@ -43,7 +42,6 @@ public class SprintResponse {
         this.isJiraSprint = sprint.getIsJiraSprint();
         this.jiraSprintUrl = sprint.getJiraSprintUrl();
         this.jiraAuthKey = sprint.getJiraAuthKey();
-        this.allowSearch = sprint.getAllowSearch();
         this.allowAutoJoin = sprint.getAllowAutoJoin();
         this.activated = sprint.getActivated();
         this.doDailyScrumMeeting = sprint.getDoDailyScrumMeeting();

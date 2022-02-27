@@ -8,25 +8,30 @@ import { Button, Liner } from '@/components';
 import { HistoryPropTypes, SprintPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './SprintList.scss';
+import withLoader from '@/components/Common/withLoader';
+import { DATE_FORMATS_TYPES } from '@/constants/constants';
 
-const SprintList = ({ className, printOld, t, history, sprints }) => {
+const SprintList = ({ className, t, history, sprints }) => {
   const now = Date.now();
   return (
     <ul className={`sprint-list-wrapper ${className}`}>
       {sprints.map((sprint) => {
-        const old = now > dateUtil.getTime(sprint.endDate);
+        const old = now > sprint.endDate;
 
         return (
           <li
             key={sprint.id}
             onClick={() => {
-              history.push(`/sprints/${sprint.id}/board/daily`);
+              history.push(`/sprints/${sprint.id}/daily`);
             }}
           >
             <div>
               <div className="name-and-date">
-                <div className="name">{sprint.name}</div>
-                <div className={`sprint-date ${printOld && old ? 'old-sprint' : ''}`}>
+                <div className="name">
+                  <span className="project-name">{sprint.projectName}</span>
+                  <span className="sprint-name">{sprint.name}</span>
+                </div>
+                <div className={`sprint-date ${old ? 'old-sprint' : ''}`}>
                   <div>
                     <div>
                       <span className="date-label">FROM</span>
@@ -35,17 +40,16 @@ const SprintList = ({ className, printOld, t, history, sprints }) => {
                     <Liner className="date-liner" width="10px" height="1px" display="inline-block" color="black" margin="0 0.5rem" />
                     <div>
                       <span className="date-label">TO</span>
-                      <span className="date-text">{dateUtil.getDateString(sprint.endDate)}</span>
+                      <span className="date-text">
+                        {dateUtil.isSameYear(sprint.startDate, sprint.endDate)
+                          ? dateUtil.getDateString(sprint.endDate, DATE_FORMATS_TYPES.dayHours)
+                          : dateUtil.getDateString(sprint.endDate)}
+                      </span>
                     </div>
-                    {printOld && old && (
-                      <div className="old">
-                        <span>old</span>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
-              {printOld && old && (
+              {old && sprint.isAdmin && (
                 <>
                   <div className="status">
                     <Button
@@ -60,40 +64,49 @@ const SprintList = ({ className, printOld, t, history, sprints }) => {
                     </Button>
                   </div>
                   <div className="liner">
-                    <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 0.5rem" />
+                    <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 1rem" />
                   </div>
                 </>
               )}
               <div className="others">
-                <div className="user-count">
-                  <div className="label">
-                    <span>{t('사용자')}</span>
-                  </div>
-                  <div className="value">{sprint.userCount}</div>
-                </div>
-                <div className="is-jira-sprint">
-                  <div className="label">
-                    <span>{t('JIRA')}</span>
-                  </div>
-                  <div className="value">{sprint.isJiraSprint ? 'Y' : 'N'}</div>
+                <div>
+                  <Button
+                    size="lg"
+                    color="white"
+                    className="daily-button"
+                    outline
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      history.push(`/sprints/${sprint.id}/daily`);
+                    }}
+                  >
+                    <div className="label">{t('데일리')}</div>
+                    <div className="icon">
+                      <i className="fas fa-calendar-alt" />
+                    </div>
+                  </Button>
                 </div>
                 <div className="allow-auto-join">
-                  <div className="label">
-                    <span>{t('자동 승인')}</span>
-                  </div>
-                  <div className="value">{sprint.allowAutoJoin ? 'Y' : 'N'}</div>
-                </div>
-                <div className="allow-search">
-                  <div className="label">
-                    <span>{t('검색 허용')}</span>
-                  </div>
-                  <div className="value">{sprint.allowSearch ? 'Y' : 'N'}</div>
+                  <Button
+                    size="lg"
+                    color="white"
+                    outline
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      history.push(`/sprints/${sprint.id}/summary`);
+                    }}
+                  >
+                    <div className="label">{t('요약')}</div>
+                    <div className="icon">
+                      <i className="fas fa-chart-bar" />
+                    </div>
+                  </Button>
                 </div>
               </div>
               {sprint.isMember && (
                 <>
                   <div className="liner">
-                    <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 0.5rem" />
+                    <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 1rem" />
                   </div>
                   <div className="controls">
                     <Button
@@ -125,11 +138,10 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(SprintList);
+export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(withLoader(SprintList, 'sprints'));
 
 SprintList.defaultProps = {
   className: '',
-  printOld: true,
 };
 
 SprintList.propTypes = {
@@ -137,5 +149,4 @@ SprintList.propTypes = {
   t: PropTypes.func,
   sprints: PropTypes.arrayOf(SprintPropTypes),
   history: HistoryPropTypes,
-  printOld: PropTypes.bool,
 };

@@ -151,9 +151,9 @@ const SprintTimeLine = ({ className, t, history, project }) => {
                                 className={`point-${point}`}
                                 onClick={() => {
                                   if (point === 'past') {
-                                    history.push(`/sprints/${sprint.id}/board/summary`);
+                                    history.push(`/sprints/${sprint.id}/summary`);
                                   } else if (point === 'current') {
-                                    history.push(`/sprints/${sprint.id}/board/daily`);
+                                    history.push(`/sprints/${sprint.id}/daily`);
                                   } else {
                                     history.push(`/sprints/${sprint.id}`);
                                   }

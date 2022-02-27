@@ -23,7 +23,6 @@ public class SprintRequest {
     private Boolean isJiraSprint;
     private String jiraSprintUrl;
     private String jiraAuthKey;
-    private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean activated;
     private Boolean doDailyScrumMeeting;
@@ -46,7 +45,6 @@ public class SprintRequest {
                 .isJiraSprint(isJiraSprint)
                 .jiraSprintUrl(jiraSprintUrl)
                 .jiraAuthKey(jiraAuthKey)
-                .allowSearch(allowSearch)
                 .allowAutoJoin(allowAutoJoin)
                 .activated(activated)
                 .doDailyScrumMeeting(doDailyScrumMeeting)
