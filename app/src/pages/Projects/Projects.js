@@ -53,17 +53,18 @@ const Projects = ({ t, history }) => {
       >
         {t('프로젝트')}
       </PageTitle>
-      <PageContent listLayout>
-        {projects && projects.length > 0 && <ProjectList projects={projects} />}
-        {projects && projects.length < 1 && (
+      <PageContent listLayout={projects === null || projects?.length > 0}>
+        {projects?.length > 0 && <ProjectList projects={projects} />}
+        {projects?.length < 1 && (
           <EmptyContent
             height="100%"
-            message={t('프로젝트가 없습니다.')}
+            icon={<i className="fas fa-archive" />}
+            message={t('참여 중인 프로젝트가 없습니다.')}
             additionalContent={
               <div className="mt-3">
                 <Button
                   size="md"
-                  color="primary"
+                  color="point"
                   onClick={() => {
                     history.push('/projects/new');
                   }}

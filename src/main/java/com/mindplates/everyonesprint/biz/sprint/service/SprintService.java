@@ -46,6 +46,7 @@ public class SprintService {
         sprint.setLastUpdateDate(now);
         sprint.setCreatedBy(userSession.getId());
         sprint.setLastUpdatedBy(userSession.getId());
+        sprint.setClosed(false);
         sprintRepository.save(sprint);
 
         LocalDateTime startDate = sprint.getStartDate();
@@ -240,8 +241,8 @@ public class SprintService {
         sprintRepository.delete(sprint);
     }
 
-    public List<Sprint> selectUserSprintList(UserSession userSession) {
-        return sprintRepository.findAllByUsersUserId(userSession.getId());
+    public List<Sprint> selectUserSprintList(UserSession userSession, Boolean closed) {
+        return sprintRepository.findAllByUsersUserIdAndClosed(userSession.getId(), closed);
     }
 
     public Sprint selectSprintInfo(Long id) {

@@ -20,7 +20,7 @@ import {
   withLogin,
 } from '@/components';
 import dialog from '@/utils/dialog';
-import { ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
+import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from './sprintUtil';
@@ -70,7 +70,25 @@ const Sprint = ({
 
   return (
     <Page className="sprint-common">
-      <PageTitle>{t('스프린트 정보')}</PageTitle>
+      <PageTitle
+        breadcrumbs={[
+          {
+            link: '/',
+            name: t('TOP'),
+          },
+          {
+            link: '/sprints',
+            name: t('스프린트 목록'),
+          },
+          {
+            link: `/sprints/${sprint?.id}`,
+            name: sprint?.name,
+            current: true,
+          },
+        ]}
+      >
+        {t('스프린트 정보')}
+      </PageTitle>
       {sprint && (
         <PageContent info>
           <Block className="pt-0">
@@ -127,10 +145,6 @@ const Sprint = ({
           </Block>
           <Block>
             <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
-              <Text>{(ALLOW_SEARCHES.find((d) => d.key === sprint.allowSearch) || {}).value}</Text>
-            </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
               <Text>{(JOIN_POLICIES.find((d) => d.key === sprint.allowAutoJoin) || {}).value}</Text>

@@ -50,10 +50,9 @@ public class SprintController {
     @Operation(description = "사용자의 스프린트 목록 조회")
     @GetMapping("")
     public List<SprintListResponse> selectUserSprintList(@RequestParam(value = "date", required = false) LocalDate date, @RequestParam(value = "startDate", required = false) LocalDateTime startDate, @ApiIgnore UserSession userSession) {
-        List<Sprint> sprints = sprintService.selectUserSprintList(userSession);
+        List<Sprint> sprints = sprintService.selectUserSprintList(userSession, false);
         return sprints.stream().map((sprint -> {
-            SprintListResponse item = new SprintListResponse(sprint);
-            item.setIsMember(sprint.getUsers().stream().anyMatch((sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))));
+            SprintListResponse item = new SprintListResponse(sprint, userSession);
             if (startDate != null && date != null) {
                 LocalDateTime endDate = startDate.plusDays(1).minusSeconds(1);
                 if (meetingService.selectHasSprintMeeting(item.getId(), startDate, endDate)) {
@@ -75,6 +74,21 @@ public class SprintController {
 
         Sprint sprint = sprintRequest.buildEntity();
         return new SprintResponse(sprintService.createSprintInfo(sprint, userSession));
+    }
+
+    @Operation(description = "스프린트 닫기")
+    @PutMapping("/{id}/close")
+    public SprintResponse updateSprintClosed(@PathVariable Long id, @Valid @RequestBody SprintRequest sprintRequest, @ApiIgnore UserSession userSession) {
+
+        if (!id.equals(sprintRequest.getId())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
+        Sprint sprint = sprintService.selectSprintInfo(id);
+        checkIsAdminUser(userSession, sprint);
+        sprint.setClosed(true);
+        Sprint sprintInfo = sprintRequest.buildEntity();
+        return new SprintResponse(sprintService.updateSprintInfo(sprintInfo, userSession));
     }
 
     @Operation(description = "스프린트 수정")
@@ -116,7 +130,7 @@ public class SprintController {
     }
 
     @Operation(description = "특정일의 스프린트 정보 요약")
-    @GetMapping("/{id}/board")
+    @GetMapping("/{id}/daily")
     public SprintBoardResponse selectSprintBoard(@PathVariable Long id,
                                                  @RequestParam("start") LocalDateTime start,
                                                  @RequestParam("end") LocalDateTime end,

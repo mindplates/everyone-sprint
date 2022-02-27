@@ -29,6 +29,10 @@ function getLocalDate(val) {
 }
 
 function getDate(val) {
+  if (typeof val === 'number') {
+    return new Date(val);
+  }
+
   return new Date(`${val}Z`);
 }
 
@@ -43,6 +47,10 @@ function getTime(val) {
 
 function isSameDay(val1, val2) {
   return val1.getFullYear() === val2.getFullYear() && val1.getMonth() === val2.getMonth() && val1.getDate() === val2.getDate();
+}
+
+function isSameYear(val1, val2) {
+  return getDate(val1).getFullYear() === getDate(val2).getFullYear();
 }
 
 function getToday() {
@@ -147,6 +155,7 @@ const dateUtil = {
   getLocalDateISOString,
   getDurationMinutes,
   getLocalDate,
+  isSameYear,
 };
 
 export default dateUtil;

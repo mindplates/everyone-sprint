@@ -49,14 +49,14 @@ public class Sprint extends CommonEntity {
     @Column(name = "jira_auth_key", length = ColumnsDef.TOKEN)
     private String jiraAuthKey;
 
-    @Column(name = "allow_search")
-    private Boolean allowSearch;
-
     @Column(name = "allow_auto_join")
     private Boolean allowAutoJoin;
 
     @Column(name = "activated")
     private Boolean activated;
+
+    @Column(name = "closed")
+    private Boolean closed;
 
     @Column(name = "do_daily_scrum_meeting")
     private Boolean doDailyScrumMeeting;

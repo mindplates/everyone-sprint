@@ -66,6 +66,7 @@
 .stats-wrapper {
   .page-content {
     display: flex;
+    flex-direction: row;
     position: relative;
 
     .relation-sites {

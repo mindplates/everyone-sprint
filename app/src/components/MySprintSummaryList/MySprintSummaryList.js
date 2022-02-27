@@ -50,7 +50,7 @@ const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo 
                 <li
                   key={sprint.id}
                   onClick={() => {
-                    history.push(`/sprints/${sprint.id}/board/daily`);
+                    history.push(`/sprints/${sprint.id}/daily`);
                   }}
                 >
                   {sprint.isMember && (

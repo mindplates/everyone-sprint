@@ -9,20 +9,21 @@ import {
   EditMeeting,
   EditProject,
   EditSprint,
-  Join,
   Footer,
   Groups,
   Header,
   Home,
+  Join,
   Meetings,
   Message,
   Project,
   Projects,
   PublicPark,
   Sprint,
-  SprintBoard,
+  SprintDaily,
   SprintDeactivate,
   Sprints,
+  SprintSummary,
   StartingLine,
   Stats,
 } from './pages';
@@ -54,8 +55,9 @@ function App({ history, setting }) {
           <Route exact path="/projects" component={Projects} />
           <Route exact path="/sprints/new" render={() => <EditSprint type="new" />} />
           <Route exact path="/sprints/:id/deactivate" component={SprintDeactivate} />
-          <Route exact path="/sprints/:id/board/:tab/:date" component={SprintBoard} />
-          <Route exact path="/sprints/:id/board/:tab" component={SprintBoard} />
+          <Route exact path="/sprints/:id/daily/:date" component={SprintDaily} />
+          <Route exact path="/sprints/:id/daily" component={SprintDaily} />
+          <Route exact path="/sprints/:id/summary" component={SprintSummary} />
           <Route exact path="/sprints/:id/edit" render={() => <EditSprint type="edit" />} />
           <Route exact path="/sprints/:id" component={Sprint} />
           <Route exact path="/sprints" component={Sprints} />

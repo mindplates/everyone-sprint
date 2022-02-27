@@ -1,9 +1,9 @@
 $answer-color: lighten($blue, 43%);
 $answer-color: $light;
 $answer-color: #f9f9f9;
-$answer-border: 1px solid rgba(0, 0, 0, 0.3);
+$answer-border: 1px solid rgba(0, 0, 0, 0.2);
 
-.sprint-board-wrapper {
+.sprint-daily-wrapper {
   .sub-view-type {
     display: flex;
 
@@ -239,7 +239,7 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
       .team-daily-meeting-list {
         flex-grow: 1;
         display: flex;
-        margin: 1rem 1rem 1rem 0;
+        margin: 0.5rem 1rem 1rem 0;
 
         &.collapsed {
           margin: -1rem 0 -1rem 0;
@@ -387,47 +387,17 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
                 margin-bottom: 1rem;
 
                 > div {
-                  display: flex;
-                  flex-direction: row;
-
                   &.user-info {
-                    padding: 0.5rem 0;
+                    padding: 0.5rem;
                     line-height: 100%;
+                    display: flex;
+                    flex-direction: row;
 
                     > div {
                       align-self: center;
 
-                      &.bullet {
-                        display: inline-flex;
-                        font-size: 14px;
-                        margin-right: 0.4rem;
-                        align-self: center;
-
-                        > span {
-                          display: inline-flex;
-                          width: 28px;
-                          height: 28px;
-                          border: $border;
-                          border-radius: 50%;
-                          justify-content: center;
-                          i {
-                            align-self: center;
-                          }
-                        }
-
-                        > div {
-                          align-self: center;
-                          display: inline-block;
-                          width: 6px;
-                          background-color: #333;
-                          height: 16px;
-
-                          border-radius: 2px;
-                        }
-                      }
                       &.user-image {
                         margin-right: 0.5rem;
-                        display: none;
                       }
 
                       &.user-name {
@@ -450,106 +420,107 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.3);
                     }
                   }
 
-                  &.question-answer-info {
-                    padding: 0;
-                    margin-bottom: 1rem;
+                  &.question-answer-content {
+                    padding: 1rem;
+                    background-color: $light;
+                    border: 1px solid rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+                    .question-answer-info {
+                      margin-bottom: 1rem;
 
-                    .icon {
-                      width: 22px;
-                      height: 22px;
-                      font-size: 14px;
-                      background-color: $white;
-                    }
+                      &:last-child {
+                        margin-bottom: 0;
+                      }
 
-                    ul {
-                      width: 100%;
-                      display: table;
-                      > li {
-                        display: table-cell;
-                        width: 50%;
-                        padding: 0 0.5rem;
-                        position: relative;
+                      .icon {
+                        height: 22px;
+                        font-size: 14px;
+                        border: none;
+                      }
 
-                        > div.liner {
-                          position: absolute;
-                          top: 0;
-                          left: 0.5rem;
-                          right: 0.5rem;
-                          bottom: 0;
-                          border: 1px solid rgba(0, 0, 0, 0.4);
-                          z-index: 0;
-                        }
-
-                        &:first-child {
-                          padding-left: 0;
-
-                          > div.liner {
-                            left: 0;
-                          }
-                        }
-
-                        &:last-child {
-                          padding-right: 0;
-
-                          > div.liner {
-                            right: 0;
-                          }
-                        }
-
-                        > div.content {
-                          height: 100%;
+                      ul {
+                        width: 100%;
+                        display: table;
+                        > li {
+                          display: table-cell;
+                          width: 50%;
+                          padding: 0 0.5rem;
                           position: relative;
-                          z-index: 1;
 
-                          .question {
-                            padding: 1rem;
-                            margin: 1px 1px 0;
-                            background-color: $light;
-                            display: flex;
-                            > span {
-                              align-self: center;
-                              line-height: 100%;
+                          > div.liner {
+                            position: absolute;
+                            top: 0;
+                            left: 0.5rem;
+                            right: 0.5rem;
+                            bottom: 0;
+                            border: $answer-border;
+                            z-index: 0;
+                            display: none;
+                          }
+
+                          &:first-child {
+                            padding-left: 0;
+
+                            > div.liner {
+                              left: 0;
                             }
                           }
-                          .answer {
-                            padding: 1rem;
-                            border-left: none;
-                            border-right: none;
 
-                            font-size: 14px;
-                            white-space: pre-wrap;
+                          &:last-child {
+                            padding-right: 0;
 
-                            &:empty:before {
-                              content: 'NONE';
-                              color: $gray-500;
-                              width: 100%;
-                              display: inline-block;
+                            > div.liner {
+                              right: 0;
+                            }
+                          }
+
+                          > div.content {
+                            height: 100%;
+                            position: relative;
+                            z-index: 1;
+
+                            .question {
+                              display: flex;
+                              margin-bottom: 0.5rem;
+                              > span {
+                                align-self: center;
+                                line-height: 100%;
+                              }
+                            }
+                            .answer {
+                              padding: 1rem;
+                              font-size: 14px;
+                              white-space: pre-wrap;
+                              background-color: $white;
+                              border-radius: 5px;
+                              border: 1px solid rgba(0, 0, 0, 0.1);
+
+                              &:empty:before {
+                                content: 'NONE';
+                                color: $gray-500;
+                                width: 100%;
+                                display: inline-block;
+                              }
                             }
                           }
                         }
                       }
                     }
-                  }
 
-                  &.others {
-                    ul {
-                      width: 100%;
-                      display: block;
-
-                      > li {
+                    .others {
+                      ul {
+                        width: 100%;
                         display: block;
-                        width: auto;
-                        padding: 0;
-                        margin-bottom: 1rem;
 
-                        &:last-child {
-                          margin-bottom: 0;
-                        }
-                        .content {
-                          border: 1px solid rgba(0, 0, 0, 0.4);
-                        }
-                        div.liner {
-                          display: none;
+                        > li {
+                          display: block;
+                          width: auto;
+                          padding: 0;
+                          margin-bottom: 1rem;
+
+                          &:last-child {
+                            margin-bottom: 0;
+                          }
                         }
                       }
                     }

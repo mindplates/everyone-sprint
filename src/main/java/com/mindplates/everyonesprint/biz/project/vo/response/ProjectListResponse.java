@@ -22,6 +22,7 @@ public class ProjectListResponse {
     private List<Sprint> sprints;
     private List<User> users;
     private Boolean isMember;
+    private Boolean isAdmin;
     private Long activatedSprintCount = 0L;
 
     public ProjectListResponse(Project project, UserSession userSession) {
@@ -31,6 +32,7 @@ public class ProjectListResponse {
         this.allowAutoJoin = project.getAllowAutoJoin();
         this.activated = project.getActivated();
         this.isMember = project.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userSession.getId())));
+        this.isAdmin = project.getUsers().stream().anyMatch((projectUser -> projectUser.getRole().equals(RoleCode.ADMIN) && projectUser.getUser().getId().equals(userSession.getId())));
         this.users = project.getUsers().stream().map(
                 (projectUser) -> User.builder()
                         .id(projectUser.getId())

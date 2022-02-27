@@ -52,6 +52,8 @@ const ProjectPropTypes = PropTypes.shape({
   activated: PropTypes.bool,
   users: PropTypes.arrayOf(UserPropTypes),
   activatedSprintCount: PropTypes.number,
+  isMember: PropTypes.bool,
+  isAdmin: PropTypes.bool,
 });
 
 const SprintPropTypes = PropTypes.shape({
@@ -70,11 +72,13 @@ const SprintPropTypes = PropTypes.shape({
   users: PropTypes.arrayOf(UserPropTypes),
   sprintDailyMeetings: PropTypes.arrayOf(SprintDailyMeetingPropTypes),
   isMember: PropTypes.bool,
+  isAdmin: PropTypes.bool,
   userCount: PropTypes.number,
   hasScrumMeeting: PropTypes.bool,
   isUserScrumInfoRegistered: PropTypes.bool,
   projectId: PropTypes.number,
   projectName: PropTypes.string,
+  projectActivated: PropTypes.bool,
 });
 
 const MeetingPropTypes = PropTypes.shape({

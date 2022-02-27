@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { Button, EmptyContent, Page, PageTitle, SprintList, withLogin } from '@/components';
+import { Button, EmptyContent, Page, PageContent, PageTitle, SprintList, withLogin } from '@/components';
 import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
@@ -17,9 +17,13 @@ const Sprints = ({ t, history }) => {
       null,
       (list) => {
         setSprints(
-          list.map((d) => {
-            return sprintUtil.getSprint(d);
-          }),
+          list
+            .map((d) => {
+              return sprintUtil.getSprint(d);
+            })
+            .sort((a, b) => {
+              return b.startDate - a.startDate;
+            }),
         );
       },
       null,
@@ -34,6 +38,7 @@ const Sprints = ({ t, history }) => {
   return (
     <Page>
       <PageTitle
+        isListPageTitle
         buttons={[
           {
             icon: <i className="fas fa-plus" />,
@@ -43,33 +48,43 @@ const Sprints = ({ t, history }) => {
             },
           },
         ]}
+        breadcrumbs={[
+          {
+            link: '/',
+            name: t('TOP'),
+          },
+          {
+            link: '/sprints',
+            name: t('스프린트 목록'),
+            current: true,
+          },
+        ]}
       >
         {t('스프린트')}
       </PageTitle>
-      {sprints != null && (
-        <div className={`${sprints && sprints.length > 0 ? 'g-list-content' : 'g-page-content'}`}>
-          {sprints && sprints.length > 0 && <SprintList sprints={sprints} />}
-          {!(sprints && sprints.length > 0) && (
-            <EmptyContent
-              height="100%"
-              message={t('스프린트가 없습니다.')}
-              additionalContent={
-                <div className="mt-3">
-                  <Button
-                    size="md"
-                    color="primary"
-                    onClick={() => {
-                      history.push('/sprints/new');
-                    }}
-                  >
-                    <i className="fas fa-plus" /> {t('새 스프린트')}
-                  </Button>
-                </div>
-              }
-            />
-          )}
-        </div>
-      )}
+      <PageContent listLayout={sprints === null || sprints?.length > 0}>
+        {sprints?.length > 0 && <SprintList sprints={sprints} />}
+        {sprints?.length < 1 && (
+          <EmptyContent
+            height="100%"
+            icon={<i className="fas fa-plane" />}
+            message={t('참여 중인 스프린트가 없습니다.')}
+            additionalContent={
+              <div className="mt-3">
+                <Button
+                  size="md"
+                  color="point"
+                  onClick={() => {
+                    history.push('/sprints/new');
+                  }}
+                >
+                  <i className="fas fa-plus" /> {t('새 스프린트')}
+                </Button>
+              </div>
+            }
+          />
+        )}
+      </PageContent>
     </Page>
   );
 };
