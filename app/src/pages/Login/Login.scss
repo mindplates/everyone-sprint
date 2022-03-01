@@ -12,8 +12,7 @@
   }
 }
 
-.starting-line-wrapper {
-  padding-top: 2rem !important;
+.login-wrapper {
   position: relative;
 
   .bg {
@@ -23,6 +22,10 @@
     bottom: 0;
     right: 0;
     overflow: hidden;
+
+    @media (max-width: 576px) {
+      display: none;
+    }
 
     > div {
       position: absolute;
@@ -34,14 +37,15 @@
     }
   }
 
-  @media (max-width: 992px) {
-    padding-top: 1rem !important;
-  }
-
-  .starting-line-content {
-    background-color: transparent;
+  .login-content {
     border: none;
     display: flex;
+    justify-content: center;
+
+    @media (max-width: 576px) {
+      background-color: $white;
+    }
+
     > form {
       width: 500px;
       align-self: center;
@@ -51,6 +55,12 @@
       border: $border;
       box-shadow: $box-shadow-sm;
       transition: all 0.3s;
+
+      @media (max-width: 576px) {
+        width: 100%;
+        box-shadow: none;
+        border: none;
+      }
 
       &.typing {
         border: 1px solid rgba(0, 0, 0, 0.4);

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Liner, Text } from '@/components';
 import './DateRangeText.scss';
 import dateUtil from '@/utils/dateUtil';
+import { DATE_FORMATS_TYPES } from '@/constants/constants';
 
 const DateRangeText = ({ className, startDate, endDate, size, showTimeOnly }) => {
   return (
@@ -12,7 +13,8 @@ const DateRangeText = ({ className, startDate, endDate, size, showTimeOnly }) =>
       </div>
       <Liner width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
       <div>
-        <Text>{dateUtil.getDateString(endDate, showTimeOnly ? 'hoursMinutes' : '')}</Text>
+        {showTimeOnly && <Text>{dateUtil.getDateString(endDate, 'hoursMinutes')}</Text>}
+        {!showTimeOnly && <Text>{dateUtil.getDateString(endDate, dateUtil.isSameYear(startDate, endDate) ? DATE_FORMATS_TYPES.dayHours : '')}</Text>}
       </div>
     </div>
   );

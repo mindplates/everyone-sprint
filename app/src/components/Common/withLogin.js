@@ -60,7 +60,7 @@ const withLogin = (WrappedComponent) => {
               </div>
               <div className="message">{t('로그인이 필요한 서비스입니다')}</div>
               <div className="login">
-                <Link to="/starting-line">
+                <Link to="/login">
                   <span>{t('로그인')}</span>
                 </Link>
               </div>

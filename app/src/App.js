@@ -24,14 +24,14 @@ import {
   SprintDeactivate,
   Sprints,
   SprintSummary,
-  StartingLine,
+  Login,
   Stats,
 } from './pages';
 import './App.scss';
 import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
 
 const CONFERENCE_PATTERN = /^\/conferences\/[A-Za-z0-9]*/;
-const NO_MAX_WIDTH_PATTERNS = [CONFERENCE_PATTERN, /^\/starting-line[A-Za-z0-9]*/];
+const NO_MAX_WIDTH_PATTERNS = [CONFERENCE_PATTERN, /^\/login[A-Za-z0-9]*/];
 
 function App({ history, setting }) {
   const noMaxWidth = NO_MAX_WIDTH_PATTERNS.some((pattern) => pattern.test(history.location.pathname));
@@ -65,7 +65,7 @@ function App({ history, setting }) {
           <Route exact path="/meetings" component={Meetings} />
           <Route exact path="/conferences/:code" component={Conference} />
           <Route exact path="/conferences" component={Conference} />
-          <Route exact path="/starting-line" component={StartingLine} />
+          <Route exact path="/login" component={Login} />
           <Route exact path="/join" component={Join} />
           <Route render={() => <Message code="404" />} />
         </Switch>
