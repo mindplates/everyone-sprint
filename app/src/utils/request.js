@@ -99,7 +99,7 @@ function processError(error, failHandler) {
         store.dispatch(setUserInfo({}));
 
         dialog.setConfirm(MESSAGE_CATEGORY.ERROR, '인증 실패', '인증이 되어 있지 않거나, 만료되었습니다. 로그인 페이지로 이동하시겠습니까?', () => {
-          window.location.href = '/starting-line';
+          window.location.href = '/login';
         });
 
         break;

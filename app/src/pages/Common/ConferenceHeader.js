@@ -106,7 +106,7 @@ const ConferenceHeader = (props) => {
                   <div className="arrow">
                     <div />
                   </div>
-                  <Link to="/starting-line">
+                  <Link to="/login">
                     <span>{t('로그인')}</span>
                   </Link>
                 </div>

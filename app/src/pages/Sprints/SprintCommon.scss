@@ -1,5 +1,4 @@
 .sprint-common {
-
   .title {
     display: inline-flex;
     > span {
@@ -16,17 +15,6 @@
         margin-left: 0.5rem;
       }
     }
-  }
-
-  .sprint-span {
-    align-self: center;
-    display: inline-block;
-    font-size: 14px;
-    padding: 0.125rem 0.5rem;
-    background-color: $green;
-    color: $white;
-    border-radius: 4px;
-    margin-left: 0.5rem;
   }
 
   .sprint-daily-meetings {

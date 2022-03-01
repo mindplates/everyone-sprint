@@ -1,7 +1,27 @@
-.sprint-board-summary-wrapper {
+.sprint-summary-wrapper {
   .meeting-summary {
+    display: inline-flex;
+    margin-right: 1rem;
+    &:last-child {
+      margin-right: 0;
+    }
     > span {
-      margin-right: 0.5rem;
+      align-self: center;
+      &.tag {
+        margin-right: 0.5rem;
+        > span {
+          font-size: 14px;
+          background-color: $gray-200;
+          padding: 0.5rem 0.75rem;
+          line-height: 100%;
+          display: inline-block;
+          border-radius: 2px;
+          font-family: pretendard, sans-serif;
+        }
+      }
+      &.slash {
+        margin: 0 0.5rem;
+      }
     }
   }
 

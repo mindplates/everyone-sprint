@@ -11,11 +11,11 @@ import request from '@/utils/request';
 import storage from '@/utils/storage';
 import { HistoryPropTypes, LocationPropTypes } from '@/proptypes';
 import { COLORS } from '@/constants/constants';
-import './StartingLine.scss';
+import './Login.scss';
 
 const enableTypingEffect = true;
 
-const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer }) => {
+const Login = ({ t, history, location, setUserInfo: setUserInfoReducer }) => {
   const bgRef = useRef(null);
 
   const [info, setInfo] = useState({ email: '', password: '', autoLogin: false });
@@ -100,7 +100,7 @@ const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer })
   };
 
   return (
-    <Page className="starting-line-wrapper">
+    <Page className="login-wrapper">
       <div className="bg" ref={bgRef}>
         {dots.map((dot, inx) => {
           return (
@@ -120,7 +120,7 @@ const StartingLine = ({ t, history, location, setUserInfo: setUserInfoReducer })
           );
         })}
       </div>
-      <PageContent className="starting-line-content">
+      <PageContent listLayout className="login-content">
         <Form onSubmit={onSubmit} className={typing ? 'typing' : ''}>
           <div className="mb-2 text-center">
             <ProductLogo className="bg-white d-inline-block" />
@@ -183,9 +183,9 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(StartingLine)));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(Login)));
 
-StartingLine.propTypes = {
+Login.propTypes = {
   t: PropTypes.func,
   systemInfo: PropTypes.shape({
     version: PropTypes.string,

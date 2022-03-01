@@ -104,7 +104,7 @@ const Sprint = ({
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('기간')}</Label>
               <DateRangeText country={user.country} startDate={sprint.startDate} endDate={sprint.endDate} />
-              <span className="align-self-center sprint-span">
+              <span className="align-self-center">
                 <span>{`${sprintSpan.days}${t('일')}`}</span>
                 <span className="ml-2">{`${sprintSpan.hours}${t('시간')}`}</span>
               </span>

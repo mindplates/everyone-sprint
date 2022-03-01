@@ -5,7 +5,7 @@ function checkUserLogin(history) {
   if (!(state.user && state.user.id)) {
     console.log(window.location);
     const { pathname } = window.location;
-    history.push(`/starting-line?url=${pathname || '/'}`);
+    history.push(`/login?url=${pathname || '/'}`);
   }
 }
 

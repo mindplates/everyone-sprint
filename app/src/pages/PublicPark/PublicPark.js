@@ -278,7 +278,7 @@ const PublicPark = ({ user, t }) => {
         <div ref={viewer} className="viewer" />
         {(!user || !user.id) && (
           <div className="message">
-            <Link to="/starting-line">{t('참여하기 위해서는 로그인이 필요합니다.')}</Link>
+            <Link to="/login">{t('참여하기 위해서는 로그인이 필요합니다.')}</Link>
           </div>
         )}
         {user && user.id && (

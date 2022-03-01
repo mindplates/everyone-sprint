@@ -87,7 +87,7 @@ const SprintSummary = ({
   }) || [0, 0, 0];
 
   return (
-    <Page className="sprint-board-wrapper sprint-common">
+    <Page className="sprint-summary-wrapper sprint-common">
       <PageTitle
         breadcrumbs={[
           {
@@ -117,42 +117,49 @@ const SprintSummary = ({
       {sprint && (
         <PageContent className="page-content" info>
           <div className="board-content">
-            <div className="sprint-board-summary-wrapper">
+            <div>
               <Block className="pt-0 pb-0">
                 <BlockTitle>{t('미팅 요약 정보')}</BlockTitle>
                 <BlockRow>
+                  <Label minWidth={labelMinWidth}>{t('기간')}</Label>
+                  <DateRangeText country={user.country} startDate={sprint.startDate} endDate={sprint.endDate} />
+                </BlockRow>
+                <BlockRow>
                   <Label minWidth={labelMinWidth}>{t('남은 기간')}</Label>
                   <Text>
-                    <span className="sprint-span ml-0">
+                    <span className="ml-0">
                       <span>{`${sprintSpan.days}${t('일')}`}</span>
                       <span className="ml-2">{`${sprintSpan.hours}${t('시간')}`}</span>
                       <span className="ml-2">{t('후 종료')}</span>
                     </span>
                   </Text>
-                  <DateRangeText className="ml-2" country={user.country} startDate={sprint.startDate} endDate={sprint.endDate} />
                 </BlockRow>
                 <BlockRow>
-                  <Label minWidth={labelMinWidth} verticalAlign="baseline">
-                    {t('미팅')}
-                  </Label>
-                  <Text verticalAlign="baseline">
+                  <Label minWidth={labelMinWidth}>{t('미팅')}</Label>
+                  <Text>
                     <div className="meeting-summary">
-                      <span>{t('계획')}</span>
+                      <span className="tag">
+                        <span>{t('계획')}</span>
+                      </span>
                       <span>
                         {sprintSummary?.meetings?.length}
                         {t('회')}
                       </span>
+                      <span className="slash">/</span>
                       <span>
                         {meetingSpan[0] ? meetingSpan[0] / (1000 * 60) : 0}
                         {t('분')}
                       </span>
                     </div>
                     <div className="meeting-summary">
-                      <span>{t('실제')}</span>
+                      <span className="tag">
+                        <span>{t('실제')}</span>
+                      </span>
                       <span>
                         {meetingSpan[2]}
                         {t('회')}
                       </span>
+                      <span className="slash">/</span>
                       <span>
                         {meetingSpan[1]}
                         {t('분')}
