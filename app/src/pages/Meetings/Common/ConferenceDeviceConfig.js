@@ -687,7 +687,7 @@ ConferenceDeviceConfig.propTypes = {
     endDate: PropTypes.string,
     id: PropTypes.number,
     name: PropTypes.string,
-    sprintDailyMeetingId: PropTypes.number,
+    scrumMeetingPlanId: PropTypes.number,
     sprintId: PropTypes.number,
     sprintName: PropTypes.string,
     startDate: PropTypes.string,

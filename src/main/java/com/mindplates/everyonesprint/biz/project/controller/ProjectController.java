@@ -63,7 +63,7 @@ public class ProjectController {
 
     @Operation(description = "프로젝트 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteProjectInfo(@PathVariable Long id, @ApiIgnore UserSession userSession) {
+    public ResponseEntity deleteProjectInfo(@PathVariable Long id) {
         projectService.deleteProjectInfo(id);
         return new ResponseEntity(HttpStatus.OK);
     }

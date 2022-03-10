@@ -24,12 +24,12 @@ public class SprintService {
 
     final private SprintRepository sprintRepository;
     final private MeetingRepository meetingRepository;
-    final private SprintDailyMeetingAnswerRepository sprintDailyMeetingAnswerRepository;
+    final private SprintDailyMeetingAnswerRepository scrumMeetingPlanAnswerRepository;
 
-    public SprintService(SprintRepository sprintRepository, MeetingRepository meetingRepository, SprintDailyMeetingAnswerRepository sprintDailyMeetingAnswerRepository) {
+    public SprintService(SprintRepository sprintRepository, MeetingRepository meetingRepository, SprintDailyMeetingAnswerRepository scrumMeetingPlanAnswerRepository) {
         this.sprintRepository = sprintRepository;
         this.meetingRepository = meetingRepository;
-        this.sprintDailyMeetingAnswerRepository = sprintDailyMeetingAnswerRepository;
+        this.scrumMeetingPlanAnswerRepository = scrumMeetingPlanAnswerRepository;
     }
 
     public boolean selectIsExistProjectSprintName(Long projectId, Long sprintId, String name) {
@@ -54,11 +54,11 @@ public class SprintService {
 
         ArrayList<Meeting> meetings = new ArrayList<>();
 
-        for (SprintDailyMeeting sprintDailyMeeting : sprint.getSprintDailyMeetings()) {
-            meetings.addAll(makeMeetings(sprintDailyMeeting, startDate, endDate, userSession));
+        for (ScrumMeetingPlan scrumMeetingPlan : sprint.getScrumMeetingPlans()) {
+            meetings.addAll(makeMeetings(scrumMeetingPlan, startDate, endDate, userSession));
         }
 
-        for (SprintDailySmallTalkMeeting sprintDailySmallTalkMeeting : sprint.getSprintDailySmallTalkMeetings()) {
+        for (SmallTalkMeetingPlan sprintDailySmallTalkMeeting : sprint.getSprintDailySmallTalkMeetings()) {
             meetings.addAll(makeMeetings(sprintDailySmallTalkMeeting, startDate, endDate, userSession));
         }
 
@@ -81,26 +81,26 @@ public class SprintService {
         List<Meeting> deleteMeetings = new ArrayList<>();
 
         // 스프린트 스크럼 미팅 및 미팅 삭제
-        List<SprintDailyMeeting> deleteSprintDailyMeetings = new ArrayList<>();
-        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> "D".equals(sprintDailyMeeting.getCRUD()))).forEach((sprintDailyMeeting -> {
-            deleteSprintDailyMeetings.add(sprintDailyMeeting);
-            meetingRepository.deleteAllBySprintDailyMeetingId(sprintDailyMeeting.getId());
+        List<ScrumMeetingPlan> deleteSprintDailyMeetings = new ArrayList<>();
+        sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "D".equals(scrumMeetingPlan.getCRUD()))).forEach((scrumMeetingPlan -> {
+            deleteSprintDailyMeetings.add(scrumMeetingPlan);
+            meetingRepository.deleteAllByScrumMeetingPlanId(scrumMeetingPlan.getId());
         }));
-        sprint.getSprintDailyMeetings().removeAll(deleteSprintDailyMeetings);
+        sprint.getScrumMeetingPlans().removeAll(deleteSprintDailyMeetings);
 
         // 새 미팅 정보에 따른 미팅 생성
-        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> "C".equals(sprintDailyMeeting.getCRUD()))).forEach(sprintDailyMeeting -> updateMeetings.addAll(makeMeetings((AbstractDailyMeeting) sprintDailyMeeting, startDate, endDate, userSession)));
+        sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "C".equals(scrumMeetingPlan.getCRUD()))).forEach(scrumMeetingPlan -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) scrumMeetingPlan, startDate, endDate, userSession)));
 
-        sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> "U".equals(sprintDailyMeeting.getCRUD()))).forEach((sprintDailyMeeting -> {
-            List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSprintDailyMeetingId(sprint.getId(), sprintDailyMeeting.getId());
-            fillMeetings(sprint, userSession, now, startDate, endDate, updateMeetings, deleteMeetings, sprintDailyMeeting, meetings);
+        sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "U".equals(scrumMeetingPlan.getCRUD()))).forEach((scrumMeetingPlan -> {
+            List<Meeting> meetings = meetingRepository.findAllBySprintIdAndScrumMeetingPlanId(sprint.getId(), scrumMeetingPlan.getId());
+            fillMeetings(sprint, userSession, now, startDate, endDate, updateMeetings, deleteMeetings, scrumMeetingPlan, meetings);
         }));
 
         // 스몰톡 미팅 및 미팅 삭제
-        List<SprintDailySmallTalkMeeting> deleteSprintDailySmallTalkMeetings = new ArrayList<>();
+        List<SmallTalkMeetingPlan> deleteSprintDailySmallTalkMeetings = new ArrayList<>();
         sprint.getSprintDailySmallTalkMeetings().stream().filter((sprintDailySmallTalkMeeting -> "D".equals(sprintDailySmallTalkMeeting.getCRUD()))).forEach((sprintDailySmallTalkMeeting -> {
             deleteSprintDailySmallTalkMeetings.add(sprintDailySmallTalkMeeting);
-            meetingRepository.deleteAllBySprintDailySmallTalkMeetingId(sprintDailySmallTalkMeeting.getId());
+            meetingRepository.deleteAllBySmallTalkMeetingPlanId(sprintDailySmallTalkMeeting.getId());
         }));
         sprint.getSprintDailySmallTalkMeetings().removeAll(deleteSprintDailySmallTalkMeetings);
 
@@ -108,13 +108,13 @@ public class SprintService {
         sprint.getSprintDailySmallTalkMeetings()
                 .stream()
                 .filter((sprintDailySmallTalkMeeting -> "C".equals(sprintDailySmallTalkMeeting.getCRUD())))
-                .forEach(sprintDailySmallTalkMeeting -> updateMeetings.addAll(makeMeetings((AbstractDailyMeeting) sprintDailySmallTalkMeeting, startDate, endDate, userSession)));
+                .forEach(sprintDailySmallTalkMeeting -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) sprintDailySmallTalkMeeting, startDate, endDate, userSession)));
 
         sprint.getSprintDailySmallTalkMeetings()
                 .stream()
                 .filter((sprintDailySmallTalkMeeting -> "U".equals(sprintDailySmallTalkMeeting.getCRUD())))
                 .forEach((sprintDailySmallTalkMeeting -> {
-                    List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSprintDailySmallTalkMeetingId(sprint.getId(), sprintDailySmallTalkMeeting.getId());
+                    List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSmallTalkMeetingPlanId(sprint.getId(), sprintDailySmallTalkMeeting.getId());
                     fillMeetings(sprint, userSession, now, startDate, endDate, updateMeetings, deleteMeetings, sprintDailySmallTalkMeeting, meetings);
                 }));
 
@@ -126,7 +126,7 @@ public class SprintService {
         return sprint;
     }
 
-    private void fillMeetings(Sprint sprint, UserSession userSession, LocalDateTime now, LocalDateTime startDate, LocalDateTime endDate, List<Meeting> updateMeetings, List<Meeting> deleteMeetings, AbstractDailyMeeting abstractDailyMeeting, List<Meeting> meetings) {
+    private void fillMeetings(Sprint sprint, UserSession userSession, LocalDateTime now, LocalDateTime startDate, LocalDateTime endDate, List<Meeting> updateMeetings, List<Meeting> deleteMeetings, AbstractMeetingPlan abstractDailyMeeting, List<Meeting> meetings) {
         // 범위에 포함되지 않는 미팅 삭제
         meetings.forEach((meeting -> {
             if (meeting.getStartDate().isBefore(startDate) || meeting.getStartDate().isAfter(endDate)) {
@@ -158,7 +158,7 @@ public class SprintService {
         }
     }
 
-    private List<Meeting> makeMeetings(AbstractDailyMeeting abstractDailyMeeting, LocalDateTime startDate, LocalDateTime endDate, UserSession userSession) {
+    private List<Meeting> makeMeetings(AbstractMeetingPlan abstractDailyMeeting, LocalDateTime startDate, LocalDateTime endDate, UserSession userSession) {
 
         ArrayList<Meeting> meetings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
@@ -170,8 +170,8 @@ public class SprintService {
             int dayOfWeekIndex = currentDate.getDayOfWeek().getValue() - 1;
             if (meetingStartDate.isAfter(startDate) && abstractDailyMeeting.getDays().charAt(dayOfWeekIndex) == '1') {
                 Meeting meeting = getMeeting(abstractDailyMeeting.getSprint(), userSession, now, currentDate, abstractDailyMeeting, null);
-                if (abstractDailyMeeting instanceof SprintDailySmallTalkMeeting) {
-                    meeting.setLimitUserCount(((SprintDailySmallTalkMeeting) abstractDailyMeeting).getLimitUserCount());
+                if (abstractDailyMeeting instanceof SmallTalkMeetingPlan) {
+                    meeting.setLimitUserCount(((SmallTalkMeetingPlan) abstractDailyMeeting).getLimitUserCount());
                 }
                 meetings.add(meeting);
             }
@@ -183,7 +183,7 @@ public class SprintService {
     }
 
 
-    private Meeting getMeeting(Sprint sprint, UserSession userSession, LocalDateTime now, LocalDateTime currentDate, AbstractDailyMeeting abstractDailyMeeting, Meeting pMeeting) {
+    private Meeting getMeeting(Sprint sprint, UserSession userSession, LocalDateTime now, LocalDateTime currentDate, AbstractMeetingPlan abstractDailyMeeting, Meeting pMeeting) {
         String code = pMeeting != null ? pMeeting.getCode() : "";
         Long count;
 
@@ -205,8 +205,8 @@ public class SprintService {
         meeting.setEndDate(meetingEndDate);
         meeting.setCode(code);
 
-        if (abstractDailyMeeting instanceof SprintDailyMeeting) {
-            meeting.setSprintDailyMeeting((SprintDailyMeeting) abstractDailyMeeting);
+        if (abstractDailyMeeting instanceof ScrumMeetingPlan) {
+            meeting.setScrumMeetingPlan((ScrumMeetingPlan) abstractDailyMeeting);
 
             List<MeetingUser> meetingUsers = Optional.ofNullable(meeting.getUsers()).orElse(new ArrayList<>());
             meetingUsers.clear();
@@ -221,9 +221,9 @@ public class SprintService {
 
             meeting.setUsers(meetingUsers);
 
-        } else if (abstractDailyMeeting instanceof SprintDailySmallTalkMeeting) {
-            meeting.setLimitUserCount(((SprintDailySmallTalkMeeting) abstractDailyMeeting).getLimitUserCount());
-            meeting.setSprintDailySmallTalkMeeting((SprintDailySmallTalkMeeting) abstractDailyMeeting);
+        } else if (abstractDailyMeeting instanceof SmallTalkMeetingPlan) {
+            meeting.setLimitUserCount(((SmallTalkMeetingPlan) abstractDailyMeeting).getLimitUserCount());
+            meeting.setSmallTalkMeetingPlan((SmallTalkMeetingPlan) abstractDailyMeeting);
         }
 
         meeting.setLastUpdateDate(now);
@@ -236,57 +236,57 @@ public class SprintService {
         return meeting;
     }
 
-    public void deleteSprintInfo(Sprint sprint) {
-        List<Meeting> sprintMeetings = meetingRepository.findAllBySprintId(sprint.getId());
-        sprintDailyMeetingAnswerRepository.deleteAllBySprintId(sprint.getId());
+    public void deleteSprintInfo(long sprintId) {
+        List<Meeting> sprintMeetings = meetingRepository.findAllBySprintId(sprintId);
+        scrumMeetingPlanAnswerRepository.deleteAllBySprintId(sprintId);
         meetingRepository.deleteAll(sprintMeetings);
-        sprintRepository.delete(sprint);
+        sprintRepository.deleteById(sprintId);
     }
 
     public List<Sprint> selectUserSprintList(UserSession userSession, Boolean closed) {
         return sprintRepository.findAllByUsersUserIdAndClosed(userSession.getId(), closed);
     }
 
-    public Sprint selectSprintInfo(Long id) {
-        return sprintRepository.findById(id).orElse(null);
+    public Optional<Sprint> selectSprintInfo(Long id) {
+        return sprintRepository.findById(id);
     }
 
-    public List<SprintDailyMeetingAnswer> createSprintDailyMeetingAnswers(List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers, UserSession userSession) {
+    public List<ScrumMeetingAnswer> createSprintDailyMeetingAnswers(List<ScrumMeetingAnswer> scrumMeetingAnswers, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
 
-        sprintDailyMeetingAnswers.forEach((sprintDailyMeetingAnswer -> {
-            if (sprintDailyMeetingAnswer.getId() == null) {
-                sprintDailyMeetingAnswer.setCreationDate(now);
-                sprintDailyMeetingAnswer.setCreatedBy(userSession.getId());
+        scrumMeetingAnswers.forEach((scrumMeetingPlanAnswer -> {
+            if (scrumMeetingPlanAnswer.getId() == null) {
+                scrumMeetingPlanAnswer.setCreationDate(now);
+                scrumMeetingPlanAnswer.setCreatedBy(userSession.getId());
             }
 
-            sprintDailyMeetingAnswer.setLastUpdateDate(now);
-            sprintDailyMeetingAnswer.setLastUpdatedBy(userSession.getId());
+            scrumMeetingPlanAnswer.setLastUpdateDate(now);
+            scrumMeetingPlanAnswer.setLastUpdatedBy(userSession.getId());
         }));
 
-        return sprintDailyMeetingAnswerRepository.saveAll(sprintDailyMeetingAnswers);
+        return scrumMeetingPlanAnswerRepository.saveAll(scrumMeetingAnswers);
     }
 
-    public List<SprintDailyMeetingAnswer> selectSprintDailyMeetingAnswerList(Long sprintId, LocalDate date) {
-        return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndDateEquals(sprintId, date);
+    public List<ScrumMeetingAnswer> selectSprintDailyMeetingAnswerList(Long sprintId, LocalDate date) {
+        return scrumMeetingPlanAnswerRepository.findAllBySprintIdAndDateEquals(sprintId, date);
     }
 
     public boolean selectIsSprintUserScrumInfoRegistered(Long sprintId, LocalDate date, Long userId) {
-        return sprintDailyMeetingAnswerRepository.countBySprintIdAndDateEqualsAndUserId(sprintId, date, userId) > 0L;
+        return scrumMeetingPlanAnswerRepository.countBySprintIdAndDateEqualsAndUserId(sprintId, date, userId) > 0L;
     }
 
-    public List<SprintDailyMeetingAnswer> selectLastUserSprintDailyMeetingAnswerList(Long sprintId, Long meetingId, Long userId, LocalDate date) {
-        SprintDailyMeetingAnswer lastAnswer = sprintDailyMeetingAnswerRepository.findTop1BySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndUserIdAndDateLessThanOrderByDateDesc(sprintId, meetingId, userId, date);
+    public List<ScrumMeetingAnswer> selectLastUserSprintDailyMeetingAnswerList(Long sprintId, Long meetingId, Long userId, LocalDate date) {
+        ScrumMeetingAnswer lastAnswer = scrumMeetingPlanAnswerRepository.findTop1BySprintIdAndScrumMeetingQuestionScrumMeetingPlanIdAndUserIdAndDateLessThanOrderByDateDesc(sprintId, meetingId, userId, date);
         if (lastAnswer != null) {
-            return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndUserIdAndDateEquals(sprintId, meetingId, userId, lastAnswer.getDate());
+            return scrumMeetingPlanAnswerRepository.findAllBySprintIdAndScrumMeetingQuestionScrumMeetingPlanIdAndUserIdAndDateEquals(sprintId, meetingId, userId, lastAnswer.getDate());
         }
 
         return new ArrayList<>();
 
     }
 
-    public List<SprintDailyMeetingAnswer> selectSprintDailyMeetingAnswerList(Long sprintId, Long meetingId, LocalDate date) {
-        return sprintDailyMeetingAnswerRepository.findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndDateEquals(sprintId, meetingId, date);
+    public List<ScrumMeetingAnswer> selectSprintDailyMeetingAnswerList(Long sprintId, Long meetingId, LocalDate date) {
+        return scrumMeetingPlanAnswerRepository.findAllBySprintIdAndScrumMeetingQuestionScrumMeetingPlanIdAndDateEquals(sprintId, meetingId, date);
     }
 
     public Long selectAllSprintCount() {

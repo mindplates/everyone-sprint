@@ -119,8 +119,8 @@ const Sprint = ({
           </Block>
           {sprint.doDailyScrumMeeting && (
             <Block className="sprint-daily-meetings">
-              {sprint.sprintDailyMeetings.map((sprintDailyMeeting, inx) => {
-                return <DailyScrumMeeting key={inx} no={inx + 1} sprintDailyMeeting={sprintDailyMeeting} user={user} />;
+              {sprint.scrumMeetingPlans.map((scrumMeetingPlan, inx) => {
+                return <DailyScrumMeeting key={inx} no={inx + 1} scrumMeetingPlan={scrumMeetingPlan} user={user} />;
               })}
             </Block>
           )}

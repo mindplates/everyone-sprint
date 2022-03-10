@@ -2,8 +2,8 @@ package com.mindplates.everyonesprint.biz.meeting.entity;
 
 import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
-import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
-import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting;
+import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
+import com.mindplates.everyonesprint.biz.sprint.entity.SmallTalkMeetingPlan;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -58,12 +58,12 @@ public class Meeting extends CommonEntity {
     private List<MeetingUser> users;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_daily_meeting_id", foreignKey = @ForeignKey(name = "FK_MEETING__SPRINT_DAILY_MEETING"))
-    private SprintDailyMeeting sprintDailyMeeting;
+    @JoinColumn(name = "scrum_meeting_plan_id", foreignKey = @ForeignKey(name = "FK_MEETING__SPRINT_DAILY_MEETING"))
+    private ScrumMeetingPlan scrumMeetingPlan;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sprint_daily_small_talk_meeting_id", foreignKey = @ForeignKey(name = "FK_MEETING__SPRINT_DAILY_SMALL_TALK_MEETING"))
-    private SprintDailySmallTalkMeeting sprintDailySmallTalkMeeting;
+    private SmallTalkMeetingPlan smallTalkMeetingPlan;
 
     @Column(name = "current_max_order")
     private Integer currentMaxOrder;

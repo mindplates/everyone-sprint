@@ -237,10 +237,10 @@ class Conference extends React.Component {
     }
   };
 
-  getAnswers = (sprintId, sprintDailyMeetingId, date, loading) => {
+  getAnswers = (sprintId, scrumMeetingPlanId, date, loading) => {
     const { t } = this.props;
     request.get(
-      `/api/sprints/${sprintId}/meetings/${sprintDailyMeetingId}/answers?date=${dateUtil.getLocalDateISOString(date)}`,
+      `/api/sprints/${sprintId}/meetings/${scrumMeetingPlanId}/answers?date=${dateUtil.getLocalDateISOString(date)}`,
       null,
       (answers) => {
         this.setState({
@@ -268,8 +268,8 @@ class Conference extends React.Component {
               this.getUsers(code, type);
             } else {
               this.getUsers(code, type);
-              if (conference.sprintDailyMeetingId) {
-                this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate);
+              if (conference.scrumMeetingPlanId) {
+                this.getAnswers(conference.sprintId, conference.scrumMeetingPlanId, conference.startDate);
               }
             }
           },
@@ -682,7 +682,7 @@ class Conference extends React.Component {
       }
 
       case 'SCRUM_INFO_CHANGED': {
-        this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate, false);
+        this.getAnswers(conference.sprintId, conference.scrumMeetingPlanId, conference.startDate, false);
         break;
       }
 
@@ -1201,7 +1201,7 @@ class Conference extends React.Component {
                               </div>
                             </div>
                           </div>
-                          {conference?.sprintDailyMeetingId && dailyScrumInfo?.started && (
+                          {conference?.scrumMeetingPlanId && dailyScrumInfo?.started && (
                             <div className="scrum-info-status">
                               <div>
                                 <span className="tag">NOW</span>
@@ -1223,7 +1223,7 @@ class Conference extends React.Component {
                             </div>
                           )}
                           <div>
-                            {conference.sprintDailyMeetingId && (
+                            {conference.scrumMeetingPlanId && (
                               <div className="scrum-control">
                                 {dailyScrumInfo !== null && !dailyScrumInfo.started && (
                                   <div>
@@ -1262,7 +1262,7 @@ class Conference extends React.Component {
                               <div className="daily-scrum-content">
                                 <ScrumInfoViewer
                                   dailyScrumInfo={dailyScrumInfo}
-                                  questions={conference.sprintDailyMeetingQuestions}
+                                  questions={conference.scrumMeetingPlanQuestions}
                                   answers={answers}
                                   user={user}
                                   doneUserScrumDone={this.doneUserScrumDone}
@@ -1449,8 +1449,8 @@ class Conference extends React.Component {
                         }}
                         sprintId={conference.sprintId}
                         date={dateUtil.getLocalDateISOString(conference.startDate)}
-                        sprintDailyMeetingId={conference.sprintDailyMeetingId}
-                        questions={conference.sprintDailyMeetingQuestions}
+                        scrumMeetingPlanId={conference.scrumMeetingPlanId}
+                        questions={conference.scrumMeetingPlanQuestions}
                         answers={answers.filter((answer) => answer.user.id === user.id)}
                         onSaveComplete={() => {
                           this.sendToAll('SCRUM_INFO_CHANGED');

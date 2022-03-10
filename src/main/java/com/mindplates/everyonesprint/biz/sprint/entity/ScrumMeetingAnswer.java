@@ -10,12 +10,12 @@ import java.time.LocalDate;
 
 @Entity
 @Builder
-@Table(name = "sprint_daily_meeting_answer")
+@Table(name = "scrum_meeting_answer")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class SprintDailyMeetingAnswer extends CommonEntity {
+public class ScrumMeetingAnswer extends CommonEntity {
 
     @Id
     @Column(name = "id")
@@ -23,15 +23,15 @@ public class SprintDailyMeetingAnswer extends CommonEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_daily_meeting_question_id", foreignKey = @ForeignKey(name = "FK_SPRINT_DAILY_MEETING_QUESTION__SPRINT_DAILY_MEETING"))
-    private SprintDailyMeetingQuestion sprintDailyMeetingQuestion;
+    @JoinColumn(name = "scrum_meeting_question_id", foreignKey = @ForeignKey(name = "FK_SCRUM_MEETING_ANSWER__SCRUM_MEETING_QUESTION"))
+    private ScrumMeetingQuestion scrumMeetingQuestion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name = "FK_SPRINT_DAILY_MEETING_ANSWER__SPRINT"))
+    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name = "FK_SCRUM_MEETING_ANSWER__SPRINT"))
     private Sprint sprint;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_SPRINT_DAILY_MEETING_ANSWER__USER"))
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_SCRUM_MEETING_ANSWER__USER"))
     private User user;
 
     @Column(name = "date", nullable = false)

@@ -5,10 +5,10 @@ function getSprint(sprint) {
     ...sprint,
   };
 
-  result.sprintDailyMeetings?.forEach((sprintDailyMeeting) => {
-    sprintDailyMeeting.CRUD = 'R';
-    const starts = sprintDailyMeeting.startTime.split(':');
-    const ends = sprintDailyMeeting.endTime.split(':');
+  result.scrumMeetingPlans?.forEach((scrumMeetingPlan) => {
+    scrumMeetingPlan.CRUD = 'R';
+    const starts = scrumMeetingPlan.startTime.split(':');
+    const ends = scrumMeetingPlan.endTime.split(':');
 
     const startTime = new Date();
     startTime.setHours(Number(starts[0]) + dateUtil.getUserOffsetHours());
@@ -18,10 +18,10 @@ function getSprint(sprint) {
     endTime.setHours(Number(ends[0]) + dateUtil.getUserOffsetHours());
     endTime.setMinutes(Number(ends[1]) + dateUtil.getUserOffsetMinutes());
 
-    sprintDailyMeeting.startTime = startTime.getTime();
-    sprintDailyMeeting.endTime = endTime.getTime();
+    scrumMeetingPlan.startTime = startTime.getTime();
+    scrumMeetingPlan.endTime = endTime.getTime();
 
-    sprintDailyMeeting.sprintDailyMeetingQuestions.sort((a, b) => {
+    scrumMeetingPlan.scrumMeetingPlanQuestions.sort((a, b) => {
       return a.sortOrder - b.sortOrder;
     });
   });

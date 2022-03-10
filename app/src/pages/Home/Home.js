@@ -33,7 +33,7 @@ const Home = ({ t, user }) => {
   const [scrumInfo, setScrumInfo] = useState({
     isOpen: false,
     sprintId: null,
-    sprintDailyMeetings: [],
+    scrumMeetingPlans: [],
     currentSprintDailyMeetingId: null,
   });
 
@@ -125,13 +125,13 @@ const Home = ({ t, user }) => {
       request.get(
         `/api/sprints/${sprintId}/scrums?date=${todayString}&startDate=${today.toISOString()}`,
         null,
-        (sprintDailyMeetings) => {
+        (scrumMeetingPlans) => {
           const nextScrumInfo = { ...scrumInfo };
           nextScrumInfo.isOpen = isOpen;
           nextScrumInfo.sprintId = sprintId;
-          nextScrumInfo.sprintDailyMeetings = sprintDailyMeetings;
-          if (nextScrumInfo.sprintDailyMeetings.length > 0) {
-            nextScrumInfo.currentSprintDailyMeetingId = nextScrumInfo.sprintDailyMeetings[0].id;
+          nextScrumInfo.scrumMeetingPlans = scrumMeetingPlans;
+          if (nextScrumInfo.scrumMeetingPlans.length > 0) {
+            nextScrumInfo.currentSprintDailyMeetingId = nextScrumInfo.scrumMeetingPlans[0].id;
           }
 
           setScrumInfo(nextScrumInfo);
@@ -146,9 +146,9 @@ const Home = ({ t, user }) => {
     }
   };
 
-  const onChangeCurrentSprintDailyMeetingId = (sprintDailyMeetingId) => {
+  const onChangeCurrentSprintDailyMeetingId = (scrumMeetingPlanId) => {
     const nextScrumInfo = { ...scrumInfo };
-    nextScrumInfo.currentSprintDailyMeetingId = sprintDailyMeetingId;
+    nextScrumInfo.currentSprintDailyMeetingId = scrumMeetingPlanId;
     setScrumInfo(nextScrumInfo);
   };
 
@@ -216,13 +216,13 @@ const Home = ({ t, user }) => {
           setOpen={() => {
             onChangeScrumInfo(null, false);
           }}
-          sprintDailyMeetings={scrumInfo.sprintDailyMeetings}
+          scrumMeetingPlans={scrumInfo.scrumMeetingPlans}
           onChangeCurrentSprintDailyMeetingId={onChangeCurrentSprintDailyMeetingId}
           sprintId={scrumInfo.sprintId}
           date={dateUtil.getLocalDateISOString(Date.now())}
-          sprintDailyMeetingId={scrumInfo.currentSprintDailyMeetingId}
-          questions={scrumInfo.sprintDailyMeetings.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId).sprintDailyMeetingQuestions}
-          answers={scrumInfo.sprintDailyMeetings.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId).sprintDailyMeetingAnswers}
+          scrumMeetingPlanId={scrumInfo.currentSprintDailyMeetingId}
+          questions={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId).scrumMeetingPlanQuestions}
+          answers={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId).scrumMeetingPlanAnswers}
           onSaveComplete={() => {
             getSprints();
             // this.sendToAll('SCRUM_INFO_CHANGED');

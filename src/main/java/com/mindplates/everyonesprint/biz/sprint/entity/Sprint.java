@@ -70,11 +70,11 @@ public class Sprint extends CommonEntity {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
-    private List<SprintDailyMeeting> sprintDailyMeetings;
+    private List<ScrumMeetingPlan> scrumMeetingPlans;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
-    private List<SprintDailySmallTalkMeeting> sprintDailySmallTalkMeetings;
+    private List<SmallTalkMeetingPlan> sprintDailySmallTalkMeetings;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_SPRINT__PROJECT"))

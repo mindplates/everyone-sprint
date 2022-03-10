@@ -5,13 +5,12 @@ import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingResponse;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingSummaryResponse;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
-import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
-import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeetingAnswer;
+import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
+import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingAnswer;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.sprint.vo.request.SprintDailyMeetingAnswerRequest;
 import com.mindplates.everyonesprint.biz.sprint.vo.request.SprintRequest;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.*;
-import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,12 +40,6 @@ public class SprintController {
         this.meetingService = meetingService;
     }
 
-    private void checkIsAdminUser(UserSession userSession, Sprint sprint) {
-        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()) && sprintUser.getRole().equals(RoleCode.ADMIN))) {
-            throw new ServiceException("common.not.authorized");
-        }
-    }
-
     @Operation(description = "사용자의 스프린트 목록 조회")
     @GetMapping("")
     public List<SprintListResponse> selectUserSprintList(@RequestParam(value = "date", required = false) LocalDate date, @RequestParam(value = "startDate", required = false) LocalDateTime startDate, @ApiIgnore UserSession userSession) {
@@ -73,29 +66,28 @@ public class SprintController {
         }
 
         Sprint sprint = sprintRequest.buildEntity();
+        sprint.setClosed(false);
         return new SprintResponse(sprintService.createSprintInfo(sprint, userSession));
     }
 
     @Operation(description = "스프린트 닫기")
-    @PutMapping("/{id}/close")
-    public SprintResponse updateSprintClosed(@PathVariable Long id, @Valid @RequestBody SprintRequest sprintRequest, @ApiIgnore UserSession userSession) {
+    @PutMapping("/{sprintId}/close")
+    public SprintResponse updateSprintClosed(@PathVariable Long sprintId, @Valid @RequestBody SprintRequest sprintRequest, @ApiIgnore UserSession userSession) {
 
-        if (!id.equals(sprintRequest.getId())) {
+        if (!sprintId.equals(sprintRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
-        Sprint sprint = sprintService.selectSprintInfo(id);
-        checkIsAdminUser(userSession, sprint);
+        Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
         sprint.setClosed(true);
-        Sprint sprintInfo = sprintRequest.buildEntity();
-        return new SprintResponse(sprintService.updateSprintInfo(sprintInfo, userSession));
+        return new SprintResponse(sprintService.updateSprintInfo(sprint, userSession));
     }
 
     @Operation(description = "스프린트 수정")
-    @PutMapping("/{id}")
-    public SprintResponse updateSprintInfo(@PathVariable Long id, @Valid @RequestBody SprintRequest sprintRequest, @ApiIgnore UserSession userSession) {
+    @PutMapping("/{sprintId}")
+    public SprintResponse updateSprintInfo(@PathVariable Long sprintId, @Valid @RequestBody SprintRequest sprintRequest, @ApiIgnore UserSession userSession) {
 
-        if (!id.equals(sprintRequest.getId())) {
+        if (!sprintId.equals(sprintRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
@@ -103,69 +95,53 @@ public class SprintController {
             throw new ServiceException("sprint.duplicated");
         }
 
-        Sprint sprint = sprintService.selectSprintInfo(id);
-        checkIsAdminUser(userSession, sprint);
         Sprint sprintInfo = sprintRequest.buildEntity();
         return new SprintResponse(sprintService.updateSprintInfo(sprintInfo, userSession));
     }
 
     @Operation(description = "스프린트 삭제")
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteSprintInfo(@PathVariable Long id, @ApiIgnore UserSession userSession) {
-        Sprint sprint = sprintService.selectSprintInfo(id);
-        checkIsAdminUser(userSession, sprint);
-        sprintService.deleteSprintInfo(sprint);
+    @DeleteMapping("/{sprintId}")
+    public ResponseEntity deleteSprintInfo(@PathVariable Long sprintId) {
+        sprintService.deleteSprintInfo(sprintId);
         return new ResponseEntity(HttpStatus.OK);
     }
 
 
     @Operation(description = "스프린트 조회")
-    @GetMapping("/{id}")
-    public SprintResponse selectSprintInfo(@PathVariable Long id, @ApiIgnore UserSession userSession) {
-        Sprint sprint = sprintService.selectSprintInfo(id);
-        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
-            throw new ServiceException("common.not.authorized");
-        }
+    @GetMapping("/{sprintId}")
+    public SprintResponse selectSprintInfo(@PathVariable Long sprintId) {
+        Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
         return new SprintResponse(sprint);
     }
 
     @Operation(description = "특정일의 스프린트 정보 요약")
-    @GetMapping("/{id}/daily")
-    public SprintBoardResponse selectSprintBoard(@PathVariable Long id,
+    @GetMapping("/{sprintId}/daily")
+    public SprintBoardResponse selectSprintBoard(@PathVariable Long sprintId,
                                                  @RequestParam("start") LocalDateTime start,
                                                  @RequestParam("end") LocalDateTime end,
                                                  @RequestParam("date") LocalDate date,
                                                  @ApiIgnore UserSession userSession) {
-        Sprint sprint = sprintService.selectSprintInfo(id);
-        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
-            throw new ServiceException("common.not.authorized");
-        }
 
-        List<Long> sprintDailyMeetingIds = sprint.getSprintDailyMeetings().stream().map(SprintDailyMeeting::getId).collect(Collectors.toList());
-        List<Meeting> dailyMeetings = meetingService.selectSprintUserScrumMeetingList(userSession.getId(), sprintDailyMeetingIds, start, end);
+        Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
+        List<Long> scrumMeetingPlanIds = sprint.getScrumMeetingPlans().stream().map(ScrumMeetingPlan::getId).collect(Collectors.toList());
+        List<Meeting> dailyMeetings = meetingService.selectSprintUserScrumMeetingList(userSession.getId(), scrumMeetingPlanIds, start, end);
         List<Meeting> noDailyMeetings = meetingService.selectSprintNotScrumMeetingList(userSession.getId(), start, end);
-        List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(id, date);
+        List<ScrumMeetingAnswer> scrumMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(sprintId, date);
 
         return SprintBoardResponse.builder()
                 .dailyMeetings(dailyMeetings.stream().map(MeetingResponse::new).collect(Collectors.toList()))
                 .meetings(noDailyMeetings.stream().map(MeetingResponse::new).collect(Collectors.toList()))
-                .sprintDailyMeetingAnswers(sprintDailyMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList()))
+                .scrumMeetingPlanAnswers(scrumMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList()))
                 .build();
     }
 
 
     @GetMapping("/{id}/answers")
     public List<SprintDailyMeetingAnswerResponse> selectSprintDailyMeetingAnswers(@PathVariable Long id,
-                                                                                  @RequestParam("date") LocalDate date,
-                                                                                  @ApiIgnore UserSession userSession) {
-        Sprint sprint = sprintService.selectSprintInfo(id);
-        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
-            throw new ServiceException("common.not.authorized");
-        }
+                                                                                  @RequestParam("date") LocalDate date) {
+        List<ScrumMeetingAnswer> scrumMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(id, date);
 
-        List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(id, date);
-
-        return sprintDailyMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+        return scrumMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{sprintId}/meetings/{meetingId}/answers/latest")
@@ -173,57 +149,31 @@ public class SprintController {
                                                                                         @PathVariable Long meetingId,
                                                                                         @RequestParam("date") LocalDate date,
                                                                                         @ApiIgnore UserSession userSession) {
-        Sprint sprint = sprintService.selectSprintInfo(sprintId);
-        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
-            throw new ServiceException("common.not.authorized");
-        }
-
-        List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers = sprintService.selectLastUserSprintDailyMeetingAnswerList(sprintId, meetingId, userSession.getId(), date);
-
-        return sprintDailyMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+        List<ScrumMeetingAnswer> scrumMeetingAnswers = sprintService.selectLastUserSprintDailyMeetingAnswerList(sprintId, meetingId, userSession.getId(), date);
+        return scrumMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{sprintId}/meetings/{meetingId}/answers")
     public List<SprintDailyMeetingAnswerResponse> selectSprintDailyMeetingAnswers(@PathVariable Long sprintId,
                                                                                   @PathVariable Long meetingId,
-                                                                                  @RequestParam("date") LocalDate date,
+                                                                                  @RequestParam("date") LocalDate date) {
+        List<ScrumMeetingAnswer> scrumMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(sprintId, meetingId, date);
+
+        return scrumMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+    }
+
+    @PostMapping("/{sprintId}/answers")
+    public List<SprintDailyMeetingAnswerResponse> createSprintDailyMeetingAnswers(@PathVariable Long sprintId,
+                                                                                  @Valid @RequestBody List<SprintDailyMeetingAnswerRequest> scrumMeetingPlanAnswerRequests,
                                                                                   @ApiIgnore UserSession userSession) {
-        Sprint sprint = sprintService.selectSprintInfo(sprintId);
-        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
-            throw new ServiceException("common.not.authorized");
-        }
 
-        List<SprintDailyMeetingAnswer> sprintDailyMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(sprintId, meetingId, date);
-
-        return sprintDailyMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+        List<ScrumMeetingAnswer> scrumMeetingPlanUserAnswers = scrumMeetingPlanAnswerRequests.stream().map((scrumMeetingPlanAnswerRequest -> scrumMeetingPlanAnswerRequest.buildEntity(userSession.getId()))).collect(Collectors.toList());
+        return (sprintService.createSprintDailyMeetingAnswers(scrumMeetingPlanUserAnswers, userSession)).stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
     }
 
-    @PostMapping("/{id}/answers")
-    public List<SprintDailyMeetingAnswerResponse> createSprintDailyMeetingAnswers(
-            @Valid @RequestBody List<SprintDailyMeetingAnswerRequest> sprintDailyMeetingAnswerRequests,
-            @RequestParam("date") LocalDate date,
-            @PathVariable Long id,
-            @ApiIgnore UserSession userSession) {
-
-        Sprint sprint = sprintService.selectSprintInfo(id);
-        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
-            throw new ServiceException("common.not.authorized");
-        }
-
-        List<SprintDailyMeetingAnswer> sprintDailyMeetingUserAnswers = sprintDailyMeetingAnswerRequests.stream().map((sprintDailyMeetingAnswerRequest -> sprintDailyMeetingAnswerRequest.buildEntity(userSession.getId()))).collect(Collectors.toList());
-        return (sprintService.createSprintDailyMeetingAnswers(sprintDailyMeetingUserAnswers, userSession)).stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
-    }
-
-    @GetMapping("/{id}/summary")
-    public SprintSummaryResponse selectSprintSummary(@PathVariable Long id, @ApiIgnore UserSession userSession) {
-
-        Sprint sprint = sprintService.selectSprintInfo(id);
-        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
-            throw new ServiceException("common.not.authorized");
-        }
-
-        List<Meeting> meetings = meetingService.selectSprintMeetingList(id);
-
+    @GetMapping("/{sprintId}/summary")
+    public SprintSummaryResponse selectSprintSummary(@PathVariable Long sprintId) {
+        List<Meeting> meetings = meetingService.selectSprintMeetingList(sprintId);
         SprintSummaryResponse response = new SprintSummaryResponse();
         response.meetings = meetings.stream()
                 .map(MeetingSummaryResponse::new)
@@ -233,23 +183,17 @@ public class SprintController {
     }
 
 
-    @GetMapping("/{id}/scrums")
-    public List<SprintDailyMeetingResponse> selectSprintDailyMeetingList(@PathVariable Long id, @RequestParam("date") LocalDate date, @RequestParam(value = "startDate", required = false) LocalDateTime startDate, @ApiIgnore UserSession userSession) {
-
-        Sprint sprint = sprintService.selectSprintInfo(id);
-        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
-            throw new ServiceException("common.not.authorized");
-        }
-
+    @GetMapping("/{sprintId}/scrums")
+    public List<SprintDailyMeetingResponse> selectSprintDailyMeetingList(@PathVariable Long sprintId, @RequestParam("date") LocalDate date, @RequestParam(value = "startDate", required = false) LocalDateTime startDate) {
         LocalDateTime endDate = startDate.plusDays(1).minusSeconds(1);
-        List<Meeting> meetings = meetingService.selectSprintScrumMeetingList(id, startDate, endDate);
-        List<SprintDailyMeeting> sprintDailyMeetings = meetings.stream().map(Meeting::getSprintDailyMeeting).distinct().collect(Collectors.toList());
-        List<SprintDailyMeetingResponse> sprintDailyMeetingResponses = new ArrayList<>();
-        sprintDailyMeetings.forEach(sprintDailyMeeting ->
-                sprintDailyMeetingResponses.add(new SprintDailyMeetingResponse(sprintDailyMeeting, sprintService.selectSprintDailyMeetingAnswerList(id, sprintDailyMeeting.getId(), date)))
+        List<Meeting> meetings = meetingService.selectSprintScrumMeetingList(sprintId, startDate, endDate);
+        List<ScrumMeetingPlan> scrumMeetingPlans = meetings.stream().map(Meeting::getScrumMeetingPlan).distinct().collect(Collectors.toList());
+        List<SprintDailyMeetingResponse> scrumMeetingPlanResponses = new ArrayList<>();
+        scrumMeetingPlans.forEach(scrumMeetingPlan ->
+                scrumMeetingPlanResponses.add(new SprintDailyMeetingResponse(scrumMeetingPlan, sprintService.selectSprintDailyMeetingAnswerList(sprintId, scrumMeetingPlan.getId(), date)))
         );
 
-        return sprintDailyMeetingResponses;
+        return scrumMeetingPlanResponses;
     }
 
 

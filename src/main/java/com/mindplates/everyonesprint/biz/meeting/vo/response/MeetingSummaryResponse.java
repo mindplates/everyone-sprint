@@ -1,7 +1,7 @@
 package com.mindplates.everyonesprint.biz.meeting.vo.response;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
-import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
+import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ public class MeetingSummaryResponse {
     private LocalDateTime realEndDate;
     private Long durationSeconds;
     private List<User> users;
-    private Long sprintDailyMeetingId;
+    private Long scrumMeetingPlanId;
 
 
     public MeetingSummaryResponse(Meeting meeting) {
@@ -31,7 +31,7 @@ public class MeetingSummaryResponse {
         this.realStartDate = meeting.getRealStartDate();
         this.realEndDate = meeting.getRealEndDate();
         this.durationSeconds = meeting.getDurationSeconds();
-        this.sprintDailyMeetingId = Optional.ofNullable(meeting.getSprintDailyMeeting()).map(SprintDailyMeeting::getId).orElse(null);
+        this.scrumMeetingPlanId = Optional.ofNullable(meeting.getScrumMeetingPlan()).map(ScrumMeetingPlan::getId).orElse(null);
         this.users = meeting.getUsers().stream().map(
                 (meetingUser) -> User.builder()
                         .id(meetingUser.getId())

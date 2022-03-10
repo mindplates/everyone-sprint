@@ -71,7 +71,7 @@ const EditSprint = ({
     doDailyScrumMeeting: false,
     doDailySmallTalkMeeting: false,
     users: [],
-    sprintDailyMeetings: [],
+    scrumMeetingPlans: [],
     sprintDailySmallTalkMeetings: [],
     projectId: null,
   });
@@ -161,13 +161,13 @@ const EditSprint = ({
     }
 
     if (key === 'startDate' || key === 'endDate' || key === 'users') {
-      const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
-      nextSprintDailyMeetings.forEach((sprintDailyMeeting) => {
-        if (sprintDailyMeeting.CRUD === 'R') {
-          sprintDailyMeeting.CRUD = 'U';
+      const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
+      nextSprintDailyMeetings.forEach((scrumMeetingPlan) => {
+        if (scrumMeetingPlan.CRUD === 'R') {
+          scrumMeetingPlan.CRUD = 'U';
         }
       });
-      next.sprintDailyMeetings = nextSprintDailyMeetings;
+      next.scrumMeetingPlans = nextSprintDailyMeetings;
     }
 
     setSprint(next);
@@ -175,7 +175,7 @@ const EditSprint = ({
 
   const changeSprintDailyMeeting = (inx, key, value) => {
     const next = { ...sprint };
-    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+    const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
     nextSprintDailyMeetings[inx] = { ...nextSprintDailyMeetings[inx], [key]: value };
 
     if (key === 'startTime' && nextSprintDailyMeetings[inx].startTime >= nextSprintDailyMeetings[inx].endTime) {
@@ -190,13 +190,13 @@ const EditSprint = ({
       nextSprintDailyMeetings[inx].CRUD = 'U';
     }
 
-    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    next.scrumMeetingPlans = nextSprintDailyMeetings;
     setSprint(next);
   };
 
   const changeSprintDailyMeetingDays = (inx, daysIndex, value) => {
     const next = { ...sprint };
-    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+    const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
     const nextSprintDailyMeeting = nextSprintDailyMeetings[inx];
     const list = nextSprintDailyMeeting.days.split('');
     list[daysIndex] = value;
@@ -206,32 +206,32 @@ const EditSprint = ({
       nextSprintDailyMeeting.CRUD = 'U';
     }
 
-    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    next.scrumMeetingPlans = nextSprintDailyMeetings;
     setSprint(next);
   };
 
   const removeSprintDailyMeeting = (inx) => {
     const next = { ...sprint };
-    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+    const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
     nextSprintDailyMeetings[inx].CRUD = 'D';
-    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    next.scrumMeetingPlans = nextSprintDailyMeetings;
     setSprint(next);
   };
 
   const changeSprintDailyMeetingQuestions = (meetingIndex, questionIndex, key, value) => {
     const next = { ...sprint };
-    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
-    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions.slice(0);
+    const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
+    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].scrumMeetingPlanQuestions.slice(0);
     nextSprintDailyMeetingQuestions[questionIndex][key] = value;
-    nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions = nextSprintDailyMeetingQuestions;
-    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    nextSprintDailyMeetings[meetingIndex].scrumMeetingPlanQuestions = nextSprintDailyMeetingQuestions;
+    next.scrumMeetingPlans = nextSprintDailyMeetings;
     setSprint(next);
   };
 
   const changeOrderSprintDailyMeetingQuestions = (dir, meetingIndex, questionIndex) => {
     const next = { ...sprint };
-    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
-    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions.slice(0);
+    const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
+    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].scrumMeetingPlanQuestions.slice(0);
 
     const target = nextSprintDailyMeetingQuestions[questionIndex];
 
@@ -256,18 +256,18 @@ const EditSprint = ({
       });
     }
 
-    nextSprintDailyMeetings[meetingIndex].sprintDailyMeetingQuestions = nextSprintDailyMeetingQuestions;
-    next.sprintDailyMeetings = nextSprintDailyMeetings;
+    nextSprintDailyMeetings[meetingIndex].scrumMeetingPlanQuestions = nextSprintDailyMeetingQuestions;
+    next.scrumMeetingPlans = nextSprintDailyMeetings;
     setSprint(next);
   };
 
   const changeUsers = (users) => {
     const next = { ...sprint };
     next.users = users;
-    const nextSprintDailyMeetings = next.sprintDailyMeetings.slice(0);
-    nextSprintDailyMeetings.forEach((sprintDailyMeeting) => {
-      if (sprintDailyMeeting.CRUD === 'R') {
-        sprintDailyMeeting.CRUD = 'U';
+    const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
+    nextSprintDailyMeetings.forEach((scrumMeetingPlan) => {
+      if (scrumMeetingPlan.CRUD === 'R') {
+        scrumMeetingPlan.CRUD = 'U';
       }
     });
     setSprint(next);
@@ -275,20 +275,20 @@ const EditSprint = ({
 
   const addSprintDailyMeeting = () => {
     const next = { ...sprint };
-    const sprintDailyMeetings = next.sprintDailyMeetings.slice(0);
+    const scrumMeetingPlans = next.scrumMeetingPlans.slice(0);
 
-    const sprintDailyMeetingQuestions = [];
-    sprintDailyMeetingQuestions.push({
+    const scrumMeetingPlanQuestions = [];
+    scrumMeetingPlanQuestions.push({
       question: t('지난 데일리 스크럼부터 지금까지 내가 완수한 것이 무엇인가'),
       sortOrder: 1,
     });
 
-    sprintDailyMeetingQuestions.push({
+    scrumMeetingPlanQuestions.push({
       question: t('다음 데일리 스크럼까지 내가 하기로 한 것이 무엇인가'),
       sortOrder: 2,
     });
 
-    sprintDailyMeetingQuestions.push({
+    scrumMeetingPlanQuestions.push({
       question: t('현재 장애가 되고 있는 것(곤란하고 어려운 것)이 무엇인가'),
       sortOrder: 3,
     });
@@ -305,7 +305,7 @@ const EditSprint = ({
     endTime.setSeconds(0);
     endTime.setMilliseconds(0);
 
-    sprintDailyMeetings.push({
+    scrumMeetingPlans.push({
       CRUD: 'C',
       name: '데일리 스크럼',
       startTime: startTime.getTime(),
@@ -313,10 +313,10 @@ const EditSprint = ({
       days: '1111100',
       onHoliday: true,
       useQuestion: true,
-      sprintDailyMeetingQuestions,
+      scrumMeetingPlanQuestions,
     });
 
-    next.sprintDailyMeetings = sprintDailyMeetings;
+    next.scrumMeetingPlans = scrumMeetingPlans;
     setSprint(next);
   };
 
@@ -400,23 +400,23 @@ const EditSprint = ({
     const next = JSON.parse(JSON.stringify(sprint));
     next.startDate = new Date(next.startDate).toISOString();
     next.endDate = new Date(next.endDate).toISOString();
-    next.sprintDailyMeetings.forEach((sprintDailyMeeting) => {
-      const startTime = new Date(sprintDailyMeeting.startTime);
+    next.scrumMeetingPlans.forEach((scrumMeetingPlan) => {
+      const startTime = new Date(scrumMeetingPlan.startTime);
       startTime.setHours(startTime.getHours());
       startTime.setMinutes(startTime.getMinutes());
 
-      const endTime = new Date(sprintDailyMeeting.endTime);
+      const endTime = new Date(scrumMeetingPlan.endTime);
       endTime.setHours(endTime.getHours());
       endTime.setMinutes(endTime.getMinutes());
 
-      // sprintDailyMeeting.startTime = `${`0${startTime.getHours()}`.slice(-2)}:${`0${startTime.getMinutes()}`.slice(-2)}:00`;
-      // sprintDailyMeeting.endTime = `${`0${endTime.getHours()}`.slice(-2)}:${`0${endTime.getMinutes()}`.slice(-2)}:00`;
+      // scrumMeetingPlan.startTime = `${`0${startTime.getHours()}`.slice(-2)}:${`0${startTime.getMinutes()}`.slice(-2)}:00`;
+      // scrumMeetingPlan.endTime = `${`0${endTime.getHours()}`.slice(-2)}:${`0${endTime.getMinutes()}`.slice(-2)}:00`;
 
-      sprintDailyMeeting.startTime = startTime.toISOString();
-      sprintDailyMeeting.endTime = endTime.toISOString();
+      scrumMeetingPlan.startTime = startTime.toISOString();
+      scrumMeetingPlan.endTime = endTime.toISOString();
 
-      sprintDailyMeeting.sprintDailyMeetingQuestions.forEach((sprintDailyMeetingQuestion, inx) => {
-        sprintDailyMeetingQuestion.sortOrder = inx + 1;
+      scrumMeetingPlan.scrumMeetingPlanQuestions.forEach((scrumMeetingPlanQuestion, inx) => {
+        scrumMeetingPlanQuestion.sortOrder = inx + 1;
       });
     });
 
@@ -429,8 +429,8 @@ const EditSprint = ({
       endTime.setHours(endTime.getHours());
       endTime.setMinutes(endTime.getMinutes());
 
-      // sprintDailySmallTalkMeeting.startTime = `${`0${startTime.getHours()}`.slice(-2)}:${`0${startTime.getMinutes()}`.slice(-2)}:00`;
-      // sprintDailySmallTalkMeeting.endTime = `${`0${endTime.getHours()}`.slice(-2)}:${`0${endTime.getMinutes()}`.slice(-2)}:00`;
+      // smallTalkMeetingPlan.startTime = `${`0${startTime.getHours()}`.slice(-2)}:${`0${startTime.getMinutes()}`.slice(-2)}:00`;
+      // smallTalkMeetingPlan.endTime = `${`0${endTime.getHours()}`.slice(-2)}:${`0${endTime.getMinutes()}`.slice(-2)}:00`;
 
       sprintDailySmallTalkMeeting.startTime = startTime.toISOString();
       sprintDailySmallTalkMeeting.endTime = endTime.toISOString();
@@ -587,14 +587,14 @@ const EditSprint = ({
             </Block>
             {sprint.doDailyScrumMeeting && (
               <Block className="sprint-daily-meetings">
-                {sprint.sprintDailyMeetings.map((sprintDailyMeeting, inx) => {
+                {sprint.scrumMeetingPlans.map((scrumMeetingPlan, inx) => {
                   return (
                     <DailyScrumMeeting
-                      className={sprintDailyMeeting.CRUD === 'D' ? 'd-none' : ''}
+                      className={scrumMeetingPlan.CRUD === 'D' ? 'd-none' : ''}
                       key={inx}
                       edit
                       no={inx + 1}
-                      sprintDailyMeeting={sprintDailyMeeting}
+                      scrumMeetingPlan={scrumMeetingPlan}
                       onRemove={() => {
                         removeSprintDailyMeeting(inx);
                       }}
@@ -602,7 +602,7 @@ const EditSprint = ({
                         changeSprintDailyMeeting(inx, key, value);
                       }}
                       onChangeMeetingDays={(dayIndex) => {
-                        changeSprintDailyMeetingDays(inx, dayIndex, sprintDailyMeeting.days[dayIndex] === '1' ? '0' : '1');
+                        changeSprintDailyMeetingDays(inx, dayIndex, scrumMeetingPlan.days[dayIndex] === '1' ? '0' : '1');
                       }}
                       onChangeQuestionOrder={(dayIndex, dir) => {
                         changeOrderSprintDailyMeetingQuestions(dir, inx, dayIndex);

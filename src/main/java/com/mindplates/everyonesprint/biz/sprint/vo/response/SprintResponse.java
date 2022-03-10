@@ -27,7 +27,7 @@ public class SprintResponse {
     private Boolean doDailyScrumMeeting;
     private Boolean doDailySmallTalkMeeting;
     private List<User> users;
-    private List<SprintDailyMeeting> sprintDailyMeetings;
+    private List<SprintDailyMeeting> scrumMeetingPlans;
     private List<SprintDailySmallTalkMeeting> sprintDailySmallTalkMeetings;
 
     private Long projectId;
@@ -57,22 +57,22 @@ public class SprintResponse {
                         .imageType(sprintUser.getUser().getImageType())
                         .imageData(sprintUser.getUser().getImageData())
                         .build()).collect(Collectors.toList());
-        this.sprintDailyMeetings = sprint.getSprintDailyMeetings()
+        this.scrumMeetingPlans = sprint.getScrumMeetingPlans()
                 .stream()
                 .map(
-                        (sprintDailyMeeting) -> SprintDailyMeeting.builder()
-                                .id(sprintDailyMeeting.getId())
-                                .name(sprintDailyMeeting.getName())
-                                .startTime(sprintDailyMeeting.getStartTime())
-                                .endTime(sprintDailyMeeting.getEndTime())
-                                .useQuestion(sprintDailyMeeting.getUseQuestion())
-                                .onHoliday(sprintDailyMeeting.getOnHoliday())
-                                .days(sprintDailyMeeting.getDays())
-                                .sprintDailyMeetingQuestions((sprintDailyMeeting.getSprintDailyMeetingQuestions().stream()
-                                        .map((sprintDailyMeetingQuestion -> SprintDailyMeetingQuestion.builder()
-                                                .id(sprintDailyMeetingQuestion.getId())
-                                                .question(sprintDailyMeetingQuestion.getQuestion())
-                                                .sortOrder(sprintDailyMeetingQuestion.getSortOrder())
+                        (scrumMeetingPlan) -> SprintDailyMeeting.builder()
+                                .id(scrumMeetingPlan.getId())
+                                .name(scrumMeetingPlan.getName())
+                                .startTime(scrumMeetingPlan.getStartTime())
+                                .endTime(scrumMeetingPlan.getEndTime())
+                                .useQuestion(scrumMeetingPlan.getUseQuestion())
+                                .onHoliday(scrumMeetingPlan.getOnHoliday())
+                                .days(scrumMeetingPlan.getDays())
+                                .scrumMeetingPlanQuestions((scrumMeetingPlan.getScrumMeetingQuestions().stream()
+                                        .map((scrumMeetingPlanQuestion -> SprintDailyMeetingQuestion.builder()
+                                                .id(scrumMeetingPlanQuestion.getId())
+                                                .question(scrumMeetingPlanQuestion.getQuestion())
+                                                .sortOrder(scrumMeetingPlanQuestion.getSortOrder())
                                                 .build()))
                                         .collect(Collectors.toList())))
                                 .build()
@@ -122,7 +122,7 @@ public class SprintResponse {
         private Boolean useQuestion;
         private Boolean onHoliday;
         private String days;
-        private List<SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
+        private List<SprintDailyMeetingQuestion> scrumMeetingPlanQuestions;
 
     }
 

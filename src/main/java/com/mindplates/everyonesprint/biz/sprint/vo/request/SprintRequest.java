@@ -1,8 +1,7 @@
 package com.mindplates.everyonesprint.biz.sprint.vo.request;
 
 import com.mindplates.everyonesprint.biz.project.entity.Project;
-import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
-import com.mindplates.everyonesprint.biz.sprint.entity.SprintUser;
+import com.mindplates.everyonesprint.biz.sprint.entity.*;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +26,7 @@ public class SprintRequest {
     private Boolean doDailyScrumMeeting;
     private Boolean doDailySmallTalkMeeting;
     private List<SprintRequest.User> users;
-    private List<SprintRequest.SprintDailyMeeting> sprintDailyMeetings;
+    private List<SprintRequest.SprintDailyMeeting> scrumMeetingPlans;
     private List<SprintRequest.SprintDailySmallTalkMeeting> sprintDailySmallTalkMeetings;
 
     @NotNull
@@ -60,29 +59,29 @@ public class SprintRequest {
                         .role(user.getRole())
                         .sprint(sprint).build()).collect(Collectors.toList());
 
-        List<com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting> meetings = sprintDailyMeetings
+        List<ScrumMeetingPlan> meetings = scrumMeetingPlans
                 .stream()
-                .map((sprintDailyMeeting) -> {
-                            com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting meeting = com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting.builder()
-                                    .id(sprintDailyMeeting.getId())
-                                    .CRUD(sprintDailyMeeting.getCRUD())
+                .map((scrumMeetingPlan) -> {
+                            ScrumMeetingPlan meeting = ScrumMeetingPlan.builder()
+                                    .id(scrumMeetingPlan.getId())
+                                    .CRUD(scrumMeetingPlan.getCRUD())
                                     .sprint(sprint)
-                                    .name(sprintDailyMeeting.getName())
-                                    .startTime(sprintDailyMeeting.getStartTime().toLocalTime())
-                                    .endTime(sprintDailyMeeting.getEndTime().toLocalTime())
-                                    .useQuestion(sprintDailyMeeting.getUseQuestion())
-                                    .onHoliday(sprintDailyMeeting.getOnHoliday())
-                                    .days(sprintDailyMeeting.getDays())
+                                    .name(scrumMeetingPlan.getName())
+                                    .startTime(scrumMeetingPlan.getStartTime().toLocalTime())
+                                    .endTime(scrumMeetingPlan.getEndTime().toLocalTime())
+                                    .useQuestion(scrumMeetingPlan.getUseQuestion())
+                                    .onHoliday(scrumMeetingPlan.getOnHoliday())
+                                    .days(scrumMeetingPlan.getDays())
                                     .build();
 
-                            meeting.setSprintDailyMeetingQuestions(sprintDailyMeeting.getSprintDailyMeetingQuestions()
+                            meeting.setScrumMeetingQuestions(scrumMeetingPlan.getScrumMeetingPlanQuestions()
                                     .stream()
-                                    .map((sprintDailyMeetingQuestion -> com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeetingQuestion
+                                    .map((scrumMeetingPlanQuestion -> ScrumMeetingQuestion
                                             .builder()
-                                            .sprintDailyMeeting(meeting)
-                                            .id(sprintDailyMeetingQuestion.getId())
-                                            .question(sprintDailyMeetingQuestion.getQuestion())
-                                            .sortOrder(sprintDailyMeetingQuestion.getSortOrder())
+                                            .scrumMeetingPlan(meeting)
+                                            .id(scrumMeetingPlanQuestion.getId())
+                                            .question(scrumMeetingPlanQuestion.getQuestion())
+                                            .sortOrder(scrumMeetingPlanQuestion.getSortOrder())
                                             .build())).collect(Collectors.toList()));
 
                             return meeting;
@@ -92,10 +91,10 @@ public class SprintRequest {
                 ).collect(Collectors.toList());
 
 
-        List<com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting> smallTalkMeetings = sprintDailySmallTalkMeetings
+        List<SmallTalkMeetingPlan> smallTalkMeetings = sprintDailySmallTalkMeetings
                 .stream()
                 .map((sprintDailySmallTalkMeeting) -> {
-                            com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting meeting = com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting.builder()
+                            SmallTalkMeetingPlan meeting = SmallTalkMeetingPlan.builder()
                                     .id(sprintDailySmallTalkMeeting.getId())
                                     .CRUD(sprintDailySmallTalkMeeting.getCRUD())
                                     .sprint(sprint)
@@ -116,7 +115,7 @@ public class SprintRequest {
 
 
         sprint.setUsers(sprintUsers);
-        sprint.setSprintDailyMeetings(meetings);
+        sprint.setScrumMeetingPlans(meetings);
         sprint.setSprintDailySmallTalkMeetings(smallTalkMeetings);
 
         return sprint;
@@ -140,7 +139,7 @@ public class SprintRequest {
         private Boolean useQuestion;
         private Boolean onHoliday;
         private String days;
-        private List<SprintRequest.SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
+        private List<SprintRequest.SprintDailyMeetingQuestion> scrumMeetingPlanQuestions;
     }
 
     @Data

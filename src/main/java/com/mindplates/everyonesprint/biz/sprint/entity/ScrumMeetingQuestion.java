@@ -8,12 +8,12 @@ import javax.persistence.*;
 
 @Entity
 @Builder
-@Table(name = "sprint_daily_meeting_question")
+@Table(name = "scrum_meeting_question")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class SprintDailyMeetingQuestion extends CommonEntity {
+public class ScrumMeetingQuestion extends CommonEntity {
 
     @Id
     @Column(name = "id")
@@ -21,8 +21,8 @@ public class SprintDailyMeetingQuestion extends CommonEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "sprint_daily_meeting_id", foreignKey = @ForeignKey(name = "FK_SPRINT_DAILY_MEETING_QUESTION__SPRINT_DAILY_MEETING"))
-    private SprintDailyMeeting sprintDailyMeeting;
+    @JoinColumn(name = "scrum_meeting_plan_id", foreignKey = @ForeignKey(name = "FK_SCRUM_MEETING_QUESTION__SCRUM_MEETING_PLAN"))
+    private ScrumMeetingPlan scrumMeetingPlan;
 
     @Column(name = "question", nullable = false, length = ColumnsDef.TEXT)
     private String question;

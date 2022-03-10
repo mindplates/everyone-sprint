@@ -41,7 +41,7 @@ const SprintDailyMeetingPropTypes = PropTypes.shape({
   name: PropTypes.string,
   startTime: PropTypes.number,
   endTime: PropTypes.number,
-  sprintDailyMeetingQuestions: PropTypes.arrayOf(SprintDailyMeetingQuestionPropTypes),
+  scrumMeetingPlanQuestions: PropTypes.arrayOf(SprintDailyMeetingQuestionPropTypes),
 });
 
 const ProjectPropTypes = PropTypes.shape({
@@ -70,7 +70,7 @@ const SprintPropTypes = PropTypes.shape({
   activated: PropTypes.bool,
   doDailyScrumMeeting: PropTypes.bool,
   users: PropTypes.arrayOf(UserPropTypes),
-  sprintDailyMeetings: PropTypes.arrayOf(SprintDailyMeetingPropTypes),
+  scrumMeetingPlans: PropTypes.arrayOf(SprintDailyMeetingPropTypes),
   isMember: PropTypes.bool,
   isAdmin: PropTypes.bool,
   userCount: PropTypes.number,
@@ -86,7 +86,7 @@ const MeetingPropTypes = PropTypes.shape({
   endDate: PropTypes.string,
   id: PropTypes.number,
   name: PropTypes.string,
-  sprintDailyMeetingId: PropTypes.number,
+  scrumMeetingPlanId: PropTypes.number,
   sprintDailySmallTalkMeetingId: PropTypes.number,
   sprintId: PropTypes.number,
   sprintName: PropTypes.string,
@@ -113,7 +113,7 @@ const SprintSummaryPropTypes = PropTypes.shape({
       endDate: PropTypes.string,
       realEndDate: PropTypes.number,
       realStartDate: PropTypes.number,
-      sprintDailyMeetingId: PropTypes.number,
+      scrumMeetingPlanId: PropTypes.number,
       users: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.number,

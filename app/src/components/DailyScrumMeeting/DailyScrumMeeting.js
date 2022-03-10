@@ -13,7 +13,7 @@ const DailyScrumMeeting = ({
   no,
   onRemove,
   onChangeInfo,
-  sprintDailyMeeting,
+  scrumMeetingPlan,
   onChangeMeetingDays,
   onChangeQuestionOrder,
   onChangeQuestion,
@@ -46,9 +46,9 @@ const DailyScrumMeeting = ({
       <BlockRow>
         <Label minWidth={labelMinWidth}>{t('미팅 이름')}</Label>
         {edit && (
-          <Input type="text" size="md" value={sprintDailyMeeting.name} onChange={(val) => onChangeInfo('name', val)} outline simple required minLength={1} />
+          <Input type="text" size="md" value={scrumMeetingPlan.name} onChange={(val) => onChangeInfo('name', val)} outline simple required minLength={1} />
         )}
-        {!edit && <Text>{sprintDailyMeeting.name}</Text>}
+        {!edit && <Text>{scrumMeetingPlan.name}</Text>}
       </BlockRow>
       <BlockRow>
         <div className="date-info">
@@ -58,8 +58,8 @@ const DailyScrumMeeting = ({
               <DateRange
                 country={user.country}
                 language={user.language}
-                startDate={sprintDailyMeeting.startTime}
-                endDate={sprintDailyMeeting.endTime}
+                startDate={scrumMeetingPlan.startTime}
+                endDate={scrumMeetingPlan.endTime}
                 showTimeSelectOnly
                 startDateKey="startTime"
                 endDateKey="endTime"
@@ -70,7 +70,7 @@ const DailyScrumMeeting = ({
             )}
           </div>
           <div>
-            {!edit && <DateRangeText showTimeOnly country={user.country} startDate={sprintDailyMeeting.startTime} endDate={sprintDailyMeeting.endTime} />}
+            {!edit && <DateRangeText showTimeOnly country={user.country} startDate={scrumMeetingPlan.startTime} endDate={scrumMeetingPlan.endTime} />}
             {edit && (
               <div className="day-of-weeks">
                 <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
@@ -78,13 +78,13 @@ const DailyScrumMeeting = ({
                   return (
                     <Button
                       key={jnx}
-                      className={sprintDailyMeeting.days[jnx] === '1' ? 'selected' : ''}
+                      className={scrumMeetingPlan.days[jnx] === '1' ? 'selected' : ''}
                       size="md"
                       color="white"
                       outline
                       rounded
                       onClick={() => {
-                        onChangeMeetingDays(jnx, sprintDailyMeeting.days[jnx] === '1' ? '0' : '1');
+                        onChangeMeetingDays(jnx, scrumMeetingPlan.days[jnx] === '1' ? '0' : '1');
                       }}
                     >
                       {day}
@@ -94,11 +94,11 @@ const DailyScrumMeeting = ({
                 <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
                 <Button
                   size="sm"
-                  className={sprintDailyMeeting.onHoliday ? 'selected' : ''}
+                  className={scrumMeetingPlan.onHoliday ? 'selected' : ''}
                   color="white"
                   outline
                   onClick={() => {
-                    onChangeInfo('onHoliday', !sprintDailyMeeting.onHoliday);
+                    onChangeInfo('onHoliday', !scrumMeetingPlan.onHoliday);
                   }}
                 >
                   휴일 제외
@@ -110,7 +110,7 @@ const DailyScrumMeeting = ({
                 <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
                 {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')]
                   .filter((d, inx) => {
-                    return sprintDailyMeeting.days[inx] === '1';
+                    return scrumMeetingPlan.days[inx] === '1';
                   })
                   .map((day, jnx) => {
                     return (
@@ -119,7 +119,7 @@ const DailyScrumMeeting = ({
                       </span>
                     );
                   })}
-                {sprintDailyMeeting.onHoliday && (
+                {scrumMeetingPlan.onHoliday && (
                   <>
                     <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
                     <span className="holiday-text">
@@ -138,20 +138,20 @@ const DailyScrumMeeting = ({
           <CheckBox
             size="md"
             type="checkbox"
-            value={sprintDailyMeeting.useQuestion}
+            value={scrumMeetingPlan.useQuestion}
             onChange={(val) => onChangeInfo('useQuestion', val)}
             label={t('정해진 스크럼 미팅 양식을 사용합니다.')}
           />
         )}
-        {!edit && <Text>{sprintDailyMeeting.useQuestion ? 'Y' : 'N'}</Text>}
+        {!edit && <Text>{scrumMeetingPlan.useQuestion ? 'Y' : 'N'}</Text>}
       </BlockRow>
-      {sprintDailyMeeting.useQuestion && (
+      {scrumMeetingPlan.useQuestion && (
         <BlockRow>
           <Label className="align-self-baseline" minWidth={labelMinWidth}>
             {t('스크럼 질문')}
           </Label>
           <div className="flex-grow-1">
-            {sprintDailyMeeting.sprintDailyMeetingQuestions.map((sprintDailyMeetingQuestion, jnx) => {
+            {scrumMeetingPlan.scrumMeetingPlanQuestions.map((scrumMeetingPlanQuestion, jnx) => {
               return (
                 <div key={jnx} className="question-item">
                   {edit && (
@@ -176,7 +176,7 @@ const DailyScrumMeeting = ({
                           color="white"
                           outline
                           rounded
-                          disabled={sprintDailyMeeting.sprintDailyMeetingQuestions.length - 2 < jnx}
+                          disabled={scrumMeetingPlan.scrumMeetingPlanQuestions.length - 2 < jnx}
                           onClick={() => {
                             onChangeQuestionOrder(jnx, 'down');
                           }}
@@ -191,7 +191,7 @@ const DailyScrumMeeting = ({
                       <Input
                         type="text"
                         size="md"
-                        value={sprintDailyMeetingQuestion.question}
+                        value={scrumMeetingPlanQuestion.question}
                         onChange={(val) => onChangeQuestion(jnx, 'question', val)}
                         outline
                         simple
@@ -199,7 +199,7 @@ const DailyScrumMeeting = ({
                         minLength={1}
                       />
                     )}
-                    {!edit && <Text>{sprintDailyMeetingQuestion.question}</Text>}
+                    {!edit && <Text>{scrumMeetingPlanQuestion.question}</Text>}
                   </div>
                   {edit && (
                     <div className="dir-button delete">
@@ -254,13 +254,13 @@ DailyScrumMeeting.propTypes = {
   t: PropTypes.func,
   no: PropTypes.number,
   onRemove: PropTypes.func,
-  sprintDailyMeeting: PropTypes.shape({
+  scrumMeetingPlan: PropTypes.shape({
     days: PropTypes.string,
     endTime: PropTypes.number,
     id: PropTypes.number,
     name: PropTypes.string,
     onHoliday: PropTypes.bool,
-    sprintDailyMeetingQuestions: PropTypes.arrayOf(
+    scrumMeetingPlanQuestions: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number,
         question: PropTypes.string,

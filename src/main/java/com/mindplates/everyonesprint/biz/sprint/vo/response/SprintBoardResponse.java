@@ -12,7 +12,7 @@ import java.util.List;
 public class SprintBoardResponse {
     private List<MeetingResponse> dailyMeetings;
     private List<MeetingResponse> meetings;
-    private List<SprintDailyMeetingAnswerResponse> sprintDailyMeetingAnswers;
+    private List<SprintDailyMeetingAnswerResponse> scrumMeetingPlanAnswers;
 
 
 }

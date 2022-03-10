@@ -4,7 +4,10 @@ import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +23,7 @@ public class ProjectListResponse {
     private Boolean allowAutoJoin;
     private Boolean activated;
     private List<Sprint> sprints;
-    private List<User> users;
+    private List<ProjectUserResponse> users;
     private Boolean isMember;
     private Boolean isAdmin;
     private Long activatedSprintCount = 0L;
@@ -34,7 +37,7 @@ public class ProjectListResponse {
         this.isMember = project.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userSession.getId())));
         this.isAdmin = project.getUsers().stream().anyMatch((projectUser -> projectUser.getRole().equals(RoleCode.ADMIN) && projectUser.getUser().getId().equals(userSession.getId())));
         this.users = project.getUsers().stream().map(
-                (projectUser) -> User.builder()
+                (projectUser) -> ProjectUserResponse.builder()
                         .id(projectUser.getId())
                         .userId(projectUser.getUser().getId())
                         .role(projectUser.getRole())
@@ -48,19 +51,6 @@ public class ProjectListResponse {
         if (project.getSprints() != null) {
             this.activatedSprintCount = project.getSprints().stream().filter(Sprint::getActivated).count();
         }
-    }
-
-    @Data
-    @Builder
-    public static class User {
-        private Long id;
-        private Long userId;
-        private RoleCode role;
-        private String email;
-        private String name;
-        private String alias;
-        private String imageType;
-        private String imageData;
     }
 
 

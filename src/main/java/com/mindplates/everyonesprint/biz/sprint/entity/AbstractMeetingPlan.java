@@ -17,7 +17,7 @@ import java.time.LocalTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class AbstractDailyMeeting extends CommonEntity {
+public abstract class AbstractMeetingPlan extends CommonEntity {
 
     @Id
     @Column(name = "id")

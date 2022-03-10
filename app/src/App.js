@@ -26,6 +26,7 @@ import {
   Sprints,
   SprintSummary,
   Stats,
+  Talks,
 } from './pages';
 import './App.scss';
 import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
@@ -66,6 +67,7 @@ function App({ history, setting }) {
           <Route exact path="/conferences/:code" component={Conference} />
           <Route exact path="/conferences" component={Conference} />
           <Route exact path="/talks/:code/rooms/:roomCode" render={() => <Conference type="talk" />} />
+          <Route exact path="/talks/:code" component={Talks} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/join" component={Join} />
           <Route render={() => <Message code="404" />} />

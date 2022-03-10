@@ -12,33 +12,34 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Entity
-@Table(name = "sprint_daily_meeting")
+@Table(name = "scrum_meeting_plan")
 @EqualsAndHashCode
 @Getter
 @Setter
-public class SprintDailyMeeting extends AbstractDailyMeeting {
+public class ScrumMeetingPlan extends AbstractMeetingPlan {
 
 
     @Column(name = "use_question")
     private Boolean useQuestion;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "sprintDailyMeeting", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "scrumMeetingPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
-    private List<SprintDailyMeetingQuestion> sprintDailyMeetingQuestions;
+    private List<ScrumMeetingQuestion> scrumMeetingQuestions;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name = "FK_SPRINT_DAILY_MEETING__SPRINT"))
+    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name = "FK_SCRUM_MEETING_PLAN__SPRINT"))
     private Sprint sprint;
 
-    public SprintDailyMeeting() {
+    public ScrumMeetingPlan() {
 
     }
 
     @Builder
-    public SprintDailyMeeting(Long id, Sprint sprint, String name, LocalTime startTime, LocalTime endTime, Boolean onHoliday, String days, String CRUD, Boolean useQuestion, List<SprintDailyMeetingQuestion> sprintDailyMeetingQuestions) {
+    public ScrumMeetingPlan(Long id, Sprint sprint, String name, LocalTime startTime, LocalTime endTime, Boolean onHoliday, String days, String CRUD, Boolean useQuestion, List<ScrumMeetingQuestion> scrumMeetingQuestions) {
         super(id, name, startTime, endTime, onHoliday, days, CRUD);
         this.sprint = sprint;
         this.useQuestion = useQuestion;
-        this.sprintDailyMeetingQuestions = sprintDailyMeetingQuestions;
+        this.scrumMeetingQuestions = scrumMeetingQuestions;
     }
 
     public Sprint getSprint() {

@@ -96,7 +96,7 @@ public class MeetingService {
 
         LocalDateTime nextDay = date.plusDays(1);
 
-        List<Meeting> sprintDailySmallTalkMeetings = meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndSprintDailySmallTalkMeetingIsNotNull(date, nextDay, userSession.getId());
+        List<Meeting> sprintDailySmallTalkMeetings = meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndSmallTalkMeetingPlanIsNotNull(date, nextDay, userSession.getId());
         if (sprintId != null) {
             sprintDailySmallTalkMeetings.addAll(meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(sprintId, date, nextDay, userSession.getId()));
             return sprintDailySmallTalkMeetings;
@@ -119,19 +119,19 @@ public class MeetingService {
     }
 
     public List<Meeting> selectSprintUserScrumMeetingList(Long userId, List<Long> springDailyMeetingIds, LocalDateTime startTime, LocalDateTime endTime) {
-        return meetingRepository.findAllByUsersUserIdAndSprintDailyMeetingIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(userId, springDailyMeetingIds, startTime, endTime);
+        return meetingRepository.findAllByUsersUserIdAndScrumMeetingPlanIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(userId, springDailyMeetingIds, startTime, endTime);
     }
 
     public List<Meeting> selectSprintScrumMeetingList(Long sprintId, LocalDateTime startTime, LocalDateTime endTime) {
-        return meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNotNull(sprintId, startTime, endTime);
+        return meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndScrumMeetingPlanIsNotNull(sprintId, startTime, endTime);
     }
 
     public boolean selectHasSprintMeeting(Long sprintId, LocalDateTime startTime, LocalDateTime endTime) {
-        return meetingRepository.countBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNotNull(sprintId, startTime, endTime) > 0L;
+        return meetingRepository.countBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndScrumMeetingPlanIsNotNull(sprintId, startTime, endTime) > 0L;
     }
 
     public List<Meeting> selectSprintNotScrumMeetingList(Long userId, LocalDateTime startTime, LocalDateTime endTime) {
-        return meetingRepository.findAllByUsersUserIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNull(userId, startTime, endTime);
+        return meetingRepository.findAllByUsersUserIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndScrumMeetingPlanIsNull(userId, startTime, endTime);
     }
 
     public Participant updateUserJoinInfo(String code, User user, String ipAddress, String socketId, Boolean audio, Boolean video, Meeting meeting) {
