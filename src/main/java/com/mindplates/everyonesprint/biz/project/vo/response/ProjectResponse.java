@@ -3,9 +3,11 @@ package com.mindplates.everyonesprint.biz.project.vo.response;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintResponse;
-import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +24,7 @@ public class ProjectResponse {
     private Boolean allowAutoJoin;
     private Boolean activated;
     private List<SprintResponse> sprints;
-    private List<User> users;
+    private List<ProjectUserResponse> users;
     private Boolean isMember;
     private Long activatedSprintCount = 0L;
     private LocalDateTime creationDate;
@@ -36,7 +38,7 @@ public class ProjectResponse {
         this.isMember = project.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userSession.getId())));
         this.creationDate = project.getCreationDate();
         this.users = project.getUsers().stream().map(
-                (projectUser) -> User.builder()
+                (projectUser) -> ProjectUserResponse.builder()
                         .id(projectUser.getId())
                         .userId(projectUser.getUser().getId())
                         .role(projectUser.getRole())
@@ -54,31 +56,17 @@ public class ProjectResponse {
         if (project.getSprints() != null) {
             this.sprints = project.getSprints()
                     .stream()
-                    .map(
-                            (sprint) -> SprintResponse.builder()
-                                    .id(sprint.getId())
-                                    .name(sprint.getName())
-                                    .startDate(sprint.getStartDate())
-                                    .endDate(sprint.getEndDate())
-                                    .activated(sprint.getActivated())
-                                    .build()
+                    .map((sprint) -> SprintResponse.builder()
+                            .id(sprint.getId())
+                            .name(sprint.getName())
+                            .startDate(sprint.getStartDate())
+                            .endDate(sprint.getEndDate())
+                            .activated(sprint.getActivated())
+                            .build()
                     ).collect(Collectors.toList());
         }
 
 
-    }
-
-    @Data
-    @Builder
-    public static class User {
-        private Long id;
-        private Long userId;
-        private RoleCode role;
-        private String email;
-        private String name;
-        private String alias;
-        private String imageType;
-        private String imageData;
     }
 
 

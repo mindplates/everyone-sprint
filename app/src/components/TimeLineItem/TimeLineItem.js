@@ -9,7 +9,7 @@ import { MeetingPropTypes, UserPropTypes } from '@/proptypes';
 import './TimeLineItem.scss';
 
 const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }) => {
-  const isSmallTalkMeeting = !!meeting.sprintDailySmallTalkMeetingId;
+  const isSmallTalkMeeting = !!meeting.smallTalkMeetingPlanId;
 
   return (
     <div
@@ -36,7 +36,7 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
             <span className="mx-1">-</span>
             <span>{dateUtil.getDateString(meeting.endDate, DATE_FORMATS_TYPES.hoursMinutes)}</span>
           </div>
-          {!meeting.sprintDailySmallTalkMeetingId && (
+          {!meeting.smallTalkMeetingPlanId && (
             <div>
               <span>{meeting.users[0]?.alias}</span>
               {meeting.users.length - 1 > 0 && <span className="ml-1">외</span>}

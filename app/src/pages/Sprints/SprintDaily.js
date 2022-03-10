@@ -5,7 +5,22 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
-import { Block, BlockTitle, Button, DatePicker, Liner, Page, PageContent, PageTitle, Placeholder, Tabs, TextArea, UserImage, withLogin } from '@/components';
+import {
+  Block,
+  BlockTitle,
+  Button,
+  DatePicker,
+  Liner,
+  Page,
+  PageContent,
+  PageTitle,
+  Placeholder,
+  Selector,
+  Tabs,
+  TextArea,
+  UserImage,
+  withLogin,
+} from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
@@ -80,11 +95,11 @@ const SprintDaily = ({
     const meeting = meetings.find((d) => d.id === meetingId);
     setSelectedMeetingId(meetingId);
 
-    const sprintDailyMeeting = sprint?.sprintDailyMeetings.find((d) => d.id === meeting.sprintDailyMeetingId);
-    setSelectedDailyMeetingId(sprintDailyMeeting?.id);
+    const scrumMeetingPlan = sprint?.scrumMeetingPlans.find((d) => d.id === meeting.scrumMeetingPlanId);
+    setSelectedDailyMeetingId(scrumMeetingPlan?.id);
 
-    const nextAnswers = sprintDailyMeeting?.sprintDailyMeetingQuestions.map((d) => {
-      const currentAnswer = dailyAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === user.id);
+    const nextAnswers = scrumMeetingPlan?.scrumMeetingPlanQuestions.map((d) => {
+      const currentAnswer = dailyAnswers.find((answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === user.id);
 
       if (currentAnswer) {
         return {
@@ -93,7 +108,7 @@ const SprintDaily = ({
       }
       return {
         sprintId: id,
-        sprintDailyMeetingQuestionId: d.id,
+        scrumMeetingPlanQuestionId: d.id,
         answer: '',
         date: localDayString,
       };
@@ -119,8 +134,8 @@ const SprintDaily = ({
       `/api/sprints/${id}/daily?start=${start.toISOString()}&end=${end.toISOString()}&date=${dayString}`,
       null,
       (data) => {
-        setMeetings(data.dailyMeetings);
-        setDailyAnswers(data.sprintDailyMeetingAnswers);
+        setMeetings(data.scrumMeetings);
+        setDailyAnswers(data.scrumMeetingPlanAnswers);
       },
       null,
       t('스프린트 보드에 필요한 정보를 모으고 있습니다.'),
@@ -151,7 +166,7 @@ const SprintDaily = ({
 
   useEffect(() => {
     if (meetings.length > 0) {
-      const meetingId = meetings.find((d) => d.sprintDailyMeetingId === selectedDailyMeetingId)?.id;
+      const meetingId = meetings.find((d) => d.scrumMeetingPlanId === selectedDailyMeetingId)?.id;
 
       if (meetingId) {
         setTimeout(() => {
@@ -173,17 +188,17 @@ const SprintDaily = ({
 
   const onChangeAnswer = (questionId, value) => {
     const nextAnswers = selectedAnswers.slice(0);
-    const answer = nextAnswers.find((d) => d.sprintDailyMeetingQuestionId === questionId);
+    const answer = nextAnswers.find((d) => d.scrumMeetingPlanQuestionId === questionId);
     answer.answer = value;
     setSelectedAnswers(nextAnswers);
   };
 
   const getLastMeetingAnswer = () => {
     const meeting = meetings.find((d) => d.id === selectedMeetingId);
-    const { sprintDailyMeetingId } = meeting;
+    const { scrumMeetingPlanId } = meeting;
 
     request.get(
-      `/api/sprints/${id}/meetings/${sprintDailyMeetingId}/answers/latest?date=${localDayString}`,
+      `/api/sprints/${id}/meetings/${scrumMeetingPlanId}/answers/latest?date=${localDayString}`,
       null,
       (answers) => {
         if (answers.length < 1) {
@@ -198,7 +213,7 @@ const SprintDaily = ({
         const nextSelectedAnswers = selectedAnswers.slice(0);
         answers.forEach((answer) => {
           const info = nextSelectedAnswers.find(
-            (d) => d.sprintDailyMeetingQuestionId === answer.sprintDailyMeetingQuestionId && d.sprintId === answer.sprintId,
+            (d) => d.scrumMeetingPlanQuestionId === answer.scrumMeetingPlanQuestionId && d.sprintId === answer.sprintId,
           );
           info.answer = answer.answer;
         });
@@ -210,9 +225,9 @@ const SprintDaily = ({
     );
   };
 
-  const dailyMeetingList = sprint?.sprintDailyMeetings
-    .find((d) => d.id === meetings.find((meeting) => meeting.id === selectedMeetingId)?.sprintDailyMeetingId)
-    ?.sprintDailyMeetingQuestions?.sort((a, b) => {
+  const dailyMeetingList = sprint?.scrumMeetingPlans
+    .find((d) => d.id === meetings.find((meeting) => meeting.id === selectedMeetingId)?.scrumMeetingPlanId)
+    ?.scrumMeetingPlanQuestions?.sort((a, b) => {
       return a.sortOrder - b.sortOrder;
     });
 
@@ -251,6 +266,7 @@ const SprintDaily = ({
               <div className={`daily-meeting-list ${meetingListCollapsed ? 'collapsed' : ''}`}>
                 {meetingListCollapsed && (
                   <Button
+                    className="collapse-button"
                     size="sm"
                     color="white"
                     outline
@@ -320,6 +336,26 @@ const SprintDaily = ({
                         >
                           <i className="fas fa-angle-right" />
                         </Button>
+                      </div>
+                      <div className='break' />
+                      <div className="meeting-list-selector">
+                        <Selector
+                          outline
+                          size="md"
+                          items={meetings.map((d) => {
+                            return {
+                              key: d.id,
+                              value: d.name,
+                            };
+                          })}
+                          value={selectedMeetingId}
+                          onChange={(val) => {
+                            if (selectedMeetingId !== val) {
+                              selectMeeting(val);
+                            }
+                          }}
+                          minWidth="100px"
+                        />
                       </div>
                     </div>
                     <div className="meeting-list-content">
@@ -429,7 +465,7 @@ const SprintDaily = ({
                         {dailyMeetingList && dailyMeetingList.length > 0 && (
                           <ul>
                             {dailyMeetingList.map((d, inx) => {
-                              const currentAnswer = selectedAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id)?.answer;
+                              const currentAnswer = selectedAnswers.find((answer) => answer.scrumMeetingPlanQuestionId === d.id)?.answer;
                               return (
                                 <li key={d.id}>
                                   <div className="question">{d.question}</div>
@@ -557,7 +593,7 @@ const SprintDaily = ({
                                                     <div className="answer">
                                                       {
                                                         dailyAnswers.find(
-                                                          (answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId,
+                                                          (answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === u.userId,
                                                         )?.answer
                                                       }
                                                     </div>
@@ -586,7 +622,7 @@ const SprintDaily = ({
                                                     <div className="answer">
                                                       {
                                                         dailyAnswers.find(
-                                                          (answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId,
+                                                          (answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === u.userId,
                                                         )?.answer
                                                       }
                                                     </div>
@@ -634,7 +670,7 @@ const SprintDaily = ({
                                                 <div className="answer">
                                                   <div>
                                                     {
-                                                      dailyAnswers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId)
+                                                      dailyAnswers.find((answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === u.userId)
                                                         ?.answer
                                                     }
                                                   </div>
@@ -712,7 +748,7 @@ const SprintDaily = ({
                                                     <div>
                                                       {
                                                         dailyAnswers.find(
-                                                          (answer) => answer.sprintDailyMeetingQuestionId === d.id && answer.user.id === u.userId,
+                                                          (answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === u.userId,
                                                         )?.answer
                                                       }
                                                     </div>

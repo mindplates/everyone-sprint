@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -41,16 +42,16 @@ public class ProjectService {
         return project;
     }
 
-    public void deleteProjectInfo(Project project) {
-        projectRepository.delete(project);
+    public void deleteProjectInfo(long projectId) {
+        projectRepository.deleteById(projectId);
     }
 
     public List<Project> selectUserPrjectList(UserSession userSession) {
         return projectRepository.findAllByUsersUserId(userSession.getId());
     }
 
-    public Project selectProjectInfo(Long id) {
-        return projectRepository.findById(id).orElse(null);
+    public Optional<Project> selectProjectInfo(Long id) {
+        return projectRepository.findById(id);
     }
 
 

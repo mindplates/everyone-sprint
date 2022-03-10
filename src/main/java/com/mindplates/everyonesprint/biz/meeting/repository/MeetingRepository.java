@@ -20,25 +20,25 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(Long sprintId, LocalDateTime date, LocalDateTime nextDay, Long userId);
 
-    List<Meeting> findAllBySprintIdAndSprintDailyMeetingId(Long sprintId, Long sprintDailyMeetingId);
+    List<Meeting> findAllBySprintIdAndScrumMeetingPlanId(Long sprintId, Long scrumMeetingPlanId);
 
-    void deleteAllBySprintDailyMeetingId(Long sprintDailyMeetingId);
+    void deleteAllByScrumMeetingPlanId(Long scrumMeetingPlanId);
 
-    void deleteAllBySprintDailySmallTalkMeetingId(Long sprintDailySmallTalkId);
+    void deleteAllBySmallTalkMeetingPlanId(Long sprintDailySmallTalkId);
 
-    List<Meeting> findAllBySprintIdAndSprintDailySmallTalkMeetingId(Long sprintId, Long sprintDailySmallTalkId);
+    List<Meeting> findAllBySprintIdAndSmallTalkMeetingPlanId(Long sprintId, Long sprintDailySmallTalkId);
 
-    List<Meeting> findAllByUsersUserIdAndSprintDailyMeetingIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(Long userId, List<Long> sprintDailyMeetingIds, LocalDateTime startTime, LocalDateTime endTime);
+    List<Meeting> findAllByUsersUserIdAndScrumMeetingPlanIdInAndStartDateGreaterThanEqualAndStartDateLessThanEqual(Long userId, List<Long> scrumMeetingPlanIds, LocalDateTime startTime, LocalDateTime endTime);
 
-    long countBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNotNull(Long sprintId, LocalDateTime startTime, LocalDateTime endTime);
+    long countBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndScrumMeetingPlanIsNotNull(Long sprintId, LocalDateTime startTime, LocalDateTime endTime);
 
-    List<Meeting> findAllByUsersUserIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNull(Long userId, LocalDateTime date, LocalDateTime nextDay);
+    List<Meeting> findAllByUsersUserIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndScrumMeetingPlanIsNull(Long userId, LocalDateTime date, LocalDateTime nextDay);
 
-    List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintDailyMeetingIsNotNull(Long userId, LocalDateTime date, LocalDateTime nextDay);
+    List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndScrumMeetingPlanIsNotNull(Long userId, LocalDateTime date, LocalDateTime nextDay);
 
     Long countBy();
 
-    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndSprintDailySmallTalkMeetingIsNotNull(LocalDateTime date, LocalDateTime nextDay, Long userId);
+    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndSmallTalkMeetingPlanIsNotNull(LocalDateTime date, LocalDateTime nextDay, Long userId);
 
 }
 

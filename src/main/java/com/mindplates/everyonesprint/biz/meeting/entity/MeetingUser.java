@@ -22,11 +22,11 @@ public class MeetingUser extends CommonEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="FK_MEETING_USER__USER"))
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_MEETING_USER__USER"))
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meeting_id", foreignKey = @ForeignKey(name="FK_MEETING_USER__MEETING"))
+    @JoinColumn(name = "meeting_id", foreignKey = @ForeignKey(name = "FK_MEETING_USER__MEETING"))
     private Meeting meeting;
 
     @Column(name = "first_join_date")

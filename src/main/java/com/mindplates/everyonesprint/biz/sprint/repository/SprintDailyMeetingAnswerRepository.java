@@ -1,22 +1,22 @@
 package com.mindplates.everyonesprint.biz.sprint.repository;
 
 
-import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeetingAnswer;
+import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingAnswer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public interface SprintDailyMeetingAnswerRepository extends JpaRepository<SprintDailyMeetingAnswer, Long> {
-    List<SprintDailyMeetingAnswer> findAllBySprintIdAndDateEquals(Long sprintId, LocalDate date);
+public interface SprintDailyMeetingAnswerRepository extends JpaRepository<ScrumMeetingAnswer, Long> {
+    List<ScrumMeetingAnswer> findAllBySprintIdAndDateEquals(Long sprintId, LocalDate date);
 
-    SprintDailyMeetingAnswer findTop1BySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndUserIdAndDateLessThanOrderByDateDesc(Long sprintId, Long meetingId, Long userId, LocalDate date);
+    ScrumMeetingAnswer findTop1BySprintIdAndScrumMeetingQuestionScrumMeetingPlanIdAndUserIdAndDateLessThanOrderByDateDesc(Long sprintId, Long meetingId, Long userId, LocalDate date);
 
-    List<SprintDailyMeetingAnswer> findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndUserIdAndDateEquals(Long sprintId, Long meetingId, Long userId, LocalDate date);
+    List<ScrumMeetingAnswer> findAllBySprintIdAndScrumMeetingQuestionScrumMeetingPlanIdAndUserIdAndDateEquals(Long sprintId, Long meetingId, Long userId, LocalDate date);
 
     void deleteAllBySprintId(Long sprintId);
 
-    List<SprintDailyMeetingAnswer> findAllBySprintIdAndSprintDailyMeetingQuestionSprintDailyMeetingIdAndDateEquals(Long sprintId, Long meetingId, LocalDate date);
+    List<ScrumMeetingAnswer> findAllBySprintIdAndScrumMeetingQuestionScrumMeetingPlanIdAndDateEquals(Long sprintId, Long meetingId, LocalDate date);
 
     Long countBySprintIdAndDateEqualsAndUserId(Long sprintId, LocalDate date, Long userId);
 

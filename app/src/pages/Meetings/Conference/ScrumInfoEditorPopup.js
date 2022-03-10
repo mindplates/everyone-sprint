@@ -14,22 +14,22 @@ const ScrumInfoEditorPopup = ({
   setOpen,
   questions,
   answers: propsAnswer,
-  sprintDailyMeetingId,
+  scrumMeetingPlanId,
   date,
   sprintId,
   onSaveComplete,
-  sprintDailyMeetings,
+  scrumMeetingPlans,
   onChangeCurrentSprintDailyMeetingId,
 }) => {
   const [answers, setAnswer] = useState(_.cloneDeep(propsAnswer));
 
   useEffect(() => {
     setAnswer(_.cloneDeep(propsAnswer));
-  }, [sprintDailyMeetingId]);
+  }, [scrumMeetingPlanId]);
 
   const getLastMeetingAnswer = () => {
     request.get(
-      `/api/sprints/${sprintId}/meetings/${sprintDailyMeetingId}/answers/latest?date=${date}`,
+      `/api/sprints/${sprintId}/meetings/${scrumMeetingPlanId}/answers/latest?date=${date}`,
       null,
       (result) => {
         if (result.length < 1) {
@@ -40,12 +40,12 @@ const ScrumInfoEditorPopup = ({
         const nextSelectedAnswers = answers.slice(0);
 
         result.forEach((answer) => {
-          let info = nextSelectedAnswers.find((d) => d.sprintDailyMeetingQuestionId === answer.sprintDailyMeetingQuestionId);
+          let info = nextSelectedAnswers.find((d) => d.scrumMeetingPlanQuestionId === answer.scrumMeetingPlanQuestionId);
 
           if (!info) {
             info = {
               date,
-              sprintDailyMeetingQuestionId: answer.sprintDailyMeetingQuestionId,
+              scrumMeetingPlanQuestionId: answer.scrumMeetingPlanQuestionId,
               sprintId,
             };
             nextSelectedAnswers.push(info);
@@ -63,11 +63,11 @@ const ScrumInfoEditorPopup = ({
 
   const onChangeAnswer = (questionId, value) => {
     const nextAnswers = answers.slice(0);
-    let answer = nextAnswers.find((d) => d.sprintDailyMeetingQuestionId === questionId);
+    let answer = nextAnswers.find((d) => d.scrumMeetingPlanQuestionId === questionId);
     if (!answer) {
       answer = {
         date,
-        sprintDailyMeetingQuestionId: questionId,
+        scrumMeetingPlanQuestionId: questionId,
         sprintId,
       };
       nextAnswers.push(answer);
@@ -102,16 +102,16 @@ const ScrumInfoEditorPopup = ({
       }}
     >
       <div className="scrum-info-content">
-        {sprintDailyMeetings?.length > 1 && (
+        {scrumMeetingPlans?.length > 1 && (
           <div className="daily-meeting-list">
             <ul>
-              {sprintDailyMeetings.map((d) => {
+              {scrumMeetingPlans.map((d) => {
                 return (
                   <li key={d.id}>
                     <Button
                       size="sm"
                       color="white"
-                      className={`${d.id === sprintDailyMeetingId ? 'selected' : ''}`}
+                      className={`${d.id === scrumMeetingPlanId ? 'selected' : ''}`}
                       outline
                       onClick={() => {
                         onChangeCurrentSprintDailyMeetingId(d.id);
@@ -129,7 +129,7 @@ const ScrumInfoEditorPopup = ({
         {questions && questions.length > 0 && (
           <ul className="questions">
             {questions.map((d, inx) => {
-              const currentAnswer = answers.find((answer) => answer.sprintDailyMeetingQuestionId === d.id)?.answer;
+              const currentAnswer = answers.find((answer) => answer.scrumMeetingPlanQuestionId === d.id)?.answer;
               return (
                 <li key={d.id}>
                   <div className="question">{d.question}</div>
@@ -233,11 +233,11 @@ ScrumInfoEditorPopup.propTypes = {
       question: PropTypes.string,
     }),
   ),
-  sprintDailyMeetingId: PropTypes.number,
+  scrumMeetingPlanId: PropTypes.number,
   date: PropTypes.string,
   sprintId: PropTypes.number,
   onSaveComplete: PropTypes.func,
 
-  sprintDailyMeetings: PropTypes.arrayOf(PropTypes.any),
+  scrumMeetingPlans: PropTypes.arrayOf(PropTypes.any),
   onChangeCurrentSprintDailyMeetingId: PropTypes.func,
 };

@@ -1,0 +1,170 @@
+.conference-device-config-wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  color: $white;
+
+  > div {
+    align-self: center;
+
+    .current-user-info {
+      text-align: center;
+      margin-bottom: 1rem;
+
+      .text {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: $gray-400;
+      }
+
+      .user-count {
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .user-list {
+        > span {
+          display: inline-block;
+          text-transform: uppercase;
+          border-bottom: 2px solid #333;
+          padding: 0.4rem 0.5rem;
+          line-height: 100%;
+          font-weight: bold;
+          font-family: flex, sans-serif;
+          margin-right: 1rem;
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
+    .config-button {
+      text-align: center;
+      margin-bottom: 1rem;
+
+      > button {
+        margin-right: 0.5rem;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+
+    .video-content {
+      display: flex;
+      flex-direction: row;
+      max-width: 640px;
+      justify-content: center;
+
+      .my-video {
+        width: 100%;
+        height: 100%;
+      }
+
+      .capabilities-editor,
+      .pix-info-editor {
+        @media (max-width: 992px) {
+          position: absolute;
+          left: 0;
+          top: 2rem;
+          bottom: 2rem;
+          height: auto !important;
+          width: calc(100% - 4rem);
+          margin: 0 2rem;
+          z-index: 6;
+        }
+      }
+
+      .config-video {
+        max-width: 100%;
+        background-color: transparent;
+        height: auto !important;
+
+        .not-supported-user-media {
+          border: 1px solid rgba(0, 0, 0, 0.4);
+          background-color: $white;
+        }
+
+        .video-element {
+          max-width: 100%;
+          height: auto !important;
+          min-height: 240px;
+        }
+      }
+    }
+
+    .device-error-info {
+      margin-top: 1rem;
+      text-align: center;
+      color: $danger;
+
+      .error-name {
+        font-weight: bold;
+      }
+    }
+
+    .user-media-config-buttons {
+      margin-top: 1rem;
+      text-align: center;
+      position: relative;
+
+      .enter-button {
+        display: inline-block;
+
+        @media (max-width: 576px) {
+          display: block;
+          margin-top: 1rem;
+        }
+      }
+
+      .enter-liner {
+        @media (max-width: 576px) {
+          display: none !important;
+        }
+      }
+
+      .exit-button {
+        position: absolute;
+        left: 0;
+
+        @media (max-width: 576px) {
+          top : 0;
+        }
+      }
+
+      .is-requesting {
+        &.microphone {
+          margin-right: 1rem;
+        }
+
+        &.camera {
+          margin-left: 0.5rem;
+        }
+      }
+
+      > button {
+        margin-right: 0.5rem;
+        position: relative;
+        z-index: 2;
+
+        &[disabled] {
+        }
+
+        .icon {
+          color: $danger;
+          position: absolute;
+          top: -6px;
+          left: -6px;
+          display: inline-block;
+          font-size: 18px;
+        }
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}

@@ -5,16 +5,25 @@ import { withRouter } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { Button, ConferenceVideoItem, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
+import {
+  Button,
+  ConferenceVideoItem,
+  Liner,
+  Page,
+  PageContent,
+  PageTitle,
+  ParticipantsList,
+  SocketClient,
+} from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import ConferenceDeviceConfig from '@/pages/Meetings/Conference/ConferenceDeviceConfig';
-import EmptyConference from './EmptyConference';
+import ConferenceDeviceConfig from '@/pages/Meetings/Common/ConferenceDeviceConfig';
 import mediaUtil from '@/utils/mediaUtil';
 import './Conference.scss';
 import dateUtil from '@/utils/dateUtil';
 import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
 import ScrumInfoViewer from '@/pages/Meetings/Conference/ScrumInfoViewer';
+import EmptyConference from '../Common/EmptyConference';
 
 const peerConnectionConfig = {
   iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
@@ -46,6 +55,7 @@ class Conference extends React.Component {
       conference: null,
       myStream: null,
       code: null,
+      roomCode: null,
       align: {
         type: 'CONNECT',
         order: 'ASC',
@@ -119,12 +129,13 @@ class Conference extends React.Component {
   static getDerivedStateFromProps(props, state) {
     const {
       match: {
-        params: { code },
+        params: { code, roomCode },
       },
     } = props;
 
-    if (code && code !== state.code) {
+    if ((code && code !== state.code) || roomCode !== state.roomCode) {
       return {
+        roomCode,
         code,
       };
     }
@@ -133,24 +144,24 @@ class Conference extends React.Component {
   }
 
   componentDidMount() {
-    const { code } = this.state;
+    const { code, roomCode } = this.state;
     window.addEventListener('resize', this.setVideoInfoDebounced);
     this.setVideoInfoDebounced();
 
     if (code) {
-      this.getConference(code);
+      this.getConference(code, roomCode);
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { code, videoInfo } = this.state;
+    const { code, roomCode, videoInfo } = this.state;
 
     if (!videoInfo.init) {
       this.setVideoInfo();
     }
 
-    if (code && code !== prevState.code) {
-      this.getConference(code);
+    if (code && (code !== prevState.code || roomCode !== prevState.roomCode)) {
+      this.getConference(code, roomCode);
     }
   }
 
@@ -226,10 +237,10 @@ class Conference extends React.Component {
     }
   };
 
-  getAnswers = (sprintId, sprintDailyMeetingId, date, loading) => {
+  getAnswers = (sprintId, scrumMeetingPlanId, date, loading) => {
     const { t } = this.props;
     request.get(
-      `/api/sprints/${sprintId}/meetings/${sprintDailyMeetingId}/answers?date=${dateUtil.getLocalDateISOString(date)}`,
+      `/api/sprints/${sprintId}/meetings/${scrumMeetingPlanId}/answers?date=${dateUtil.getLocalDateISOString(date)}`,
       null,
       (answers) => {
         this.setState({
@@ -241,20 +252,25 @@ class Conference extends React.Component {
     );
   };
 
-  getConference = (code) => {
-    const { t } = this.props;
+  getConference = (code, roomCode) => {
+    const { t, type } = this.props;
+
     request.get(
-      `/api/conferences/${code}`,
+      type === 'talk' ? `/api/conferences/${code}/rooms/${roomCode}` : `/api/conferences/${code}`,
       null,
       (conference) => {
-        this.setState(
+                this.setState(
           {
             conference,
           },
           () => {
-            this.getUsers(code);
-            if (conference.sprintDailyMeetingId) {
-              this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate);
+            if (type === 'talk') {
+              this.getUsers(code, type);
+            } else {
+              this.getUsers(code, type);
+              if (conference.scrumMeetingPlanId) {
+                this.getAnswers(conference.sprintId, conference.scrumMeetingPlanId, conference.startDate);
+              }
             }
           },
         );
@@ -290,12 +306,17 @@ class Conference extends React.Component {
     return nextConference;
   };
 
-  getUsers = (code) => {
+  getUsers = (code, type) => {
     const { t } = this.props;
+    const { roomCode } = this.state;
+
+
+
     request.get(
-      `/api/conferences/${code}/users`,
+      type === 'talk' ? `/api/conferences/${code}/rooms/${roomCode}/users` : `/api/conferences/${code}/users`,
       null,
       (participants) => {
+
         const nextConference = this.getMergeUsersWithParticipants(participants);
         this.setState({
           conference: nextConference,
@@ -333,20 +354,34 @@ class Conference extends React.Component {
     }
   };
 
-  sendToAll = (type, data) => {
-    const { code } = this.state;
+  sendToAll = (messageType, data) => {
+
+    const { code, roomCode } = this.state;
+    const { type } = this.props;
     if (this.socket && this.socket.state && this.socket.state.connected) {
-      this.socket.sendMessage(`/pub/api/message/conferences/${code}/send`, JSON.stringify({ type, data }));
+      if (type === 'talk') {
+        this.socket.sendMessage(`/pub/api/message/conferences/${code}/rooms/${roomCode}/send`, JSON.stringify({ type: messageType, data }));
+      } else {
+        this.socket.sendMessage(`/pub/api/message/conferences/${code}/send`, JSON.stringify({ type: messageType, data }));
+      }
+
       return true;
     }
 
     return false;
   };
 
-  sendToUser = (type, userId, data) => {
-    const { code } = this.state;
+  sendToUser = (messageType, userId, data) => {
+    const { code, roomCode } = this.state;
+    const { type } = this.props;
+
     if (this.socket && this.socket.state && this.socket.state.connected) {
-      this.socket.sendMessage(`/pub/api/message/conferences/${code}/${userId}/send`, JSON.stringify({ type, data }));
+      if (type === 'talk') {
+        this.socket.sendMessage(`/pub/api/message/conferences/${code}/rooms/${roomCode}/${userId}/send`, JSON.stringify({ type: messageType, data }));
+      } else {
+        this.socket.sendMessage(`/pub/api/message/conferences/${code}/${userId}/send`, JSON.stringify({ type: messageType, data }));
+      }
+
       return true;
     }
 
@@ -647,7 +682,7 @@ class Conference extends React.Component {
       }
 
       case 'SCRUM_INFO_CHANGED': {
-        this.getAnswers(conference.sprintId, conference.sprintDailyMeetingId, conference.startDate, false);
+        this.getAnswers(conference.sprintId, conference.scrumMeetingPlanId, conference.startDate, false);
         break;
       }
 
@@ -936,6 +971,8 @@ class Conference extends React.Component {
             handler();
           }
         });
+    } else if (handler) {
+      handler();
     }
   };
 
@@ -1059,8 +1096,23 @@ class Conference extends React.Component {
   };
 
   render() {
-    const { history, t, user } = this.props;
-    const { conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers, dailyScrumInfo } = this.state;
+    const { history, t, user, type } = this.props;
+    const {
+      code,
+      roomCode,
+      conference,
+      align,
+      supportInfo,
+      videoInfo,
+      controls,
+      screenShare,
+      isSetting,
+      pixInfo,
+      myStream,
+      statistics,
+      answers,
+      dailyScrumInfo,
+    } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -1072,14 +1124,25 @@ class Conference extends React.Component {
             {existConference && (
               <>
                 <SocketClient
-                  topics={[`/sub/conferences/${conference.code}`, `/sub/conferences/${conference.code}/${user.id}`]}
+                  topics={
+                    type === 'talk'
+                      ? [`/sub/conferences/${code}/rooms/${roomCode}`, `/sub/conferences/${code}/rooms/${roomCode}/${user.id}`]
+                      : [`/sub/conferences/${code}`, `/sub/conferences/${code}/${user.id}`]
+                  }
                   onMessage={this.onMessage}
                   onConnect={() => {}}
                   onDisconnect={() => {
-                    request.put(`/api/conferences/${conference.code}/talked`, {
-                      ...statistics,
-                      time: Math.round(statistics.time / 1000),
-                    });
+                    if (type === 'talk') {
+                      request.put(`/api/conferences/${conference.code}/rooms/${roomCode}/talked`, {
+                        ...statistics,
+                        time: Math.round(statistics.time / 1000),
+                      });
+                    } else {
+                      request.put(`/api/conferences/${conference.code}/talked`, {
+                        ...statistics,
+                        time: Math.round(statistics.time / 1000),
+                      });
+                    }
                   }}
                   setRef={(client) => {
                     this.socket = client;
@@ -1087,6 +1150,7 @@ class Conference extends React.Component {
                 />
                 {isSetting && (
                   <ConferenceDeviceConfig
+                    type={type}
                     user={user}
                     conference={conference}
                     stream={myStream}
@@ -1137,7 +1201,7 @@ class Conference extends React.Component {
                               </div>
                             </div>
                           </div>
-                          {conference?.sprintDailyMeetingId && dailyScrumInfo?.started && (
+                          {conference?.scrumMeetingPlanId && dailyScrumInfo?.started && (
                             <div className="scrum-info-status">
                               <div>
                                 <span className="tag">NOW</span>
@@ -1159,7 +1223,7 @@ class Conference extends React.Component {
                             </div>
                           )}
                           <div>
-                            {conference.sprintDailyMeetingId && (
+                            {conference.scrumMeetingPlanId && (
                               <div className="scrum-control">
                                 {dailyScrumInfo !== null && !dailyScrumInfo.started && (
                                   <div>
@@ -1198,7 +1262,7 @@ class Conference extends React.Component {
                               <div className="daily-scrum-content">
                                 <ScrumInfoViewer
                                   dailyScrumInfo={dailyScrumInfo}
-                                  questions={conference.sprintDailyMeetingQuestions}
+                                  questions={conference.scrumMeetingPlanQuestions}
                                   answers={answers}
                                   user={user}
                                   doneUserScrumDone={this.doneUserScrumDone}
@@ -1385,8 +1449,8 @@ class Conference extends React.Component {
                         }}
                         sprintId={conference.sprintId}
                         date={dateUtil.getLocalDateISOString(conference.startDate)}
-                        sprintDailyMeetingId={conference.sprintDailyMeetingId}
-                        questions={conference.sprintDailyMeetingQuestions}
+                        scrumMeetingPlanId={conference.scrumMeetingPlanId}
+                        questions={conference.scrumMeetingPlanQuestions}
                         answers={answers.filter((answer) => answer.user.id === user.id)}
                         onSaveComplete={() => {
                           this.sendToAll('SCRUM_INFO_CHANGED');
@@ -1419,6 +1483,8 @@ Conference.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       code: PropTypes.string,
+      roomCode: PropTypes.string,
     }),
   }),
+  type: PropTypes.string,
 };

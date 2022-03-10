@@ -14,6 +14,7 @@ import {
   Header,
   Home,
   Join,
+  Login,
   Meetings,
   Message,
   Project,
@@ -24,13 +25,13 @@ import {
   SprintDeactivate,
   Sprints,
   SprintSummary,
-  Login,
   Stats,
+  Talks,
 } from './pages';
 import './App.scss';
 import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
 
-const CONFERENCE_PATTERN = /^\/conferences\/[A-Za-z0-9]*/;
+const CONFERENCE_PATTERN = /^\/conferences|talks\/[A-Za-z0-9]*/;
 const NO_MAX_WIDTH_PATTERNS = [CONFERENCE_PATTERN, /^\/login[A-Za-z0-9]*/];
 
 function App({ history, setting }) {
@@ -65,6 +66,8 @@ function App({ history, setting }) {
           <Route exact path="/meetings" component={Meetings} />
           <Route exact path="/conferences/:code" component={Conference} />
           <Route exact path="/conferences" component={Conference} />
+          <Route exact path="/talks/:code/rooms/:roomCode" render={() => <Conference type="talk" />} />
+          <Route exact path="/talks/:code" component={Talks} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/join" component={Join} />
           <Route render={() => <Message code="404" />} />

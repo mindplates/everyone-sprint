@@ -55,7 +55,7 @@ public class MeetingController {
         }
 
         meetingService.selectMeetingInfo(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        Sprint sprint = sprintService.selectSprintInfo(meetingRequest.getSprintId());
+        Sprint sprint = sprintService.selectSprintInfo(meetingRequest.getSprintId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         checkIsMember(userSession, sprint);
 
         Meeting meetingInfo = meetingRequest.buildEntity();

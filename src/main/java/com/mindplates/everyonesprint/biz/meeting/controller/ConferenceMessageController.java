@@ -47,6 +47,33 @@ public class ConferenceMessageController {
         this.dailyScrumService = dailyScrumService;
     }
 
+    @MessageMapping("/rooms/{roomCode}/send")
+    public void sendToRoom(@DestinationVariable(value = "code") String code, @DestinationVariable(value = "roomCode") String roomCode, String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
+
+        UserSession userSession = SessionUtil.getUserInfo(headerAccessor);
+        Map<String, Object> value = mapper.readValue(message, Map.class);
+
+        String type = (String) value.get("type");
+        Map<String, Object> receiveData = (Map<String, Object>) value.get("data");
+        Map<String, Object> sendData = null;
+
+        if (userSession != null && "JOIN".equals(type)) {
+            // JOIN 정보
+            Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            User user = userService.selectUser(userSession.getId());
+
+            sendData = new HashMap<>();
+            sendData.put("type", type);
+            Participant currentParticipant = meetingService.updateUserJoinInfo(code, roomCode, user, SessionUtil.getUserIP(headerAccessor), headerAccessor.getSessionId(), (Boolean) receiveData.get("audio"), (Boolean) receiveData.get("video"), meeting);
+            sendData.put("participant", currentParticipant);
+        }
+
+        MessageData data = MessageData.builder().type(type).data(Optional.ofNullable(sendData).orElse(receiveData)).build();
+        messageSendService.sendTo("conferences/" + code + "/rooms/" + roomCode, data, userSession);
+
+
+    }
+
     @MessageMapping("/send")
     public void sendToConference(@DestinationVariable(value = "code") String code, String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
 
@@ -95,6 +122,19 @@ public class ConferenceMessageController {
 
         MessageData data = MessageData.builder().type(type).data(receiveData).build();
         messageSendService.sendTo("conferences/" + code + "/" + userId, data, userSession);
+    }
+
+    @MessageMapping("/rooms/{roomCode}/{userId}/send")
+    public void sendToUser(@DestinationVariable(value = "code") String code, @DestinationVariable(value = "roomCode") String roomCode, @DestinationVariable(value = "userId") Long userId, String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
+
+        UserSession userSession = SessionUtil.getUserInfo(headerAccessor);
+        Map<String, Object> value = mapper.readValue(message, Map.class);
+
+        String type = (String) value.get("type");
+        Map<String, Object> receiveData = (Map<String, Object>) value.get("data");
+
+        MessageData data = MessageData.builder().type(type).data(receiveData).build();
+        messageSendService.sendTo("conferences/" + code + "/rooms/" + roomCode + "/" + userId, data, userSession);
     }
 
 }
