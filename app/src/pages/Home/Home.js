@@ -221,8 +221,8 @@ const Home = ({ t, user }) => {
           sprintId={scrumInfo.sprintId}
           date={dateUtil.getLocalDateISOString(Date.now())}
           scrumMeetingPlanId={scrumInfo.currentSprintDailyMeetingId}
-          questions={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId).scrumMeetingPlanQuestions}
-          answers={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId).scrumMeetingPlanAnswers}
+          questions={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId)?.scrumMeetingPlanQuestions}
+          answers={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId)?.scrumMeetingPlanAnswers}
           onSaveComplete={() => {
             getSprints();
             // this.sendToAll('SCRUM_INFO_CHANGED');
