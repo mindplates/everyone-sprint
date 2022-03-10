@@ -26,6 +26,9 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
     .day-content {
       display: flex;
       flex-grow: 1;
+      @media (max-width: 1200px) {
+        flex-direction: column;
+      }
 
       .empty-content {
         flex-grow: 1;
@@ -45,6 +48,19 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
         flex-direction: column;
         width: 100%;
 
+        @media (max-width: 1200px) {
+          min-width: auto;
+          max-width: none;
+          height: auto;
+
+          .collapse-button {
+            display: none;
+          }
+          .collapsed-button {
+            display: none;
+          }
+        }
+
         &.collapsed {
           max-width: none;
           min-width: auto;
@@ -57,6 +73,11 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
           flex-grow: 1;
           display: flex;
           flex-direction: column;
+
+          @media (max-width: 1200px) {
+            flex-grow: 0;
+            margin-bottom: 0;
+          }
 
           .meeting-list-title {
             position: relative;
@@ -71,8 +92,34 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
             justify-content: center;
             margin-bottom: 0.75rem;
             margin-top: 0.25rem;
+
+            @media (max-width: 1200px) {
+              justify-content: flex-start;
+              flex-wrap: wrap;
+              margin-bottom: 1rem;
+            }
             > div {
               align-self: center;
+
+              &.break {
+                display: none;
+                flex-basis: 100%;
+                height: 0;
+              }
+
+              &.meeting-list-selector {
+                display: none;
+                margin-left: 1rem;
+
+                @media (max-width: 1200px) {
+                  display: block;
+                }
+
+                @media (max-width: 576px) {
+                  margin-left: 0;
+                  margin-top: 0.5rem;
+                }
+              }
             }
           }
 
@@ -80,6 +127,10 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
             flex-grow: 1;
             height: 100%;
             position: relative;
+
+            @media (max-width: 1200px) {
+              display: none;
+            }
 
             > div {
               position: absolute;
@@ -241,12 +292,21 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
         display: flex;
         margin: 0.5rem 1rem 1rem 0;
 
+        @media (max-width: 1200px) {
+          margin: 0;
+        }
+
         &.collapsed {
           margin: -1rem 0 -1rem 0;
         }
 
         .team-daily-meeting-list-content {
           border-left: 1px solid rgba(0, 0, 0, 0.2);
+
+          @media (max-width: 1200px) {
+            border-left: none;
+            padding: 0;
+          }
 
           &.collapsed {
             padding: 1rem 0 1rem 1rem;
@@ -258,6 +318,10 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
 
           .view-type-tabs {
             padding: 0 0.5rem;
+
+            @media (max-width: 1200px) {
+              padding: 0;
+            }
           }
         }
 
@@ -320,6 +384,10 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
         }
 
         .team-user-daily-meeting-content {
+          @media (max-width: 1200px) {
+            margin-top: 1rem;
+          }
+
           ul {
             padding: 0;
             margin: 0;
@@ -382,9 +450,23 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
             overflow-y: auto;
             padding-right: 1rem;
             padding-top: 1rem;
+
+            @media (max-width: 1200px) {
+              position: relative;
+              padding-right: 0;
+              padding-top: 0;
+              left: 0;
+            }
+
             > ul {
               > li {
                 margin-bottom: 1rem;
+
+                @media (max-width: 1200px) {
+                  &:last-child {
+                    margin-bottom: 0;
+                  }
+                }
 
                 > div {
                   &.user-info {
@@ -425,6 +507,15 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
                     background-color: $light;
                     border: 1px solid rgba(0, 0, 0, 0.2);
                     border-radius: 5px;
+
+                    @media (max-width: 1200px) {
+                      border: none;
+                      background-color: $white;
+                    }
+
+                    @media (max-width: 576px) {
+                      padding: 0;
+                    }
                     .question-answer-info {
                       margin-bottom: 1rem;
 
@@ -441,11 +532,22 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
                       ul {
                         width: 100%;
                         display: table;
+
+                        @media (max-width: 1200px) {
+                          display: block;
+                        }
+
                         > li {
                           display: table-cell;
                           width: 50%;
                           padding: 0 0.5rem;
                           position: relative;
+
+                          @media (max-width: 1200px) {
+                            display: block;
+                            width: auto;
+                            padding: 0;
+                          }
 
                           > div.liner {
                             position: absolute;
@@ -581,6 +683,7 @@ $answer-border: 1px solid rgba(0, 0, 0, 0.2);
           width: 100%;
           flex-grow: 1;
           position: relative;
+
           > div {
             position: absolute;
             top: 0;

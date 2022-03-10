@@ -21,6 +21,8 @@ public class Participant implements Comparable<Participant> {
     private String id;
     @Indexed
     private String code;
+    @Indexed
+    private String roomCode;
     private String email;
     private String name;
     private String alias;
@@ -45,6 +47,29 @@ public class Participant implements Comparable<Participant> {
             this.key = code + user.getId();
             this.id = String.valueOf(user.getId());
             this.code = code;
+            this.email = user.getEmail();
+            this.name = user.getIsNameOpened() ? user.getName() : "";
+            this.alias = user.getAlias();
+            this.imageType = user.getImageType();
+            this.imageData = user.getImageData();
+            this.connected = true;
+            this.joinTime = LocalDateTime.now();
+            this.ip = ip;
+            this.socketId = socketId;
+            this.audio = audio;
+            this.video = video;
+            this.isDailyScrumDone = false;
+            this.talkedSeconds = 0L;
+            this.talkedCount = 0L;
+        }
+    }
+
+    public Participant(User user, String code, String roomCode, String ip, String socketId, Boolean audio, Boolean video) {
+        if (user != null) {
+            this.key = code + roomCode + user.getId();
+            this.id = String.valueOf(user.getId());
+            this.code = code;
+            this.roomCode = roomCode;
             this.email = user.getEmail();
             this.name = user.getIsNameOpened() ? user.getName() : "";
             this.alias = user.getAlias();

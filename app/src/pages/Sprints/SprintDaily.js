@@ -5,7 +5,22 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
-import { Block, BlockTitle, Button, DatePicker, Liner, Page, PageContent, PageTitle, Placeholder, Tabs, TextArea, UserImage, withLogin } from '@/components';
+import {
+  Block,
+  BlockTitle,
+  Button,
+  DatePicker,
+  Liner,
+  Page,
+  PageContent,
+  PageTitle,
+  Placeholder,
+  Selector,
+  Tabs,
+  TextArea,
+  UserImage,
+  withLogin,
+} from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
@@ -251,6 +266,7 @@ const SprintDaily = ({
               <div className={`daily-meeting-list ${meetingListCollapsed ? 'collapsed' : ''}`}>
                 {meetingListCollapsed && (
                   <Button
+                    className="collapse-button"
                     size="sm"
                     color="white"
                     outline
@@ -320,6 +336,26 @@ const SprintDaily = ({
                         >
                           <i className="fas fa-angle-right" />
                         </Button>
+                      </div>
+                      <div className='break' />
+                      <div className="meeting-list-selector">
+                        <Selector
+                          outline
+                          size="md"
+                          items={meetings.map((d) => {
+                            return {
+                              key: d.id,
+                              value: d.name,
+                            };
+                          })}
+                          value={selectedMeetingId}
+                          onChange={(val) => {
+                            if (selectedMeetingId !== val) {
+                              selectMeeting(val);
+                            }
+                          }}
+                          minWidth="100px"
+                        />
                       </div>
                     </div>
                     <div className="meeting-list-content">

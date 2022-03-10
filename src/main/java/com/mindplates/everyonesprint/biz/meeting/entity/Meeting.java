@@ -12,6 +12,7 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Builder
@@ -69,5 +70,17 @@ public class Meeting extends CommonEntity {
 
     @Column(name = "daily_scrum_started")
     private Boolean dailyScrumStarted;
+
+    @Column(name = "limit_user_count")
+    private Integer limitUserCount;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<Room> rooms;
+
+    public Optional<Room> getRoom(String roomCode) {
+        return this.getRooms().stream().filter((r -> r.getCode().equals(roomCode))).findFirst();
+    }
+
 
 }

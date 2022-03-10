@@ -31,7 +31,6 @@ import SprintList from '@/components/SprintList/SprintList';
 import MeetingList from '@/components/MeetingList/MeetingList';
 import Selector from '@/components/Selector/Selector';
 import ParticipantsList from '@/components/ParticipantsList/ParticipantsList';
-import VideoElement from '@/components/VideoElement/VideoElement';
 import ConferenceVideoItem from '@/components/ConferenceVideoItem/ConferenceVideoItem';
 import DailyScrumMeeting from '@/components/DailyScrumMeeting/DailyScrumMeeting';
 import Tabs from '@/components/Tabs/Tabs';
@@ -88,7 +87,6 @@ export {
   Selector,
   MeetingList,
   ParticipantsList,
-  VideoElement,
   ConferenceVideoItem,
   DailyScrumMeeting,
   Tabs,

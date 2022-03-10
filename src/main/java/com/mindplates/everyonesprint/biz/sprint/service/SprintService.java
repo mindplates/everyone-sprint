@@ -94,9 +94,7 @@ public class SprintService {
         sprint.getSprintDailyMeetings().stream().filter((sprintDailyMeeting -> "U".equals(sprintDailyMeeting.getCRUD()))).forEach((sprintDailyMeeting -> {
             List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSprintDailyMeetingId(sprint.getId(), sprintDailyMeeting.getId());
             fillMeetings(sprint, userSession, now, startDate, endDate, updateMeetings, deleteMeetings, sprintDailyMeeting, meetings);
-
         }));
-
 
         // 스몰톡 미팅 및 미팅 삭제
         List<SprintDailySmallTalkMeeting> deleteSprintDailySmallTalkMeetings = new ArrayList<>();
@@ -106,7 +104,7 @@ public class SprintService {
         }));
         sprint.getSprintDailySmallTalkMeetings().removeAll(deleteSprintDailySmallTalkMeetings);
 
-        // 새 미팅 정보에 따른 미팅 생성
+        // 새 스몰톡 미팅 생성
         sprint.getSprintDailySmallTalkMeetings()
                 .stream()
                 .filter((sprintDailySmallTalkMeeting -> "C".equals(sprintDailySmallTalkMeeting.getCRUD())))
@@ -144,12 +142,12 @@ public class SprintService {
             if (currentDateMeeting == null) {
                 LocalDateTime meetingStartDate = currentDate.withHour(abstractDailyMeeting.getStartTime().getHour()).withMinute(abstractDailyMeeting.getStartTime().getMinute()).withSecond(0).withNano(0);
                 if (meetingStartDate.isAfter(startDate) && abstractDailyMeeting.getDays().charAt(currentDate.getDayOfWeek().getValue() - 1) == '1') {
-                    Meeting meeting = getMeeting(sprint, userSession, now, currentDate, (AbstractDailyMeeting)abstractDailyMeeting, null);
+                    Meeting meeting = getMeeting(sprint, userSession, now, currentDate, abstractDailyMeeting, null);
                     updateMeetings.add(meeting);
                 }
             } else {
                 if (abstractDailyMeeting.getDays().charAt(currentDate.getDayOfWeek().getValue() - 1) == '1') {
-                    Meeting meeting = getMeeting(sprint, userSession, now, currentDate, (AbstractDailyMeeting)abstractDailyMeeting, currentDateMeeting);
+                    Meeting meeting = getMeeting(sprint, userSession, now, currentDate, abstractDailyMeeting, currentDateMeeting);
                     updateMeetings.add(meeting);
                 } else {
                     deleteMeetings.add(currentDateMeeting);
@@ -172,6 +170,9 @@ public class SprintService {
             int dayOfWeekIndex = currentDate.getDayOfWeek().getValue() - 1;
             if (meetingStartDate.isAfter(startDate) && abstractDailyMeeting.getDays().charAt(dayOfWeekIndex) == '1') {
                 Meeting meeting = getMeeting(abstractDailyMeeting.getSprint(), userSession, now, currentDate, abstractDailyMeeting, null);
+                if (abstractDailyMeeting instanceof SprintDailySmallTalkMeeting) {
+                    meeting.setLimitUserCount(((SprintDailySmallTalkMeeting) abstractDailyMeeting).getLimitUserCount());
+                }
                 meetings.add(meeting);
             }
 
@@ -221,6 +222,7 @@ public class SprintService {
             meeting.setUsers(meetingUsers);
 
         } else if (abstractDailyMeeting instanceof SprintDailySmallTalkMeeting) {
+            meeting.setLimitUserCount(((SprintDailySmallTalkMeeting) abstractDailyMeeting).getLimitUserCount());
             meeting.setSprintDailySmallTalkMeeting((SprintDailySmallTalkMeeting) abstractDailyMeeting);
         }
 

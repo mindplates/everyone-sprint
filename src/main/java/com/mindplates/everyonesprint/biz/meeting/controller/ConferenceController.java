@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.meeting.controller;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.entity.MeetingUser;
+import com.mindplates.everyonesprint.biz.meeting.entity.Room;
 import com.mindplates.everyonesprint.biz.meeting.redis.Participant;
 import com.mindplates.everyonesprint.biz.meeting.service.DailyScrumService;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
@@ -9,6 +10,7 @@ import com.mindplates.everyonesprint.biz.meeting.service.ParticipantService;
 import com.mindplates.everyonesprint.biz.meeting.vo.request.TalkedRequest;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.DailyScrumStatusResponse;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingResponse;
+import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
@@ -46,6 +48,41 @@ public class ConferenceController {
         if (users.stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
             throw new ServiceException(HttpStatus.FORBIDDEN, "common.no.member");
         }
+    }
+
+    private void checkIsSprintMember(UserSession userSession, Sprint sprint) {
+        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
+            throw new ServiceException(HttpStatus.FORBIDDEN, "common.no.member");
+        }
+    }
+
+    private void checkIsRoomMember(UserSession userSession, Room room) {
+        if (room.getUsers().stream().noneMatch((u) -> u.getUser().getId().equals(userSession.getId()))) {
+            throw new ServiceException(HttpStatus.FORBIDDEN, "common.no.room.member");
+        }
+    }
+
+    @GetMapping("/{code}/rooms/{roomCode}")
+    public MeetingResponse selectMeetingInfo(@PathVariable String code, @PathVariable String roomCode, UserSession userSession) {
+        Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsSprintMember(userSession, meeting.getSprint());
+
+        Room room = meeting.getRooms().stream().filter((r -> r.getCode().equals(roomCode))).findFirst().orElseThrow(() -> new ServiceException(HttpStatus.FORBIDDEN, "common.no.room"));
+        checkIsRoomMember(userSession, room);
+
+        return new MeetingResponse(meeting, room);
+    }
+
+    @GetMapping("/{code}/rooms/{roomCode}/users")
+    public Iterable<Participant> selectMyInfo(@PathVariable String code, @PathVariable String roomCode, UserSession userSession) {
+        Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsSprintMember(userSession, meeting.getSprint());
+
+        Room room = meeting.getRooms().stream().filter((r -> r.getCode().equals(roomCode))).findFirst().orElseThrow(() -> new ServiceException(HttpStatus.FORBIDDEN, "common.no.room"));
+        checkIsRoomMember(userSession, room);
+
+        Participant participant = Participant.builder().code(code).roomCode(roomCode).build();
+        return participantService.findAll(participant);
     }
 
     @GetMapping("/{code}")
@@ -117,6 +154,28 @@ public class ConferenceController {
             meetingService.updateUserTalkedInfo(meeting, userSession, talkedRequest.getCount(), talkedRequest.getTime());
         } else {
             meetingService.updateUserTalkedInfo(meeting, userSession, Optional.ofNullable(currentParticipant.getTalkedCount()).orElse(0L) + talkedRequest.getCount(), Optional.ofNullable(currentParticipant.getTalkedSeconds()).orElse(0L) + talkedRequest.getTime());
+            currentParticipant.setTalkedCount(Optional.ofNullable(currentParticipant.getTalkedCount()).orElse(0L) + talkedRequest.getCount());
+            currentParticipant.setTalkedSeconds(Optional.ofNullable(currentParticipant.getTalkedSeconds()).orElse(0L) + talkedRequest.getTime());
+            participantService.save(currentParticipant);
+        }
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PutMapping("/{code}/rooms/{roomCode}/talked")
+    public ResponseEntity updateUserTalkedInfo(@PathVariable String code, @PathVariable String roomCode, @RequestBody TalkedRequest talkedRequest, UserSession userSession) {
+
+        Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsSprintMember(userSession, meeting.getSprint());
+
+        Room room = meeting.getRooms().stream().filter((r -> r.getCode().equals(roomCode))).findFirst().orElseThrow(() -> new ServiceException(HttpStatus.FORBIDDEN, "common.no.room"));
+        checkIsRoomMember(userSession, room);
+
+        Participant currentParticipant = participantService.findById(code + roomCode + userSession.getId());
+
+        if (currentParticipant == null) {
+            meetingService.updateRoomUserTalkedInfo(meeting.getRoom(roomCode).get(), userSession, talkedRequest.getCount(), talkedRequest.getTime());
+        } else {
+            meetingService.updateRoomUserTalkedInfo(meeting.getRoom(roomCode).get(), userSession, Optional.ofNullable(currentParticipant.getTalkedCount()).orElse(0L) + talkedRequest.getCount(), Optional.ofNullable(currentParticipant.getTalkedSeconds()).orElse(0L) + talkedRequest.getTime());
             currentParticipant.setTalkedCount(Optional.ofNullable(currentParticipant.getTalkedCount()).orElse(0L) + talkedRequest.getCount());
             currentParticipant.setTalkedSeconds(Optional.ofNullable(currentParticipant.getTalkedSeconds()).orElse(0L) + talkedRequest.getTime());
             participantService.save(currentParticipant);

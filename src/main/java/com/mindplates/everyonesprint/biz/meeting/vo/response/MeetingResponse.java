@@ -1,6 +1,7 @@
 package com.mindplates.everyonesprint.biz.meeting.vo.response;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
+import com.mindplates.everyonesprint.biz.meeting.entity.Room;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailyMeeting;
 import com.mindplates.everyonesprint.biz.sprint.entity.SprintDailySmallTalkMeeting;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintDailyMeetingQuestionResponse;
@@ -29,6 +30,7 @@ public class MeetingResponse {
     private List<SprintDailyMeetingQuestionResponse> sprintDailyMeetingQuestions;
     private Long connectedUserCount;
     private Long sprintDailySmallTalkMeetingId;
+    private Integer limitUserCount;
 
 
     public MeetingResponse(Meeting meeting) {
@@ -41,7 +43,38 @@ public class MeetingResponse {
         this.sprintName = meeting.getSprint().getName();
         this.sprintDailyMeetingId = Optional.ofNullable(meeting.getSprintDailyMeeting()).map(SprintDailyMeeting::getId).orElse(null);
         this.sprintDailySmallTalkMeetingId = Optional.ofNullable(meeting.getSprintDailySmallTalkMeeting()).map(SprintDailySmallTalkMeeting::getId).orElse(null);
+        this.limitUserCount = meeting.getLimitUserCount();
         this.users = meeting.getUsers().stream().map(
+                (meetingUser) -> User.builder()
+                        .id(meetingUser.getId())
+                        .userId(meetingUser.getUser().getId())
+                        .email(meetingUser.getUser().getEmail())
+                        .name(meetingUser.getUser().getName())
+                        .alias(meetingUser.getUser().getAlias())
+                        .imageType(meetingUser.getUser().getImageType())
+                        .imageData(meetingUser.getUser().getImageData())
+                        .build()).collect(Collectors.toList());
+        if (meeting.getSprintDailyMeeting() != null) {
+            this.sprintDailyMeetingQuestions = meeting.getSprintDailyMeeting().getSprintDailyMeetingQuestions()
+                    .stream()
+                    .map((SprintDailyMeetingQuestionResponse::new)).collect(Collectors.toList());
+        }
+
+    }
+
+    public MeetingResponse(Meeting meeting, Room room) {
+        this.id = meeting.getId();
+        this.name = meeting.getName();
+        this.code = meeting.getCode();
+        this.startDate = meeting.getStartDate();
+        this.endDate = meeting.getEndDate();
+        this.sprintId = meeting.getSprint().getId();
+        this.sprintName = meeting.getSprint().getName();
+        this.sprintDailyMeetingId = Optional.ofNullable(meeting.getSprintDailyMeeting()).map(SprintDailyMeeting::getId).orElse(null);
+        this.sprintDailySmallTalkMeetingId = Optional.ofNullable(meeting.getSprintDailySmallTalkMeeting()).map(SprintDailySmallTalkMeeting::getId).orElse(null);
+        this.limitUserCount = meeting.getLimitUserCount();
+
+        this.users = room.getUsers().stream().map(
                 (meetingUser) -> User.builder()
                         .id(meetingUser.getId())
                         .userId(meetingUser.getUser().getId())
