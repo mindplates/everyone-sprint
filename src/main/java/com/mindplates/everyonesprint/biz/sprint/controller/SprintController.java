@@ -8,7 +8,7 @@ import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
 import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingAnswer;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
-import com.mindplates.everyonesprint.biz.sprint.vo.request.SprintDailyMeetingAnswerRequest;
+import com.mindplates.everyonesprint.biz.sprint.vo.request.ScrumMeetingAnswerRequest;
 import com.mindplates.everyonesprint.biz.sprint.vo.request.SprintRequest;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.*;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
@@ -96,6 +96,10 @@ public class SprintController {
         }
 
         Sprint sprintInfo = sprintRequest.buildEntity();
+        Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
+        sprintInfo.setClosed(sprint.getClosed());
+        sprintInfo.setRealEndDate(sprint.getRealEndDate());
+
         return new SprintResponse(sprintService.updateSprintInfo(sprintInfo, userSession));
     }
 
@@ -124,51 +128,51 @@ public class SprintController {
 
         Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
         List<Long> scrumMeetingPlanIds = sprint.getScrumMeetingPlans().stream().map(ScrumMeetingPlan::getId).collect(Collectors.toList());
-        List<Meeting> dailyMeetings = meetingService.selectSprintUserScrumMeetingList(userSession.getId(), scrumMeetingPlanIds, start, end);
+        List<Meeting> scrumMeetings = meetingService.selectSprintUserScrumMeetingList(userSession.getId(), scrumMeetingPlanIds, start, end);
         List<Meeting> noDailyMeetings = meetingService.selectSprintNotScrumMeetingList(userSession.getId(), start, end);
         List<ScrumMeetingAnswer> scrumMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(sprintId, date);
 
         return SprintBoardResponse.builder()
-                .dailyMeetings(dailyMeetings.stream().map(MeetingResponse::new).collect(Collectors.toList()))
+                .scrumMeetings(scrumMeetings.stream().map(MeetingResponse::new).collect(Collectors.toList()))
                 .meetings(noDailyMeetings.stream().map(MeetingResponse::new).collect(Collectors.toList()))
-                .scrumMeetingPlanAnswers(scrumMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList()))
+                .scrumMeetingPlanAnswers(scrumMeetingAnswers.stream().map(ScrumMeetingAnswerResponse::new).collect(Collectors.toList()))
                 .build();
     }
 
 
     @GetMapping("/{id}/answers")
-    public List<SprintDailyMeetingAnswerResponse> selectSprintDailyMeetingAnswers(@PathVariable Long id,
-                                                                                  @RequestParam("date") LocalDate date) {
+    public List<ScrumMeetingAnswerResponse> selectSprintDailyMeetingAnswers(@PathVariable Long id,
+                                                                            @RequestParam("date") LocalDate date) {
         List<ScrumMeetingAnswer> scrumMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(id, date);
 
-        return scrumMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+        return scrumMeetingAnswers.stream().map(ScrumMeetingAnswerResponse::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{sprintId}/meetings/{meetingId}/answers/latest")
-    public List<SprintDailyMeetingAnswerResponse> selectLatestSprintDailyMeetingAnswers(@PathVariable Long sprintId,
-                                                                                        @PathVariable Long meetingId,
-                                                                                        @RequestParam("date") LocalDate date,
-                                                                                        @ApiIgnore UserSession userSession) {
+    public List<ScrumMeetingAnswerResponse> selectLatestSprintDailyMeetingAnswers(@PathVariable Long sprintId,
+                                                                                  @PathVariable Long meetingId,
+                                                                                  @RequestParam("date") LocalDate date,
+                                                                                  @ApiIgnore UserSession userSession) {
         List<ScrumMeetingAnswer> scrumMeetingAnswers = sprintService.selectLastUserSprintDailyMeetingAnswerList(sprintId, meetingId, userSession.getId(), date);
-        return scrumMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+        return scrumMeetingAnswers.stream().map(ScrumMeetingAnswerResponse::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{sprintId}/meetings/{meetingId}/answers")
-    public List<SprintDailyMeetingAnswerResponse> selectSprintDailyMeetingAnswers(@PathVariable Long sprintId,
-                                                                                  @PathVariable Long meetingId,
-                                                                                  @RequestParam("date") LocalDate date) {
+    public List<ScrumMeetingAnswerResponse> selectSprintDailyMeetingAnswers(@PathVariable Long sprintId,
+                                                                            @PathVariable Long meetingId,
+                                                                            @RequestParam("date") LocalDate date) {
         List<ScrumMeetingAnswer> scrumMeetingAnswers = sprintService.selectSprintDailyMeetingAnswerList(sprintId, meetingId, date);
 
-        return scrumMeetingAnswers.stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+        return scrumMeetingAnswers.stream().map(ScrumMeetingAnswerResponse::new).collect(Collectors.toList());
     }
 
     @PostMapping("/{sprintId}/answers")
-    public List<SprintDailyMeetingAnswerResponse> createSprintDailyMeetingAnswers(@PathVariable Long sprintId,
-                                                                                  @Valid @RequestBody List<SprintDailyMeetingAnswerRequest> scrumMeetingPlanAnswerRequests,
-                                                                                  @ApiIgnore UserSession userSession) {
+    public List<ScrumMeetingAnswerResponse> createSprintDailyMeetingAnswers(@PathVariable Long sprintId,
+                                                                            @Valid @RequestBody List<ScrumMeetingAnswerRequest> scrumMeetingPlanAnswerRequests,
+                                                                            @ApiIgnore UserSession userSession) {
 
         List<ScrumMeetingAnswer> scrumMeetingPlanUserAnswers = scrumMeetingPlanAnswerRequests.stream().map((scrumMeetingPlanAnswerRequest -> scrumMeetingPlanAnswerRequest.buildEntity(userSession.getId()))).collect(Collectors.toList());
-        return (sprintService.createSprintDailyMeetingAnswers(scrumMeetingPlanUserAnswers, userSession)).stream().map(SprintDailyMeetingAnswerResponse::new).collect(Collectors.toList());
+        return (sprintService.createSprintDailyMeetingAnswers(scrumMeetingPlanUserAnswers, userSession)).stream().map(ScrumMeetingAnswerResponse::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{sprintId}/summary")

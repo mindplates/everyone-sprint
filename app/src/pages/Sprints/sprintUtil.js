@@ -26,10 +26,10 @@ function getSprint(sprint) {
     });
   });
 
-  result.sprintDailySmallTalkMeetings?.forEach((sprintDailySmallTalkMeeting) => {
-    sprintDailySmallTalkMeeting.CRUD = 'R';
-    const starts = sprintDailySmallTalkMeeting.startTime.split(':');
-    const ends = sprintDailySmallTalkMeeting.endTime.split(':');
+  result.smallTalkMeetingPlans?.forEach((smallTalkMeetingPlan) => {
+    smallTalkMeetingPlan.CRUD = 'R';
+    const starts = smallTalkMeetingPlan.startTime.split(':');
+    const ends = smallTalkMeetingPlan.endTime.split(':');
 
     const startTime = new Date();
     startTime.setHours(Number(starts[0]) + dateUtil.getUserOffsetHours());
@@ -39,8 +39,8 @@ function getSprint(sprint) {
     endTime.setHours(Number(ends[0]) + dateUtil.getUserOffsetHours());
     endTime.setMinutes(Number(ends[1]) + dateUtil.getUserOffsetMinutes());
 
-    sprintDailySmallTalkMeeting.startTime = startTime.getTime();
-    sprintDailySmallTalkMeeting.endTime = endTime.getTime();
+    smallTalkMeetingPlan.startTime = startTime.getTime();
+    smallTalkMeetingPlan.endTime = endTime.getTime();
   });
 
   result.startDate = dateUtil.getTime(result.startDate);

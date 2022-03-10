@@ -93,7 +93,7 @@ const MeetingTimeLine = ({ className, date, user, meetings, history, height }) =
                           baseTime={d}
                           user={user}
                           onClick={() => {
-                            if (meeting.sprintDailySmallTalkMeetingId) {
+                            if (meeting.smallTalkMeetingPlanId) {
                               history.push(`/talks/${meeting.code}`);
                             } else {
                               history.push(`/conferences/${meeting.code}`);

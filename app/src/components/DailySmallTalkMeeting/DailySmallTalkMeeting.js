@@ -6,7 +6,7 @@ import { UserPropTypes } from '@/proptypes';
 import { BlockRow, Button, DateRange, DateRangeText, Input, Label, Liner, Text } from '@/components';
 import './DailySmallTalkMeeting.scss';
 
-const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo, sprintDailySmallTalkMeeting, onChangeMeetingDays, user }) => {
+const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo, smallTalkMeetingPlan, onChangeMeetingDays, user }) => {
   const labelMinWidth = '140px';
 
   return (
@@ -37,7 +37,7 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
           <Input
             type="text"
             size="md"
-            value={sprintDailySmallTalkMeeting.name}
+            value={smallTalkMeetingPlan.name}
             onChange={(val) => onChangeInfo('name', val)}
             outline
             simple
@@ -45,7 +45,7 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
             minLength={1}
           />
         )}
-        {!edit && <Text>{sprintDailySmallTalkMeeting.name}</Text>}
+        {!edit && <Text>{smallTalkMeetingPlan.name}</Text>}
       </BlockRow>
       <BlockRow>
         <div className="date-info">
@@ -55,8 +55,8 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
               <DateRange
                 country={user.country}
                 language={user.language}
-                startDate={sprintDailySmallTalkMeeting.startTime}
-                endDate={sprintDailySmallTalkMeeting.endTime}
+                startDate={smallTalkMeetingPlan.startTime}
+                endDate={smallTalkMeetingPlan.endTime}
                 showTimeSelectOnly
                 startDateKey="startTime"
                 endDateKey="endTime"
@@ -71,8 +71,8 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
               <DateRangeText
                 showTimeOnly
                 country={user.country}
-                startDate={sprintDailySmallTalkMeeting.startTime}
-                endDate={sprintDailySmallTalkMeeting.endTime}
+                startDate={smallTalkMeetingPlan.startTime}
+                endDate={smallTalkMeetingPlan.endTime}
               />
             )}
             {edit && (
@@ -82,13 +82,13 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
                   return (
                     <Button
                       key={jnx}
-                      className={sprintDailySmallTalkMeeting.days[jnx] === '1' ? 'selected' : ''}
+                      className={smallTalkMeetingPlan.days[jnx] === '1' ? 'selected' : ''}
                       size="md"
                       color="white"
                       outline
                       rounded
                       onClick={() => {
-                        onChangeMeetingDays(jnx, sprintDailySmallTalkMeeting.days[jnx] === '1' ? '0' : '1');
+                        onChangeMeetingDays(jnx, smallTalkMeetingPlan.days[jnx] === '1' ? '0' : '1');
                       }}
                     >
                       {day}
@@ -98,11 +98,11 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
                 <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
                 <Button
                   size="sm"
-                  className={sprintDailySmallTalkMeeting.onHoliday ? 'selected' : ''}
+                  className={smallTalkMeetingPlan.onHoliday ? 'selected' : ''}
                   color="white"
                   outline
                   onClick={() => {
-                    onChangeInfo('onHoliday', !sprintDailySmallTalkMeeting.onHoliday);
+                    onChangeInfo('onHoliday', !smallTalkMeetingPlan.onHoliday);
                   }}
                 >
                   휴일 제외
@@ -114,7 +114,7 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
                 <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
                 {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')]
                   .filter((d, inx) => {
-                    return sprintDailySmallTalkMeeting.days[inx] === '1';
+                    return smallTalkMeetingPlan.days[inx] === '1';
                   })
                   .map((day, jnx) => {
                     return (
@@ -123,7 +123,7 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
                       </span>
                     );
                   })}
-                {sprintDailySmallTalkMeeting.onHoliday && (
+                {smallTalkMeetingPlan.onHoliday && (
                   <>
                     <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
                     <span className="holiday-text">
@@ -142,7 +142,7 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
           <Input
             type="number"
             size="md"
-            value={sprintDailySmallTalkMeeting.limitUserCount}
+            value={smallTalkMeetingPlan.limitUserCount}
             onChange={(val) => onChangeInfo('limitUserCount', val)}
             outline
             simple
@@ -150,7 +150,7 @@ const DailySmallTalkMeeting = ({ className, t, edit, no, onRemove, onChangeInfo,
             minLength={1}
           />
         )}
-        {!edit && <Text>{sprintDailySmallTalkMeeting.limitUserCount}</Text>}
+        {!edit && <Text>{smallTalkMeetingPlan.limitUserCount}</Text>}
       </BlockRow>
     </div>
   );
@@ -169,7 +169,7 @@ DailySmallTalkMeeting.propTypes = {
   t: PropTypes.func,
   no: PropTypes.number,
   onRemove: PropTypes.func,
-  sprintDailySmallTalkMeeting: PropTypes.shape({
+  smallTalkMeetingPlan: PropTypes.shape({
     days: PropTypes.string,
     endTime: PropTypes.number,
     id: PropTypes.number,

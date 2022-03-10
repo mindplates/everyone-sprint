@@ -10,7 +10,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class SprintDailyMeetingAnswerRequest {
+public class ScrumMeetingAnswerRequest {
 
     private Long id;
     private Long sprintId;

@@ -4,7 +4,7 @@ import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.entity.Room;
 import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
 import com.mindplates.everyonesprint.biz.sprint.entity.SmallTalkMeetingPlan;
-import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintDailyMeetingQuestionResponse;
+import com.mindplates.everyonesprint.biz.sprint.vo.response.ScrumMeetingQuestionResponse;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -27,9 +27,9 @@ public class MeetingResponse {
     private LocalDateTime endDate;
     private List<User> users;
     private Long scrumMeetingPlanId;
-    private List<SprintDailyMeetingQuestionResponse> scrumMeetingPlanQuestions;
+    private List<ScrumMeetingQuestionResponse> scrumMeetingPlanQuestions;
     private Long connectedUserCount;
-    private Long sprintDailySmallTalkMeetingId;
+    private Long smallTalkMeetingPlanId;
     private Integer limitUserCount;
 
 
@@ -42,7 +42,7 @@ public class MeetingResponse {
         this.sprintId = meeting.getSprint().getId();
         this.sprintName = meeting.getSprint().getName();
         this.scrumMeetingPlanId = Optional.ofNullable(meeting.getScrumMeetingPlan()).map(ScrumMeetingPlan::getId).orElse(null);
-        this.sprintDailySmallTalkMeetingId = Optional.ofNullable(meeting.getSmallTalkMeetingPlan()).map(SmallTalkMeetingPlan::getId).orElse(null);
+        this.smallTalkMeetingPlanId = Optional.ofNullable(meeting.getSmallTalkMeetingPlan()).map(SmallTalkMeetingPlan::getId).orElse(null);
         this.limitUserCount = meeting.getLimitUserCount();
         this.users = meeting.getUsers().stream().map(
                 (meetingUser) -> User.builder()
@@ -57,7 +57,7 @@ public class MeetingResponse {
         if (meeting.getScrumMeetingPlan() != null) {
             this.scrumMeetingPlanQuestions = meeting.getScrumMeetingPlan().getScrumMeetingQuestions()
                     .stream()
-                    .map((SprintDailyMeetingQuestionResponse::new)).collect(Collectors.toList());
+                    .map((ScrumMeetingQuestionResponse::new)).collect(Collectors.toList());
         }
 
     }
@@ -71,7 +71,7 @@ public class MeetingResponse {
         this.sprintId = meeting.getSprint().getId();
         this.sprintName = meeting.getSprint().getName();
         this.scrumMeetingPlanId = Optional.ofNullable(meeting.getScrumMeetingPlan()).map(ScrumMeetingPlan::getId).orElse(null);
-        this.sprintDailySmallTalkMeetingId = Optional.ofNullable(meeting.getSmallTalkMeetingPlan()).map(SmallTalkMeetingPlan::getId).orElse(null);
+        this.smallTalkMeetingPlanId = Optional.ofNullable(meeting.getSmallTalkMeetingPlan()).map(SmallTalkMeetingPlan::getId).orElse(null);
         this.limitUserCount = meeting.getLimitUserCount();
 
         this.users = room.getUsers().stream().map(
@@ -87,7 +87,7 @@ public class MeetingResponse {
         if (meeting.getScrumMeetingPlan() != null) {
             this.scrumMeetingPlanQuestions = meeting.getScrumMeetingPlan().getScrumMeetingQuestions()
                     .stream()
-                    .map((SprintDailyMeetingQuestionResponse::new)).collect(Collectors.toList());
+                    .map((ScrumMeetingQuestionResponse::new)).collect(Collectors.toList());
         }
 
     }

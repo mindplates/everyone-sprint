@@ -72,7 +72,7 @@ const EditSprint = ({
     doDailySmallTalkMeeting: false,
     users: [],
     scrumMeetingPlans: [],
-    sprintDailySmallTalkMeetings: [],
+    smallTalkMeetingPlans: [],
     projectId: null,
   });
 
@@ -322,15 +322,15 @@ const EditSprint = ({
 
   const removeSprintDailySmallTalkMeeting = (inx) => {
     const next = { ...sprint };
-    const nextSprintDailySmallTalkMeetings = next.sprintDailySmallTalkMeetings.slice(0);
+    const nextSprintDailySmallTalkMeetings = next.smallTalkMeetingPlans.slice(0);
     nextSprintDailySmallTalkMeetings[inx].CRUD = 'D';
-    next.sprintDailySmallTalkMeetings = nextSprintDailySmallTalkMeetings;
+    next.smallTalkMeetingPlans = nextSprintDailySmallTalkMeetings;
     setSprint(next);
   };
 
   const changeSprintDailySmallTalkMeeting = (inx, key, value) => {
     const next = { ...sprint };
-    const nextSprintDailySmallTalkMeetings = next.sprintDailySmallTalkMeetings.slice(0);
+    const nextSprintDailySmallTalkMeetings = next.smallTalkMeetingPlans.slice(0);
     nextSprintDailySmallTalkMeetings[inx] = { ...nextSprintDailySmallTalkMeetings[inx], [key]: value };
 
     if (key === 'startTime' && nextSprintDailySmallTalkMeetings[inx].startTime >= nextSprintDailySmallTalkMeetings[inx].endTime) {
@@ -344,13 +344,13 @@ const EditSprint = ({
     if (nextSprintDailySmallTalkMeetings[inx].CRUD === 'R') {
       nextSprintDailySmallTalkMeetings[inx].CRUD = 'U';
     }
-    next.sprintDailySmallTalkMeetings = nextSprintDailySmallTalkMeetings;
+    next.smallTalkMeetingPlans = nextSprintDailySmallTalkMeetings;
     setSprint(next);
   };
 
   const changeSprintDailySmallTalkMeetingDays = (inx, daysIndex, value) => {
     const next = { ...sprint };
-    const nextSprintDailySmallTalkMeetings = next.sprintDailySmallTalkMeetings.slice(0);
+    const nextSprintDailySmallTalkMeetings = next.smallTalkMeetingPlans.slice(0);
     const nextSprintDailySmallTalkMeeting = nextSprintDailySmallTalkMeetings[inx];
     const list = nextSprintDailySmallTalkMeeting.days.split('');
     list[daysIndex] = value;
@@ -360,13 +360,13 @@ const EditSprint = ({
       nextSprintDailySmallTalkMeeting.CRUD = 'U';
     }
 
-    next.sprintDailySmallTalkMeetings = nextSprintDailySmallTalkMeetings;
+    next.smallTalkMeetingPlans = nextSprintDailySmallTalkMeetings;
     setSprint(next);
   };
 
   const addSprintDailySmallTalkMeeting = () => {
     const next = { ...sprint };
-    const sprintDailySmallTalkMeetings = next.sprintDailySmallTalkMeetings.slice(0);
+    const smallTalkMeetingPlans = next.smallTalkMeetingPlans.slice(0);
 
     const startTime = new Date();
     startTime.setHours(11);
@@ -380,7 +380,7 @@ const EditSprint = ({
     endTime.setSeconds(0);
     endTime.setMilliseconds(0);
 
-    sprintDailySmallTalkMeetings.push({
+    smallTalkMeetingPlans.push({
       CRUD: 'C',
       name: '스몰톡 미팅',
       startTime: startTime.getTime(),
@@ -390,7 +390,7 @@ const EditSprint = ({
       limitUserCount: 5,
     });
 
-    next.sprintDailySmallTalkMeetings = sprintDailySmallTalkMeetings;
+    next.smallTalkMeetingPlans = smallTalkMeetingPlans;
     setSprint(next);
   };
 
@@ -420,20 +420,20 @@ const EditSprint = ({
       });
     });
 
-    next.sprintDailySmallTalkMeetings.forEach((sprintDailySmallTalkMeeting) => {
-      const startTime = new Date(sprintDailySmallTalkMeeting.startTime);
+    next.smallTalkMeetingPlans.forEach((smallTalkMeetingPlan) => {
+      const startTime = new Date(smallTalkMeetingPlan.startTime);
       startTime.setHours(startTime.getHours());
       startTime.setMinutes(startTime.getMinutes());
 
-      const endTime = new Date(sprintDailySmallTalkMeeting.endTime);
+      const endTime = new Date(smallTalkMeetingPlan.endTime);
       endTime.setHours(endTime.getHours());
       endTime.setMinutes(endTime.getMinutes());
 
       // smallTalkMeetingPlan.startTime = `${`0${startTime.getHours()}`.slice(-2)}:${`0${startTime.getMinutes()}`.slice(-2)}:00`;
       // smallTalkMeetingPlan.endTime = `${`0${endTime.getHours()}`.slice(-2)}:${`0${endTime.getMinutes()}`.slice(-2)}:00`;
 
-      sprintDailySmallTalkMeeting.startTime = startTime.toISOString();
-      sprintDailySmallTalkMeeting.endTime = endTime.toISOString();
+      smallTalkMeetingPlan.startTime = startTime.toISOString();
+      smallTalkMeetingPlan.endTime = endTime.toISOString();
     });
 
     if (type === 'edit') {
@@ -638,14 +638,14 @@ const EditSprint = ({
             </Block>
             {sprint.doDailySmallTalkMeeting && (
               <Block className="sprint-daily-meetings">
-                {sprint.sprintDailySmallTalkMeetings.map((sprintDailySmallTalkMeeting, inx) => {
+                {sprint.smallTalkMeetingPlans.map((smallTalkMeetingPlan, inx) => {
                   return (
                     <DailySmallTalkMeeting
-                      className={sprintDailySmallTalkMeeting.CRUD === 'D' ? 'd-none' : ''}
+                      className={smallTalkMeetingPlan.CRUD === 'D' ? 'd-none' : ''}
                       key={inx}
                       edit
                       no={inx + 1}
-                      sprintDailySmallTalkMeeting={sprintDailySmallTalkMeeting}
+                      smallTalkMeetingPlan={smallTalkMeetingPlan}
                       onRemove={() => {
                         removeSprintDailySmallTalkMeeting(inx);
                       }}
@@ -653,7 +653,7 @@ const EditSprint = ({
                         changeSprintDailySmallTalkMeeting(inx, key, value);
                       }}
                       onChangeMeetingDays={(dayIndex) => {
-                        changeSprintDailySmallTalkMeetingDays(inx, dayIndex, sprintDailySmallTalkMeeting.days[dayIndex] === '1' ? '0' : '1');
+                        changeSprintDailySmallTalkMeetingDays(inx, dayIndex, smallTalkMeetingPlan.days[dayIndex] === '1' ? '0' : '1');
                       }}
                       user={user}
                     />

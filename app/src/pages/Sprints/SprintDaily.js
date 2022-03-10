@@ -134,7 +134,7 @@ const SprintDaily = ({
       `/api/sprints/${id}/daily?start=${start.toISOString()}&end=${end.toISOString()}&date=${dayString}`,
       null,
       (data) => {
-        setMeetings(data.dailyMeetings);
+        setMeetings(data.scrumMeetings);
         setDailyAnswers(data.scrumMeetingPlanAnswers);
       },
       null,

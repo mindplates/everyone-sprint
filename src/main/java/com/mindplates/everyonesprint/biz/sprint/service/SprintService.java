@@ -58,8 +58,8 @@ public class SprintService {
             meetings.addAll(makeMeetings(scrumMeetingPlan, startDate, endDate, userSession));
         }
 
-        for (SmallTalkMeetingPlan sprintDailySmallTalkMeeting : sprint.getSprintDailySmallTalkMeetings()) {
-            meetings.addAll(makeMeetings(sprintDailySmallTalkMeeting, startDate, endDate, userSession));
+        for (SmallTalkMeetingPlan smallTalkMeetingPlan : sprint.getSmallTalkMeetingPlans()) {
+            meetings.addAll(makeMeetings(smallTalkMeetingPlan, startDate, endDate, userSession));
         }
 
         if (meetings.size() > 0) {
@@ -98,24 +98,24 @@ public class SprintService {
 
         // 스몰톡 미팅 및 미팅 삭제
         List<SmallTalkMeetingPlan> deleteSprintDailySmallTalkMeetings = new ArrayList<>();
-        sprint.getSprintDailySmallTalkMeetings().stream().filter((sprintDailySmallTalkMeeting -> "D".equals(sprintDailySmallTalkMeeting.getCRUD()))).forEach((sprintDailySmallTalkMeeting -> {
-            deleteSprintDailySmallTalkMeetings.add(sprintDailySmallTalkMeeting);
-            meetingRepository.deleteAllBySmallTalkMeetingPlanId(sprintDailySmallTalkMeeting.getId());
+        sprint.getSmallTalkMeetingPlans().stream().filter((smallTalkMeetingPlan -> "D".equals(smallTalkMeetingPlan.getCRUD()))).forEach((smallTalkMeetingPlan -> {
+            deleteSprintDailySmallTalkMeetings.add(smallTalkMeetingPlan);
+            meetingRepository.deleteAllBySmallTalkMeetingPlanId(smallTalkMeetingPlan.getId());
         }));
-        sprint.getSprintDailySmallTalkMeetings().removeAll(deleteSprintDailySmallTalkMeetings);
+        sprint.getSmallTalkMeetingPlans().removeAll(deleteSprintDailySmallTalkMeetings);
 
         // 새 스몰톡 미팅 생성
-        sprint.getSprintDailySmallTalkMeetings()
+        sprint.getSmallTalkMeetingPlans()
                 .stream()
-                .filter((sprintDailySmallTalkMeeting -> "C".equals(sprintDailySmallTalkMeeting.getCRUD())))
-                .forEach(sprintDailySmallTalkMeeting -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) sprintDailySmallTalkMeeting, startDate, endDate, userSession)));
+                .filter((smallTalkMeetingPlan -> "C".equals(smallTalkMeetingPlan.getCRUD())))
+                .forEach(smallTalkMeetingPlan -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) smallTalkMeetingPlan, startDate, endDate, userSession)));
 
-        sprint.getSprintDailySmallTalkMeetings()
+        sprint.getSmallTalkMeetingPlans()
                 .stream()
-                .filter((sprintDailySmallTalkMeeting -> "U".equals(sprintDailySmallTalkMeeting.getCRUD())))
-                .forEach((sprintDailySmallTalkMeeting -> {
-                    List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSmallTalkMeetingPlanId(sprint.getId(), sprintDailySmallTalkMeeting.getId());
-                    fillMeetings(sprint, userSession, now, startDate, endDate, updateMeetings, deleteMeetings, sprintDailySmallTalkMeeting, meetings);
+                .filter((smallTalkMeetingPlan -> "U".equals(smallTalkMeetingPlan.getCRUD())))
+                .forEach((smallTalkMeetingPlan -> {
+                    List<Meeting> meetings = meetingRepository.findAllBySprintIdAndSmallTalkMeetingPlanId(sprint.getId(), smallTalkMeetingPlan.getId());
+                    fillMeetings(sprint, userSession, now, startDate, endDate, updateMeetings, deleteMeetings, smallTalkMeetingPlan, meetings);
                 }));
 
 

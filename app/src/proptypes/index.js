@@ -87,7 +87,7 @@ const MeetingPropTypes = PropTypes.shape({
   id: PropTypes.number,
   name: PropTypes.string,
   scrumMeetingPlanId: PropTypes.number,
-  sprintDailySmallTalkMeetingId: PropTypes.number,
+  smallTalkMeetingPlanId: PropTypes.number,
   sprintId: PropTypes.number,
   sprintName: PropTypes.string,
   startDate: PropTypes.string,

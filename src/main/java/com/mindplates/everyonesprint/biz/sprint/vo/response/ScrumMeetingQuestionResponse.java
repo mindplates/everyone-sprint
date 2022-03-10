@@ -1,10 +1,16 @@
 package com.mindplates.everyonesprint.biz.sprint.vo.response;
 
 import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingQuestion;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class SprintDailyMeetingQuestionResponse {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ScrumMeetingQuestionResponse {
 
     private Long id;
     private Long scrumMeetingPlanId;
@@ -12,7 +18,7 @@ public class SprintDailyMeetingQuestionResponse {
     private Integer sortOrder;
 
 
-    public SprintDailyMeetingQuestionResponse(ScrumMeetingQuestion scrumMeetingQuestion) {
+    public ScrumMeetingQuestionResponse(ScrumMeetingQuestion scrumMeetingQuestion) {
         this.id = scrumMeetingQuestion.getId();
         this.scrumMeetingPlanId = scrumMeetingQuestion.getScrumMeetingPlan().getId();
         this.question = scrumMeetingQuestion.getQuestion();

@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class SprintDailyMeetingAnswerResponse {
+public class ScrumMeetingAnswerResponse {
 
     private Long id;
     private Long scrumMeetingPlanQuestionId;
@@ -17,7 +17,7 @@ public class SprintDailyMeetingAnswerResponse {
     private String answer;
     private UserResponse user;
 
-    public SprintDailyMeetingAnswerResponse(ScrumMeetingAnswer scrumMeetingAnswer) {
+    public ScrumMeetingAnswerResponse(ScrumMeetingAnswer scrumMeetingAnswer) {
         this.id = scrumMeetingAnswer.getId();
         this.scrumMeetingPlanQuestionId = scrumMeetingAnswer.getScrumMeetingQuestion().getId();
         this.sprintId = scrumMeetingAnswer.getSprint().getId();
