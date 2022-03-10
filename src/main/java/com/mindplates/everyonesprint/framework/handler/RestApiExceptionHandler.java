@@ -32,8 +32,13 @@ public class RestApiExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<?> handleServiceException(ServiceException e) {
-        String message = messageSourceAccessor.getMessage(e.getMessageCode(), e.getMessageParameters());
-        return response.apply(e.getCode(), message);
+        if (e.getMessageCode() != null) {
+            String message = messageSourceAccessor.getMessage(e.getMessageCode(), e.getMessageParameters());
+            return response.apply(e.getCode(), message);
+        }
+
+        return response.apply(e.getCode(), "");
+
     }
 
 

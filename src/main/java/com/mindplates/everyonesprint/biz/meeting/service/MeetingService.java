@@ -342,7 +342,7 @@ public class MeetingService {
             HashMap<String, Object> data = new HashMap<>();
             data.put("participant", participant);
             MessageData message = MessageData.builder().type("LEAVE").data(data).build();
-            if(participant.getRoomCode() == null) {
+            if (participant.getRoomCode() == null) {
                 messageSendService.sendTo("conferences/" + participant.getCode(), message, userSession);
             } else {
                 messageSendService.sendTo("conferences/" + participant.getCode() + "/rooms/" + participant.getRoomCode(), message, userSession);

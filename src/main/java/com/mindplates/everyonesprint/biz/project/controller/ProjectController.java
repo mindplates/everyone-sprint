@@ -5,7 +5,6 @@ import com.mindplates.everyonesprint.biz.project.service.ProjectService;
 import com.mindplates.everyonesprint.biz.project.vo.request.ProjectRequest;
 import com.mindplates.everyonesprint.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.everyonesprint.biz.project.vo.response.ProjectResponse;
-import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,12 +27,6 @@ public class ProjectController {
 
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
-    }
-
-    private void checkIsAdminUser(UserSession userSession, Project project) {
-        if (project.getUsers().stream().noneMatch(projectUser -> projectUser.getUser().getId().equals(userSession.getId()) && projectUser.getRole().equals(RoleCode.ADMIN))) {
-            throw new ServiceException("common.not.authorized");
-        }
     }
 
     @Operation(description = "사용자의 프로젝트 목록 조회")
@@ -64,8 +57,6 @@ public class ProjectController {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
-        Project project = projectService.selectProjectInfo(id);
-        checkIsAdminUser(userSession, project);
         Project projectInfo = projectRequest.buildEntity();
         return new ProjectResponse(projectService.updateProjectInfo(projectInfo, userSession), userSession);
     }
@@ -73,9 +64,7 @@ public class ProjectController {
     @Operation(description = "프로젝트 삭제")
     @DeleteMapping("/{id}")
     public ResponseEntity deleteProjectInfo(@PathVariable Long id, @ApiIgnore UserSession userSession) {
-        Project project = projectService.selectProjectInfo(id);
-        checkIsAdminUser(userSession, project);
-        projectService.deleteProjectInfo(project);
+        projectService.deleteProjectInfo(id);
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -83,10 +72,7 @@ public class ProjectController {
     @Operation(description = "프로젝트 조회")
     @GetMapping("/{id}")
     public ProjectResponse selectProjectInfo(@PathVariable Long id, @ApiIgnore UserSession userSession) {
-        Project project = projectService.selectProjectInfo(id);
-        if (project.getUsers().stream().noneMatch(projectUser -> projectUser.getUser().getId().equals(userSession.getId()))) {
-            throw new ServiceException("common.not.authorized");
-        }
+        Project project = projectService.selectProjectInfo(id).get();
         return new ProjectResponse(project, userSession);
     }
 

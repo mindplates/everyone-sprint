@@ -23,15 +23,15 @@ public class SprintDailyMeetingAnswer extends CommonEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_daily_meeting_question_id", foreignKey = @ForeignKey(name="FK_SPRINT_DAILY_MEETING_QUESTION__SPRINT_DAILY_MEETING"))
+    @JoinColumn(name = "sprint_daily_meeting_question_id", foreignKey = @ForeignKey(name = "FK_SPRINT_DAILY_MEETING_QUESTION__SPRINT_DAILY_MEETING"))
     private SprintDailyMeetingQuestion sprintDailyMeetingQuestion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name="FK_SPRINT_DAILY_MEETING_ANSWER__SPRINT"))
+    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name = "FK_SPRINT_DAILY_MEETING_ANSWER__SPRINT"))
     private Sprint sprint;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="FK_SPRINT_DAILY_MEETING_ANSWER__USER"))
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_SPRINT_DAILY_MEETING_ANSWER__USER"))
     private User user;
 
     @Column(name = "date", nullable = false)

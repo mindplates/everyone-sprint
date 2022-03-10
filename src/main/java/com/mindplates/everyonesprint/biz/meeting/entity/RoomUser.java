@@ -22,11 +22,11 @@ public class RoomUser extends CommonEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="FK_ROOM_USER__USER"))
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_ROOM_USER__USER"))
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", foreignKey = @ForeignKey(name="FK_ROOM_USER__ROOM"))
+    @JoinColumn(name = "room_id", foreignKey = @ForeignKey(name = "FK_ROOM_USER__ROOM"))
     private Room room;
 
     @Column(name = "first_join_date")

@@ -27,10 +27,10 @@ public class SprintUser extends CommonEntity {
     private RoleCode role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="FK_SPRINT_USER__USER"))
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_SPRINT_USER__USER"))
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name="FK_SPRINT_USER__SPRINT"))
+    @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name = "FK_SPRINT_USER__SPRINT"))
     private Sprint sprint;
 }

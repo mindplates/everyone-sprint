@@ -77,7 +77,7 @@ public class Sprint extends CommonEntity {
     private List<SprintDailySmallTalkMeeting> sprintDailySmallTalkMeetings;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name="FK_SPRINT__PROJECT"))
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_SPRINT__PROJECT"))
     private Project project;
 
 }

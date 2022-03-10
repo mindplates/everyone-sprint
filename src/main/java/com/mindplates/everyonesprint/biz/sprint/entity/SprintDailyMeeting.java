@@ -29,10 +29,6 @@ public class SprintDailyMeeting extends AbstractDailyMeeting {
     @JoinColumn(name = "sprint_id", foreignKey = @ForeignKey(name = "FK_SPRINT_DAILY_MEETING__SPRINT"))
     private Sprint sprint;
 
-    public Sprint getSprint() {
-        return this.sprint;
-    }
-
     public SprintDailyMeeting() {
 
     }
@@ -43,6 +39,10 @@ public class SprintDailyMeeting extends AbstractDailyMeeting {
         this.sprint = sprint;
         this.useQuestion = useQuestion;
         this.sprintDailyMeetingQuestions = sprintDailyMeetingQuestions;
+    }
+
+    public Sprint getSprint() {
+        return this.sprint;
     }
 
 
