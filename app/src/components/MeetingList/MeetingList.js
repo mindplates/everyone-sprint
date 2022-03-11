@@ -64,6 +64,10 @@ const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
                   <Liner className="date-liner" width="10px" height="1px" display="inline-block" color="black" margin="0 0.5rem" />
                   <div className="end-date">{dateUtil.getDateString(meeting.endDate, DATE_FORMATS_TYPES.hoursMinutes)}</div>
                 </div>
+                <div className="project-sprint-info">
+                  <span>{meeting.projectName}</span>
+                  <span>{meeting.sprintName}</span>
+                </div>
               </div>
               <div className="users">
                 {meeting.type !== 'SMALLTALK' && (

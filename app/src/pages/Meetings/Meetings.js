@@ -104,7 +104,7 @@ const Meetings = ({ t, user, history }) => {
       >
         {t('미팅')}
       </PageTitle>
-      <PageContent className="d-flex" info>
+      <PageContent className="d-flex pb-3" info>
         <div className="search">
           <div>
             <div>

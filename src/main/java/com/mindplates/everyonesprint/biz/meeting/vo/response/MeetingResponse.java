@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class MeetingResponse {
     private Long id;
+    private Long projectId;
+    private String projectName;
     private Long sprintId;
     private String sprintName;
     private String name;
@@ -43,8 +45,17 @@ public class MeetingResponse {
         this.type = meeting.getType();
         this.startDate = meeting.getStartDate();
         this.endDate = meeting.getEndDate();
-        this.sprintId = meeting.getSprint().getId();
-        this.sprintName = meeting.getSprint().getName();
+        if (meeting.getSprint() != null) {
+            this.sprintId = meeting.getSprint().getId();
+            this.sprintName = meeting.getSprint().getName();
+        }
+
+        if (meeting.getSprint() != null && meeting.getSprint().getProject() != null) {
+            this.projectId = meeting.getSprint().getProject().getId();
+            this.projectName = meeting.getSprint().getProject().getName();
+        }
+
+
         this.scrumMeetingPlanId = Optional.ofNullable(meeting.getScrumMeetingPlan()).map(ScrumMeetingPlan::getId).orElse(null);
         this.smallTalkMeetingPlanId = Optional.ofNullable(meeting.getSmallTalkMeetingPlan()).map(SmallTalkMeetingPlan::getId).orElse(null);
         this.limitUserCount = meeting.getLimitUserCount();
@@ -75,8 +86,16 @@ public class MeetingResponse {
         this.roomCode = room.getCode();
         this.startDate = meeting.getStartDate();
         this.endDate = meeting.getEndDate();
-        this.sprintId = meeting.getSprint().getId();
-        this.sprintName = meeting.getSprint().getName();
+        if (meeting.getSprint() != null) {
+
+            this.sprintId = meeting.getSprint().getId();
+            this.sprintName = meeting.getSprint().getName();
+        }
+
+        if (meeting.getSprint() != null && meeting.getSprint().getProject() != null) {
+            this.projectId = meeting.getSprint().getProject().getId();
+            this.projectName = meeting.getSprint().getProject().getName();
+        }
         this.scrumMeetingPlanId = Optional.ofNullable(meeting.getScrumMeetingPlan()).map(ScrumMeetingPlan::getId).orElse(null);
         this.smallTalkMeetingPlanId = Optional.ofNullable(meeting.getSmallTalkMeetingPlan()).map(SmallTalkMeetingPlan::getId).orElse(null);
         this.limitUserCount = meeting.getLimitUserCount();
