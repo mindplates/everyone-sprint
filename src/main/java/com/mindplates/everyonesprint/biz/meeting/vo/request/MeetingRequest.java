@@ -29,6 +29,7 @@ public class MeetingRequest {
                 .name(name)
                 .startDate(startDate)
                 .endDate(endDate)
+                .limitUserCount(limitUserCount)
                 .sprint(Sprint.builder().id(sprintId).build())
                 .type(type)
                 .build();

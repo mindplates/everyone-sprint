@@ -78,6 +78,19 @@ button.btn {
     }
   }
 
+  &.btn-outline-point {
+    background-color: $white;
+    color: $point;
+    border: 1px solid $point;
+    &:hover {
+      border: 1px solid darken($point, 10%);
+      color: darken($point, 10%);
+      &.disabled {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
   &.btn-primary {
     &:hover {
       background-color: lighten($primary, 8%);

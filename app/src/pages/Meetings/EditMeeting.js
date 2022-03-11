@@ -14,6 +14,7 @@ import {
   Form,
   Input,
   Label,
+  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -45,6 +46,8 @@ const labelMinWidth = '140px';
 
 const quickTimes = [10, 11, 14, 15, 16, 17, 18, 23];
 
+const durations = [1000 * 60 * 10, 1000 * 60 * 30, 1000 * 60 * 60, 1000 * 60 * 120];
+
 const EditMeeting = ({
   t,
   type,
@@ -56,6 +59,7 @@ const EditMeeting = ({
 }) => {
   const [sprints, setSprints] = useState([]);
   const [sprintUsers, setSprintUsers] = useState([]);
+  const [duration, setDuration] = useState(1000 * 60 * 30);
   const [info, setInfo] = useState({
     id: null,
     sprintId: null,
@@ -63,6 +67,7 @@ const EditMeeting = ({
     startDate: start.getTime(),
     endDate: end.getTime(),
     users: [],
+    type: 'MEETING',
   });
 
   const getSprints = () => {
@@ -125,13 +130,16 @@ const EditMeeting = ({
       `/api/meetings/${meetingId}`,
       null,
       (data) => {
-        console.log(data);
-
         setInfo({
           ...data,
           startDate: dateUtil.getTime(data.startDate),
           endDate: dateUtil.getTime(data.endDate),
         });
+
+        const currentDuration = dateUtil.getTime(data.endDate) - dateUtil.getTime(data.startDate);
+        if (durations.find((d) => d === currentDuration)) {
+          setDuration(currentDuration);
+        }
       },
       null,
       t('미팅 정보를 가져오고 있습니다.'),
@@ -199,6 +207,29 @@ const EditMeeting = ({
     const next = { ...info };
     next.users = users;
     setInfo(next);
+  };
+
+  const changeTime = (startDate, span) => {
+    if (span) {
+      setInfo({
+        ...info,
+        startDate,
+        endDate: startDate + span,
+      });
+    } else {
+      setInfo({
+        ...info,
+        startDate,
+      });
+    }
+  };
+
+  const getHourDate = (date, hours) => {
+    date.setHours(hours);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
   };
 
   const onSubmit = (e) => {
@@ -333,11 +364,51 @@ const EditMeeting = ({
               >
                 <div className="g-scrollbar">
                   <div>
-                    <Button size="sm" color="white" outline>
-                      지금
+                    <span className="day-label">{t('회의 시간')}</span>
+                    {durations.map((span) => {
+                      return (
+                        <Button
+                          key={span}
+                          size="sm"
+                          color={info.endDate - info.startDate === span ? 'yellow' : 'white'}
+                          outline
+                          onClick={() => {
+                            changeTime(info.startDate, span);
+                            setDuration(span);
+                          }}
+                        >
+                          {span / (1000 * 60)} {t('분')}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <div>
+                    <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                  </div>
+                  <div>
+                    <span className="day-label">{t('시작 시간')}</span>
+                    <Button
+                      size="sm"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        changeTime(Date.now(), info.endDate - info.startDate === duration ? duration : null);
+                      }}
+                    >
+                      {t('지금')}
                     </Button>
-                    <Button size="sm" color="white" outline>
-                      다음 시간
+                    <Button
+                      size="sm"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        changeTime(
+                          Math.floor(Date.now() / (1000 * 60 * 60)) * 1000 * 60 * 60 + 1000 * 60 * 60,
+                          info.endDate - info.startDate === duration ? duration : null,
+                        );
+                      }}
+                    >
+                      {t('다음 시간')}
                     </Button>
                   </div>
                   <div>
@@ -346,18 +417,42 @@ const EditMeeting = ({
                       .filter((d) => d > nowHours)
                       .map((d) => {
                         return (
-                          <Button key={d} size="sm" color="white" outline>
-                            {d}시
+                          <Button
+                            key={d}
+                            size="sm"
+                            color={
+                              new Date(info.startDate).getDate() === new Date().getDate() && new Date(info.startDate).getHours() === d ? 'yellow' : 'white'
+                            }
+                            outline
+                            onClick={() => {
+                              changeTime(getHourDate(new Date(), d).getTime(), info.endDate - info.startDate === duration ? duration : null);
+                            }}
+                          >
+                            {d}
+                            {t('시')}
                           </Button>
                         );
                       })}
                   </div>
                   <div className="next-day">
-                    <span className="day-label">내일</span>
+                    <span className="day-label">{t('내일')}</span>
                     {quickTimes.map((d) => {
                       return (
-                        <Button key={d} size="sm" color="white" outline>
-                          {d}시
+                        <Button
+                          key={d}
+                          size="sm"
+                          color={
+                            new Date(info.startDate).getDate() === new Date().getDate() + 1 && new Date(info.startDate).getHours() === d ? 'yellow' : 'white'
+                          }
+                          outline
+                          onClick={() => {
+                            const nextDay = new Date();
+                            nextDay.setDate(nextDay.getDate() + 1);
+                            changeTime(getHourDate(nextDay, d).getTime(), info.endDate - info.startDate === duration ? duration : null);
+                          }}
+                        >
+                          {d}
+                          {t('시')}
                         </Button>
                       );
                     })}
@@ -369,7 +464,25 @@ const EditMeeting = ({
               <Label minWidth={labelMinWidth} required>
                 {t('미팅 타입')}
               </Label>
-              <RadioButton className="radio" size="sm" items={MEETING_TYPES} value={info?.type} onClick={(val) => changeInfo('type', val)} />
+              {type === 'new' && (
+                <RadioButton
+                  className="radio"
+                  size="sm"
+                  items={MEETING_TYPES.filter((d) => d.supportType === type)}
+                  value={info?.type}
+                  onClick={(val) => changeInfo('type', val)}
+                />
+              )}
+              {type === 'edit' && info.type === 'SCRUM' && <span className="align-self-center">{MEETING_TYPES.find((d) => d.key === info?.type).value}</span>}
+              {type === 'edit' && info.type !== 'SCRUM' && (
+                <RadioButton
+                  className="radio"
+                  size="sm"
+                  items={MEETING_TYPES.filter((d) => d.supportType === 'new')}
+                  value={info?.type}
+                  onClick={(val) => changeInfo('type', val)}
+                />
+              )}
             </BlockRow>
             {info.type === 'SMALLTALK' && (
               <BlockRow>
@@ -389,7 +502,7 @@ const EditMeeting = ({
               </BlockRow>
             )}
           </Block>
-          <Block className="flex-grow-1 d-flex flex-column">
+          <Block className={`flex-grow-1 d-flex flex-column ${info.type === 'SMALLTALK' ? 'pb-0' : ''}`}>
             <BlockTitle className="mb-2 mb-sm-3">{t('참여자')}</BlockTitle>
             {info.type === 'SMALLTALK' && <EmptyContent className="flex-grow-1" icon={false} height="auto" message={t('스프린트 멤버들이 참여 가능합니다.')} />}
             {info.type !== 'SMALLTALK' && (

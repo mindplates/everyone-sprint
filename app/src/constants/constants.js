@@ -309,10 +309,13 @@ const MEETING_TYPES = [
   {
     key: 'MEETING',
     value: '미팅',
+    supportType : 'new',
   },
   {
     key: 'SMALLTALK',
     value: '스몰톡 미팅',
+    type : '',
+    supportType : 'new',
   },
   {
     key: 'SCRUM',

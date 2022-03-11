@@ -23,7 +23,7 @@ export default EmptyContent;
 
 EmptyContent.defaultProps = {
   className: '',
-  icon: <i className="far fa-clipboard" />,
+  icon: <i className="fas fa-inbox" />,
   height: '100%',
 };
 

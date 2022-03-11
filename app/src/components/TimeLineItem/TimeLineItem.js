@@ -9,11 +9,9 @@ import { MeetingPropTypes, UserPropTypes } from '@/proptypes';
 import './TimeLineItem.scss';
 
 const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }) => {
-  const isSmallTalkMeeting = !!meeting.smallTalkMeetingPlanId;
-
   return (
     <div
-      className={`time-line-item-wrapper ${className} ${isSmallTalkMeeting ? 'small-talk' : 'normal'}`}
+      className={`time-line-item-wrapper ${className} ${meeting.type}`}
       style={{
         height: `${dateUtil.getSpanHours(dateUtil.getLocalDate(meeting.startDate), dateUtil.getLocalDate(meeting.endDate), true) * (100 / timeSpan)}%`,
       }}
@@ -46,7 +44,7 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
           )}
         </div>
       </div>
-      {isSmallTalkMeeting && (
+      {meeting.type === 'SMALLTALK' && (
         <div className="small-talk-icon">
           <span className="icon-1">
             <i className="fas fa-smile" />
@@ -62,7 +60,7 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
       <div className="meeting-info">
         <div className="meeting-name">
           <span>{meeting.name}</span>
-          {!isSmallTalkMeeting && (
+          {meeting.type !== 'SMALLTALK' && (
             <span className="connected-user-count">
               <span>{meeting.connectedUserCount}</span>
             </span>

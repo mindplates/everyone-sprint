@@ -1,18 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
+import copy from 'copy-to-clipboard';
 import ReactTimeAgo from 'react-time-ago';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button, Liner } from '@/components';
 import { MeetingPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
-import './MeetingList.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
+import './MeetingList.scss';
 
 const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
   const now = new Date();
+
+  const [copiedId, setCopiedId] = useState(null);
 
   return (
     <ul className="meeting-list-wrapper">
@@ -36,6 +39,19 @@ const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
               </div>
               <div className="name-and-date">
                 <div className="name">
+                  {meeting.type === 'SMALLTALK' && (
+                    <div className="small-talk-icon">
+                      <span className="icon-1">
+                        <i className="fas fa-smile" />
+                      </span>
+                      <span className="icon-2">
+                        <i className="fab fa-gratipay" />
+                      </span>
+                      <span className="icon-3">
+                        <i className="fas fa-comment-alt" />
+                      </span>
+                    </div>
+                  )}
                   <span className="text">{meeting.name}</span>
                   <span className="time-ago">
                     <ReactTimeAgo locale={user.language || 'ko'} date={startDate} />
@@ -50,18 +66,20 @@ const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
                 </div>
               </div>
               <div className="users">
-                <div>
-                  <span className="icon">
-                    <i className="fas fa-child" />
-                  </span>
-                  {meeting.users.map((d) => {
-                    return (
-                      <span className="user-alias" key={d.id}>
-                        {d.alias}
-                      </span>
-                    );
-                  })}
-                </div>
+                {meeting.type !== 'SMALLTALK' && (
+                  <div>
+                    <span className="icon">
+                      <i className="fas fa-child" />
+                    </span>
+                    {meeting.users.map((d) => {
+                      return (
+                        <span className="user-alias" key={d.id}>
+                          {d.alias}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               <div className="liner">
                 <Liner width="1px" height="20px" display="inline-block" color="gray" margin="0 1rem" />
@@ -70,7 +88,7 @@ const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
                 <Button
                   size="md"
                   data-tip={t('참여')}
-                  color="white"
+                  color="point"
                   outline
                   rounded
                   onClick={(e) => {
@@ -82,6 +100,25 @@ const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
                 </Button>
                 <Button
                   size="md"
+                  data-tip={t('URL 복사')}
+                  color="white"
+                  outline
+                  rounded
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCopiedId(meeting.id);
+                    setTimeout(() => {
+                      setCopiedId(null);
+                    }, 1000);
+                    copy(`${window.location.origin}/meets/${meeting.code}`);
+                  }}
+                >
+                  {meeting.id === copiedId && <i className="fas fa-clipboard-check" />}
+                  {meeting.id !== copiedId && <i className="fas fa-clipboard" />}
+                </Button>
+                <Button
+                  size="md"
+                  data-tip={t('설정')}
                   color="white"
                   outline
                   rounded
@@ -95,7 +132,8 @@ const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
               </div>
               <div className="buttons d-flex d-sm-none ">
                 <Button
-                  size="sm"
+                  size="md"
+                  data-tip={t('설정')}
                   color="white"
                   outline
                   rounded

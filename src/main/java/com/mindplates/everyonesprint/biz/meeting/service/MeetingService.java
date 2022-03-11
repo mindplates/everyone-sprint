@@ -67,7 +67,6 @@ public class MeetingService {
         meeting.setLastUpdateDate(now);
         meeting.setCreatedBy(userSession.getId());
         meeting.setLastUpdatedBy(userSession.getId());
-        meeting.setType(MeetingTypeCode.MEETING);
         return meetingRepository.save(meeting);
     }
 
@@ -94,18 +93,16 @@ public class MeetingService {
     }
 
     public List<Meeting> selectUserMeetingList(Long sprintId, LocalDateTime date, UserSession userSession) {
-
-
         LocalDateTime nextDay = date.plusDays(1);
 
-        List<Meeting> smallTalkMeetingPlans = meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndSmallTalkMeetingPlanIsNotNull(date, nextDay, userSession.getId());
+        List<Meeting> meetings = meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEquals(date, nextDay, userSession.getId(), MeetingTypeCode.SMALLTALK);
         if (sprintId != null) {
-            smallTalkMeetingPlans.addAll(meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(sprintId, date, nextDay, userSession.getId()));
-            return smallTalkMeetingPlans;
+            meetings.addAll(meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(sprintId, date, nextDay, userSession.getId()));
+            return meetings;
         }
 
-        smallTalkMeetingPlans.addAll(meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(date, nextDay, userSession.getId()));
-        return smallTalkMeetingPlans;
+        meetings.addAll(meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(date, nextDay, userSession.getId()));
+        return meetings;
     }
 
     public Optional<Meeting> selectMeetingInfo(Long id) {
