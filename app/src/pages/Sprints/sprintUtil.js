@@ -21,7 +21,7 @@ function getSprint(sprint) {
     scrumMeetingPlan.startTime = startTime.getTime();
     scrumMeetingPlan.endTime = endTime.getTime();
 
-    scrumMeetingPlan.scrumMeetingPlanQuestions.sort((a, b) => {
+    scrumMeetingPlan.scrumMeetingQuestions.sort((a, b) => {
       return a.sortOrder - b.sortOrder;
     });
   });

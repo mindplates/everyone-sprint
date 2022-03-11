@@ -41,7 +41,7 @@ const SprintDailyMeetingPropTypes = PropTypes.shape({
   name: PropTypes.string,
   startTime: PropTypes.number,
   endTime: PropTypes.number,
-  scrumMeetingPlanQuestions: PropTypes.arrayOf(SprintDailyMeetingQuestionPropTypes),
+  scrumMeetingQuestions: PropTypes.arrayOf(SprintDailyMeetingQuestionPropTypes),
 });
 
 const ProjectPropTypes = PropTypes.shape({

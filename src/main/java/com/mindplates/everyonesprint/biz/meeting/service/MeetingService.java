@@ -7,6 +7,7 @@ import com.mindplates.everyonesprint.biz.meeting.entity.RoomUser;
 import com.mindplates.everyonesprint.biz.meeting.redis.Participant;
 import com.mindplates.everyonesprint.biz.meeting.repository.*;
 import com.mindplates.everyonesprint.biz.user.entity.User;
+import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
@@ -92,18 +93,16 @@ public class MeetingService {
     }
 
     public List<Meeting> selectUserMeetingList(Long sprintId, LocalDateTime date, UserSession userSession) {
-
-
         LocalDateTime nextDay = date.plusDays(1);
 
-        List<Meeting> smallTalkMeetingPlans = meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndSmallTalkMeetingPlanIsNotNull(date, nextDay, userSession.getId());
+        List<Meeting> meetings = meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEquals(date, nextDay, userSession.getId(), MeetingTypeCode.SMALLTALK);
         if (sprintId != null) {
-            smallTalkMeetingPlans.addAll(meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(sprintId, date, nextDay, userSession.getId()));
-            return smallTalkMeetingPlans;
+            meetings.addAll(meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(sprintId, date, nextDay, userSession.getId()));
+            return meetings;
         }
 
-        smallTalkMeetingPlans.addAll(meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(date, nextDay, userSession.getId()));
-        return smallTalkMeetingPlans;
+        meetings.addAll(meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(date, nextDay, userSession.getId()));
+        return meetings;
     }
 
     public Optional<Meeting> selectMeetingInfo(Long id) {
@@ -343,16 +342,16 @@ public class MeetingService {
             data.put("participant", participant);
             MessageData message = MessageData.builder().type("LEAVE").data(data).build();
             if (participant.getRoomCode() == null) {
-                messageSendService.sendTo("conferences/" + participant.getCode(), message, userSession);
+                messageSendService.sendTo("meets/" + participant.getCode(), message, userSession);
             } else {
-                messageSendService.sendTo("conferences/" + participant.getCode() + "/rooms/" + participant.getRoomCode(), message, userSession);
+                messageSendService.sendTo("meets/" + participant.getCode() + "/rooms/" + participant.getRoomCode(), message, userSession);
             }
 
 
             if (currentMeeting != null && participant.getRoomCode() == null) {
                 Map<String, Object> notifyData = new HashMap<>();
                 notifyData.put("meetingId", currentMeeting.getId());
-                messageSendService.sendTo("conferences/notify", MessageData.builder().type("LEAVE").data(notifyData).build(), null);
+                messageSendService.sendTo("meets/notify", MessageData.builder().type("LEAVE").data(notifyData).build(), null);
             }
 
         });

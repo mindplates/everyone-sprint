@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"unchecked", "unused"})
 @Log
 @RestController
-@MessageMapping("/api/message/conferences/{code}")
-public class ConferenceMessageController {
+@MessageMapping("/api/message/meets/{code}")
+public class MeetMessageController {
 
     final private UserService userService;
     final private MeetingService meetingService;
@@ -39,7 +39,7 @@ public class ConferenceMessageController {
     final private MessageSendService messageSendService;
     final private DailyScrumService dailyScrumService;
 
-    public ConferenceMessageController(UserService userService, MeetingService meetingService, ObjectMapper mapper, MessageSendService messageSendService, DailyScrumService dailyScrumService) {
+    public MeetMessageController(UserService userService, MeetingService meetingService, ObjectMapper mapper, MessageSendService messageSendService, DailyScrumService dailyScrumService) {
         this.userService = userService;
         this.meetingService = meetingService;
         this.mapper = mapper;
@@ -69,7 +69,7 @@ public class ConferenceMessageController {
         }
 
         MessageData data = MessageData.builder().type(type).data(Optional.ofNullable(sendData).orElse(receiveData)).build();
-        messageSendService.sendTo("conferences/" + code + "/rooms/" + roomCode, data, userSession);
+        messageSendService.sendTo("meets/" + code + "/rooms/" + roomCode, data, userSession);
 
 
     }
@@ -102,11 +102,11 @@ public class ConferenceMessageController {
 
             Map<String, Object> notifyData = new HashMap<>();
             notifyData.put("meetingId", meeting.getId());
-            messageSendService.sendTo("conferences/notify", MessageData.builder().type("JOIN").data(notifyData).build(), null);
+            messageSendService.sendTo("meets/notify", MessageData.builder().type("JOIN").data(notifyData).build(), null);
         }
 
         MessageData data = MessageData.builder().type(type).data(Optional.ofNullable(sendData).orElse(receiveData)).build();
-        messageSendService.sendTo("conferences/" + code, data, userSession);
+        messageSendService.sendTo("meets/" + code, data, userSession);
 
 
     }
@@ -121,7 +121,7 @@ public class ConferenceMessageController {
         Map<String, Object> receiveData = (Map<String, Object>) value.get("data");
 
         MessageData data = MessageData.builder().type(type).data(receiveData).build();
-        messageSendService.sendTo("conferences/" + code + "/" + userId, data, userSession);
+        messageSendService.sendTo("meets/" + code + "/" + userId, data, userSession);
     }
 
     @MessageMapping("/rooms/{roomCode}/{userId}/send")
@@ -134,7 +134,7 @@ public class ConferenceMessageController {
         Map<String, Object> receiveData = (Map<String, Object>) value.get("data");
 
         MessageData data = MessageData.builder().type(type).data(receiveData).build();
-        messageSendService.sendTo("conferences/" + code + "/rooms/" + roomCode + "/" + userId, data, userSession);
+        messageSendService.sendTo("meets/" + code + "/rooms/" + roomCode + "/" + userId, data, userSession);
     }
 
 }

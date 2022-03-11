@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SprintDailyMeetingResponse {
 
-    List<ScrumMeetingQuestionResponse> scrumMeetingPlanQuestions;
-    List<ScrumMeetingAnswerResponse> scrumMeetingPlanAnswers;
+    List<ScrumMeetingQuestionResponse> scrumMeetingQuestions;
+    List<ScrumMeetingAnswerResponse> scrumMeetingAnswers;
     private Long id;
     private String name;
     private LocalTime startTime;
@@ -38,8 +38,8 @@ public class SprintDailyMeetingResponse {
         this.useQuestion = scrumMeetingPlan.getUseQuestion();
         this.onHoliday = scrumMeetingPlan.getOnHoliday();
         this.days = scrumMeetingPlan.getDays();
-        this.scrumMeetingPlanQuestions = scrumMeetingPlan.getScrumMeetingQuestions().stream().map(ScrumMeetingQuestionResponse::new).collect(Collectors.toList());
-        this.scrumMeetingPlanAnswers = scrumMeetingAnswers.stream().map(ScrumMeetingAnswerResponse::new).collect(Collectors.toList());
+        this.scrumMeetingQuestions = scrumMeetingPlan.getScrumMeetingQuestions().stream().map(ScrumMeetingQuestionResponse::new).collect(Collectors.toList());
+        this.scrumMeetingAnswers = scrumMeetingAnswers.stream().map(ScrumMeetingAnswerResponse::new).collect(Collectors.toList());
     }
 
 

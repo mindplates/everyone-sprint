@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.meeting.repository;
 
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
+import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -38,7 +39,7 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     Long countBy();
 
-    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndSmallTalkMeetingPlanIsNotNull(LocalDateTime date, LocalDateTime nextDay, Long userId);
+    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEquals(LocalDateTime date, LocalDateTime nextDay, Long userId, MeetingTypeCode type);
 
 }
 

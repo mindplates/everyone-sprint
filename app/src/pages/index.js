@@ -21,7 +21,6 @@ import EditProject from './Projects/EditProject';
 import Project from './Projects/Project';
 import SprintDaily from './Sprints/SprintDaily';
 import SprintSummary from './Sprints/SprintSummary';
-import Talks from './Meetings/Talks/Talks';
 
 export {
   PublicPark,
@@ -47,5 +46,4 @@ export {
   Project,
   SprintDaily,
   SprintSummary,
-  Talks,
 };

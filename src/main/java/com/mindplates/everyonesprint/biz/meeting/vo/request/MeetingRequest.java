@@ -3,6 +3,7 @@ package com.mindplates.everyonesprint.biz.meeting.vo.request;
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.entity.MeetingUser;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
+import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,8 @@ public class MeetingRequest {
     private Long id;
     private Long sprintId;
     private String name;
+    private MeetingTypeCode type;
+    private Integer limitUserCount;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private List<MeetingRequest.User> users;
@@ -26,7 +29,9 @@ public class MeetingRequest {
                 .name(name)
                 .startDate(startDate)
                 .endDate(endDate)
+                .limitUserCount(limitUserCount)
                 .sprint(Sprint.builder().id(sprintId).build())
+                .type(type)
                 .build();
 
         List<MeetingUser> meetingUsers = users.stream().map(

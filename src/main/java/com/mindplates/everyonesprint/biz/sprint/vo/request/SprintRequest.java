@@ -72,7 +72,7 @@ public class SprintRequest {
                                     .days(scrumMeetingPlan.getDays())
                                     .build();
 
-                            meeting.setScrumMeetingQuestions(scrumMeetingPlan.getScrumMeetingPlanQuestions()
+                            meeting.setScrumMeetingQuestions(scrumMeetingPlan.getScrumMeetingQuestions()
                                     .stream()
                                     .map((scrumMeetingPlanQuestion -> ScrumMeetingQuestion
                                             .builder()

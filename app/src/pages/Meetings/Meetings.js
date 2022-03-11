@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import { Button, CheckBox, DatePicker, EmptyContent, Liner, MeetingList, PageTitle, Selector } from '@/components';
+import { Button, CheckBox, DatePicker, EmptyContent, Liner, MeetingList, Page, PageContent, PageTitle, Selector, withLogin } from '@/components';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
@@ -90,7 +90,7 @@ const Meetings = ({ t, user, history }) => {
   const list = meetings?.filter((d) => (options.all ? true : dateUtil.getTime(d.endDate) > Date.now()));
 
   return (
-    <div className="meetings-wrapper g-content">
+    <Page className="meetings-wrapper">
       <PageTitle
         buttons={[
           {
@@ -104,7 +104,7 @@ const Meetings = ({ t, user, history }) => {
       >
         {t('미팅')}
       </PageTitle>
-      <div className={`${meetings && meetings.length > 0 ? 'g-page-content' : 'g-page-content'}`}>
+      <PageContent className="d-flex pb-3" info>
         <div className="search">
           <div>
             <div>
@@ -255,9 +255,16 @@ const Meetings = ({ t, user, history }) => {
             {meetings && list.length > 0 && (
               <MeetingList
                 meetings={list}
+                onClick={(code) => {
+                  commonUtil.fullscreen(true);
+                  history.push(`/meets/${code}`);
+                }}
                 onJoin={(code) => {
                   commonUtil.fullscreen(true);
-                  history.push(`/conferences/${code}`);
+                  history.push(`/meets/${code}`);
+                }}
+                onConfig={(meetingId) => {
+                  history.push(`/meetings/${meetingId}/edit`);
                 }}
               />
             )}
@@ -268,8 +275,8 @@ const Meetings = ({ t, user, history }) => {
                 additionalContent={
                   <div className="mt-3 mb-4">
                     <Button
-                      size="md"
-                      color="primary"
+                      size="sm"
+                      color="point"
                       onClick={() => {
                         history.push('/meetings/new');
                       }}
@@ -283,8 +290,8 @@ const Meetings = ({ t, user, history }) => {
           </>
         )}
         {tab === 'calendar' && <EmptyContent height="100%" message={t('아직 구현되지 않은 기능입니다.')} />}
-      </div>
-    </div>
+      </PageContent>
+    </Page>
   );
 };
 
@@ -294,7 +301,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(Meetings);
+export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(withLogin(Meetings));
 
 Meetings.propTypes = {
   t: PropTypes.func,

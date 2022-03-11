@@ -10,9 +10,11 @@ import {
   BottomButtons,
   Button,
   DateRange,
+  EmptyContent,
   Form,
   Input,
   Label,
+  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -20,12 +22,13 @@ import {
   UserList,
 } from '@/components';
 import dialog from '@/utils/dialog';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { MEETING_TYPES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './EditMeeting.scss';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
+import RadioButton from '@/components/RadioButton/RadioButton';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -43,6 +46,8 @@ const labelMinWidth = '140px';
 
 const quickTimes = [10, 11, 14, 15, 16, 17, 18, 23];
 
+const durations = [1000 * 60 * 10, 1000 * 60 * 30, 1000 * 60 * 60, 1000 * 60 * 120];
+
 const EditMeeting = ({
   t,
   type,
@@ -53,12 +58,16 @@ const EditMeeting = ({
   },
 }) => {
   const [sprints, setSprints] = useState([]);
+  const [sprintUsers, setSprintUsers] = useState([]);
+  const [duration, setDuration] = useState(1000 * 60 * 30);
   const [info, setInfo] = useState({
+    id: null,
     sprintId: null,
     name: '',
     startDate: start.getTime(),
     endDate: end.getTime(),
     users: [],
+    type: 'MEETING',
   });
 
   const getSprints = () => {
@@ -66,24 +75,20 @@ const EditMeeting = ({
       '/api/sprints',
       null,
       (list) => {
-        const current = list.find((sprint) => sprint.id === id);
-        if (id && current) {
-          setInfo({
-            ...info,
-            sprintId: current.id,
-          });
-        } else if (list.length > 0) {
-          setInfo({
-            ...info,
-            sprintId: list[0].id,
-          });
-        }
-
         setSprints(
           list.map((d) => {
             return sprintUtil.getSprint(d);
           }),
         );
+
+        if (type === 'new') {
+          if (list.length > 0) {
+            setInfo({
+              ...info,
+              sprintId: list[0].id,
+            });
+          }
+        }
       },
       null,
       t('사용자의 스프린트 목록을 모으고 있습니다.'),
@@ -106,42 +111,53 @@ const EditMeeting = ({
           };
         });
 
-        setInfo({
-          ...info,
-          users,
-        });
+        setSprintUsers(users);
+
+        if (info.type !== 'SMALLTALK') {
+          setInfo({
+            ...info,
+            users,
+          });
+        }
       },
       null,
       t('스프린트가 변경되어 참여자를 변경 중입니다.'),
     );
   };
 
+  const getMeeting = (meetingId) => {
+    request.get(
+      `/api/meetings/${meetingId}`,
+      null,
+      (data) => {
+        setInfo({
+          ...data,
+          startDate: dateUtil.getTime(data.startDate),
+          endDate: dateUtil.getTime(data.endDate),
+        });
+
+        const currentDuration = dateUtil.getTime(data.endDate) - dateUtil.getTime(data.startDate);
+        if (durations.find((d) => d === currentDuration)) {
+          setDuration(currentDuration);
+        }
+      },
+      null,
+      t('미팅 정보를 가져오고 있습니다.'),
+    );
+  };
+
   useEffect(() => {
     getSprints();
-  }, []);
+    if (id) {
+      getMeeting(id);
+    }
+  }, [id]);
 
   useEffect(() => {
     if (info.sprintId) {
       getSprint(info.sprintId);
     }
   }, [info.sprintId]);
-
-  useEffect(() => {
-    if (id && type === 'edit')
-      request.get(
-        `/api/sprints/${id}`,
-        null,
-        (data) => {
-          setInfo({
-            ...data,
-            startDate: dateUtil.getTime(data.startDate),
-            endDate: dateUtil.getTime(data.endDate),
-          });
-        },
-        null,
-        t('스프린트 정보를 가져오고 있습니다'),
-      );
-  }, [id, type]);
 
   useEffect(() => {
     if (type === 'new') {
@@ -169,6 +185,21 @@ const EditMeeting = ({
   const changeInfo = (key, value) => {
     const next = { ...info };
     next[key] = value;
+
+    if (key === 'type') {
+      if (value === 'SMALLTALK') {
+        next.users = [];
+        if (!next.limitUserCount) {
+          next.limitUserCount = 4;
+        }
+      } else {
+        next.users = sprintUsers.slice(0);
+        if (!next.limitUserCount) {
+          next.limitUserCount = null;
+        }
+      }
+    }
+
     setInfo(next);
   };
 
@@ -178,25 +209,48 @@ const EditMeeting = ({
     setInfo(next);
   };
 
+  const changeTime = (startDate, span) => {
+    if (span) {
+      setInfo({
+        ...info,
+        startDate,
+        endDate: startDate + span,
+      });
+    } else {
+      setInfo({
+        ...info,
+        startDate,
+      });
+    }
+  };
+
+  const getHourDate = (date, hours) => {
+    date.setHours(hours);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
+  };
+
   const onSubmit = (e) => {
     e.preventDefault();
 
     if (type === 'edit') {
       request.put(
-        `/api/sprints/${info.id}`,
+        `/api/meetings/${info.id}`,
         {
           ...info,
           startDate: new Date(info.startDate),
           endDate: new Date(info.endDate),
           users: info.users.filter((u) => u.CRUD !== 'D'),
         },
-        (data) => {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/sprints/${data.id}`);
+        () => {
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 변경되었습니다.'), () => {
+            history.push('/meetings');
           });
         },
         null,
-        t('스프린트를 변경하고 있습니다.'),
+        t('미팅 정보를 변경하고 있습니다.'),
       );
     } else {
       request.post(
@@ -217,8 +271,48 @@ const EditMeeting = ({
 
   return (
     <Page className="edit-meeting-wrapper">
-      <PageTitle>{type === 'edit' ? t('미팅 정보 변경') : t('새로운 미팅')}</PageTitle>
-      <PageContent>
+      <PageTitle
+        breadcrumbs={
+          type === 'new'
+            ? [
+                {
+                  link: '/',
+                  name: t('TOP'),
+                },
+                {
+                  link: '/meetings',
+                  name: t('미팅 목록'),
+                },
+                {
+                  link: '/meetings/new',
+                  name: t('새 미팅'),
+                  current: true,
+                },
+              ]
+            : [
+                {
+                  link: '/',
+                  name: t('TOP'),
+                },
+                {
+                  link: '/meetings',
+                  name: t('미팅 목록'),
+                },
+                {
+                  link: `/meetings/${info?.id}`,
+                  name: info?.name,
+                },
+                {
+                  link: `/meetings/${info?.id}/edit`,
+                  name: t('변경'),
+                  current: true,
+                },
+              ]
+        }
+      >
+        {type === 'edit' ? t('미팅 정보 변경') : t('새로운 미팅')}
+      </PageTitle>
+      <PageContent className="d-flex" info>
         <Form onSubmit={onSubmit} className="d-flex flex-column h-100">
           <Block className="pt-0">
             <BlockTitle className="mb-2 mb-sm-3">{t('미팅 정보')}</BlockTitle>
@@ -270,11 +364,51 @@ const EditMeeting = ({
               >
                 <div className="g-scrollbar">
                   <div>
-                    <Button size="sm" color="white" outline>
-                      지금
+                    <span className="day-label">{t('회의 시간')}</span>
+                    {durations.map((span) => {
+                      return (
+                        <Button
+                          key={span}
+                          size="sm"
+                          color={info.endDate - info.startDate === span ? 'yellow' : 'white'}
+                          outline
+                          onClick={() => {
+                            changeTime(info.startDate, span);
+                            setDuration(span);
+                          }}
+                        >
+                          {span / (1000 * 60)} {t('분')}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <div>
+                    <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                  </div>
+                  <div>
+                    <span className="day-label">{t('시작 시간')}</span>
+                    <Button
+                      size="sm"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        changeTime(Date.now(), info.endDate - info.startDate === duration ? duration : null);
+                      }}
+                    >
+                      {t('지금')}
                     </Button>
-                    <Button size="sm" color="white" outline>
-                      다음 시간
+                    <Button
+                      size="sm"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        changeTime(
+                          Math.floor(Date.now() / (1000 * 60 * 60)) * 1000 * 60 * 60 + 1000 * 60 * 60,
+                          info.endDate - info.startDate === duration ? duration : null,
+                        );
+                      }}
+                    >
+                      {t('다음 시간')}
                     </Button>
                   </div>
                   <div>
@@ -283,18 +417,42 @@ const EditMeeting = ({
                       .filter((d) => d > nowHours)
                       .map((d) => {
                         return (
-                          <Button key={d} size="sm" color="white" outline>
-                            {d}시
+                          <Button
+                            key={d}
+                            size="sm"
+                            color={
+                              new Date(info.startDate).getDate() === new Date().getDate() && new Date(info.startDate).getHours() === d ? 'yellow' : 'white'
+                            }
+                            outline
+                            onClick={() => {
+                              changeTime(getHourDate(new Date(), d).getTime(), info.endDate - info.startDate === duration ? duration : null);
+                            }}
+                          >
+                            {d}
+                            {t('시')}
                           </Button>
                         );
                       })}
                   </div>
                   <div className="next-day">
-                    <span className="day-label">내일</span>
+                    <span className="day-label">{t('내일')}</span>
                     {quickTimes.map((d) => {
                       return (
-                        <Button key={d} size="sm" color="white" outline>
-                          {d}시
+                        <Button
+                          key={d}
+                          size="sm"
+                          color={
+                            new Date(info.startDate).getDate() === new Date().getDate() + 1 && new Date(info.startDate).getHours() === d ? 'yellow' : 'white'
+                          }
+                          outline
+                          onClick={() => {
+                            const nextDay = new Date();
+                            nextDay.setDate(nextDay.getDate() + 1);
+                            changeTime(getHourDate(nextDay, d).getTime(), info.endDate - info.startDate === duration ? duration : null);
+                          }}
+                        >
+                          {d}
+                          {t('시')}
                         </Button>
                       );
                     })}
@@ -302,18 +460,62 @@ const EditMeeting = ({
                 </div>
               </div>
             </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth} required>
+                {t('미팅 타입')}
+              </Label>
+              {type === 'new' && (
+                <RadioButton
+                  className="radio"
+                  size="sm"
+                  items={MEETING_TYPES.filter((d) => d.supportType === type)}
+                  value={info?.type}
+                  onClick={(val) => changeInfo('type', val)}
+                />
+              )}
+              {type === 'edit' && info.type === 'SCRUM' && <span className="align-self-center">{MEETING_TYPES.find((d) => d.key === info?.type).value}</span>}
+              {type === 'edit' && info.type !== 'SCRUM' && (
+                <RadioButton
+                  className="radio"
+                  size="sm"
+                  items={MEETING_TYPES.filter((d) => d.supportType === 'new')}
+                  value={info?.type}
+                  onClick={(val) => changeInfo('type', val)}
+                />
+              )}
+            </BlockRow>
+            {info.type === 'SMALLTALK' && (
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('최대 참여 인원')}
+                </Label>
+                <Input
+                  type="number"
+                  size="md"
+                  value={info.limitUserCount}
+                  onChange={(val) => changeInfo('limitUserCount', val)}
+                  outline
+                  simple
+                  required
+                  minLength={1}
+                />
+              </BlockRow>
+            )}
           </Block>
-          <Block className="flex-grow-1">
+          <Block className={`flex-grow-1 d-flex flex-column ${info.type === 'SMALLTALK' ? 'pb-0' : ''}`}>
             <BlockTitle className="mb-2 mb-sm-3">{t('참여자')}</BlockTitle>
-            <UserList
-              users={info.users}
-              onChange={(val) => changeInfo('users', val)}
-              onChangeUsers={changeUsers}
-              editable={{
-                role: false,
-                member: true,
-              }}
-            />
+            {info.type === 'SMALLTALK' && <EmptyContent className="flex-grow-1" icon={false} height="auto" message={t('스프린트 멤버들이 참여 가능합니다.')} />}
+            {info.type !== 'SMALLTALK' && (
+              <UserList
+                users={info.users}
+                onChange={(val) => changeInfo('users', val)}
+                onChangeUsers={changeUsers}
+                editable={{
+                  role: false,
+                  member: true,
+                }}
+              />
+            )}
           </Block>
           <BottomButtons
             onCancel={() => {

@@ -18,6 +18,9 @@
 
     &.bullet {
       margin-right: 0.5rem;
+      @media (max-width: 576px) {
+        display: none;
+      }
       > span {
         display: inline-block;
         height: 12px;
@@ -27,10 +30,32 @@
     }
 
     &.text {
+      @media (max-width: 576px) {
+        flex-grow: 1;
+        text-align: center;
+      }
       > span {
         font-size: 20px;
         font-weight: bold;
         font-family: pretendard, sans-serif;
+
+        @media (max-width: 576px) {
+          font-size: 18px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+          display: inline-block;
+          padding: 0 1rem 2px;
+        }
+      }
+    }
+
+    &.control {
+      @media (max-width: 576px) {
+        position: absolute;
+        right: 1rem;
+
+        .liner-wrapper {
+          display: none !important;
+        }
       }
     }
   }

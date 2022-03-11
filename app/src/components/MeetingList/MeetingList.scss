@@ -75,6 +75,34 @@
         .name {
           margin-bottom: 0;
           display: flex;
+          position: relative;
+
+          .small-talk-icon {
+            position: absolute;
+            color: $point;
+            left: 0;
+            right: 0;
+
+            > span {
+              position: absolute;
+
+              &.icon-1 {
+                top: 2px;
+                left: -15px;
+                transform: rotate(-45deg);
+              }
+
+              &.icon-2 {
+                top: -9px;
+                left: -7px;
+              }
+
+              &.icon-3 {
+                top: -9px;
+                left: 8px;
+              }
+            }
+          }
           > span {
             align-self: center;
           }
@@ -109,6 +137,19 @@
             align-self: center;
           }
         }
+
+        .project-sprint-info {
+          margin-top: 0.25rem;
+          > span {
+            display: inline-block;
+            margin-right: 0.25rem;
+            font-size: 11px;
+            font-family: pretendard, sans-serif;
+            border: 1px solid $gray-500;
+            padding: 0.25rem 0.5rem;
+            line-height: 100%;
+          }
+        }
       }
 
       .users {
@@ -133,6 +174,10 @@
             &.user-alias {
               border-radius: 2px;
               border: 1px solid rgba(0, 0, 0, 0.4);
+            }
+
+            &:last-child {
+              margin-right: 0;
             }
           }
         }

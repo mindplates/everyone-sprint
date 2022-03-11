@@ -305,6 +305,24 @@ const BODY_PIX = {
   },
 };
 
+const MEETING_TYPES = [
+  {
+    key: 'MEETING',
+    value: '미팅',
+    supportType : 'new',
+  },
+  {
+    key: 'SMALLTALK',
+    value: '스몰톡 미팅',
+    type : '',
+    supportType : 'new',
+  },
+  {
+    key: 'SCRUM',
+    value: '스크럼 미팅',
+  },
+];
+
 export {
   PORTS,
   USER_STUB,
@@ -324,4 +342,5 @@ export {
   CAPABILITIES,
   BODY_PIX,
   ACTIVATES,
+  MEETING_TYPES,
 };

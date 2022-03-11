@@ -1,10 +1,12 @@
 package com.mindplates.everyonesprint.biz.meeting.vo.response;
 
+import com.mindplates.everyonesprint.biz.common.vo.response.SimpleUserResponse;
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.entity.Room;
 import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
 import com.mindplates.everyonesprint.biz.sprint.entity.SmallTalkMeetingPlan;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.ScrumMeetingQuestionResponse;
+import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,33 +21,47 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class MeetingResponse {
     private Long id;
+    private Long projectId;
+    private String projectName;
     private Long sprintId;
     private String sprintName;
     private String name;
     private String code;
+    private String roomCode;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private List<User> users;
+    private List<SimpleUserResponse> users;
     private Long scrumMeetingPlanId;
-    private List<ScrumMeetingQuestionResponse> scrumMeetingPlanQuestions;
+    private List<ScrumMeetingQuestionResponse> scrumMeetingQuestions;
     private Long connectedUserCount;
     private Long smallTalkMeetingPlanId;
     private Integer limitUserCount;
-
+    private MeetingTypeCode type;
 
     public MeetingResponse(Meeting meeting) {
         this.id = meeting.getId();
         this.name = meeting.getName();
         this.code = meeting.getCode();
+        this.type = meeting.getType();
         this.startDate = meeting.getStartDate();
         this.endDate = meeting.getEndDate();
-        this.sprintId = meeting.getSprint().getId();
-        this.sprintName = meeting.getSprint().getName();
+        if (meeting.getSprint() != null) {
+            this.sprintId = meeting.getSprint().getId();
+            this.sprintName = meeting.getSprint().getName();
+        }
+
+        if (meeting.getSprint() != null && meeting.getSprint().getProject() != null) {
+            this.projectId = meeting.getSprint().getProject().getId();
+            this.projectName = meeting.getSprint().getProject().getName();
+        }
+
+
         this.scrumMeetingPlanId = Optional.ofNullable(meeting.getScrumMeetingPlan()).map(ScrumMeetingPlan::getId).orElse(null);
         this.smallTalkMeetingPlanId = Optional.ofNullable(meeting.getSmallTalkMeetingPlan()).map(SmallTalkMeetingPlan::getId).orElse(null);
         this.limitUserCount = meeting.getLimitUserCount();
+
         this.users = meeting.getUsers().stream().map(
-                (meetingUser) -> User.builder()
+                (meetingUser) -> SimpleUserResponse.builder()
                         .id(meetingUser.getId())
                         .userId(meetingUser.getUser().getId())
                         .email(meetingUser.getUser().getEmail())
@@ -55,7 +71,7 @@ public class MeetingResponse {
                         .imageData(meetingUser.getUser().getImageData())
                         .build()).collect(Collectors.toList());
         if (meeting.getScrumMeetingPlan() != null) {
-            this.scrumMeetingPlanQuestions = meeting.getScrumMeetingPlan().getScrumMeetingQuestions()
+            this.scrumMeetingQuestions = meeting.getScrumMeetingPlan().getScrumMeetingQuestions()
                     .stream()
                     .map((ScrumMeetingQuestionResponse::new)).collect(Collectors.toList());
         }
@@ -66,16 +82,26 @@ public class MeetingResponse {
         this.id = meeting.getId();
         this.name = meeting.getName();
         this.code = meeting.getCode();
+        this.type = meeting.getType();
+        this.roomCode = room.getCode();
         this.startDate = meeting.getStartDate();
         this.endDate = meeting.getEndDate();
-        this.sprintId = meeting.getSprint().getId();
-        this.sprintName = meeting.getSprint().getName();
+        if (meeting.getSprint() != null) {
+
+            this.sprintId = meeting.getSprint().getId();
+            this.sprintName = meeting.getSprint().getName();
+        }
+
+        if (meeting.getSprint() != null && meeting.getSprint().getProject() != null) {
+            this.projectId = meeting.getSprint().getProject().getId();
+            this.projectName = meeting.getSprint().getProject().getName();
+        }
         this.scrumMeetingPlanId = Optional.ofNullable(meeting.getScrumMeetingPlan()).map(ScrumMeetingPlan::getId).orElse(null);
         this.smallTalkMeetingPlanId = Optional.ofNullable(meeting.getSmallTalkMeetingPlan()).map(SmallTalkMeetingPlan::getId).orElse(null);
         this.limitUserCount = meeting.getLimitUserCount();
 
         this.users = room.getUsers().stream().map(
-                (meetingUser) -> User.builder()
+                (meetingUser) -> SimpleUserResponse.builder()
                         .id(meetingUser.getId())
                         .userId(meetingUser.getUser().getId())
                         .email(meetingUser.getUser().getEmail())
@@ -85,22 +111,12 @@ public class MeetingResponse {
                         .imageData(meetingUser.getUser().getImageData())
                         .build()).collect(Collectors.toList());
         if (meeting.getScrumMeetingPlan() != null) {
-            this.scrumMeetingPlanQuestions = meeting.getScrumMeetingPlan().getScrumMeetingQuestions()
+            this.scrumMeetingQuestions = meeting.getScrumMeetingPlan().getScrumMeetingQuestions()
                     .stream()
                     .map((ScrumMeetingQuestionResponse::new)).collect(Collectors.toList());
         }
 
     }
 
-    @Data
-    @Builder
-    public static class User {
-        private Long id;
-        private Long userId;
-        private String email;
-        private String name;
-        private String alias;
-        private String imageType;
-        private String imageData;
-    }
+
 }

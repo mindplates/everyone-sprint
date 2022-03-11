@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.meeting.vo.response;
 
+import com.mindplates.everyonesprint.biz.common.vo.response.SimpleUserResponse;
 import com.mindplates.everyonesprint.biz.meeting.entity.Room;
 import lombok.*;
 
@@ -19,7 +20,7 @@ public class RoomResponse {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer limitUserCount;
-    private List<User> users;
+    private List<SimpleUserResponse> users;
 
 
     public RoomResponse(Room room) {
@@ -30,7 +31,7 @@ public class RoomResponse {
         this.endDate = room.getEndDate();
         this.limitUserCount = room.getLimitUserCount();
         this.users = room.getUsers().stream().map(
-                (roomUser) -> User.builder()
+                (roomUser) -> SimpleUserResponse.builder()
                         .id(roomUser.getId())
                         .userId(roomUser.getUser().getId())
                         .email(roomUser.getUser().getEmail())
@@ -43,15 +44,5 @@ public class RoomResponse {
 
     }
 
-    @Data
-    @Builder
-    public static class User {
-        private Long id;
-        private Long userId;
-        private String email;
-        private String name;
-        private String alias;
-        private String imageType;
-        private String imageData;
-    }
+
 }

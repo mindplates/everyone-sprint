@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.project.vo.response;
 
+import com.mindplates.everyonesprint.biz.common.vo.response.SimpleUserResponse;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintResponse;
@@ -24,7 +25,7 @@ public class ProjectResponse {
     private Boolean allowAutoJoin;
     private Boolean activated;
     private List<SprintResponse> sprints;
-    private List<ProjectUserResponse> users;
+    private List<SimpleUserResponse> users;
     private Boolean isMember;
     private Long activatedSprintCount = 0L;
     private LocalDateTime creationDate;
@@ -38,7 +39,7 @@ public class ProjectResponse {
         this.isMember = project.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userSession.getId())));
         this.creationDate = project.getCreationDate();
         this.users = project.getUsers().stream().map(
-                (projectUser) -> ProjectUserResponse.builder()
+                (projectUser) -> SimpleUserResponse.builder()
                         .id(projectUser.getId())
                         .userId(projectUser.getUser().getId())
                         .role(projectUser.getRole())

@@ -69,7 +69,7 @@ public class SprintResponse {
                                 .useQuestion(scrumMeetingPlan.getUseQuestion())
                                 .onHoliday(scrumMeetingPlan.getOnHoliday())
                                 .days(scrumMeetingPlan.getDays())
-                                .scrumMeetingPlanQuestions((scrumMeetingPlan.getScrumMeetingQuestions().stream()
+                                .scrumMeetingQuestions((scrumMeetingPlan.getScrumMeetingQuestions().stream()
                                         .map((scrumMeetingPlanQuestion -> ScrumMeetingQuestionResponse.builder()
                                                 .id(scrumMeetingPlanQuestion.getId())
                                                 .question(scrumMeetingPlanQuestion.getQuestion())

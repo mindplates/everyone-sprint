@@ -40,12 +40,12 @@ const ScrumInfoEditorPopup = ({
         const nextSelectedAnswers = answers.slice(0);
 
         result.forEach((answer) => {
-          let info = nextSelectedAnswers.find((d) => d.scrumMeetingPlanQuestionId === answer.scrumMeetingPlanQuestionId);
+          let info = nextSelectedAnswers.find((d) => d.scrumMeetingQuestionId === answer.scrumMeetingQuestionId);
 
           if (!info) {
             info = {
               date,
-              scrumMeetingPlanQuestionId: answer.scrumMeetingPlanQuestionId,
+              scrumMeetingQuestionId: answer.scrumMeetingQuestionId,
               sprintId,
             };
             nextSelectedAnswers.push(info);
@@ -63,11 +63,11 @@ const ScrumInfoEditorPopup = ({
 
   const onChangeAnswer = (questionId, value) => {
     const nextAnswers = answers.slice(0);
-    let answer = nextAnswers.find((d) => d.scrumMeetingPlanQuestionId === questionId);
+    let answer = nextAnswers.find((d) => d.scrumMeetingQuestionId === questionId);
     if (!answer) {
       answer = {
         date,
-        scrumMeetingPlanQuestionId: questionId,
+        scrumMeetingQuestionId: questionId,
         sprintId,
       };
       nextAnswers.push(answer);
@@ -129,7 +129,7 @@ const ScrumInfoEditorPopup = ({
         {questions && questions.length > 0 && (
           <ul className="questions">
             {questions.map((d, inx) => {
-              const currentAnswer = answers.find((answer) => answer.scrumMeetingPlanQuestionId === d.id)?.answer;
+              const currentAnswer = answers.find((answer) => answer.scrumMeetingQuestionId === d.id)?.answer;
               return (
                 <li key={d.id}>
                   <div className="question">{d.question}</div>

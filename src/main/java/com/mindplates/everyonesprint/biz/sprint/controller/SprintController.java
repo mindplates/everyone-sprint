@@ -135,7 +135,7 @@ public class SprintController {
         return SprintBoardResponse.builder()
                 .scrumMeetings(scrumMeetings.stream().map(MeetingResponse::new).collect(Collectors.toList()))
                 .meetings(noDailyMeetings.stream().map(MeetingResponse::new).collect(Collectors.toList()))
-                .scrumMeetingPlanAnswers(scrumMeetingAnswers.stream().map(ScrumMeetingAnswerResponse::new).collect(Collectors.toList()))
+                .scrumMeetingAnswers(scrumMeetingAnswers.stream().map(ScrumMeetingAnswerResponse::new).collect(Collectors.toList()))
                 .build();
     }
 

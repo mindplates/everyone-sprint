@@ -8,6 +8,7 @@ import com.mindplates.everyonesprint.biz.sprint.entity.*;
 import com.mindplates.everyonesprint.biz.sprint.repository.SprintDailyMeetingAnswerRepository;
 import com.mindplates.everyonesprint.biz.sprint.repository.SprintRepository;
 import com.mindplates.everyonesprint.biz.user.entity.User;
+import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +81,7 @@ public class SprintService {
         List<Meeting> updateMeetings = new ArrayList<>();
         List<Meeting> deleteMeetings = new ArrayList<>();
 
-        // 스프린트 스크럼 미팅 및 미팅 삭제
+        // 스프린트 스크럼 미팅
         List<ScrumMeetingPlan> deleteSprintDailyMeetings = new ArrayList<>();
         sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "D".equals(scrumMeetingPlan.getCRUD()))).forEach((scrumMeetingPlan -> {
             deleteSprintDailyMeetings.add(scrumMeetingPlan);
@@ -88,7 +89,6 @@ public class SprintService {
         }));
         sprint.getScrumMeetingPlans().removeAll(deleteSprintDailyMeetings);
 
-        // 새 미팅 정보에 따른 미팅 생성
         sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "C".equals(scrumMeetingPlan.getCRUD()))).forEach(scrumMeetingPlan -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) scrumMeetingPlan, startDate, endDate, userSession)));
 
         sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "U".equals(scrumMeetingPlan.getCRUD()))).forEach((scrumMeetingPlan -> {
@@ -96,7 +96,7 @@ public class SprintService {
             fillMeetings(sprint, userSession, now, startDate, endDate, updateMeetings, deleteMeetings, scrumMeetingPlan, meetings);
         }));
 
-        // 스몰톡 미팅 및 미팅 삭제
+        // 스몰톡 미팅
         List<SmallTalkMeetingPlan> deleteSprintDailySmallTalkMeetings = new ArrayList<>();
         sprint.getSmallTalkMeetingPlans().stream().filter((smallTalkMeetingPlan -> "D".equals(smallTalkMeetingPlan.getCRUD()))).forEach((smallTalkMeetingPlan -> {
             deleteSprintDailySmallTalkMeetings.add(smallTalkMeetingPlan);
@@ -171,7 +171,12 @@ public class SprintService {
             if (meetingStartDate.isAfter(startDate) && abstractDailyMeeting.getDays().charAt(dayOfWeekIndex) == '1') {
                 Meeting meeting = getMeeting(abstractDailyMeeting.getSprint(), userSession, now, currentDate, abstractDailyMeeting, null);
                 if (abstractDailyMeeting instanceof SmallTalkMeetingPlan) {
+                    meeting.setType(MeetingTypeCode.SMALLTALK);
                     meeting.setLimitUserCount(((SmallTalkMeetingPlan) abstractDailyMeeting).getLimitUserCount());
+                }
+
+                if (abstractDailyMeeting instanceof ScrumMeetingPlan) {
+                    meeting.setType(MeetingTypeCode.SCRUM);
                 }
                 meetings.add(meeting);
             }

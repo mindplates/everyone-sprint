@@ -38,12 +38,13 @@
       border-radius: 2px;
     }
     line-height: 0;
-    padding: 1px;
+    padding: 2px;
 
     &.checked {
       > span {
-        background-color: $blue;
+        background-color: $yellow;
         transition: all 0.3s;
+        border: 1px solid rgba(0, 0, 0, 0.4);
       }
     }
   }
