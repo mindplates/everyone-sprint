@@ -14,7 +14,7 @@ public class ScrumMeetingAnswerRequest {
 
     private Long id;
     private Long sprintId;
-    private Long scrumMeetingPlanQuestionId;
+    private Long scrumMeetingQuestionId;
     private LocalDate date;
     private String answer;
 
@@ -23,7 +23,7 @@ public class ScrumMeetingAnswerRequest {
         return ScrumMeetingAnswer.builder()
                 .id(id)
                 .sprint(Sprint.builder().id(sprintId).build())
-                .scrumMeetingQuestion(ScrumMeetingQuestion.builder().id(scrumMeetingPlanQuestionId).build())
+                .scrumMeetingQuestion(ScrumMeetingQuestion.builder().id(scrumMeetingQuestionId).build())
                 .user(User.builder().id(userId).build())
                 .date(date)
                 .answer(answer)

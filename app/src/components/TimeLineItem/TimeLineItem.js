@@ -26,7 +26,7 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
       <div className="tooltip-info" onClick={(e) => e.stopPropagation()}>
         <div>
           <div className="move">
-            <a href={`/conferences/${meeting.code}`}>{t('클릭하여 이동')}</a>
+            <a href={`/meets/${meeting.code}`}>{t('클릭하여 이동')}</a>
           </div>
           <div className="meeting-name">
             <span>{meeting.name}</span>

@@ -221,9 +221,9 @@ const EditSprint = ({
   const changeSprintDailyMeetingQuestions = (meetingIndex, questionIndex, key, value) => {
     const next = { ...sprint };
     const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
-    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].scrumMeetingPlanQuestions.slice(0);
+    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].scrumMeetingQuestions.slice(0);
     nextSprintDailyMeetingQuestions[questionIndex][key] = value;
-    nextSprintDailyMeetings[meetingIndex].scrumMeetingPlanQuestions = nextSprintDailyMeetingQuestions;
+    nextSprintDailyMeetings[meetingIndex].scrumMeetingQuestions = nextSprintDailyMeetingQuestions;
     next.scrumMeetingPlans = nextSprintDailyMeetings;
     setSprint(next);
   };
@@ -231,7 +231,7 @@ const EditSprint = ({
   const changeOrderSprintDailyMeetingQuestions = (dir, meetingIndex, questionIndex) => {
     const next = { ...sprint };
     const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
-    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].scrumMeetingPlanQuestions.slice(0);
+    const nextSprintDailyMeetingQuestions = nextSprintDailyMeetings[meetingIndex].scrumMeetingQuestions.slice(0);
 
     const target = nextSprintDailyMeetingQuestions[questionIndex];
 
@@ -256,7 +256,7 @@ const EditSprint = ({
       });
     }
 
-    nextSprintDailyMeetings[meetingIndex].scrumMeetingPlanQuestions = nextSprintDailyMeetingQuestions;
+    nextSprintDailyMeetings[meetingIndex].scrumMeetingQuestions = nextSprintDailyMeetingQuestions;
     next.scrumMeetingPlans = nextSprintDailyMeetings;
     setSprint(next);
   };
@@ -277,18 +277,18 @@ const EditSprint = ({
     const next = { ...sprint };
     const scrumMeetingPlans = next.scrumMeetingPlans.slice(0);
 
-    const scrumMeetingPlanQuestions = [];
-    scrumMeetingPlanQuestions.push({
+    const scrumMeetingQuestions = [];
+    scrumMeetingQuestions.push({
       question: t('지난 데일리 스크럼부터 지금까지 내가 완수한 것이 무엇인가'),
       sortOrder: 1,
     });
 
-    scrumMeetingPlanQuestions.push({
+    scrumMeetingQuestions.push({
       question: t('다음 데일리 스크럼까지 내가 하기로 한 것이 무엇인가'),
       sortOrder: 2,
     });
 
-    scrumMeetingPlanQuestions.push({
+    scrumMeetingQuestions.push({
       question: t('현재 장애가 되고 있는 것(곤란하고 어려운 것)이 무엇인가'),
       sortOrder: 3,
     });
@@ -313,7 +313,7 @@ const EditSprint = ({
       days: '1111100',
       onHoliday: true,
       useQuestion: true,
-      scrumMeetingPlanQuestions,
+      scrumMeetingQuestions,
     });
 
     next.scrumMeetingPlans = scrumMeetingPlans;
@@ -415,7 +415,7 @@ const EditSprint = ({
       scrumMeetingPlan.startTime = startTime.toISOString();
       scrumMeetingPlan.endTime = endTime.toISOString();
 
-      scrumMeetingPlan.scrumMeetingPlanQuestions.forEach((scrumMeetingPlanQuestion, inx) => {
+      scrumMeetingPlan.scrumMeetingQuestions.forEach((scrumMeetingPlanQuestion, inx) => {
         scrumMeetingPlanQuestion.sortOrder = inx + 1;
       });
     });

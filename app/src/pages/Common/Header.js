@@ -26,7 +26,7 @@ const Header = (props) => {
   const [currentTopMenu] = values;
 
   let menuAlias = currentTopMenu;
-  if (currentTopMenu === 'conferences') {
+  if (currentTopMenu === 'meets') {
     menuAlias = 'meetings';
   }
 

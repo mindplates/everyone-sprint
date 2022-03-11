@@ -66,7 +66,7 @@ const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, doneUser
             {questions && questions.length > 0 && (
               <ul>
                 {questions.map((d) => {
-                  const currentAnswer = currentUserAnswers.find((answer) => answer.scrumMeetingPlanQuestionId === d.id)?.answer;
+                  const currentAnswer = currentUserAnswers.find((answer) => answer.scrumMeetingQuestionId === d.id)?.answer;
                   return (
                     <li
                       key={d.id}

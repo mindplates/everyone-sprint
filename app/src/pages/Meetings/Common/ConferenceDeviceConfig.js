@@ -441,7 +441,7 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   render() {
-    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls, stream, history, type } = this.props;
+    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls, stream, history } = this.props;
     const { mediaConfig, enabledAudio, enabledVideo } = supportInfo;
     const { openConfigPopup, openCapabilities, capabilities, pixInfo, openPixInfo, size } = this.state;
 
@@ -468,7 +468,7 @@ class ConferenceDeviceConfig extends React.Component {
           />
         )}
         <div>
-          {type !== 'talk' && (
+          {conference.type !== 'SMALLTALK' && (
             <div className="current-user-info">
               {connectedUser.length < 1 && <div className="text">{t('아직 참가자가 없습니다.')}</div>}
               {connectedUser.length > 0 && (
@@ -691,6 +691,7 @@ ConferenceDeviceConfig.propTypes = {
     sprintId: PropTypes.number,
     sprintName: PropTypes.string,
     startDate: PropTypes.string,
+    type : PropTypes.string,
     users: PropTypes.arrayOf(
       PropTypes.shape({
         alias: PropTypes.string,
@@ -730,5 +731,4 @@ ConferenceDeviceConfig.propTypes = {
   setPixInfo: PropTypes.func,
   width: PropTypes.number,
   height: PropTypes.number,
-  type: PropTypes.string,
 };

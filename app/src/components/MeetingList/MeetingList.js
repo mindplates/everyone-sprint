@@ -11,7 +11,7 @@ import dateUtil from '@/utils/dateUtil';
 import './MeetingList.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
 
-const MeetingList = ({ t, meetings, user, onJoin }) => {
+const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
   const now = new Date();
 
   return (
@@ -21,7 +21,13 @@ const MeetingList = ({ t, meetings, user, onJoin }) => {
         const isSameDay = dateUtil.isSameDay(startDate, now);
 
         return (
-          <li key={meeting.id} className={startDate > now ? 'future' : 'past'}>
+          <li
+            key={meeting.id}
+            className={startDate > now ? 'future' : 'past'}
+            onClick={() => {
+              onClick(meeting.code);
+            }}
+          >
             <div>
               <div className="status">
                 <span className="time-ago">
@@ -74,13 +80,31 @@ const MeetingList = ({ t, meetings, user, onJoin }) => {
                 >
                   <i className="fas fa-arrow-right" />
                 </Button>
-                <Button size="md" color="white" outline rounded onClick={() => {}}>
-                  <i className="fas fa-ellipsis-h" />
+                <Button
+                  size="md"
+                  color="white"
+                  outline
+                  rounded
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onConfig(meeting.id);
+                  }}
+                >
+                  <i className="fas fa-cog" />
                 </Button>
               </div>
               <div className="buttons d-flex d-sm-none ">
-                <Button size="sm" color="white" outline rounded onClick={() => {}}>
-                  <i className="fas fa-ellipsis-h" />
+                <Button
+                  size="sm"
+                  color="white"
+                  outline
+                  rounded
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onConfig(meeting.id);
+                  }}
+                >
+                  <i className="fas fa-cog" />
                 </Button>
               </div>
             </div>
@@ -103,5 +127,7 @@ MeetingList.propTypes = {
   t: PropTypes.func,
   meetings: PropTypes.arrayOf(MeetingPropTypes),
   user: UserPropTypes,
+  onClick: PropTypes.func,
   onJoin: PropTypes.func,
+  onConfig: PropTypes.func,
 };

@@ -39,7 +39,7 @@ const Home = ({ t, user }) => {
 
   const getMeetings = () => {
     request.get(
-      '/api/meetings/today',
+      '/api/meetings/day',
       { date: dateUtil.getToday() },
       (list) => {
         setMeetings(list.sort((a, b) => dateUtil.getTime(a.startDate) - dateUtil.getTime(b.startDate)));
@@ -168,7 +168,7 @@ const Home = ({ t, user }) => {
       ]}
     >
       <SocketClient
-        topics={['/sub/conferences/notify']}
+        topics={['/sub/meets/notify']}
         onMessage={onMessage}
         onConnect={() => {}}
         setRef={(client) => {
@@ -221,8 +221,8 @@ const Home = ({ t, user }) => {
           sprintId={scrumInfo.sprintId}
           date={dateUtil.getLocalDateISOString(Date.now())}
           scrumMeetingPlanId={scrumInfo.currentSprintDailyMeetingId}
-          questions={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId)?.scrumMeetingPlanQuestions}
-          answers={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId)?.scrumMeetingPlanAnswers}
+          questions={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId)?.scrumMeetingQuestions}
+          answers={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId)?.scrumMeetingAnswers}
           onSaveComplete={() => {
             getSprints();
             // this.sendToAll('SCRUM_INFO_CHANGED');

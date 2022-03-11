@@ -5,16 +5,7 @@ import { withRouter } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import {
-  Button,
-  ConferenceVideoItem,
-  Liner,
-  Page,
-  PageContent,
-  PageTitle,
-  ParticipantsList,
-  SocketClient,
-} from '@/components';
+import { Button, ConferenceVideoItem, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Common/ConferenceDeviceConfig';
@@ -55,7 +46,6 @@ class Conference extends React.Component {
       conference: null,
       myStream: null,
       code: null,
-      roomCode: null,
       align: {
         type: 'CONNECT',
         order: 'ASC',
@@ -129,13 +119,12 @@ class Conference extends React.Component {
   static getDerivedStateFromProps(props, state) {
     const {
       match: {
-        params: { code, roomCode },
+        params: { code },
       },
     } = props;
 
-    if ((code && code !== state.code) || roomCode !== state.roomCode) {
+    if (code && code !== state.code) {
       return {
-        roomCode,
         code,
       };
     }
@@ -144,24 +133,24 @@ class Conference extends React.Component {
   }
 
   componentDidMount() {
-    const { code, roomCode } = this.state;
+    const { code } = this.state;
     window.addEventListener('resize', this.setVideoInfoDebounced);
     this.setVideoInfoDebounced();
 
     if (code) {
-      this.getConference(code, roomCode);
+      this.getConference(code);
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { code, roomCode, videoInfo } = this.state;
+    const { code, videoInfo } = this.state;
 
     if (!videoInfo.init) {
       this.setVideoInfo();
     }
 
-    if (code && (code !== prevState.code || roomCode !== prevState.roomCode)) {
-      this.getConference(code, roomCode);
+    if (code && code !== prevState.code) {
+      this.getConference(code);
     }
   }
 
@@ -252,22 +241,22 @@ class Conference extends React.Component {
     );
   };
 
-  getConference = (code, roomCode) => {
-    const { t, type } = this.props;
+  getConference = (code) => {
+    const { t } = this.props;
 
     request.get(
-      type === 'talk' ? `/api/conferences/${code}/rooms/${roomCode}` : `/api/conferences/${code}`,
+      `/api/meets/${code}`,
       null,
       (conference) => {
-                this.setState(
+        this.setState(
           {
             conference,
           },
           () => {
-            if (type === 'talk') {
-              this.getUsers(code, type);
+            if (conference.type === 'SMALLTALK') {
+              this.getUsers(conference);
             } else {
-              this.getUsers(code, type);
+              this.getUsers(conference);
               if (conference.scrumMeetingPlanId) {
                 this.getAnswers(conference.sprintId, conference.scrumMeetingPlanId, conference.startDate);
               }
@@ -306,17 +295,13 @@ class Conference extends React.Component {
     return nextConference;
   };
 
-  getUsers = (code, type) => {
+  getUsers = (conference) => {
     const { t } = this.props;
-    const { roomCode } = this.state;
-
-
 
     request.get(
-      type === 'talk' ? `/api/conferences/${code}/rooms/${roomCode}/users` : `/api/conferences/${code}/users`,
+      `/api/meets/${conference.code}/users`,
       null,
       (participants) => {
-
         const nextConference = this.getMergeUsersWithParticipants(participants);
         this.setState({
           conference: nextConference,
@@ -355,14 +340,12 @@ class Conference extends React.Component {
   };
 
   sendToAll = (messageType, data) => {
-
-    const { code, roomCode } = this.state;
-    const { type } = this.props;
+    const { conference, code } = this.state;
     if (this.socket && this.socket.state && this.socket.state.connected) {
-      if (type === 'talk') {
-        this.socket.sendMessage(`/pub/api/message/conferences/${code}/rooms/${roomCode}/send`, JSON.stringify({ type: messageType, data }));
+      if (conference.type === 'SMALLTALK') {
+        this.socket.sendMessage(`/pub/api/message/meets/${code}/rooms/${conference.roomCode}/send`, JSON.stringify({ type: messageType, data }));
       } else {
-        this.socket.sendMessage(`/pub/api/message/conferences/${code}/send`, JSON.stringify({ type: messageType, data }));
+        this.socket.sendMessage(`/pub/api/message/meets/${code}/send`, JSON.stringify({ type: messageType, data }));
       }
 
       return true;
@@ -372,14 +355,16 @@ class Conference extends React.Component {
   };
 
   sendToUser = (messageType, userId, data) => {
-    const { code, roomCode } = this.state;
-    const { type } = this.props;
+    const { conference } = this.state;
 
     if (this.socket && this.socket.state && this.socket.state.connected) {
-      if (type === 'talk') {
-        this.socket.sendMessage(`/pub/api/message/conferences/${code}/rooms/${roomCode}/${userId}/send`, JSON.stringify({ type: messageType, data }));
+      if (conference.type === 'SMALLTALK') {
+        this.socket.sendMessage(
+          `/pub/api/message/meets/${conference.code}/rooms/${conference.roomCode}/${userId}/send`,
+          JSON.stringify({ type: messageType, data }),
+        );
       } else {
-        this.socket.sendMessage(`/pub/api/message/conferences/${code}/${userId}/send`, JSON.stringify({ type: messageType, data }));
+        this.socket.sendMessage(`/pub/api/message/meets/${conference.code}/${userId}/send`, JSON.stringify({ type: messageType, data }));
       }
 
       return true;
@@ -1057,21 +1042,21 @@ class Conference extends React.Component {
     const { t } = this.props;
     const { conference } = this.state;
 
-    request.put(`/api/conferences/${conference.code}/daily?operation=start`, null, null, null, t('데일리 스크럼 시작을 위한 정보를 생성합니다.'));
+    request.put(`/api/meets/${conference.code}/scrum?operation=start`, null, null, null, t('데일리 스크럼 시작을 위한 정보를 생성합니다.'));
   };
 
   dailyScrumStop = () => {
     const { t } = this.props;
     const { conference } = this.state;
 
-    request.put(`/api/conferences/${conference.code}/daily?operation=stop`, null, null, null, t('데일리 스크럼을 종료하고 있습니다.'));
+    request.put(`/api/meets/${conference.code}/scrum?operation=stop`, null, null, null, t('데일리 스크럼을 종료하고 있습니다.'));
   };
 
   doneUserScrumDone = () => {
     const { t } = this.props;
     const { conference } = this.state;
 
-    request.put(`/api/conferences/${conference.code}/daily?operation=next`, null, null, null, t('다음 데일리 스크럼 사용자를 찾고 있습니다.'));
+    request.put(`/api/meets/${conference.code}/scrum?operation=next`, null, null, null, t('다음 데일리 스크럼 사용자를 찾고 있습니다.'));
   };
 
   getCurrentSpeaker = () => {
@@ -1096,23 +1081,9 @@ class Conference extends React.Component {
   };
 
   render() {
-    const { history, t, user, type } = this.props;
-    const {
-      code,
-      roomCode,
-      conference,
-      align,
-      supportInfo,
-      videoInfo,
-      controls,
-      screenShare,
-      isSetting,
-      pixInfo,
-      myStream,
-      statistics,
-      answers,
-      dailyScrumInfo,
-    } = this.state;
+    const { history, t, user } = this.props;
+    const { code, conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers, dailyScrumInfo } =
+      this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
@@ -1125,24 +1096,17 @@ class Conference extends React.Component {
               <>
                 <SocketClient
                   topics={
-                    type === 'talk'
-                      ? [`/sub/conferences/${code}/rooms/${roomCode}`, `/sub/conferences/${code}/rooms/${roomCode}/${user.id}`]
-                      : [`/sub/conferences/${code}`, `/sub/conferences/${code}/${user.id}`]
+                    conference.type === 'SMALLTALK'
+                      ? [`/sub/meets/${code}/rooms/${conference.roomCode}`, `/sub/meets/${code}/rooms/${conference.roomCode}/${user.id}`]
+                      : [`/sub/meets/${code}`, `/sub/meets/${code}/${user.id}`]
                   }
                   onMessage={this.onMessage}
                   onConnect={() => {}}
                   onDisconnect={() => {
-                    if (type === 'talk') {
-                      request.put(`/api/conferences/${conference.code}/rooms/${roomCode}/talked`, {
-                        ...statistics,
-                        time: Math.round(statistics.time / 1000),
-                      });
-                    } else {
-                      request.put(`/api/conferences/${conference.code}/talked`, {
-                        ...statistics,
-                        time: Math.round(statistics.time / 1000),
-                      });
-                    }
+                    request.put(`/api/meets/${conference.code}/status`, {
+                      ...statistics,
+                      time: Math.round(statistics.time / 1000),
+                    });
                   }}
                   setRef={(client) => {
                     this.socket = client;
@@ -1150,7 +1114,6 @@ class Conference extends React.Component {
                 />
                 {isSetting && (
                   <ConferenceDeviceConfig
-                    type={type}
                     user={user}
                     conference={conference}
                     stream={myStream}
@@ -1262,7 +1225,7 @@ class Conference extends React.Component {
                               <div className="daily-scrum-content">
                                 <ScrumInfoViewer
                                   dailyScrumInfo={dailyScrumInfo}
-                                  questions={conference.scrumMeetingPlanQuestions}
+                                  questions={conference.scrumMeetingQuestions}
                                   answers={answers}
                                   user={user}
                                   doneUserScrumDone={this.doneUserScrumDone}
@@ -1450,7 +1413,7 @@ class Conference extends React.Component {
                         sprintId={conference.sprintId}
                         date={dateUtil.getLocalDateISOString(conference.startDate)}
                         scrumMeetingPlanId={conference.scrumMeetingPlanId}
-                        questions={conference.scrumMeetingPlanQuestions}
+                        questions={conference.scrumMeetingQuestions}
                         answers={answers.filter((answer) => answer.user.id === user.id)}
                         onSaveComplete={() => {
                           this.sendToAll('SCRUM_INFO_CHANGED');
@@ -1483,8 +1446,6 @@ Conference.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       code: PropTypes.string,
-      roomCode: PropTypes.string,
     }),
   }),
-  type: PropTypes.string,
 };

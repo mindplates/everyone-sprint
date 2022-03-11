@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class ScrumMeetingAnswerResponse {
 
     private Long id;
-    private Long scrumMeetingPlanQuestionId;
+    private Long scrumMeetingQuestionId;
     private Long sprintId;
     private LocalDate date;
     private String answer;
@@ -19,7 +19,7 @@ public class ScrumMeetingAnswerResponse {
 
     public ScrumMeetingAnswerResponse(ScrumMeetingAnswer scrumMeetingAnswer) {
         this.id = scrumMeetingAnswer.getId();
-        this.scrumMeetingPlanQuestionId = scrumMeetingAnswer.getScrumMeetingQuestion().getId();
+        this.scrumMeetingQuestionId = scrumMeetingAnswer.getScrumMeetingQuestion().getId();
         this.sprintId = scrumMeetingAnswer.getSprint().getId();
         this.date = scrumMeetingAnswer.getDate();
         this.answer = scrumMeetingAnswer.getAnswer();

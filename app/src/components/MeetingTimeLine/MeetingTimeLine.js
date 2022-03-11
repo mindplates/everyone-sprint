@@ -10,7 +10,7 @@ import './MeetingTimeLine.scss';
 import { TimeLineItem } from '@/components';
 import withLoader from '@/components/Common/withLoader';
 
-const MeetingTimeLine = ({ className, date : paramDate, user, meetings, history, height }) => {
+const MeetingTimeLine = ({ className, date: paramDate, user, meetings, history, height }) => {
   let meetingCount = 0;
   const now = Date.now();
 
@@ -95,11 +95,7 @@ const MeetingTimeLine = ({ className, date : paramDate, user, meetings, history,
                           baseTime={d}
                           user={user}
                           onClick={() => {
-                            if (meeting.smallTalkMeetingPlanId) {
-                              history.push(`/talks/${meeting.code}`);
-                            } else {
-                              history.push(`/conferences/${meeting.code}`);
-                            }
+                            history.push(`/meets/${meeting.code}`);
                           }}
                         />
                       </div>

@@ -255,9 +255,16 @@ const Meetings = ({ t, user, history }) => {
             {meetings && list.length > 0 && (
               <MeetingList
                 meetings={list}
+                onClick={(code) => {
+                  commonUtil.fullscreen(true);
+                  history.push(`/meets/${code}`);
+                }}
                 onJoin={(code) => {
                   commonUtil.fullscreen(true);
-                  history.push(`/conferences/${code}`);
+                  history.push(`/meets/${code}`);
+                }}
+                onConfig={(meetingId) => {
+                  history.push(`/meetings/${meetingId}/edit`);
                 }}
               />
             )}

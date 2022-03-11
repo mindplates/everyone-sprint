@@ -98,8 +98,8 @@ const SprintDaily = ({
     const scrumMeetingPlan = sprint?.scrumMeetingPlans.find((d) => d.id === meeting.scrumMeetingPlanId);
     setSelectedDailyMeetingId(scrumMeetingPlan?.id);
 
-    const nextAnswers = scrumMeetingPlan?.scrumMeetingPlanQuestions.map((d) => {
-      const currentAnswer = dailyAnswers.find((answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === user.id);
+    const nextAnswers = scrumMeetingPlan?.scrumMeetingQuestions.map((d) => {
+      const currentAnswer = dailyAnswers.find((answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === user.id);
 
       if (currentAnswer) {
         return {
@@ -108,7 +108,7 @@ const SprintDaily = ({
       }
       return {
         sprintId: id,
-        scrumMeetingPlanQuestionId: d.id,
+        scrumMeetingQuestionId: d.id,
         answer: '',
         date: localDayString,
       };
@@ -135,7 +135,7 @@ const SprintDaily = ({
       null,
       (data) => {
         setMeetings(data.scrumMeetings);
-        setDailyAnswers(data.scrumMeetingPlanAnswers);
+        setDailyAnswers(data.scrumMeetingAnswers);
       },
       null,
       t('스프린트 보드에 필요한 정보를 모으고 있습니다.'),
@@ -188,7 +188,7 @@ const SprintDaily = ({
 
   const onChangeAnswer = (questionId, value) => {
     const nextAnswers = selectedAnswers.slice(0);
-    const answer = nextAnswers.find((d) => d.scrumMeetingPlanQuestionId === questionId);
+    const answer = nextAnswers.find((d) => d.scrumMeetingQuestionId === questionId);
     answer.answer = value;
     setSelectedAnswers(nextAnswers);
   };
@@ -213,7 +213,7 @@ const SprintDaily = ({
         const nextSelectedAnswers = selectedAnswers.slice(0);
         answers.forEach((answer) => {
           const info = nextSelectedAnswers.find(
-            (d) => d.scrumMeetingPlanQuestionId === answer.scrumMeetingPlanQuestionId && d.sprintId === answer.sprintId,
+            (d) => d.scrumMeetingQuestionId === answer.scrumMeetingQuestionId && d.sprintId === answer.sprintId,
           );
           info.answer = answer.answer;
         });
@@ -227,7 +227,7 @@ const SprintDaily = ({
 
   const dailyMeetingList = sprint?.scrumMeetingPlans
     .find((d) => d.id === meetings.find((meeting) => meeting.id === selectedMeetingId)?.scrumMeetingPlanId)
-    ?.scrumMeetingPlanQuestions?.sort((a, b) => {
+    ?.scrumMeetingQuestions?.sort((a, b) => {
       return a.sortOrder - b.sortOrder;
     });
 
@@ -414,7 +414,7 @@ const SprintDaily = ({
                                         outline
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          history.push(`/conferences/${d.code}`);
+                                          history.push(`/meets/${d.code}`);
                                         }}
                                       >
                                         <i className="fas fa-arrow-right" />
@@ -465,7 +465,7 @@ const SprintDaily = ({
                         {dailyMeetingList && dailyMeetingList.length > 0 && (
                           <ul>
                             {dailyMeetingList.map((d, inx) => {
-                              const currentAnswer = selectedAnswers.find((answer) => answer.scrumMeetingPlanQuestionId === d.id)?.answer;
+                              const currentAnswer = selectedAnswers.find((answer) => answer.scrumMeetingQuestionId === d.id)?.answer;
                               return (
                                 <li key={d.id}>
                                   <div className="question">{d.question}</div>
@@ -593,7 +593,7 @@ const SprintDaily = ({
                                                     <div className="answer">
                                                       {
                                                         dailyAnswers.find(
-                                                          (answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === u.userId,
+                                                          (answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId,
                                                         )?.answer
                                                       }
                                                     </div>
@@ -622,7 +622,7 @@ const SprintDaily = ({
                                                     <div className="answer">
                                                       {
                                                         dailyAnswers.find(
-                                                          (answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === u.userId,
+                                                          (answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId,
                                                         )?.answer
                                                       }
                                                     </div>
@@ -670,7 +670,7 @@ const SprintDaily = ({
                                                 <div className="answer">
                                                   <div>
                                                     {
-                                                      dailyAnswers.find((answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === u.userId)
+                                                      dailyAnswers.find((answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId)
                                                         ?.answer
                                                     }
                                                   </div>
@@ -748,7 +748,7 @@ const SprintDaily = ({
                                                     <div>
                                                       {
                                                         dailyAnswers.find(
-                                                          (answer) => answer.scrumMeetingPlanQuestionId === d.id && answer.user.id === u.userId,
+                                                          (answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId,
                                                         )?.answer
                                                       }
                                                     </div>

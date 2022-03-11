@@ -151,7 +151,7 @@ const DailyScrumMeeting = ({
             {t('스크럼 질문')}
           </Label>
           <div className="flex-grow-1">
-            {scrumMeetingPlan.scrumMeetingPlanQuestions.map((scrumMeetingPlanQuestion, jnx) => {
+            {scrumMeetingPlan.scrumMeetingQuestions.map((scrumMeetingPlanQuestion, jnx) => {
               return (
                 <div key={jnx} className="question-item">
                   {edit && (
@@ -176,7 +176,7 @@ const DailyScrumMeeting = ({
                           color="white"
                           outline
                           rounded
-                          disabled={scrumMeetingPlan.scrumMeetingPlanQuestions.length - 2 < jnx}
+                          disabled={scrumMeetingPlan.scrumMeetingQuestions.length - 2 < jnx}
                           onClick={() => {
                             onChangeQuestionOrder(jnx, 'down');
                           }}
@@ -260,7 +260,7 @@ DailyScrumMeeting.propTypes = {
     id: PropTypes.number,
     name: PropTypes.string,
     onHoliday: PropTypes.bool,
-    scrumMeetingPlanQuestions: PropTypes.arrayOf(
+    scrumMeetingQuestions: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number,
         question: PropTypes.string,

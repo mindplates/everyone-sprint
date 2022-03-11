@@ -4,6 +4,7 @@ import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
 import com.mindplates.everyonesprint.biz.sprint.entity.SmallTalkMeetingPlan;
+import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -56,6 +57,9 @@ public class Meeting extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<MeetingUser> users;
+
+    @Column(name = "type", nullable = false, length = ColumnsDef.CODE)
+    private MeetingTypeCode type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scrum_meeting_plan_id", foreignKey = @ForeignKey(name = "FK_MEETING__SPRINT_DAILY_MEETING"))

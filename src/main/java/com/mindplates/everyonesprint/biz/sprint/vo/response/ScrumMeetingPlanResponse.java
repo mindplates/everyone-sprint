@@ -16,7 +16,7 @@ public class ScrumMeetingPlanResponse {
     private Boolean useQuestion;
     private Boolean onHoliday;
     private String days;
-    private List<ScrumMeetingQuestionResponse> scrumMeetingPlanQuestions;
+    private List<ScrumMeetingQuestionResponse> scrumMeetingQuestions;
 
 
 }
