@@ -25,6 +25,7 @@ const Login = ({ t, history, location, setUserInfo: setUserInfoReducer }) => {
 
   useEffect(() => {
     const search = qs.parse(location.search, { ignoreQueryPrefix: true });
+    console.log(search);
     const { url: searchUrl } = search;
     setUrl(searchUrl);
   }, [location.search]);

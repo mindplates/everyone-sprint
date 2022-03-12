@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.meeting.vo.response;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
+import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +23,7 @@ public class MeetingSummaryResponse {
     private Long durationSeconds;
     private List<User> users;
     private Long scrumMeetingPlanId;
-
+    private MeetingTypeCode type;
 
     public MeetingSummaryResponse(Meeting meeting) {
         this.id = meeting.getId();
@@ -32,6 +33,7 @@ public class MeetingSummaryResponse {
         this.realEndDate = meeting.getRealEndDate();
         this.durationSeconds = meeting.getDurationSeconds();
         this.scrumMeetingPlanId = Optional.ofNullable(meeting.getScrumMeetingPlan()).map(ScrumMeetingPlan::getId).orElse(null);
+        this.type = meeting.getType();
         this.users = meeting.getUsers().stream().map(
                 (meetingUser) -> User.builder()
                         .id(meetingUser.getId())
@@ -40,6 +42,7 @@ public class MeetingSummaryResponse {
                         .lastOutDate(meetingUser.getLastOutDate())
                         .joinDurationSeconds(meetingUser.getJoinDurationSeconds())
                         .talkedSeconds(meetingUser.getTalkedSeconds())
+                        .talkedCount(meetingUser.getTalkedCount())
                         .build()).collect(Collectors.toList());
     }
 
@@ -52,5 +55,8 @@ public class MeetingSummaryResponse {
         private LocalDateTime lastOutDate;
         private Long joinDurationSeconds;
         private Long talkedSeconds;
+        private Long talkedCount;
+        private Long answerCount;
+
     }
 }

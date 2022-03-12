@@ -5,7 +5,7 @@ import com.mindplates.everyonesprint.biz.meeting.entity.MeetingUser;
 import com.mindplates.everyonesprint.biz.meeting.repository.MeetingRepository;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
 import com.mindplates.everyonesprint.biz.sprint.entity.*;
-import com.mindplates.everyonesprint.biz.sprint.repository.SprintDailyMeetingAnswerRepository;
+import com.mindplates.everyonesprint.biz.sprint.repository.ScrumMeetingAnswerRepository;
 import com.mindplates.everyonesprint.biz.sprint.repository.SprintRepository;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
@@ -25,9 +25,9 @@ public class SprintService {
 
     final private SprintRepository sprintRepository;
     final private MeetingRepository meetingRepository;
-    final private SprintDailyMeetingAnswerRepository scrumMeetingPlanAnswerRepository;
+    final private ScrumMeetingAnswerRepository scrumMeetingPlanAnswerRepository;
 
-    public SprintService(SprintRepository sprintRepository, MeetingRepository meetingRepository, SprintDailyMeetingAnswerRepository scrumMeetingPlanAnswerRepository) {
+    public SprintService(SprintRepository sprintRepository, MeetingRepository meetingRepository, ScrumMeetingAnswerRepository scrumMeetingPlanAnswerRepository) {
         this.sprintRepository = sprintRepository;
         this.meetingRepository = meetingRepository;
         this.scrumMeetingPlanAnswerRepository = scrumMeetingPlanAnswerRepository;
@@ -301,6 +301,12 @@ public class SprintService {
     public Long selectProjectActivatedSprintCount(Long projectId) {
         return sprintRepository.countByProjectIdAndActivatedTrue(projectId);
     }
+
+    public Long selectUserScrumMeetingAnswerCount(Long scrumMeetingPlanId, Long userId, LocalDate date) {
+        return scrumMeetingPlanAnswerRepository.countByScrumMeetingQuestionScrumMeetingPlanIdAndUserIdAndDate(scrumMeetingPlanId, userId, date);
+    }
+
+
 
 
 }

@@ -46,7 +46,7 @@ public class ProjectService {
         projectRepository.deleteById(projectId);
     }
 
-    public List<Project> selectUserPrjectList(UserSession userSession) {
+    public List<Project> selectUserProjectList(UserSession userSession) {
         return projectRepository.findAllByUsersUserId(userSession.getId());
     }
 
