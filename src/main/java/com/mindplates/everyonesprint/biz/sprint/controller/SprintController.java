@@ -4,13 +4,14 @@ import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingResponse;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingSummaryResponse;
-import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
-import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
 import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingAnswer;
+import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
+import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.sprint.vo.request.ScrumMeetingAnswerRequest;
 import com.mindplates.everyonesprint.biz.sprint.vo.request.SprintRequest;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.*;
+import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import io.swagger.v3.oas.annotations.Operation;
@@ -181,6 +182,16 @@ public class SprintController {
         SprintSummaryResponse response = new SprintSummaryResponse();
         response.meetings = meetings.stream()
                 .map(MeetingSummaryResponse::new)
+                .map((meetingSummaryResponse -> {
+                    if (meetingSummaryResponse.getType().equals(MeetingTypeCode.SCRUM)) {
+                        meetingSummaryResponse.getUsers().stream().forEach((user -> {
+                            user.setAnswerCount(sprintService.selectUserScrumMeetingAnswerCount(meetingSummaryResponse.getScrumMeetingPlanId(), user.getUserId(), meetingSummaryResponse.getStartDate().toLocalDate()));
+                        }));
+                    }
+
+                    return meetingSummaryResponse;
+
+                }))
                 .collect(Collectors.toList());
 
         return response;

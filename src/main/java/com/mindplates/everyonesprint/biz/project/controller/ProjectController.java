@@ -32,7 +32,7 @@ public class ProjectController {
     @Operation(description = "사용자의 프로젝트 목록 조회")
     @GetMapping("")
     public List<ProjectListResponse> selectUserProjectList(@ApiIgnore UserSession userSession) {
-        List<Project> projects = projectService.selectUserPrjectList(userSession);
+        List<Project> projects = projectService.selectUserProjectList(userSession);
         return projects.stream().map((project -> new ProjectListResponse(project, userSession))).collect(Collectors.toList());
     }
 
