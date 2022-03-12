@@ -92,7 +92,6 @@ const SprintSummary = ({
 
   const userStats = useMemo(() => {
     const stats = {};
-    console.log(sprint, sprintSummary);
 
     if (sprint?.users) {
       sprint?.users?.forEach((u) => {
@@ -196,8 +195,6 @@ const SprintSummary = ({
           });
         }
 
-
-
         /*
         dateUtil.getTime(current.endDate)
 
@@ -225,7 +222,6 @@ userId: 1
   }, [sprint, sprintSummary]);
 
   const statsAverage = useMemo(() => {
-    console.log(userStats);
     const average = {};
     Object.keys(userStats).forEach((userId) => {
       Object.keys(userStats[userId]).forEach((type) => {
@@ -245,16 +241,12 @@ userId: 1
 
     Object.keys(average).forEach((type) => {
       Object.keys(average[type]).forEach((col) => {
-        console.log(type, col, average[type][col]);
         average[type][col] = sprint?.users.length > 0 ? average[type][col] / sprint?.users.length : 0;
       });
     });
 
     return average;
   }, [sprint, userStats]);
-
-  console.log(userStats);
-  console.log(statsAverage);
 
   return (
     <Page className="sprint-summary-wrapper sprint-common">

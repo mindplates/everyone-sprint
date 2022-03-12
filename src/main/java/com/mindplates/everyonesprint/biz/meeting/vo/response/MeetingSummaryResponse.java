@@ -1,11 +1,13 @@
 package com.mindplates.everyonesprint.biz.meeting.vo.response;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
+import com.mindplates.everyonesprint.biz.meeting.entity.RoomUser;
 import com.mindplates.everyonesprint.biz.sprint.entity.ScrumMeetingPlan;
 import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,16 +36,32 @@ public class MeetingSummaryResponse {
         this.durationSeconds = meeting.getDurationSeconds();
         this.scrumMeetingPlanId = Optional.ofNullable(meeting.getScrumMeetingPlan()).map(ScrumMeetingPlan::getId).orElse(null);
         this.type = meeting.getType();
-        this.users = meeting.getUsers().stream().map(
-                (meetingUser) -> User.builder()
-                        .id(meetingUser.getId())
-                        .userId(meetingUser.getUser().getId())
-                        .firstJoinDate(meetingUser.getFirstJoinDate())
-                        .lastOutDate(meetingUser.getLastOutDate())
-                        .joinDurationSeconds(meetingUser.getJoinDurationSeconds())
-                        .talkedSeconds(meetingUser.getTalkedSeconds())
-                        .talkedCount(meetingUser.getTalkedCount())
-                        .build()).collect(Collectors.toList());
+        if (!meeting.getType().equals(MeetingTypeCode.SMALLTALK)) {
+            this.users = meeting.getUsers().stream().map(
+                    (meetingUser) -> User.builder()
+                            .id(meetingUser.getId())
+                            .userId(meetingUser.getUser().getId())
+                            .firstJoinDate(meetingUser.getFirstJoinDate())
+                            .lastOutDate(meetingUser.getLastOutDate())
+                            .joinDurationSeconds(meetingUser.getJoinDurationSeconds())
+                            .talkedSeconds(meetingUser.getTalkedSeconds())
+                            .talkedCount(meetingUser.getTalkedCount())
+                            .build()).collect(Collectors.toList());
+        } else {
+            List<RoomUser> roomUsers = new ArrayList<>();
+            meeting.getRooms().stream().forEach((room -> roomUsers.addAll(room.getUsers())));
+            this.users = roomUsers.stream().map(
+                    (roomUser) -> User.builder()
+                            .id(roomUser.getId())
+                            .userId(roomUser.getUser().getId())
+                            .firstJoinDate(roomUser.getFirstJoinDate())
+                            .lastOutDate(roomUser.getLastOutDate())
+                            .joinDurationSeconds(roomUser.getJoinDurationSeconds())
+                            .talkedSeconds(roomUser.getTalkedSeconds())
+                            .talkedCount(roomUser.getTalkedCount())
+                            .build()).collect(Collectors.toList());
+        }
+
     }
 
     @Data
