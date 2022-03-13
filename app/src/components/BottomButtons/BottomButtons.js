@@ -9,9 +9,15 @@ const BottomButtons = (props) => {
     onList,
     onListText,
     onListIcon,
+    onInfo,
+    onInfoText,
+    onInfoIcon,
     onDelete,
     onDeleteText,
     onDeleteIcon,
+    onClose,
+    onCloseText,
+    onCloseIcon,
     onSubmit,
     onSubmitText,
     onSubmitIcon,
@@ -40,6 +46,20 @@ const BottomButtons = (props) => {
             </Button>
           </div>
         )}
+        {onClose && (
+          <div className={`close-buttons ${onDelete ? 'ml-3' : ''}`}>
+            <Button className="close-button" type="button" size={size} color="warning" outline onClick={onClose}>
+              <div>
+                {onCloseIcon && (
+                  <div className="icon close-icon">
+                    <span>{onCloseIcon}</span>
+                  </div>
+                )}
+                <div>{onCloseText}</div>
+              </div>
+            </Button>
+          </div>
+        )}
         <div className="other-buttons">
           {onCancel && (
             <Button type="button" size={size} color="white" outline onClick={onCancel}>
@@ -62,6 +82,18 @@ const BottomButtons = (props) => {
                   </div>
                 )}
                 <div>{onListText}</div>
+              </div>
+            </Button>
+          )}
+          {onInfo && (
+            <Button type="button" size={size} color="white" outline onClick={onInfo}>
+              <div>
+                {onInfoIcon && (
+                  <div className="icon">
+                    <span>{onInfoIcon}</span>
+                  </div>
+                )}
+                <div>{onInfoText}</div>
               </div>
             </Button>
           )}
@@ -103,8 +135,12 @@ BottomButtons.defaultProps = {
   border: true,
   onListText: '목록',
   onListIcon: '', // <i className="far fa-file-alt" />,
+  onInfoText: '정보',
+  onInfoIcon: '', // <i className="far fa-file-alt" />,
   onDeleteText: '삭제',
   onDeleteIcon: '', // <i className="far fa-trash-alt" />,
+  onCloseText: '닫기',
+  onCloseIcon: '', // <i className="far fa-trash-alt" />,
   onSubmitText: '등록',
   onSubmitIcon: '', // <i className="far fa-paper-plane" />,
   onEditText: '변경',
@@ -119,9 +155,15 @@ BottomButtons.propTypes = {
   onList: PropTypes.func,
   onListText: PropTypes.string,
   onListIcon: PropTypes.node,
+  onInfo: PropTypes.func,
+  onInfoText: PropTypes.string,
+  onInfoIcon: PropTypes.node,
   onDelete: PropTypes.func,
   onDeleteText: PropTypes.string,
   onDeleteIcon: PropTypes.node,
+  onClose: PropTypes.func,
+  onCloseText: PropTypes.string,
+  onCloseIcon: PropTypes.node,
   onSubmit: PropTypes.bool,
   onSubmitText: PropTypes.string,
   onSubmitIcon: PropTypes.node,

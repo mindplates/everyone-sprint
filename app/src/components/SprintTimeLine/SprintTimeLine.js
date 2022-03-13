@@ -148,9 +148,11 @@ const SprintTimeLine = ({ className, t, history, project }) => {
                             return (
                               <li
                                 key={sprint.id}
-                                className={`point-${point}`}
+                                className={`point-${point} ${sprint.closed ? 'closed' : ''}`}
                                 onClick={() => {
-                                  if (point === 'past') {
+                                  if (sprint.closed) {
+                                    history.push(`/sprints/${sprint.id}`);
+                                  } else if (point === 'past') {
                                     history.push(`/sprints/${sprint.id}/summary`);
                                   } else if (point === 'current') {
                                     history.push(`/sprints/${sprint.id}/daily`);
@@ -159,6 +161,7 @@ const SprintTimeLine = ({ className, t, history, project }) => {
                                   }
                                 }}
                               >
+                                {sprint.closed && <span className="close-tag">CLOSED</span>}
                                 {sprint.name}
                               </li>
                             );

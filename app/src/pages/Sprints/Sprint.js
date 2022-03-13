@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
+import { Alert } from 'reactstrap';
 import {
   Block,
   BlockRow,
@@ -66,6 +67,34 @@ const Sprint = ({
     });
   };
 
+  const onOpen = () => {
+    dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 다시 열기'), t('스프린트를 오픈하시겠습니까?'), () => {
+      request.put(
+        `/api/sprints/${id}/open`,
+        null,
+        () => {
+          history.push('/sprints');
+        },
+        null,
+        t('스프린트를 다시 활성화하고 있습니다.'),
+      );
+    });
+  };
+
+  const onClose = () => {
+    dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 종료'), t('스프린트를 종료하시겠습니까?'), () => {
+      request.put(
+        `/api/sprints/${id}/close`,
+        null,
+        () => {
+          history.push('/sprints');
+        },
+        null,
+        t('스프린트를 종료하고 있습니다.'),
+      );
+    });
+  };
+
   const sprintSpan = dateUtil.getSpan(sprint?.startDate, sprint?.endDate);
 
   return (
@@ -91,6 +120,13 @@ const Sprint = ({
       </PageTitle>
       {sprint && (
         <PageContent info>
+          {sprint.closed && (
+            <Block>
+              <Alert color="warning mb-0">
+                <div className="message">{t('종료된 스프린트입니다. 종료된 스프린트 및 관련 데이터는 검색되지 않습니다.')}</div>
+              </Alert>
+            </Block>
+          )}
           <Block className="pt-0">
             <BlockTitle>{t('스프린트 정보')}</BlockTitle>
             <BlockRow>
@@ -167,9 +203,15 @@ const Sprint = ({
             onEdit={() => {
               history.push(`/sprints/${id}/edit`);
             }}
-            onEditText="스프린트 변경"
+            onEditText="변경"
+            onInfo={() => {
+              history.push(`/sprints/${sprint.id}/summary`);
+            }}
+            onInfoText="통계"
+            onClose={sprint.closed ? onOpen : onClose}
+            onCloseText={sprint.closed ? '스프린트 열기' : '스프린트 닫기'}
             onDelete={onDelete}
-            onDeleteText="스프린트 삭제"
+            onDeleteText="삭제"
           />
         </PageContent>
       )}

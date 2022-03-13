@@ -3,16 +3,18 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
-import { Table } from 'reactstrap';
+import { Alert, Table } from 'reactstrap';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, DateRangeText, Label, Page, PageContent, PageTitle, Text, UserImage, withLogin } from '@/components';
+import { Block, BlockRow, BlockTitle, Button, DateRangeText, Label, Page, PageContent, PageTitle, Text, UserImage, withLogin } from '@/components';
 import request from '@/utils/request';
-import { UserPropTypes } from '@/proptypes';
+import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 import dateUtil from '@/utils/dateUtil';
 
 import './SprintCommon.scss';
 import './SprintSummary.scss';
+import dialog from '@/utils/dialog';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
 const labelMinWidth = '140px';
 
@@ -22,6 +24,8 @@ const SprintSummary = ({
   match: {
     params: { id: idString },
   },
+  type,
+  history,
 }) => {
   const id = Number(idString);
 
@@ -62,7 +66,8 @@ const SprintSummary = ({
 
   const now = new Date();
 
-  const sprintSpan = dateUtil.getSpan(now.getTime(), sprint?.endDate);
+  const isExpired = now.getTime() > sprint?.endDate;
+  const sprintSpan = isExpired ? dateUtil.getSpan(sprint?.endDate, now.getTime()) : dateUtil.getSpan(now.getTime(), sprint?.endDate);
 
   const meetingSpan = useMemo(() => {
     return (
@@ -194,27 +199,6 @@ const SprintSummary = ({
             }
           });
         }
-
-        /*
-        dateUtil.getTime(current.endDate)
-
-        durationSeconds: null
-        endDate: "2022-03-21T06:00:00"
-        id: 279
-        realEndDate: null
-        realStartDate: null
-        scrumMeetingPlanId: null
-        startDate: "2022-03-21T05:00:00"
-
-        users :
-        firstJoinDate: "2022-03-11T06:28:52"
-id: 977
-joinDurationSeconds: 5
-lastOutDate: "2022-03-11T06:28:57"
-talkedSeconds: 0
-userId: 1
-
-         */
       });
     }
 
@@ -224,24 +208,24 @@ userId: 1
   const statsAverage = useMemo(() => {
     const average = {};
     Object.keys(userStats).forEach((userId) => {
-      Object.keys(userStats[userId]).forEach((type) => {
-        Object.keys(userStats[userId][type]).forEach((col) => {
-          if (!average[type]) {
-            average[type] = {};
+      Object.keys(userStats[userId]).forEach((value) => {
+        Object.keys(userStats[userId][value]).forEach((col) => {
+          if (!average[value]) {
+            average[value] = {};
           }
 
-          if (!average[type][col]) {
-            average[type][col] = 0;
+          if (!average[value][col]) {
+            average[value][col] = 0;
           }
 
-          average[type][col] += userStats[userId][type][col];
+          average[value][col] += userStats[userId][value][col];
         });
       });
     });
 
-    Object.keys(average).forEach((type) => {
-      Object.keys(average[type]).forEach((col) => {
-        average[type][col] = sprint?.users.length > 0 ? average[type][col] / sprint?.users.length : 0;
+    Object.keys(average).forEach((value) => {
+      Object.keys(average[value]).forEach((col) => {
+        average[value][col] = sprint?.users.length > 0 ? average[value][col] / sprint?.users.length : 0;
       });
     });
 
@@ -276,26 +260,94 @@ userId: 1
           <span className="spring-title-tag">SUMMARY</span>
         </div>
       </PageTitle>
-      {sprint && (
+      {sprint && sprintSummary && (
         <PageContent className="page-content" info>
-          <div className="board-content">
+          {sprint && (
             <div>
-              <Block className="pt-0 pb-0">
+              {sprint.closed && (
+                <Block className="status-control-block pb-0">
+                  <Alert color="info" className="close-control">
+                    <div className="message">{t('종료된 스프린트입니다. 스프린트를 다시 오픈하시겠습니까?')}</div>
+                    <Button
+                      size="sm"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 다시 열기'), t('스프린트를 오픈하시겠습니까?'), () => {
+                          request.put(
+                            `/api/sprints/${id}/open`,
+                            null,
+                            () => {
+                              history.push('/sprints');
+                            },
+                            null,
+                            t('스프린트를 다시 활성화하고 있습니다.'),
+                          );
+                        });
+                      }}
+                    >
+                      {t('스프린트 열기')}
+                    </Button>
+                  </Alert>
+                </Block>
+              )}
+              {!sprint.closed && type === 'close' && (
+                <Block className="status-control-block pb-0">
+                  <Alert color="warning" className="close-control">
+                    <div className="message">{t('스프린트 종료일이 지났습니다. 지금 스프린트를 종료하시겠습니까?')}</div>
+                    <Button
+                      size="sm"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 종료'), t('스프린트를 종료하시겠습니까?'), () => {
+                          request.put(
+                            `/api/sprints/${id}/close`,
+                            null,
+                            () => {
+                              history.push('/sprints');
+                            },
+                            null,
+                            t('스프린트를 종료하고 있습니다.'),
+                          );
+                        });
+                      }}
+                    >
+                      {t('스프린트 종료')}
+                    </Button>
+                  </Alert>
+                </Block>
+              )}
+              <Block className="pt-0">
                 <BlockTitle>{t('미팅 요약 정보')}</BlockTitle>
                 <BlockRow>
                   <Label minWidth={labelMinWidth}>{t('기간')}</Label>
                   <DateRangeText country={user.country} startDate={sprint.startDate} endDate={sprint.endDate} />
                 </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('남은 기간')}</Label>
-                  <Text>
-                    <span className="ml-0">
-                      <span>{`${sprintSpan.days}${t('일')}`}</span>
-                      <span className="ml-2">{`${sprintSpan.hours}${t('시간')}`}</span>
-                      <span className="ml-2">{t('후 종료')}</span>
-                    </span>
-                  </Text>
-                </BlockRow>
+                {isExpired && (
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth}>{t('종료 일자')}</Label>
+                    <Text>
+                      <span className="ml-0">
+                        <span>{`${sprintSpan.days}${t('일')}`}</span>
+                        <span className="ml-2">{t('지남')}</span>
+                        <span className="expired-tag">EXPIRED</span>
+                      </span>
+                    </Text>
+                  </BlockRow>
+                )}
+                {!isExpired && (
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth}>{t('남은 기간')}</Label>
+                    <Text>
+                      <span className="ml-0">
+                        <span>{`${sprintSpan.days}${t('일')}`}</span>
+                        <span className="ml-2">{`${sprintSpan.hours}${t('시간')}`}</span>
+                        <span className="ml-2">{t('후 종료')}</span>
+                      </span>
+                    </Text>
+                  </BlockRow>
+                )}
                 <BlockRow>
                   <Label minWidth={labelMinWidth}>{t('미팅')}</Label>
                   <Text>
@@ -309,7 +361,7 @@ userId: 1
                       </span>
                       <span className="slash">/</span>
                       <span>
-                        {meetingSpan[0] ? meetingSpan[0] / (1000 * 60) : 0}
+                        {Math.ceil(meetingSpan[0] ? meetingSpan[0] / (1000 * 60) : 0)}
                         {t('분')}
                       </span>
                     </div>
@@ -323,7 +375,7 @@ userId: 1
                       </span>
                       <span className="slash">/</span>
                       <span>
-                        {meetingSpan[1] ? meetingSpan[1] / (1000 * 60) : 0}
+                        {Math.ceil(meetingSpan[1] ? meetingSpan[1] / (1000 * 60) : 0)}
                         {t('분')}
                       </span>
                     </div>
@@ -337,7 +389,15 @@ userId: 1
                     <Table className="user-table g-scrollbar" responsive bordered>
                       <thead>
                         <tr>
-                          <th rowSpan={2}>{t('사용자')}</th>
+                          <th
+                            rowSpan={2}
+                            style={{
+                              position: 'sticky',
+                              left: 0,
+                            }}
+                          >
+                            {t('사용자')}
+                          </th>
                           <th colSpan={6} className="text-center">
                             {t('스크럼 미팅')}
                           </th>
@@ -373,7 +433,14 @@ userId: 1
                         {sprint.users.map((u) => {
                           return (
                             <tr key={u.id}>
-                              <td className="user-info">
+                              <td
+                                className="user-info"
+                                style={{
+                                  position: 'sticky',
+                                  left: 0,
+                                  backgroundColor: 'white',
+                                }}
+                              >
                                 <UserImage
                                   border={false}
                                   rounded
@@ -492,7 +559,7 @@ userId: 1
                 </BlockRow>
               </Block>
             </div>
-          </div>
+          )}
         </PageContent>
       )}
     </Page>
@@ -517,4 +584,6 @@ SprintSummary.propTypes = {
       date: PropTypes.string,
     }),
   }),
+  type: PropTypes.string,
+  history: HistoryPropTypes,
 };
