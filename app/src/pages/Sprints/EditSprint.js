@@ -743,7 +743,7 @@ const EditSprint = ({
               }}
               onSubmit
               onSubmitIcon={<i className="fas fa-plane" />}
-              onSubmitText={type === 'edit' ? t('스프린트 변경') : t('스프린트 등록')}
+              onSubmitText={t('저장')}
               onCancelIcon=""
             />
           </Form>

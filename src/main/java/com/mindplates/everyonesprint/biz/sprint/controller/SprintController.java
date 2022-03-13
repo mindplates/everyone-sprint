@@ -25,7 +25,9 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -73,14 +75,17 @@ public class SprintController {
 
     @Operation(description = "스프린트 닫기")
     @PutMapping("/{sprintId}/close")
-    public SprintResponse updateSprintClosed(@PathVariable Long sprintId, @Valid @RequestBody SprintRequest sprintRequest, @ApiIgnore UserSession userSession) {
-
-        if (!sprintId.equals(sprintRequest.getId())) {
-            throw new ServiceException(HttpStatus.BAD_REQUEST);
-        }
-
+    public SprintResponse updateSprintClosed(@PathVariable Long sprintId, @ApiIgnore UserSession userSession) {
         Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
         sprint.setClosed(true);
+        return new SprintResponse(sprintService.updateSprintInfo(sprint, userSession));
+    }
+
+    @Operation(description = "스프린트 열기")
+    @PutMapping("/{sprintId}/open")
+    public SprintResponse updateSprintOpened(@PathVariable Long sprintId, @ApiIgnore UserSession userSession) {
+        Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
+        sprint.setClosed(false);
         return new SprintResponse(sprintService.updateSprintInfo(sprint, userSession));
     }
 
@@ -179,13 +184,22 @@ public class SprintController {
     @GetMapping("/{sprintId}/summary")
     public SprintSummaryResponse selectSprintSummary(@PathVariable Long sprintId) {
         List<Meeting> meetings = meetingService.selectSprintMeetingList(sprintId);
+        List<Map<String, Object>> userScrumAnswerCount = sprintService.selectUserScrumMeetingAnswerCount(sprintId);
+
         SprintSummaryResponse response = new SprintSummaryResponse();
         response.meetings = meetings.stream()
                 .map(MeetingSummaryResponse::new)
                 .map((meetingSummaryResponse -> {
+
                     if (meetingSummaryResponse.getType().equals(MeetingTypeCode.SCRUM)) {
                         meetingSummaryResponse.getUsers().stream().forEach((user -> {
-                            user.setAnswerCount(sprintService.selectUserScrumMeetingAnswerCount(meetingSummaryResponse.getScrumMeetingPlanId(), user.getUserId(), meetingSummaryResponse.getStartDate().toLocalDate()));
+
+                            Map<String, Object> userDate = new HashMap<>();
+                            userDate.put("userId", user.getUserId());
+                            userDate.put("date", meetingSummaryResponse.getStartDate().toLocalDate());
+                            if (userScrumAnswerCount.contains(userDate)) {
+                                user.setAnswerCount(1L);
+                            }
                         }));
                     }
 

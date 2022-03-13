@@ -63,6 +63,7 @@ public class ProjectResponse {
                             .startDate(sprint.getStartDate())
                             .endDate(sprint.getEndDate())
                             .activated(sprint.getActivated())
+                            .closed(sprint.getClosed())
                             .build()
                     ).collect(Collectors.toList());
         }

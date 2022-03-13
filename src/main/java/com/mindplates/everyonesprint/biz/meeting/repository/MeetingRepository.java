@@ -17,9 +17,9 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     List<Meeting> findAllBySprintId(Long sprintId);
 
-    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(LocalDateTime date, LocalDateTime nextDay, Long userId);
+    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserIdAndSprintClosedFalse(LocalDateTime date, LocalDateTime nextDay, Long userId);
 
-    List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserId(Long sprintId, LocalDateTime date, LocalDateTime nextDay, Long userId);
+    List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserIdAndSprintClosedFalse(Long sprintId, LocalDateTime date, LocalDateTime nextDay, Long userId);
 
     List<Meeting> findAllBySprintIdAndScrumMeetingPlanId(Long sprintId, Long scrumMeetingPlanId);
 
@@ -39,7 +39,8 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     Long countBy();
 
-    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEquals(LocalDateTime date, LocalDateTime nextDay, Long userId, MeetingTypeCode type);
+    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEqualsAndSprintClosedFalse(LocalDateTime date, LocalDateTime nextDay, Long userId, MeetingTypeCode type);
+    List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEqualsAndSprintClosedFalse(Long sprintId, LocalDateTime date, LocalDateTime nextDay, Long userId, MeetingTypeCode type);
 
 }
 

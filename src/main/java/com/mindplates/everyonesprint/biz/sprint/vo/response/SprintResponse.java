@@ -30,6 +30,7 @@ public class SprintResponse {
     private List<SprintUserResponse> users;
     private List<ScrumMeetingPlanResponse> scrumMeetingPlans;
     private List<SmallTalkMeetingPlanResponse> smallTalkMeetingPlans;
+    private Boolean closed;
 
     private Long projectId;
     private String projectName;
@@ -47,6 +48,7 @@ public class SprintResponse {
         this.activated = sprint.getActivated();
         this.doDailyScrumMeeting = sprint.getDoDailyScrumMeeting();
         this.doDailySmallTalkMeeting = sprint.getDoDailySmallTalkMeeting();
+        this.closed = sprint.getClosed();
         this.users = sprint.getUsers().stream().map(
                 (sprintUser) -> SprintUserResponse.builder()
                         .id(sprintUser.getId())

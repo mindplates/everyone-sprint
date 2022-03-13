@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -302,11 +303,10 @@ public class SprintService {
         return sprintRepository.countByProjectIdAndActivatedTrue(projectId);
     }
 
-    public Long selectUserScrumMeetingAnswerCount(Long scrumMeetingPlanId, Long userId, LocalDate date) {
-        return scrumMeetingPlanAnswerRepository.countByScrumMeetingQuestionScrumMeetingPlanIdAndUserIdAndDate(scrumMeetingPlanId, userId, date);
+
+    public List<Map<String, Object>> selectUserScrumMeetingAnswerCount(Long sprintId) {
+        return scrumMeetingPlanAnswerRepository.selectSprintScrumAnswerStatList(sprintId);
     }
-
-
 
 
 }
