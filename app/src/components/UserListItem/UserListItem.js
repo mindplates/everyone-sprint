@@ -6,9 +6,11 @@ import { Button, ExitButton, UserImage } from '@/components';
 
 class UserListItem extends React.PureComponent {
   render() {
-    const { className, onClick, user, editable, onChange, userIndex, addCard, icon } = this.props;
+    const { className, onClick, user, editable, onChange, userIndex, addCard, icon, showAdmin } = this.props;
 
     const CRUD = (user || {}).CRUD || 'S';
+
+    console.log(user);
 
     return (
       <div
@@ -94,6 +96,11 @@ class UserListItem extends React.PureComponent {
                 </div>
                 <div className="email">{user.email}</div>
               </div>
+              {showAdmin && user.role === 'ADMIN' && (
+                <div className="admin-info">
+                  <i className="fas fa-crown" data-tip="ADMIN" />
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -110,6 +117,7 @@ UserListItem.defaultProps = {
     member: true,
   },
   icon: true,
+  showAdmin: false,
 };
 
 UserListItem.propTypes = {
@@ -124,6 +132,7 @@ UserListItem.propTypes = {
   onChange: PropTypes.func,
   addCard: PropTypes.bool,
   icon: PropTypes.bool,
+  showAdmin: PropTypes.bool,
 };
 
 export default UserListItem;

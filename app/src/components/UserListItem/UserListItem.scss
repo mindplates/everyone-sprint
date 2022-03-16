@@ -127,6 +127,12 @@
             }
           }
         }
+
+        &.admin-info {
+          flex-grow: 1;
+          text-align: right;
+          margin-right: 0.5rem;
+        }
       }
     }
   }

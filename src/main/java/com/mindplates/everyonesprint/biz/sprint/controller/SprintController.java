@@ -14,6 +14,7 @@ import com.mindplates.everyonesprint.biz.sprint.vo.response.*;
 import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import com.mindplates.everyonesprint.framework.annotation.CheckSprintAdminAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -91,6 +92,7 @@ public class SprintController {
 
     @Operation(description = "스프린트 수정")
     @PutMapping("/{sprintId}")
+    @CheckSprintAdminAuth
     public SprintResponse updateSprintInfo(@PathVariable Long sprintId, @Valid @RequestBody SprintRequest sprintRequest, @ApiIgnore UserSession userSession) {
 
         if (!sprintId.equals(sprintRequest.getId())) {
@@ -111,6 +113,7 @@ public class SprintController {
 
     @Operation(description = "스프린트 삭제")
     @DeleteMapping("/{sprintId}")
+    @CheckSprintAdminAuth
     public ResponseEntity deleteSprintInfo(@PathVariable Long sprintId) {
         sprintService.deleteSprintInfo(sprintId);
         return new ResponseEntity(HttpStatus.OK);
@@ -119,9 +122,9 @@ public class SprintController {
 
     @Operation(description = "스프린트 조회")
     @GetMapping("/{sprintId}")
-    public SprintResponse selectSprintInfo(@PathVariable Long sprintId) {
+    public SprintResponse selectSprintInfo(@PathVariable Long sprintId, @ApiIgnore UserSession userSession) {
         Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
-        return new SprintResponse(sprint);
+        return new SprintResponse(sprint, userSession);
     }
 
     @Operation(description = "특정일의 스프린트 정보 요약")

@@ -14,7 +14,7 @@ const spokenDetectionLimit = 80;
 const spokenSensitive = 2000;
 
 const ConferenceVideoItem = (props) => {
-  const { t, className, controls, alias, muted, tracking, id, imageType, imageData, pixInfo, filter, stream, supportInfo, setCanvasStream, addSpeak } = props;
+  const { t, className, controls, alias, muted, tracking, id, imageType, imageData, pixInfo, filter, stream, state, supportInfo, setCanvasStream, addSpeak } = props;
 
   const video = useRef();
 
@@ -454,6 +454,7 @@ const ConferenceVideoItem = (props) => {
 
   return (
     <div className={`conference-video-item-wrapper g-no-select ${className}}`} ref={element}>
+      <div className='state-info'>{state}</div>
       {isLoading && (
         <div className="loading">
           <div>
@@ -589,4 +590,5 @@ ConferenceVideoItem.propTypes = {
     }),
   }),
   addSpeak: PropTypes.func,
+  state : PropTypes.string,
 };

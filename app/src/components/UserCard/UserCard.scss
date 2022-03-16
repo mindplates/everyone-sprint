@@ -4,6 +4,13 @@
   height: 120px;
   line-height: 100%;
   vertical-align: top;
+  position: relative;
+
+  .admin-info {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
 
   &.add-card {
     &:hover {

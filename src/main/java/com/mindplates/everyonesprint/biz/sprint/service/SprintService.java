@@ -88,7 +88,12 @@ public class SprintService {
             deleteSprintDailyMeetings.add(scrumMeetingPlan);
             meetingRepository.deleteAllByScrumMeetingPlanId(scrumMeetingPlan.getId());
         }));
-        sprint.getScrumMeetingPlans().removeAll(deleteSprintDailyMeetings);
+
+        deleteSprintDailyMeetings.forEach((scrumMeetingPlan -> {
+            if (sprint.getScrumMeetingPlans().indexOf(scrumMeetingPlan) > -1) {
+                sprint.getScrumMeetingPlans().remove(sprint.getScrumMeetingPlans().indexOf(scrumMeetingPlan));
+            }
+        }));
 
         sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "C".equals(scrumMeetingPlan.getCRUD()))).forEach(scrumMeetingPlan -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) scrumMeetingPlan, startDate, endDate, userSession)));
 
@@ -99,11 +104,20 @@ public class SprintService {
 
         // 스몰톡 미팅
         List<SmallTalkMeetingPlan> deleteSprintDailySmallTalkMeetings = new ArrayList<>();
-        sprint.getSmallTalkMeetingPlans().stream().filter((smallTalkMeetingPlan -> "D".equals(smallTalkMeetingPlan.getCRUD()))).forEach((smallTalkMeetingPlan -> {
-            deleteSprintDailySmallTalkMeetings.add(smallTalkMeetingPlan);
-            meetingRepository.deleteAllBySmallTalkMeetingPlanId(smallTalkMeetingPlan.getId());
+        sprint.getSmallTalkMeetingPlans()
+                .stream()
+                .filter((smallTalkMeetingPlan -> "D".equals(smallTalkMeetingPlan.getCRUD())))
+                .forEach((smallTalkMeetingPlan -> {
+                    deleteSprintDailySmallTalkMeetings.add(smallTalkMeetingPlan);
+                    meetingRepository.deleteAllBySmallTalkMeetingPlanId(smallTalkMeetingPlan.getId());
+                }));
+
+        deleteSprintDailySmallTalkMeetings.forEach((smallTalkMeetingPlan -> {
+            if (sprint.getSmallTalkMeetingPlans().indexOf(smallTalkMeetingPlan) > -1) {
+                sprint.getSmallTalkMeetingPlans().remove(sprint.getSmallTalkMeetingPlans().indexOf(smallTalkMeetingPlan));
+            }
         }));
-        sprint.getSmallTalkMeetingPlans().removeAll(deleteSprintDailySmallTalkMeetings);
+
 
         // 새 스몰톡 미팅 생성
         sprint.getSmallTalkMeetingPlans()

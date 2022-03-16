@@ -49,6 +49,18 @@
     }
 
     &.control {
+      button {
+        border: none;
+        background-color: transparent;
+        color: $gray-600;
+        padding: 0;
+
+        &:hover {
+          border: none;
+          color: $black;
+        }
+      }
+
       @media (max-width: 576px) {
         position: absolute;
         right: 1rem;

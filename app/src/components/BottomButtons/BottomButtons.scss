@@ -1,27 +1,54 @@
+$space: 1.25rem;
+
+.info-layout {
+  .bottom-buttons-wrapper {
+    margin: 1.5rem 0 $space;
+
+    @media (max-width: 992px) {
+      margin: 1rem 0 1rem;
+    }
+
+    @media (max-width: 576px) {
+      margin: 1.5rem 0 0;
+      padding: 0;
+    }
+  }
+  .bottom-liner {
+    margin-bottom: $space;
+    margin-left: -1rem;
+    margin-right: -1rem;
+
+    @media (max-width: 992px) {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+
+    @media (max-width: 576px) {
+      margin-left: -1rem !important;
+      margin-right: -1rem !important;
+    }
+  }
+}
+
 .bottom-buttons-wrapper {
   text-align: right;
   padding: 0;
-  margin: 1.5rem 1rem 1.5rem;
+  margin: 1.5rem 1rem $space;
 
   @media (max-width: 992px) {
-    margin: 1rem 0.5rem 1rem;
+    margin: 1.5rem 1rem 1rem;
   }
 
   @media (max-width: 576px) {
-    margin: 1.5rem 0 0;
-  }
-
-  &.has-border {
-    _border-top: 1px dashed rgba(0, 0, 0, 0.4);
-
-    @media (max-width: 576px) {
-      border: none;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-    }
+    margin: 0 0 1rem;
+    padding: 0 1rem;
   }
 
   .bottom-liner {
-    margin-bottom: 1.5rem;
+    margin-bottom: $space;
+    margin-left: -1rem;
+    margin-right: -1rem;
+
     height: 1px;
     background: rgb(122, 122, 124);
     background: linear-gradient(
@@ -33,22 +60,33 @@
       rgba(226, 21, 80, 1) 80%,
       rgba(238, 251, 10, 1) 100%
     );
+    background: $gray-500;
     opacity: 0.7;
 
     @media (max-width: 992px) {
-      margin-bottom: 1rem;
+      margin-left: -1rem;
+      margin-right: -1rem;
     }
 
     @media (max-width: 576px) {
-      margin-bottom: 1rem;
+      margin-left: -1rem;
+      margin-right: -1rem;
     }
   }
 
   .button-content {
     display: flex;
-    > .delete-buttons {
+    > .delete-buttons,
+    > .close-buttons {
       flex-grow: 0;
       align-self: center;
+      > button {
+        color: lighten($danger, 15%);
+
+        &:hover {
+          color: $danger;
+        }
+      }
     }
 
     > .other-buttons {
@@ -58,10 +96,26 @@
     }
 
     > div > button {
-      margin-right: 1rem;
-      min-width: 70px;
+      min-width: 60px;
       height: 36px;
       padding: 0 1rem;
+      border: none;
+      font-weight: bold;
+      color: $gray-600;
+      background-color: transparent;
+
+      &:hover {
+        border: none;
+        color: $black;
+        background-color: transparent;
+      }
+
+      &.submit-button {
+        color: lighten($point, 15%);
+        &:hover {
+          color: $point;
+        }
+      }
 
       > div {
         display: flex;
@@ -72,18 +126,11 @@
           &.icon {
             display: flex;
             margin-right: 0.25rem;
-            margin-left: -0.125rem;
 
             > span {
               align-self: center;
-              border-radius: 50%;
-              font-size: 11px;
-              width: 20px;
-              height: 20px;
               display: inline-flex;
-              background-color: $white;
-              border: 1px solid rgba(0, 0, 0, 0.6);
-              color: $black;
+              font-size: 16px;
 
               > i {
                 flex-grow: 1;

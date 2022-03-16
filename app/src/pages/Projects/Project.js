@@ -4,8 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { BlockTitle, BottomButtons, Page, PageContent, SprintTimeLine, Tabs, UserList, withLogin } from '@/components';
-import dialog from '@/utils/dialog';
-import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
+import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes } from '@/proptypes';
 import './Project.scss';
@@ -34,22 +33,6 @@ const Project = ({
   useEffect(() => {
     request.get(`/api/projects/${id}`, null, setProject, null, t('프로젝트 정보를 가져오고 있습니다.'));
   }, [id]);
-
-  const onDelete = () => {
-    dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('데이터 삭제 경고'), t('프로젝트를 삭제하시겠습니까?'), () => {
-      request.del(
-        `/api/projects/${id}`,
-        null,
-        () => {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
-            history.push('/projects');
-          });
-        },
-        null,
-        t('프로젝트와 관련된 모든 데이터를 정리중입니다.'),
-      );
-    });
-  };
 
   const allowSearch = ALLOW_SEARCHES.find((d) => d.key === project?.allowSearch) || {};
   const allowAutoJoin = JOIN_POLICIES.find((d) => d.key === project?.allowAutoJoin) || {};
@@ -103,6 +86,7 @@ const Project = ({
                       role: false,
                       member: false,
                     }}
+                    showAdmin
                   />
                 </div>
               </div>
@@ -118,12 +102,14 @@ const Project = ({
             onList={() => {
               history.push('/projects');
             }}
-            onEdit={() => {
-              history.push(`/projects/${id}/edit`);
-            }}
+            onEdit={
+              project?.isAdmin
+                ? () => {
+                    history.push(`/projects/${id}/edit`);
+                  }
+                : null
+            }
             onEditText="변경"
-            onDelete={onDelete}
-            onDeleteText="삭제"
           />
         </PageContent>
       )}

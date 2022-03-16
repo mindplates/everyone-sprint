@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './BottomButtons.scss';
-import { Button } from '@/components';
+import { Button, Liner } from '@/components';
 
 const BottomButtons = (props) => {
-  const { className, size, border } = props;
+  const { className, size } = props;
   const {
     onList,
     onListText,
@@ -29,7 +29,7 @@ const BottomButtons = (props) => {
     onCancelIcon,
   } = props;
   return (
-    <div className={`bottom-buttons-wrapper ${className} ${border ? 'has-border' : ''}`}>
+    <div className={`bottom-buttons-wrapper ${className}`}>
       <div className="bottom-liner" />
       <div className="button-content">
         {onDelete && (
@@ -74,52 +74,64 @@ const BottomButtons = (props) => {
             </Button>
           )}
           {onList && (
-            <Button type="button" size={size} color="white" outline onClick={onList}>
-              <div>
-                {onListIcon && (
-                  <div className="icon">
-                    <span>{onListIcon}</span>
-                  </div>
-                )}
-                <div>{onListText}</div>
-              </div>
-            </Button>
+            <>
+              {onCancel && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />}
+              <Button type="button" size={size} color="white" outline onClick={onList}>
+                <div>
+                  {onListIcon && (
+                    <div className="icon">
+                      <span>{onListIcon}</span>
+                    </div>
+                  )}
+                  <div>{onListText}</div>
+                </div>
+              </Button>
+            </>
           )}
           {onInfo && (
-            <Button type="button" size={size} color="white" outline onClick={onInfo}>
-              <div>
-                {onInfoIcon && (
-                  <div className="icon">
-                    <span>{onInfoIcon}</span>
-                  </div>
-                )}
-                <div>{onInfoText}</div>
-              </div>
-            </Button>
+            <>
+              {(onCancel || onList) && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />}
+              <Button type="button" size={size} color="white" outline onClick={onInfo}>
+                <div>
+                  {onInfoIcon && (
+                    <div className="icon">
+                      <span>{onInfoIcon}</span>
+                    </div>
+                  )}
+                  <div>{onInfoText}</div>
+                </div>
+              </Button>
+            </>
           )}
           {onEdit && (
-            <Button type="button" size={size} color="white" outline onClick={onEdit}>
-              <div>
-                {onEditIcon && (
-                  <div className="icon">
-                    <span>{onEditIcon}</span>
-                  </div>
-                )}
-                <div>{onEditText}</div>
-              </div>
-            </Button>
+            <>
+              {(onCancel || onList || onInfo) && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />}
+              <Button type="button" size={size} color="white" outline onClick={onEdit}>
+                <div>
+                  {onEditIcon && (
+                    <div className="icon">
+                      <span>{onEditIcon}</span>
+                    </div>
+                  )}
+                  <div>{onEditText}</div>
+                </div>
+              </Button>
+            </>
           )}
           {onSubmit && (
-            <Button type="submit" size={size} color="primary">
-              <div>
-                {onSubmitIcon && (
-                  <div className="icon">
-                    <span>{onSubmitIcon}</span>
-                  </div>
-                )}
-                <div>{onSubmitText}</div>
-              </div>
-            </Button>
+            <>
+              {(onCancel || onList || onInfo || onEdit) && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />}
+              <Button type="submit" size={size} className="submit-button">
+                <div>
+                  {onSubmitIcon && (
+                    <div className="icon">
+                      <span>{onSubmitIcon}</span>
+                    </div>
+                  )}
+                  <div>{onSubmitText}</div>
+                </div>
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -132,7 +144,6 @@ export default BottomButtons;
 BottomButtons.defaultProps = {
   className: '',
   size: 'md',
-  border: true,
   onListText: '목록',
   onListIcon: '', // <i className="far fa-file-alt" />,
   onInfoText: '정보',
@@ -173,5 +184,4 @@ BottomButtons.propTypes = {
   onCancel: PropTypes.func,
   onCancelText: PropTypes.string,
   onCancelIcon: PropTypes.node,
-  border: PropTypes.bool,
 };

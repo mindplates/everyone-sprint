@@ -17,7 +17,26 @@ import ScrumInfoViewer from '@/pages/Meetings/Conference/ScrumInfoViewer';
 import EmptyConference from '../Common/EmptyConference';
 
 const peerConnectionConfig = {
-  iceServers: [{ urls: 'stun:stun.services.mozilla.com' }, { urls: 'stun:stun.l.google.com:19302' }],
+  iceServers: [
+    {
+      urls: 'stun:openrelay.metered.ca:80',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+  ],
 };
 
 class Conference extends React.Component {
@@ -410,12 +429,14 @@ class Conference extends React.Component {
     userInfo.peerConnection.oniceconnectionstatechange = () => {
       if (userInfo.peerConnection) {
         const state = userInfo.peerConnection.iceConnectionState;
+        userInfo.state = state;
         if (state === 'failed' || state === 'closed' || state === 'disconnected') {
           userInfo.tracking = false;
-          this.setState({
-            conference: nextConference,
-          });
         }
+
+        this.setState({
+          conference: nextConference,
+        });
       }
     };
 
@@ -1300,6 +1321,7 @@ class Conference extends React.Component {
                                         alias={userInfo.alias}
                                         imageType={userInfo.imageType}
                                         imageData={userInfo.imageData}
+                                        state={userInfo.state}
                                         controls={{
                                           audio: userInfo.participant?.audio,
                                           video: userInfo.participant?.video,
