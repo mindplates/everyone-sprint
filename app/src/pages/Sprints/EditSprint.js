@@ -473,8 +473,6 @@ const EditSprint = ({
       smallTalkMeetingPlan.endTime = endTime.toISOString();
     });
 
-    console.log(next);
-
     if (type === 'edit') {
       request.put(
         `/api/sprints/${next.id}`,
@@ -521,6 +519,42 @@ const EditSprint = ({
         t('스프린트와 관련된 모든 데이터를 정리중입니다.'),
       );
     });
+  };
+
+  const onOpen = () => {
+    dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 다시 열기'), t('스프린트를 오픈하시겠습니까?'), () => {
+      request.put(
+        `/api/sprints/${id}/open`,
+        null,
+        () => {
+          history.push('/sprints');
+        },
+        null,
+        t('스프린트를 다시 활성화하고 있습니다.'),
+      );
+    });
+  };
+
+  const onClose = () => {
+    dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 종료'), t('스프린트를 종료하시겠습니까?'), () => {
+      request.put(
+        `/api/sprints/${id}/close`,
+        null,
+        () => {
+          history.push('/sprints');
+        },
+        null,
+        t('스프린트를 종료하고 있습니다.'),
+      );
+    });
+  };
+
+  const getOpenCloseHandler = () => {
+    if (sprint?.isAdmin) {
+      return sprint.closed ? onOpen : onClose;
+    }
+
+    return null;
   };
 
   return (
@@ -803,6 +837,8 @@ const EditSprint = ({
               onSubmitIcon={<i className="fas fa-plane" />}
               onSubmitText={t('저장')}
               onCancelIcon=""
+              onClose={getOpenCloseHandler()}
+              onCloseText={sprint.closed ? '스프린트 열기' : '스프린트 닫기'}
             />
           </Form>
         )}
