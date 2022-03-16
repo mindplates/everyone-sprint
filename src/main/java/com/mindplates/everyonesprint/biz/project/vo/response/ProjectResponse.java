@@ -4,6 +4,7 @@ import com.mindplates.everyonesprint.biz.common.vo.response.SimpleUserResponse;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintResponse;
+import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class ProjectResponse {
     private List<SprintResponse> sprints;
     private List<SimpleUserResponse> users;
     private Boolean isMember;
+    private Boolean isAdmin;
     private Long activatedSprintCount = 0L;
     private LocalDateTime creationDate;
 
@@ -37,6 +39,7 @@ public class ProjectResponse {
         this.allowAutoJoin = project.getAllowAutoJoin();
         this.activated = project.getActivated();
         this.isMember = project.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userSession.getId())));
+        this.isAdmin = project.getUsers().stream().anyMatch((projectUser -> projectUser.getRole().equals(RoleCode.ADMIN) && projectUser.getUser().getId().equals(userSession.getId())));
         this.creationDate = project.getCreationDate();
         this.users = project.getUsers().stream().map(
                 (projectUser) -> SimpleUserResponse.builder()

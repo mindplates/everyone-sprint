@@ -6,7 +6,7 @@ import { Popup, UserCard, UserListItem } from '@/components';
 import UserSelector from '@/components/UserList/UserSelector';
 import withLoader from '@/components/Common/withLoader';
 
-const UserList = ({ className, users, editable, onChange, onChangeUsers, type, icon }) => {
+const UserList = ({ className, users, editable, onChange, onChangeUsers, type, icon, showAdmin }) => {
   const [popup, setPopup] = useState(false);
 
   const changeUser = useCallback(
@@ -45,14 +45,14 @@ const UserList = ({ className, users, editable, onChange, onChangeUsers, type, i
             if (type === 'card') {
               return (
                 <div key={index} className="user-card">
-                  <UserCard icon={icon} userIndex={index} user={user} editable={editable} onChange={changeUser} />
+                  <UserCard icon={icon} userIndex={index} user={user} editable={editable} onChange={changeUser} showAdmin={showAdmin} />
                 </div>
               );
             }
 
             return (
               <div key={index} className="user-card">
-                <UserListItem icon={icon} userIndex={index} user={user} editable={editable} onChange={changeUser} />
+                <UserListItem icon={icon} userIndex={index} user={user} editable={editable} onChange={changeUser} showAdmin={showAdmin} />
               </div>
             );
           })}
@@ -114,6 +114,7 @@ UserList.defaultProps = {
   },
   type: 'card',
   icon: true,
+  showAdmin: false,
 };
 
 UserList.propTypes = {
@@ -127,4 +128,5 @@ UserList.propTypes = {
   onChangeUsers: PropTypes.func,
   type: PropTypes.string,
   icon: PropTypes.bool,
+  showAdmin: PropTypes.bool,
 };

@@ -170,6 +170,30 @@ const EditSprint = ({
       next.scrumMeetingPlans = nextSprintDailyMeetings;
     }
 
+    if (key === 'doDailyScrumMeeting' && value === false) {
+      const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
+      for (let i = nextSprintDailyMeetings.length - 1; i >= 0; i -= 1) {
+        if (nextSprintDailyMeetings[i].CRUD === 'C') {
+          nextSprintDailyMeetings.splice(i, 1);
+        } else {
+          nextSprintDailyMeetings[i].CRUD = 'D';
+        }
+      }
+      next.scrumMeetingPlans = nextSprintDailyMeetings;
+    }
+
+    if (key === 'doDailySmallTalkMeeting' && value === false) {
+      const nextSprintDailySmallTalkMeetings = next.smallTalkMeetingPlans.slice(0);
+      for (let i = nextSprintDailySmallTalkMeetings.length - 1; i >= 0; i -= 1) {
+        if (nextSprintDailySmallTalkMeetings[i].CRUD === 'C') {
+          nextSprintDailySmallTalkMeetings.splice(i, 1);
+        } else {
+          nextSprintDailySmallTalkMeetings[i].CRUD = 'D';
+        }
+      }
+      next.smallTalkMeetingPlans = nextSprintDailySmallTalkMeetings;
+    }
+
     setSprint(next);
   };
 
@@ -213,8 +237,14 @@ const EditSprint = ({
   const removeSprintDailyMeeting = (inx) => {
     const next = { ...sprint };
     const nextSprintDailyMeetings = next.scrumMeetingPlans.slice(0);
-    nextSprintDailyMeetings[inx].CRUD = 'D';
-    next.scrumMeetingPlans = nextSprintDailyMeetings;
+    if (nextSprintDailyMeetings[inx].CRUD === 'C') {
+      nextSprintDailyMeetings.splice(inx, 1);
+      next.scrumMeetingPlans = nextSprintDailyMeetings;
+    } else {
+      nextSprintDailyMeetings[inx].CRUD = 'D';
+      next.scrumMeetingPlans = nextSprintDailyMeetings;
+    }
+
     setSprint(next);
   };
 
@@ -294,14 +324,14 @@ const EditSprint = ({
     });
 
     const startTime = new Date();
-    startTime.setHours(11);
-    startTime.setMinutes(0);
+    startTime.setHours(10);
+    startTime.setMinutes(30);
     startTime.setSeconds(0);
     startTime.setMilliseconds(0);
 
     const endTime = new Date();
-    endTime.setHours(12);
-    endTime.setMinutes(0);
+    endTime.setHours(11);
+    endTime.setMinutes(30);
     endTime.setSeconds(0);
     endTime.setMilliseconds(0);
 
@@ -323,8 +353,15 @@ const EditSprint = ({
   const removeSprintDailySmallTalkMeeting = (inx) => {
     const next = { ...sprint };
     const nextSprintDailySmallTalkMeetings = next.smallTalkMeetingPlans.slice(0);
-    nextSprintDailySmallTalkMeetings[inx].CRUD = 'D';
-    next.smallTalkMeetingPlans = nextSprintDailySmallTalkMeetings;
+
+    if (nextSprintDailySmallTalkMeetings[inx].CRUD === 'C') {
+      nextSprintDailySmallTalkMeetings.splice(inx, 1);
+      next.smallTalkMeetingPlans = nextSprintDailySmallTalkMeetings;
+    } else {
+      nextSprintDailySmallTalkMeetings[inx].CRUD = 'D';
+      next.smallTalkMeetingPlans = nextSprintDailySmallTalkMeetings;
+    }
+
     setSprint(next);
   };
 
@@ -369,13 +406,13 @@ const EditSprint = ({
     const smallTalkMeetingPlans = next.smallTalkMeetingPlans.slice(0);
 
     const startTime = new Date();
-    startTime.setHours(11);
-    startTime.setMinutes(0);
+    startTime.setHours(13);
+    startTime.setMinutes(30);
     startTime.setSeconds(0);
     startTime.setMilliseconds(0);
 
     const endTime = new Date();
-    endTime.setHours(12);
+    endTime.setHours(14);
     endTime.setMinutes(0);
     endTime.setSeconds(0);
     endTime.setMilliseconds(0);
@@ -436,6 +473,8 @@ const EditSprint = ({
       smallTalkMeetingPlan.endTime = endTime.toISOString();
     });
 
+    console.log(next);
+
     if (type === 'edit') {
       request.put(
         `/api/sprints/${next.id}`,
@@ -466,6 +505,22 @@ const EditSprint = ({
         t('새로운 스프린트를 만들고 있습니다.'),
       );
     }
+  };
+
+  const onDelete = () => {
+    dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('데이터 삭제 경고'), t('스프린트를 삭제하시겠습니까?'), () => {
+      request.del(
+        `/api/sprints/${id}`,
+        null,
+        () => {
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
+            history.push('/sprints');
+          });
+        },
+        null,
+        t('스프린트와 관련된 모든 데이터를 정리중입니다.'),
+      );
+    });
   };
 
   return (
@@ -520,7 +575,7 @@ const EditSprint = ({
               <div className="mt-3">
                 <Button
                   size="md"
-                  color="primary"
+                  color="point"
                   onClick={() => {
                     history.push('/projects/new');
                   }}
@@ -573,7 +628,7 @@ const EditSprint = ({
               </BlockRow>
             </Block>
             <Block className="pb-0">
-              <BlockTitle>{t('데일리 스크럼')}</BlockTitle>
+              <BlockTitle>{t('데일리 스크럼 미팅')}</BlockTitle>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
                 <CheckBox
@@ -716,6 +771,7 @@ const EditSprint = ({
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
                 <RadioButton
+                  disabled
                   size="sm"
                   items={JOIN_POLICIES}
                   value={sprint.allowAutoJoin}
@@ -741,6 +797,8 @@ const EditSprint = ({
               onCancel={() => {
                 history.goBack();
               }}
+              onDelete={sprint?.isAdmin ? onDelete : null}
+              onDeleteText="삭제"
               onSubmit
               onSubmitIcon={<i className="fas fa-plane" />}
               onSubmitText={t('저장')}

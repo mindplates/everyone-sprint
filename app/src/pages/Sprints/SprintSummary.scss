@@ -71,6 +71,20 @@
         }
       }
 
+      th.sticky,
+      td.sticky {
+        @media (min-width: 768px) {
+          position: sticky;
+          left: 0;
+        }
+      }
+
+      td.sticky {
+        @media (min-width: 768px) {
+          background-color: $white;
+        }
+      }
+
       th {
         padding: 0.5rem 1rem;
       }

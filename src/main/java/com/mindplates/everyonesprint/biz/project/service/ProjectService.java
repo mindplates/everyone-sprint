@@ -2,6 +2,8 @@ package com.mindplates.everyonesprint.biz.project.service;
 
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.project.repository.ProjectRepository;
+import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
+import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +18,11 @@ public class ProjectService {
 
     final private ProjectRepository projectRepository;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    final private SprintService sprintService;
+
+    public ProjectService(ProjectRepository projectRepository, SprintService sprintService) {
         this.projectRepository = projectRepository;
+        this.sprintService = sprintService;
     }
 
     public Project selectByName(String name) {
@@ -42,8 +47,12 @@ public class ProjectService {
         return project;
     }
 
-    public void deleteProjectInfo(long projectId) {
-        projectRepository.deleteById(projectId);
+
+    public void deleteProjectInfo(Project project) {
+        for (Sprint sprint : project.getSprints()) {
+            sprintService.deleteSprintInfo(sprint.getId());
+        }
+        projectRepository.delete(project);
     }
 
     public List<Project> selectUserProjectList(UserSession userSession) {

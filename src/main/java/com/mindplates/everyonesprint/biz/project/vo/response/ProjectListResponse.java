@@ -23,7 +23,6 @@ public class ProjectListResponse {
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean activated;
-    private List<Sprint> sprints;
     private List<SimpleUserResponse> users;
     private Boolean isMember;
     private Boolean isAdmin;

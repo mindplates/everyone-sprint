@@ -20,10 +20,10 @@ const PageTitle = ({ className, children, control, buttons, tabs, tab, onChangeT
       )}
       {buttons && (
         <div className="control">
-          <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+          <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
           {buttons.map((button, inx) => {
             return (
-              <Button key={inx} size="xs" color="white" outline onClick={button.handler}>
+              <Button key={inx} size="md" color="white" outline onClick={button.handler}>
                 {button.icon && <span>{button.icon}</span>} {button.text}
               </Button>
             );

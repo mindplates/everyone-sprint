@@ -6,6 +6,7 @@ import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import com.mindplates.everyonesprint.framework.annotation.CheckSprintAdminAuth;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -49,11 +50,27 @@ public class SprintAuthAspect {
     private void cudOperator() {
     }
 
-    @Before("cudOperator() && args(sprintId, ..)")
+    // @Pointcut("(@target(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth) || @annotation(com.msws.shareplates.framework.aop.annotation.CheckTopicAuth)) && execution(* com.msws.shareplates..create*(..))")
+    // private void createOperator() {
+    // }
+
+
+
+
+    @Before("cudOperator() && args(sprintId, ..) && @annotation(com.mindplates.everyonesprint.framework.annotation.CheckSprintAdminAuth)")
     public void checkIsSprintAdminUser(JoinPoint joinPoint, long sprintId) throws Throwable {
         UserSession userSession = SessionUtil.getUserInfo(request);
         Sprint sprint = sprintService.selectSprintInfo(sprintId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()) && sprintUser.getRole().equals(RoleCode.ADMIN))) {
+            throw new ServiceException("common.not.authorized");
+        }
+    }
+
+    @Before("cudOperator() && args(sprintId, ..) && !@annotation(com.mindplates.everyonesprint.framework.annotation.CheckSprintAdminAuth)")
+    public void checkIsWriteSprintUser(JoinPoint joinPoint, long sprintId) throws Throwable {
+        UserSession userSession = SessionUtil.getUserInfo(request);
+        Sprint sprint = sprintService.selectSprintInfo(sprintId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        if (sprint.getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {
             throw new ServiceException("common.not.authorized");
         }
     }

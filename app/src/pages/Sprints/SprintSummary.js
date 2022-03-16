@@ -250,14 +250,14 @@ const SprintSummary = ({
           },
           {
             link: `/sprints/${sprint?.id}/summary`,
-            name: t('요약'),
+            name: t('통계'),
             current: true,
           },
         ]}
       >
         <div className="title">
           <span>{sprint?.name}</span>
-          <span className="spring-title-tag">SUMMARY</span>
+          <span className="spring-title-tag d-none">SUMMARY</span>
         </div>
       </PageTitle>
       {sprint && sprintSummary && (
@@ -391,10 +391,7 @@ const SprintSummary = ({
                         <tr>
                           <th
                             rowSpan={2}
-                            style={{
-                              position: 'sticky',
-                              left: 0,
-                            }}
+                            className="sticky"
                           >
                             {t('사용자')}
                           </th>
@@ -434,12 +431,7 @@ const SprintSummary = ({
                           return (
                             <tr key={u.id}>
                               <td
-                                className="user-info"
-                                style={{
-                                  position: 'sticky',
-                                  left: 0,
-                                  backgroundColor: 'white',
-                                }}
+                                className="user-info sticky"
                               >
                                 <UserImage
                                   border={false}

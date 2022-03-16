@@ -14,7 +14,7 @@ import { DATE_FORMATS_TYPES } from '@/constants/constants';
 const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo }) => {
   const now = Date.now();
   return (
-    <div className={`my-sprint-summary-list-wrapper ${className} ${sprints && sprints?.length > 0 ? 'g-list-content' : 'g-page-content'}`}>
+    <div className={`my-sprint-summary-list-wrapper ${className}`}>
       {sprints && sprints.length < 1 && (
         <EmptyContent
           height="100%"
@@ -23,7 +23,7 @@ const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo 
             <div className="mt-3">
               <Button
                 size="md"
-                color="primary"
+                color="point"
                 onClick={() => {
                   history.push('/sprints/new');
                 }}

@@ -6,7 +6,7 @@ import { Button, ExitButton, UserImage } from '@/components';
 
 class UserCard extends React.PureComponent {
   render() {
-    const { className, onClick, user, editable, onChange, userIndex, addCard } = this.props;
+    const { className, onClick, user, editable, onChange, userIndex, addCard, showAdmin } = this.props;
 
     const CRUD = (user || {}).CRUD || 'S';
 
@@ -93,6 +93,11 @@ class UserCard extends React.PureComponent {
             </div>
           </div>
         )}
+        {showAdmin && user.role === 'ADMIN' && (
+          <div className="admin-info">
+            <i className="fas fa-crown" />
+          </div>
+        )}
       </div>
     );
   }
@@ -105,6 +110,7 @@ UserCard.defaultProps = {
     role: true,
     member: true,
   },
+  showAdmin: false,
 };
 
 UserCard.propTypes = {
@@ -118,6 +124,7 @@ UserCard.propTypes = {
   }),
   onChange: PropTypes.func,
   addCard: PropTypes.bool,
+  showAdmin: PropTypes.bool,
 };
 
 export default UserCard;

@@ -1,6 +1,8 @@
 package com.mindplates.everyonesprint.biz.sprint.vo.response;
 
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
+import com.mindplates.everyonesprint.common.code.RoleCode;
+import com.mindplates.everyonesprint.common.vo.UserSession;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +33,8 @@ public class SprintResponse {
     private List<ScrumMeetingPlanResponse> scrumMeetingPlans;
     private List<SmallTalkMeetingPlanResponse> smallTalkMeetingPlans;
     private Boolean closed;
+    private Boolean isMember;
+    private Boolean isAdmin;
 
     private Long projectId;
     private String projectName;
@@ -98,6 +102,14 @@ public class SprintResponse {
         if (sprint.getProject() != null) {
             this.projectId = sprint.getProject().getId();
             this.projectName = sprint.getProject().getName();
+        }
+    }
+
+    public SprintResponse(Sprint sprint, UserSession userSession) {
+        this(sprint);
+        if (userSession != null) {
+            this.isMember = sprint.getUsers().stream().anyMatch((sprintUser -> sprintUser.getUser().getId().equals(userSession.getId())));
+            this.isAdmin = sprint.getUsers().stream().anyMatch((sprintUser -> sprintUser.getRole().equals(RoleCode.ADMIN) && sprintUser.getUser().getId().equals(userSession.getId())));
         }
 
     }

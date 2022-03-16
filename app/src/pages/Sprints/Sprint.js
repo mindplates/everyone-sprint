@@ -11,6 +11,7 @@ import {
   BlockTitle,
   BottomButtons,
   DailyScrumMeeting,
+  DailySmallTalkMeeting,
   DateRangeText,
   Label,
   Page,
@@ -51,22 +52,6 @@ const Sprint = ({
     );
   }, [id]);
 
-  const onDelete = () => {
-    dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('데이터 삭제 경고'), t('스프린트를 삭제하시겠습니까?'), () => {
-      request.del(
-        `/api/sprints/${id}`,
-        null,
-        () => {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
-            history.push('/sprints');
-          });
-        },
-        null,
-        t('스프린트와 관련된 모든 데이터를 정리중입니다.'),
-      );
-    });
-  };
-
   const onOpen = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 다시 열기'), t('스프린트를 오픈하시겠습니까?'), () => {
       request.put(
@@ -93,6 +78,14 @@ const Sprint = ({
         t('스프린트를 종료하고 있습니다.'),
       );
     });
+  };
+
+  const getOpenCloseHandler = () => {
+    if (sprint?.isAdmin) {
+      return sprint.closed ? onOpen : onClose;
+    }
+
+    return null;
   };
 
   const sprintSpan = dateUtil.getSpan(sprint?.startDate, sprint?.endDate);
@@ -147,7 +140,7 @@ const Sprint = ({
             </BlockRow>
           </Block>
           <Block className="pb-0">
-            <BlockTitle>{t('데일리 스크럼')}</BlockTitle>
+            <BlockTitle>{t('데일리 스크럼 미팅')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('데일리 스크럼 미팅')}</Label>
               <Text>{sprint.doDailyScrumMeeting ? 'Y' : 'N'}</Text>
@@ -157,6 +150,20 @@ const Sprint = ({
             <Block className="sprint-daily-meetings">
               {sprint.scrumMeetingPlans.map((scrumMeetingPlan, inx) => {
                 return <DailyScrumMeeting key={inx} no={inx + 1} scrumMeetingPlan={scrumMeetingPlan} user={user} />;
+              })}
+            </Block>
+          )}
+          <Block className="pb-0">
+            <BlockTitle>{t('데일리 스몰톡 미팅')}</BlockTitle>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('데일리 스몰톡 미팅')}</Label>
+              <Text>{sprint.doDailySmallTalkMeeting ? 'Y' : 'N'}</Text>
+            </BlockRow>
+          </Block>
+          {sprint.doDailySmallTalkMeeting && (
+            <Block className="sprint-daily-meetings">
+              {sprint.smallTalkMeetingPlans.map((smallTalkMeetingPlan, inx) => {
+                return <DailySmallTalkMeeting key={inx} no={inx + 1} smallTalkMeetingPlan={smallTalkMeetingPlan} user={user} />;
               })}
             </Block>
           )}
@@ -189,6 +196,7 @@ const Sprint = ({
           <Block className="g-last-block">
             <BlockTitle>{t('멤버')}</BlockTitle>
             <UserList
+              showAdmin
               users={sprint.users}
               editable={{
                 role: false,
@@ -200,18 +208,20 @@ const Sprint = ({
             onList={() => {
               history.push('/sprints');
             }}
-            onEdit={() => {
-              history.push(`/sprints/${id}/edit`);
-            }}
+            onEdit={
+              sprint?.isAdmin
+                ? () => {
+                    history.push(`/sprints/${id}/edit`);
+                  }
+                : null
+            }
             onEditText="변경"
             onInfo={() => {
               history.push(`/sprints/${sprint.id}/summary`);
             }}
             onInfoText="통계"
-            onClose={sprint.closed ? onOpen : onClose}
+            onClose={getOpenCloseHandler()}
             onCloseText={sprint.closed ? '스프린트 열기' : '스프린트 닫기'}
-            onDelete={onDelete}
-            onDeleteText="삭제"
           />
         </PageContent>
       )}

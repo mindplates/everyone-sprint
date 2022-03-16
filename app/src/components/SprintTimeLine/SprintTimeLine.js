@@ -70,7 +70,7 @@ const SprintTimeLine = ({ className, t, history, project }) => {
   }, []);
 
   return (
-    <div className={`sprint-time-line-wrapper g-scroller  ${className}`} ref={element}>
+    <div className={`sprint-time-line-wrapper g-scroller ${className}`} ref={element}>
       <div className="project-start-info">
         <div className="date">{dateUtil.getDateString(project.creationDate, DATE_FORMATS_TYPES.yearsDays)}</div>
         <div className="project-text">{t('프로젝트 시작')}</div>

@@ -23,7 +23,7 @@ const ProjectList = ({ className, t, history, projects }) => {
             <div>
               <div className="name">
                 <div className="text">{project.name}</div>
-                {project.isMember && (
+                {project.isAdmin && (
                   <div className="controls">
                     <Button
                       size="sm"

@@ -3,7 +3,20 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, BottomButtons, Form, Input, Label, Page, PageContent, PageTitle, UserList, withLogin } from '@/components';
+import {
+  Block,
+  BlockRow,
+  BlockTitle,
+  BottomButtons,
+  Form,
+  Input,
+  Label,
+  Page,
+  PageContent,
+  PageTitle,
+  UserList,
+  withLogin,
+} from '@/components';
 import dialog from '@/utils/dialog';
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
@@ -108,6 +121,22 @@ const EditProject = ({
     }
   };
 
+  const onDelete = () => {
+    dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('데이터 삭제 경고'), t('프로젝트를 삭제하시겠습니까?'), () => {
+      request.del(
+        `/api/projects/${id}`,
+        null,
+        () => {
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
+            history.push('/projects');
+          });
+        },
+        null,
+        t('프로젝트와 관련된 모든 데이터를 정리중입니다.'),
+      );
+    });
+  };
+
   const onSubmit = (e) => {
     e.preventDefault();
 
@@ -135,6 +164,8 @@ const EditProject = ({
       save();
     }
   };
+
+  console.log(project);
 
   return (
     <Page className="edit-project-wrapper">
@@ -206,6 +237,7 @@ const EditProject = ({
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
               <RadioButton
+                disabled
                 size="sm"
                 items={ALLOW_SEARCHES}
                 value={project.allowSearch}
@@ -217,6 +249,7 @@ const EditProject = ({
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
               <RadioButton
+                disabled
                 size="sm"
                 items={JOIN_POLICIES}
                 value={project.allowAutoJoin}
@@ -244,8 +277,10 @@ const EditProject = ({
             onCancel={() => {
               history.goBack();
             }}
-            onSubmit
-            onSubmitText={type === 'edit' ? t('변경') : t('등록')}
+            onDelete={ project?.isAdmin ? onDelete : null}
+            onDeleteText="삭제"
+            onSubmit={type === 'new' || project?.isAdmin}
+            onSubmitText="저장"
             onCancelIcon=""
           />
         </Form>
