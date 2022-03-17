@@ -1,9 +1,31 @@
 <configuration>
+
+    <property name="PROJECT_NAME" value="eesprint"/>
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
         </layout>
     </appender>
+
+    <springProfile name="production">
+        <property name="LOG_DIR" value="/logs/tomcat/eesprint"/>
+        <property name="LOG_PATH_NAME" value="${LOG_DIR}/${PROJECT_NAME}.log"/>
+    </springProfile>
+
+    <springProfile name="production">
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH_NAME}</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH_NAME}.%d{yyyyMMdd}</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} -%5p [%15.15t] %-40.40logger{39} : %m%n-%wEx</pattern>
+            </encoder>
+        </appender>
+    </springProfile>
 
     <springProfile name="default">
         <logger name="org.springframework" level="INFO"/>
@@ -17,10 +39,9 @@
     </springProfile>
 
     <springProfile name="production">
-        <logger name="com.mindplates.everyonesprint.Application" level="info"/>
-        <logger name="com.mindplates.everyonesprint"/>
-        <root level="ERROR">
-            <appender-ref ref="CONSOLE"/>
+        <root level="info" additivity="false">
+            <appender-ref ref="FILE"/>
         </root>
     </springProfile>
+
 </configuration>
