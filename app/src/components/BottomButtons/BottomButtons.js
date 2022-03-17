@@ -47,7 +47,7 @@ const BottomButtons = (props) => {
           </div>
         )}
         {onClose && (
-          <div className='close-buttons text'>
+          <div className='close-buttons'>
             {onDelete && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />}
             <Button className="close-button" type="button" size={size} color="warning" outline onClick={onClose}>
               <div>
