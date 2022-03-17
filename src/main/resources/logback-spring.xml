@@ -22,7 +22,6 @@
             </rollingPolicy>
             <encoder>
                 <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} -%5p [%15.15t] %-40.40logger{39} : %m%n-%wEx</pattern>
             </encoder>
         </appender>
     </springProfile>
