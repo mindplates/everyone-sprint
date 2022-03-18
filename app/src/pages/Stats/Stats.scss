@@ -199,46 +199,6 @@
           }
         }
       }
-
-      .login-need-message {
-        padding: 1rem;
-        text-align: center;
-        font-family: pretendard, sans-serif;
-        font-weight: bold;
-        margin-top: 3rem;
-
-        @media (max-width: 768px) {
-          margin-top: 0;
-          margin-bottom: 2rem;
-        }
-
-        > div {
-          margin-bottom: 1rem;
-
-          &:last-child {
-            margin-bottom: 0;
-          }
-
-          &.login {
-            > a {
-              display: inline-flex;
-              width: 60px;
-              height: 60px;
-              background-color: $point;
-              justify-content: center;
-              border-radius: 50%;
-              color: $white;
-              text-decoration: none;
-              &:hover {
-                background-color: darken($point, 5%);
-              }
-              > span {
-                align-self: center;
-              }
-            }
-          }
-        }
-      }
     }
   }
 

@@ -9,10 +9,10 @@ import storage from '@/utils/storage';
 import MENU from '@/constants/menu';
 import { BlockTitle, Button, Liner, Overlay, ProductLogo, UserImage } from '@/components';
 import { setSetting, setUserInfo } from '@/store/actions';
-import './Header.scss';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
+import './Header.scss';
 
 const Header = (props) => {
   const { setSetting: setSettingReducer, setUserInfo: setUserInfoReducer, setting, location, t, user, i18n, history } = props;

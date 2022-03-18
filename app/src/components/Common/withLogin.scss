@@ -7,7 +7,7 @@
 
     > .logo {
       text-align: center;
-      margin-bottom: 6rem;
+      margin-bottom: 4rem;
 
       .product-logo-wrapper {
         transform: scale(3);
@@ -21,9 +21,11 @@
     }
 
     > .message {
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-size: 1rem;
       margin-bottom: 1rem;
+      padding: 0 1rem;
+      text-align: center;
+      font-family: pretendard, sans-serif;
     }
 
     > .login {
@@ -47,10 +49,17 @@
     }
 
     > .new-user {
-      margin-top: 2rem;
+      margin-top: 1rem;
       text-align: center;
-      font-weight: bold;
       font-family: pretendard, sans-serif;
+      color: $point;
+      a {
+        text-decoration: none;
+
+        &:visited {
+          color: $point;
+        }
+      }
     }
   }
 }

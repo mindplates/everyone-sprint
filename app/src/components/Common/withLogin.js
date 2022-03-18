@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
+import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { UserPropTypes } from '@/proptypes';
-import { ProductLogo } from '@/components';
+import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { Button, ProductLogo } from '@/components';
 import Spinner from '@/components/Spinner/Spinner';
 import './withLogin.scss';
 
@@ -39,7 +39,7 @@ const withLogin = (WrappedComponent) => {
     }
 
     render() {
-      const { user, t } = this.props;
+      const { user, t, history } = this.props;
       const { delayed } = this.state;
 
       if (user.tried && delayed && user && user.id) {
@@ -58,14 +58,21 @@ const withLogin = (WrappedComponent) => {
               <div className="logo">
                 <ProductLogo className="bg-transparent d-inline-block" name={false} width="auto" />
               </div>
-              <div className="message">{t('로그인이 필요한 서비스입니다')}</div>
+              <div className="message">{t('사용을 위해 로그인이 필요합니다.')}</div>
               <div className="login">
-                <Link to={`/login?url=${window.location.pathname}`}>
-                  <span>{t('로그인')}</span>
-                </Link>
+                <Button
+                  size="sm"
+                  color="white"
+                  outline
+                  onClick={() => {
+                    history.push(`/login?url=${window.location.pathname}`);
+                  }}
+                >
+                  로그인
+                </Button>
               </div>
               <div className="new-user">
-                <Link to="/join">{t('새로운 사용자를 등록합니다.')}</Link>
+                <Link to="/join">{t('회원가입')}</Link>
               </div>
             </div>
           )}
@@ -77,6 +84,7 @@ const withLogin = (WrappedComponent) => {
   NeedLogin.propTypes = {
     user: UserPropTypes,
     t: PropTypes.func,
+    history: HistoryPropTypes,
   };
 
   const mapStateToProps = (state) => {
@@ -85,7 +93,7 @@ const withLogin = (WrappedComponent) => {
     };
   };
 
-  return compose(withTranslation(), connect(mapStateToProps, undefined))(NeedLogin);
+  return compose(withTranslation(), connect(mapStateToProps, undefined))(withRouter(NeedLogin));
 };
 
 export default withLogin;

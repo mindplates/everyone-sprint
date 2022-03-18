@@ -126,7 +126,7 @@ const Login = ({ t, history, location, setUserInfo: setUserInfoReducer }) => {
           <div className="mb-2 text-center">
             <ProductLogo className="bg-white d-inline-block" />
           </div>
-          <Liner width="100%" height="1px" color="light" margin="1rem 0" />
+          <Liner className="d-none d-sm-block" width="100%" height="1px" color="light" margin="1rem 0" />
           {url && (
             <div className="need-auth-message">
               <span>{t('로그인이 필요합니다.')}</span>
@@ -164,7 +164,7 @@ const Login = ({ t, history, location, setUserInfo: setUserInfoReducer }) => {
             </Button>
           </div>
           <div className="message">
-            <Link to="/join">새로운 사용자를 등록합니다.</Link>
+            <Link to="/join">회원 가입</Link>
           </div>
         </Form>
       </PageContent>

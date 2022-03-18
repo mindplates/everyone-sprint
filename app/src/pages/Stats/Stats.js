@@ -3,13 +3,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Button, Page, PageContent, ProductLogo } from '@/components';
 import request from '@/utils/request';
 import './Stats.scss';
-import { UserPropTypes } from '@/proptypes';
 
-const Stats = ({ t, user }) => {
+const Stats = ({ t }) => {
   const [stats, setStats] = useState({
     projectCount: 0,
     sprintCount: 0,
@@ -76,18 +75,6 @@ const Stats = ({ t, user }) => {
               <div className="label">{t('사용자')}</div>
             </div>
           </div>
-          {!user?.id && (
-            <div className="login-need-message">
-              <div className="login">
-                <Link to="/login">
-                  <span>{t('로그인')}</span>
-                </Link>
-              </div>
-              <div>
-                <Link to="/join">{t('새로운 사용자를 등록합니다.')}</Link>
-              </div>
-            </div>
-          )}
         </div>
         <div className="relation-sites">
           <div>
@@ -132,7 +119,6 @@ const Stats = ({ t, user }) => {
 const mapStateToProps = (state) => {
   return {
     systemInfo: state.systemInfo,
-    user: state.user,
   };
 };
 
@@ -140,5 +126,4 @@ export default compose(connect(mapStateToProps, undefined), withRouter, withTran
 
 Stats.propTypes = {
   t: PropTypes.func,
-  user: UserPropTypes,
 };

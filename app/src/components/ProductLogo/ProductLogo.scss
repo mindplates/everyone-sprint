@@ -1,7 +1,7 @@
 $product-logo-color: lighten($header-bg-color, 5%);
-$product-logo-color: #FED900;
+$product-logo-color: #fed900;
 $product-logo-color: $header-bg-color;
-$product-logo--hover-color: #FED400;
+$product-logo--hover-color: #fed400;
 $product-logo--hover-color: $header-hover-bg-color;
 
 .product-logo-wrapper {
@@ -106,37 +106,39 @@ $product-logo--hover-color: $header-hover-bg-color;
     }
   }
 
-  &.hover:hover {
-    background-color: $product-logo--hover-color;
-    transition: all 0.3s;
+  @media (min-width: 576px) {
+    &.hover:hover {
+      background-color: $product-logo--hover-color;
+      transition: all 0.3s;
 
-    > div.side-left {
-      > div.side {
-        border-right: 10px solid $product-logo--hover-color;
-        transition: all 0.3s;
-      }
-    }
-
-    > div.side-right {
-      > div.side {
-        border-left: 10px solid $product-logo--hover-color;
-        transition: all 0.3s;
-      }
-    }
-
-    > div.product-logo-content {
-      > div {
-        &.logo-icon {
-          .hexagon {
-            transform: rotate(360deg);
-            transition: all 1s;
-          }
+      > div.side-left {
+        > div.side {
+          border-right: 10px solid $product-logo--hover-color;
+          transition: all 0.3s;
         }
+      }
 
-        &.product-name {
-          > div.product-text {
-            > span {
-              _text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+      > div.side-right {
+        > div.side {
+          border-left: 10px solid $product-logo--hover-color;
+          transition: all 0.3s;
+        }
+      }
+
+      > div.product-logo-content {
+        > div {
+          &.logo-icon {
+            .hexagon {
+              transform: rotate(360deg);
+              transition: all 1s;
+            }
+          }
+
+          &.product-name {
+            > div.product-text {
+              > span {
+                _text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+              }
             }
           }
         }

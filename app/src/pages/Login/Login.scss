@@ -60,6 +60,7 @@
         width: 100%;
         box-shadow: none;
         border: none;
+        padding: 1rem;
       }
 
       &.typing {
@@ -104,9 +105,14 @@
         margin-top: 1rem;
 
         a {
-          text-decoration: underline;
           font-family: pretendard, sans-serif;
-          font-size: 14px;
+
+          color: $point;
+          text-decoration: none;
+
+          &:visited {
+            color: $point;
+          }
         }
       }
     }
