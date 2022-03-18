@@ -74,7 +74,7 @@ public class MeetController {
                 count = meetingService.selectRoomCount(meeting.getId(), roomCode);
             } while (count > 0L);
 
-            Room newRoom = Room.builder().code(roomCode).meeting(meeting).limitUserCount(meeting.getLimitUserCount()).build();
+            Room newRoom = Room.builder().code(roomCode).meeting(meeting).limitUserCount(meeting.getLimitUserCount()).started(false).build();
             List<RoomUser> users = new ArrayList<>();
             User currentUser = userService.selectUser(userSession.getId());
             users.add(RoomUser.builder().room(newRoom).user(currentUser).build());

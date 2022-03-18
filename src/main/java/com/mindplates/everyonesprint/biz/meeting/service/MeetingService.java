@@ -1,9 +1,6 @@
 package com.mindplates.everyonesprint.biz.meeting.service;
 
-import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
-import com.mindplates.everyonesprint.biz.meeting.entity.MeetingUser;
-import com.mindplates.everyonesprint.biz.meeting.entity.Room;
-import com.mindplates.everyonesprint.biz.meeting.entity.RoomUser;
+import com.mindplates.everyonesprint.biz.meeting.entity.*;
 import com.mindplates.everyonesprint.biz.meeting.redis.Participant;
 import com.mindplates.everyonesprint.biz.meeting.repository.*;
 import com.mindplates.everyonesprint.biz.user.entity.User;
@@ -154,28 +151,47 @@ public class MeetingService {
 
         participantService.save(participant);
 
+        // 미팅이 시작되었는지 판단하여 업데이트
+        Participant condition = Participant.builder().code(meeting.getCode()).build();
+        updateMeetingRealStarted(condition, user, meeting);
+
         // 사용자 조인 시간 기록
         MeetingUser meetingUserCondition = MeetingUser.builder().meeting(Meeting.builder().id(meeting.getId()).build()).user(User.builder().id(user.getId()).build()).build();
-        meetingUserRepository.findOne(Example.of(meetingUserCondition)).ifPresent(meetingUser -> {
-            if (meetingUser.getFirstJoinDate() == null) {
-                meetingUser.setFirstJoinDate(LocalDateTime.now());
-                meetingUserRepository.save(meetingUser);
-            }
-        });
-
-        Participant condition = Participant.builder().code(meeting.getCode()).build();
-        Iterable<Participant> users = participantRepository.findAll(Example.of(condition));
-        long connectedUserCount = StreamSupport.stream(users.spliterator(), false).filter(p -> Optional.ofNullable(p.getConnected()).orElse(false)).count();
-
-        // 원래 시간보다 나중에 들어왔거나, 이전 시간이라도 1/4 이상의 인원이 들어오면 회의를 시작한 것으로 시간 기록
-        LocalDateTime now = LocalDateTime.now();
-        // if (meeting.getRealStartDate() == null && (meeting.getStartDate().isAfter(now) || connectedUserCount > (meeting.getUsers().size() / 4))) {
-        if (meeting.getRealStartDate() == null && (meeting.getStartDate().isAfter(now) || connectedUserCount > 0)) {
-            meeting.setRealStartDate(now);
-            updateMeetingInfo(meeting, user.getId());
-        }
+        MeetingUser currentMeetingUser = meetingUserRepository.findOne(Example.of(meetingUserCondition)).get();
+        updateMeetingUserJoinInfo(currentMeetingUser);
 
         return participant;
+    }
+
+    private void updateMeetingRealStarted(Participant condition, User user, Meeting meeting) {
+        Iterable<Participant> users = participantRepository.findAll(Example.of(condition));
+
+        long connectedUserCount = StreamSupport.stream(users.spliterator(), false).filter(p -> Optional.ofNullable(p.getConnected()).orElse(false)).count();
+        // 원래 시간보다 나중에 들어왔거나, 이전 시간이라도 2명 이상의 인원이 들어오면 회의를 시작한 것으로 시간 기록
+        LocalDateTime now = LocalDateTime.now();
+
+        if (condition.getRoomCode() == null) {
+            if (!meeting.getStarted() && (meeting.getStartDate().isBefore(now) || connectedUserCount > 1)) {
+                if (meeting.getRealStartDate() == null) {
+                    meeting.setRealStartDate(now);
+                }
+                meeting.setLastRealStartDate(now);
+                meeting.setStarted(true);
+                updateMeetingInfo(meeting, user.getId());
+            }
+        } else {
+            meeting.getRoom(condition.getRoomCode()).ifPresent(room -> {
+                if (!room.getStarted() && (meeting.getStartDate().isBefore(now) || connectedUserCount > 1)) {
+                    if (room.getStartDate() == null) {
+                        room.setStartDate(now);
+                    }
+                    room.setLastStartDate(now);
+                    room.setStarted(true);
+                    updateMeetingInfo(meeting, user.getId());
+                }
+            });
+        }
+
     }
 
     public Participant updateUserJoinInfo(String code, String roomCode, User user, String ipAddress, String socketId, Boolean audio, Boolean video, Meeting meeting) {
@@ -195,30 +211,32 @@ public class MeetingService {
 
         participantService.save(participant);
 
+        // 미팅이 시작되었는지 판단하여 업데이트
+        Participant condition = Participant.builder().code(meeting.getCode()).roomCode(roomCode).build();
+        updateMeetingRealStarted(condition, user, meeting);
+
         // 사용자 조인 시간 기록
         Room room = meeting.getRoom(roomCode).orElseThrow(() -> new ServiceException(HttpStatus.FORBIDDEN, "common.no.room"));
-
         RoomUser roomUserCondition = RoomUser.builder().room(Room.builder().id(room.getId()).build()).user(User.builder().id(user.getId()).build()).build();
-        roomUserRepository.findOne(Example.of(roomUserCondition)).ifPresent(roomUser -> {
-            if (roomUser.getFirstJoinDate() == null) {
-                roomUser.setFirstJoinDate(LocalDateTime.now());
-                roomUserRepository.save(roomUser);
-            }
-        });
-
-        Participant condition = Participant.builder().code(meeting.getCode()).roomCode(roomCode).build();
-        Iterable<Participant> users = participantRepository.findAll(Example.of(condition));
-        long connectedUserCount = StreamSupport.stream(users.spliterator(), false).filter(p -> Optional.ofNullable(p.getConnected()).orElse(false)).count();
-
-        // 원래 시간보다 나중에 들어왔거나, 이전 시간이라도 1/4 이상의 인원이 들어오면 회의를 시작한 것으로 시간 기록
-        LocalDateTime now = LocalDateTime.now();
-        // if (meeting.getRealStartDate() == null && (meeting.getStartDate().isAfter(now) || connectedUserCount > (meeting.getUsers().size() / 4))) {
-        if (meeting.getRealStartDate() == null && (meeting.getStartDate().isAfter(now) || connectedUserCount > 0)) {
-            meeting.setRealStartDate(now);
-            updateMeetingInfo(meeting, user.getId());
-        }
+        RoomUser currentRoomUser = roomUserRepository.findOne(Example.of(roomUserCondition)).get();
+        updateMeetingUserJoinInfo(currentRoomUser);
 
         return participant;
+    }
+
+    public void updateMeetingUserJoinInfo(AbstractMeetingUser meetingUser) {
+        if (meetingUser != null) {
+            LocalDateTime now = LocalDateTime.now();
+            if (meetingUser.getFirstJoinDate() == null) {
+                meetingUser.setFirstJoinDate(now);
+            }
+            meetingUser.setLastJoinDate(now);
+            if (meetingUser instanceof MeetingUser) {
+                meetingUserRepository.save((MeetingUser) meetingUser);
+            } else if (meetingUser instanceof RoomUser) {
+                roomUserRepository.save((RoomUser) meetingUser);
+            }
+        }
     }
 
     public void updateUserTalkedInfo(Meeting meeting, UserSession userSession, Long count, Long time) {
@@ -249,44 +267,18 @@ public class MeetingService {
             participant.setSocketId(null);
             participantService.save(participant);
 
-            if (participant.getRoomCode() == null) {
-                this.selectMeetingInfo(participant.getCode()).ifPresent(meeting -> {
-                    // 사용자 아웃 및 기타 정보 기록
+            // 사용자 아웃 및 기타 정보 기록
+            this.selectMeetingInfo(participant.getCode()).ifPresent(meeting -> {
+                if (meeting.getRoom(participant.getRoomCode()).isPresent()) {
+                    RoomUser roomUserCondition = RoomUser.builder().room(meeting.getRoom(participant.getRoomCode()).get()).user(User.builder().id(userSession.getId()).build()).build();
+                    roomUserRepository.findOne(Example.of(roomUserCondition)).ifPresent(roomUser -> updateMeetingUserJoinDuration(participant, roomUser));
+                } else {
                     MeetingUser meetingUserCondition = MeetingUser.builder().meeting(Meeting.builder().id(meeting.getId()).build()).user(User.builder().id(userSession.getId()).build()).build();
-                    meetingUserRepository.findOne(Example.of(meetingUserCondition)).ifPresent(meetingUser -> {
-
-                        meetingUser.setTalkedCount(Optional.ofNullable(meetingUser.getTalkedCount()).orElse(0L) + participant.getTalkedCount());
-                        meetingUser.setTalkedSeconds(Optional.ofNullable(meetingUser.getTalkedSeconds()).orElse(0L) + participant.getTalkedSeconds());
-                        meetingUser.setLastOutDate(LocalDateTime.now());
-                        if (meetingUser.getFirstJoinDate() != null) {
-                            meetingUser.setJoinDurationSeconds(ChronoUnit.SECONDS.between(meetingUser.getFirstJoinDate(), meetingUser.getLastOutDate()));
-                        }
-
-                        meetingUserRepository.save(meetingUser);
-                    });
-                });
-            } else {
-                this.selectMeetingInfo(participant.getCode()).ifPresent(meeting -> {
-                    // 사용자 아웃 및 기타 정보 기록
-                    if (meeting.getRoom(participant.getRoomCode()).isPresent()) {
-                        RoomUser roomUserCondition = RoomUser.builder().room(meeting.getRoom(participant.getRoomCode()).get()).user(User.builder().id(userSession.getId()).build()).build();
-                        roomUserRepository.findOne(Example.of(roomUserCondition)).ifPresent(roomUser -> {
-                            roomUser.setTalkedCount(Optional.ofNullable(roomUser.getTalkedCount()).orElse(0L) + participant.getTalkedCount());
-                            roomUser.setTalkedSeconds(Optional.ofNullable(roomUser.getTalkedSeconds()).orElse(0L) + participant.getTalkedSeconds());
-                            roomUser.setLastOutDate(LocalDateTime.now());
-                            if (roomUser.getFirstJoinDate() != null) {
-                                roomUser.setJoinDurationSeconds(ChronoUnit.SECONDS.between(roomUser.getFirstJoinDate(), roomUser.getLastOutDate()));
-                            }
-
-                            roomUserRepository.save(roomUser);
-                        });
-                    }
-
-                });
-            }
+                    meetingUserRepository.findOne(Example.of(meetingUserCondition)).ifPresent(meetingUser -> updateMeetingUserJoinDuration(participant, meetingUser));
+                }
+            });
 
 
-            Meeting currentMeeting = null;
             if (participant.getCode() != null) {
                 if (participant.getRoomCode() == null) {
                     Participant conferenceCondition = Participant.builder().code(participant.getCode()).build();
@@ -294,22 +286,21 @@ public class MeetingService {
                     Iterable<Participant> conferenceUsers = participantService.findAll(conferenceCondition);
                     long connectedUserCount = StreamSupport.stream(conferenceUsers.spliterator(), false).filter(p -> Optional.ofNullable(p.getConnected()).orElse(false)).count();
                     if (connectedUserCount < 1) {
-                        currentMeeting = this.selectMeetingInfo(participant.getCode()).orElse(null);
-                        Optional.ofNullable(currentMeeting).ifPresent(meeting -> {
-                            if (meeting.getStartDate().isAfter(now) || meeting.getRealStartDate() != null) {
-                                meeting.setRealEndDate(now);
-                                meeting.setDailyScrumStarted(false);
-                                Optional.ofNullable(meeting.getRealStartDate())
-                                        .ifPresent(realStartTime -> meeting.setDurationSeconds(ChronoUnit.SECONDS.between(realStartTime, meeting.getRealEndDate())));
+                        this.selectMeetingInfo(participant.getCode()).ifPresent(currentMeeting -> {
+                            if (currentMeeting.getStartDate().isBefore(now) || currentMeeting.getLastRealStartDate() != null) {
+                                currentMeeting.setRealEndDate(now);
+                                currentMeeting.setDailyScrumStarted(false);
+                                currentMeeting.setDurationSeconds(Optional.ofNullable(currentMeeting.getDurationSeconds()).orElse(0L) + ChronoUnit.SECONDS.between(currentMeeting.getLastRealStartDate(), currentMeeting.getRealEndDate()));
+                                currentMeeting.setStarted(false);
+                                this.updateMeetingInfo(currentMeeting, userSession);
                             }
-                            this.updateMeetingInfo(meeting, userSession);
 
                             // 모든 레디스 사용자 정보 삭제
                             for (Participant p : conferenceUsers) {
                                 participantService.deleteById(p.getKey());
                             }
-
                         });
+
                     }
                 } else {
                     Participant conferenceCondition = Participant.builder().code(participant.getCode()).roomCode(participant.getRoomCode()).build();
@@ -317,26 +308,19 @@ public class MeetingService {
                     Iterable<Participant> conferenceUsers = participantService.findAll(conferenceCondition);
                     long connectedRoomUserCount = StreamSupport.stream(conferenceUsers.spliterator(), false).filter(p -> Optional.ofNullable(p.getConnected()).orElse(false)).count();
                     if (connectedRoomUserCount < 1) {
-                        currentMeeting = this.selectMeetingInfo(participant.getCode()).orElse(null);
-                        if (currentMeeting != null) {
-                            Room room = currentMeeting.getRoom(participant.getRoomCode()).orElse(null);
-                            if (room != null) {
-                                if (room.getStartDate().isAfter(now)) {
-                                    room.setEndDate(now);
-
-                                    Optional.ofNullable(room.getStartDate())
-                                            .ifPresent(startTime -> room.setDurationSeconds(ChronoUnit.SECONDS.between(startTime, room.getEndDate())));
-                                }
+                        this.selectMeetingInfo(participant.getCode()).ifPresent(currentMeeting -> currentMeeting.getRoom(participant.getRoomCode()).ifPresent(room -> {
+                            if (room.getStartDate().isBefore(now) || room.getLastStartDate() != null) {
+                                room.setEndDate(now);
+                                room.setDurationSeconds(Optional.ofNullable(room.getDurationSeconds()).orElse(0L) + ChronoUnit.SECONDS.between(room.getLastStartDate(), room.getEndDate()));
+                                room.setStarted(false);
                                 this.updateRoomInfo(room, userSession.getId());
-
-                                // 모든 레디스 사용자 정보 삭제
-                                for (Participant p : conferenceUsers) {
-                                    participantService.deleteById(p.getKey());
-                                }
                             }
-                        }
 
-
+                            // 모든 레디스 사용자 정보 삭제
+                            for (Participant p : conferenceUsers) {
+                                participantService.deleteById(p.getKey());
+                            }
+                        }));
                     }
                 }
 
@@ -351,14 +335,32 @@ public class MeetingService {
                 messageSendService.sendTo("meets/" + participant.getCode() + "/rooms/" + participant.getRoomCode(), message, userSession);
             }
 
-
-            if (currentMeeting != null && participant.getRoomCode() == null) {
-                Map<String, Object> notifyData = new HashMap<>();
-                notifyData.put("meetingId", currentMeeting.getId());
-                messageSendService.sendTo("meets/notify", MessageData.builder().type("LEAVE").data(notifyData).build(), null);
-            }
+            // 미팅의 사용자의 숫자가 줄었음을 전파
+            this.selectMeetingInfo(participant.getCode()).ifPresent(meeting -> {
+                if (participant.getRoomCode() == null) {
+                    Map<String, Object> notifyData = new HashMap<>();
+                    notifyData.put("meetingId", meeting.getId());
+                    messageSendService.sendTo("meets/notify", MessageData.builder().type("LEAVE").data(notifyData).build(), null);
+                }
+            });
 
         });
+    }
+
+    private void updateMeetingUserJoinDuration(Participant participant, AbstractMeetingUser meetingUser) {
+        meetingUser.setTalkedCount(Optional.ofNullable(meetingUser.getTalkedCount()).orElse(0L) + participant.getTalkedCount());
+        meetingUser.setTalkedSeconds(Optional.ofNullable(meetingUser.getTalkedSeconds()).orElse(0L) + participant.getTalkedSeconds());
+        meetingUser.setLastOutDate(LocalDateTime.now());
+        if (meetingUser.getLastJoinDate() != null) {
+            meetingUser.setJoinDurationSeconds(Optional.ofNullable(meetingUser.getJoinDurationSeconds()).orElse(0L) + ChronoUnit.SECONDS.between(meetingUser.getLastJoinDate(), meetingUser.getLastOutDate()));
+        }
+
+        if (meetingUser instanceof MeetingUser) {
+            meetingUserRepository.save((MeetingUser) meetingUser);
+        } else if (meetingUser instanceof RoomUser) {
+            roomUserRepository.save((RoomUser) meetingUser);
+        }
+
     }
 
     public Long selectAllMeetingCount() {

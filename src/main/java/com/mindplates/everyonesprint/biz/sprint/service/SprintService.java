@@ -185,6 +185,7 @@ public class SprintService {
             int dayOfWeekIndex = currentDate.getDayOfWeek().getValue() - 1;
             if (meetingStartDate.isAfter(startDate) && abstractDailyMeeting.getDays().charAt(dayOfWeekIndex) == '1') {
                 Meeting meeting = getMeeting(abstractDailyMeeting.getSprint(), userSession, now, currentDate, abstractDailyMeeting, null);
+                meeting.setStarted(false);
                 if (abstractDailyMeeting instanceof SmallTalkMeetingPlan) {
                     meeting.setType(MeetingTypeCode.SMALLTALK);
                     meeting.setLimitUserCount(((SmallTalkMeetingPlan) abstractDailyMeeting).getLimitUserCount());

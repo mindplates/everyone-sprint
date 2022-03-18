@@ -27,12 +27,18 @@ public class Room extends CommonEntity {
     @Column(name = "code", nullable = false, length = ColumnsDef.CODE)
     private String code;
 
+    @Column(name = "started", nullable = false)
+    private Boolean started;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id", foreignKey = @ForeignKey(name = "FK_ROOM__MEETING"))
     private Meeting meeting;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
+
+    @Column(name = "last_start_date")
+    private LocalDateTime lastStartDate;
 
     @Column(name = "end_date")
     private LocalDateTime endDate;

@@ -39,6 +39,9 @@ public class Meeting extends CommonEntity {
     @Column(name = "code", nullable = false, length = ColumnsDef.CODE)
     private String code;
 
+    @Column(name = "started", nullable = false)
+    private Boolean started;
+
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
@@ -47,6 +50,9 @@ public class Meeting extends CommonEntity {
 
     @Column(name = "real_start_date")
     private LocalDateTime realStartDate;
+
+    @Column(name = "last_real_start_date")
+    private LocalDateTime lastRealStartDate;
 
     @Column(name = "real_end_date")
     private LocalDateTime realEndDate;

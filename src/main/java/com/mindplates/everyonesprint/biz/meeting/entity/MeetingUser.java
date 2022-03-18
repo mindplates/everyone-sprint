@@ -1,11 +1,9 @@
 package com.mindplates.everyonesprint.biz.meeting.entity;
 
 import com.mindplates.everyonesprint.biz.user.entity.User;
-import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Builder
@@ -14,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "meeting_user")
-public class MeetingUser extends CommonEntity {
+public class MeetingUser extends AbstractMeetingUser {
 
     @Id
     @Column(name = "id")
@@ -28,19 +26,4 @@ public class MeetingUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id", foreignKey = @ForeignKey(name = "FK_MEETING_USER__MEETING"))
     private Meeting meeting;
-
-    @Column(name = "first_join_date")
-    private LocalDateTime firstJoinDate;
-
-    @Column(name = "last_out_date")
-    private LocalDateTime lastOutDate;
-
-    @Column(name = "join_duration_seconds")
-    private Long joinDurationSeconds;
-
-    @Column(name = "talked_seconds")
-    private Long talkedSeconds;
-
-    @Column(name = "talked_count")
-    private Long talkedCount;
 }

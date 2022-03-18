@@ -40,7 +40,6 @@ public class WebSocketEventListener {
                 MessageData data = MessageData.builder().type("PUBLIC-PARK-EXIT").build();
                 messageSendService.sendTo("public-park", data, userSession);
                 walkerService.deleteById(userSession.getId().toString());
-
                 meetingService.updateUserLeaveInfo(headerAccessor.getSessionId(), userSession);
             }
         }

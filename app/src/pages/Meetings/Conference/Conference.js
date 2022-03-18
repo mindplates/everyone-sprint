@@ -5,7 +5,16 @@ import { withRouter } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { Button, ConferenceVideoItem, Liner, Page, PageContent, PageTitle, ParticipantsList, SocketClient } from '@/components';
+import {
+  Button,
+  ConferenceVideoItem,
+  Liner,
+  Page,
+  PageContent,
+  PageTitle,
+  ParticipantsList,
+  SocketClient,
+} from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Common/ConferenceDeviceConfig';
@@ -308,6 +317,17 @@ class Conference extends React.Component {
 
       if (user) {
         user.participant = participant;
+      } else {
+        nextUsers.push({
+          alias: participant.alias,
+          email: participant.email,
+          imageData: participant.imageData,
+          imageType: participant.imageType,
+          name: participant.name,
+          userId: Number(participant.id),
+          participant,
+          role: null,
+        });
       }
     });
 
@@ -362,7 +382,10 @@ class Conference extends React.Component {
     const { conference, code } = this.state;
     if (this.socket && this.socket.state && this.socket.state.connected) {
       if (conference.type === 'SMALLTALK') {
-        this.socket.sendMessage(`/pub/api/message/meets/${code}/rooms/${conference.roomCode}/send`, JSON.stringify({ type: messageType, data }));
+        this.socket.sendMessage(`/pub/api/message/meets/${code}/rooms/${conference.roomCode}/send`, JSON.stringify({
+          type: messageType,
+          data,
+        }));
       } else {
         this.socket.sendMessage(`/pub/api/message/meets/${code}/send`, JSON.stringify({ type: messageType, data }));
       }
@@ -383,7 +406,10 @@ class Conference extends React.Component {
           JSON.stringify({ type: messageType, data }),
         );
       } else {
-        this.socket.sendMessage(`/pub/api/message/meets/${conference.code}/${userId}/send`, JSON.stringify({ type: messageType, data }));
+        this.socket.sendMessage(`/pub/api/message/meets/${conference.code}/${userId}/send`, JSON.stringify({
+          type: messageType,
+          data,
+        }));
       }
 
       return true;
@@ -723,7 +749,6 @@ class Conference extends React.Component {
 
       case 'JOIN': {
         const nextConference = this.getMergeUsersWithParticipants([data.participant]);
-
         const currentSpeakerUser = data.scrumUserOrders?.find((d) => d.isCurrentSpeaker);
 
         this.setState(
@@ -816,16 +841,18 @@ class Conference extends React.Component {
         if (!isMe) {
           const addIceCandidate = (handler) => {
             const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
-            if (!targetUser.peerConnection) {
-              this.setUpPeerConnection(senderInfo.id, false);
-            }
-
-            targetUser.peerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
-              console.error(e);
-              if (handler) {
-                handler();
+            if (targetUser) {
+              if (!targetUser.peerConnection) {
+                this.setUpPeerConnection(senderInfo.id, false);
               }
-            });
+
+              targetUser.peerConnection.addIceCandidate(new RTCIceCandidate(data)).catch((e) => {
+                console.error(e);
+                if (handler) {
+                  handler();
+                }
+              });
+            }
           };
 
           setTimeout(() => {
@@ -868,31 +895,33 @@ class Conference extends React.Component {
       case 'SDP': {
         if (!isMe) {
           const targetUser = users.find((d) => Number(d.userId) === Number(senderInfo.id));
-          if (!targetUser.peerConnection) {
-            this.setUpPeerConnection(senderInfo.id, false);
-          }
+          if (targetUser) {
+            if (!targetUser.peerConnection) {
+              this.setUpPeerConnection(senderInfo.id, false);
+            }
 
-          // STEP 4 : SDP answer가 도착하면, remote description 추가
-          targetUser.peerConnection
-            .setRemoteDescription(new RTCSessionDescription(data))
-            .then(() => {
-              if (data.type === 'offer') {
-                // STEP 3 : SDP offer가 도착하면, SDP 송신자에게 내 SDP 정보를 송신
-                targetUser.peerConnection
-                  .createAnswer()
-                  .then((description) => {
-                    targetUser.peerConnection.setLocalDescription(description).then(() => {
-                      this.sendToUser('SDP', senderInfo.id, targetUser.peerConnection.localDescription);
+            // STEP 4 : SDP answer가 도착하면, remote description 추가
+            targetUser.peerConnection
+              .setRemoteDescription(new RTCSessionDescription(data))
+              .then(() => {
+                if (data.type === 'offer') {
+                  // STEP 3 : SDP offer가 도착하면, SDP 송신자에게 내 SDP 정보를 송신
+                  targetUser.peerConnection
+                    .createAnswer()
+                    .then((description) => {
+                      targetUser.peerConnection.setLocalDescription(description).then(() => {
+                        this.sendToUser('SDP', senderInfo.id, targetUser.peerConnection.localDescription);
+                      });
+                    })
+                    .catch((e) => {
+                      console.error(e);
                     });
-                  })
-                  .catch((e) => {
-                    console.error(e);
-                  });
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
+                }
+              })
+              .catch((e) => {
+                console.log(e);
+              });
+          }
         }
 
         break;
@@ -1005,7 +1034,7 @@ class Conference extends React.Component {
               connectedUsers.forEach((userInfo) => {
                 this.setUpPeerConnection(userInfo.userId, true);
               });
-            }, 1000);
+            }, 3000);
           });
         },
       );
@@ -1110,7 +1139,7 @@ class Conference extends React.Component {
 
     return (
       <>
-        {conference && !existConference && <EmptyConference />}
+        {conference && !existConference && <EmptyConference/>}
         {existConference && (
           <Page className="conference-wrapper">
             {existConference && (
@@ -1122,7 +1151,8 @@ class Conference extends React.Component {
                       : [`/sub/meets/${code}`, `/sub/meets/${code}/${user.id}`]
                   }
                   onMessage={this.onMessage}
-                  onConnect={() => {}}
+                  onConnect={() => {
+                  }}
                   onDisconnect={() => {
                     request.put(`/api/meets/${conference.code}/status`, {
                       ...statistics,
@@ -1161,11 +1191,12 @@ class Conference extends React.Component {
                             <div>
                               <div>
                                 <span>
-                                  <i className="fas fa-clock" />
+                                  <i className="fas fa-clock"/>
                                 </span>
                                 <span>
                                   {conference.startDate && (
-                                    <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />
+                                    <ReactTimeAgo locale={user.language || 'ko'}
+                                                  date={dateUtil.getLocalDate(conference.startDate).valueOf()}/>
                                   )}{' '}
                                   {t('시작')}
                                 </span>
@@ -1173,7 +1204,7 @@ class Conference extends React.Component {
                               <div className="my-conference-info">
                                 <div>
                                   <span className="icon">
-                                    <i className="fas fa-compact-disc" />
+                                    <i className="fas fa-compact-disc"/>
                                   </span>
                                   <span className="count">
                                     {statistics.count}
@@ -1192,7 +1223,7 @@ class Conference extends React.Component {
                               </div>
                               <div>{this.getCurrentSpeaker()?.alias}</div>
                               <div>
-                                <i className="fas fa-long-arrow-alt-right" />
+                                <i className="fas fa-long-arrow-alt-right"/>
                               </div>
                               {this.getNextSpeaker() ? (
                                 <>
@@ -1233,7 +1264,8 @@ class Conference extends React.Component {
                                     }}
                                   >
                                     MY DAILY
-                                    {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
+                                    {answers.filter((answer) => answer.user.id === user.id).length < 1 &&
+                                    <div className="no-register">{t('미등록')}</div>}
                                   </Button>
                                 </div>
                               </div>
@@ -1261,7 +1293,7 @@ class Conference extends React.Component {
                             {isSharing && (
                               <div className="screen-sharing-content">
                                 <div>
-                                  <video ref={this.myScreenStreamVideo} autoPlay playsInline />
+                                  <video ref={this.myScreenStreamVideo} autoPlay playsInline/>
                                 </div>
                               </div>
                             )}
@@ -1343,8 +1375,8 @@ class Conference extends React.Component {
                                   this.setControls('audio', !controls.audio);
                                 }}
                               >
-                                {controls.audio && <i className="fas fa-microphone" />}
-                                {!controls.audio && <i className="fas fa-microphone-slash" />}
+                                {controls.audio && <i className="fas fa-microphone"/>}
+                                {!controls.audio && <i className="fas fa-microphone-slash"/>}
                               </Button>
                               <Button
                                 size="md"
@@ -1354,26 +1386,29 @@ class Conference extends React.Component {
                                   this.setControls('video', !controls.video);
                                 }}
                               >
-                                {controls.video && <i className="fas fa-video" />}
-                                {!controls.video && <i className="fas fa-video-slash" />}
+                                {controls.video && <i className="fas fa-video"/>}
+                                {!controls.video && <i className="fas fa-video-slash"/>}
                               </Button>
-                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem"/>
                               {!screenShare.sharing && !controls.sharing && (
-                                <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" onClick={this.startScreenShare}>
-                                  <i className="fas fa-desktop" />
+                                <Button size="md" rounded data-tip={t('내 화면 공유')} color="white"
+                                        onClick={this.startScreenShare}>
+                                  <i className="fas fa-desktop"/>
                                 </Button>
                               )}
                               {!screenShare.sharing && controls.sharing && (
-                                <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
-                                  <i className="fas fa-desktop" />
+                                <Button size="md" rounded data-tip={t('공유 중지')} color="danger"
+                                        onClick={this.stopScreenShare}>
+                                  <i className="fas fa-desktop"/>
                                 </Button>
                               )}
                               {screenShare.sharing && (
-                                <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
+                                <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {
+                                }}>
                                   공유 중지 요청
                                 </Button>
                               )}
-                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem"/>
                               <Button
                                 size="md"
                                 rounded
@@ -1382,7 +1417,7 @@ class Conference extends React.Component {
                                   history.push('/meetings');
                                 }}
                               >
-                                <i className="fas fa-times" />
+                                <i className="fas fa-times"/>
                               </Button>
                               <div className="additional-button">
                                 <Button
@@ -1395,7 +1430,7 @@ class Conference extends React.Component {
                                     this.setControls('participants', !controls.participants);
                                   }}
                                 >
-                                  <i className="fas fa-child" />
+                                  <i className="fas fa-child"/>
                                 </Button>
                                 <Button
                                   size="md"
@@ -1403,10 +1438,11 @@ class Conference extends React.Component {
                                   color="white"
                                   data-tip={t('채팅')}
                                   className={controls.chatting ? 'selected' : ''}
-                                  onClick={() => {}}
+                                  onClick={() => {
+                                  }}
                                   disabled
                                 >
-                                  <i className="far fa-comment-dots" />
+                                  <i className="far fa-comment-dots"/>
                                 </Button>
                               </div>
                             </div>
