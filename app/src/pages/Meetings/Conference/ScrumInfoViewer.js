@@ -4,11 +4,18 @@ import PropTypes from 'prop-types';
 import { BlockTitle, Button, ConferenceVideoItem, FadeMessage } from '@/components';
 import './ScrumInfoViewer.scss';
 import { UserPropTypes } from '@/proptypes';
+import request from '@/utils/request';
 
-const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, doneUserScrumDone, stream, currentUser, onFocus }) => {
+const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, conference, stream, onFocus }) => {
   const initMessage = useRef(false);
   const [message, setMessage] = useState(null);
   const [currentUserMessage, setCurrentUserMessage] = useState(null);
+
+  const doneUserScrumDone = () => {
+    request.put(`/api/meets/${conference.code}/scrum?operation=next`, null, null, null, t('다음 데일리 스크럼 사용자를 찾고 있습니다.'));
+  };
+
+  const currentUser = conference.users.find((d) => d.userId === dailyScrumInfo.currentSpeakerUserId);
 
   useEffect(() => {
     setMessage(t('데일리 스크럼을 시작합니다.'));
@@ -147,8 +154,7 @@ ScrumInfoViewer.propTypes = {
     }),
   ),
   user: UserPropTypes,
-  doneUserScrumDone: PropTypes.func,
   stream: PropTypes.objectOf(PropTypes.any),
-  currentUser: PropTypes.objectOf(PropTypes.any),
   onFocus: PropTypes.func,
+  conference: PropTypes.shape(PropTypes.any),
 };

@@ -1,0 +1,29 @@
+.conference-controls-wrapper {
+  text-align: center;
+  padding: 1rem;
+  height: 120px;
+  display: flex;
+  > div {
+    align-self: center;
+    width: 100%;
+    position: relative;
+
+    .first {
+      margin-right: 0.5rem;
+    }
+
+    .additional-button {
+      position: absolute;
+      right: 1rem;
+      bottom: 0;
+
+      > button {
+        margin-left: 1rem;
+      }
+
+      .selected {
+        background-color: $yellow;
+      }
+    }
+  }
+}

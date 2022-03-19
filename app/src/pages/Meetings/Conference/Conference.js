@@ -2,13 +2,10 @@ import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import ReactTimeAgo from 'react-time-ago';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Button,
   ConferenceVideoItem,
-  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -17,7 +14,7 @@ import {
   withLogin,
 } from '@/components';
 import request from '@/utils/request';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Common/ConferenceDeviceConfig';
 import mediaUtil from '@/utils/mediaUtil';
 import './Conference.scss';
@@ -26,6 +23,8 @@ import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPop
 import ScrumInfoViewer from '@/pages/Meetings/Conference/ScrumInfoViewer';
 import EmptyConference from '../Common/EmptyConference';
 import JoinRequestManager from '@/pages/Meetings/Conference/JoinRequestManager';
+import ConferenceInfoBar from './ConferenceInfoBar';
+import ConferenceControls from './ConferenceControls';
 
 const peerConnectionConfig = {
   iceServers: [
@@ -97,6 +96,7 @@ class Conference extends React.Component {
       },
       screenShare: {
         sharing: false,
+        userId: null,
       },
       isSetting: true,
       supportInfo: {
@@ -1174,50 +1174,8 @@ class Conference extends React.Component {
     });
   };
 
-  dailyScrumStart = () => {
-    const { t } = this.props;
-    const { conference } = this.state;
-
-    request.put(`/api/meets/${conference.code}/scrum?operation=start`, null, null, null, t('데일리 스크럼 시작을 위한 정보를 생성합니다.'));
-  };
-
-  dailyScrumStop = () => {
-    const { t } = this.props;
-    const { conference } = this.state;
-
-    request.put(`/api/meets/${conference.code}/scrum?operation=stop`, null, null, null, t('데일리 스크럼을 종료하고 있습니다.'));
-  };
-
-  doneUserScrumDone = () => {
-    const { t } = this.props;
-    const { conference } = this.state;
-
-    request.put(`/api/meets/${conference.code}/scrum?operation=next`, null, null, null, t('다음 데일리 스크럼 사용자를 찾고 있습니다.'));
-  };
-
-  getCurrentSpeaker = () => {
-    const { conference, dailyScrumInfo } = this.state;
-    return conference.users.find((d) => d.userId === dailyScrumInfo.currentSpeakerUserId);
-  };
-
-  getNextSpeaker = () => {
-    const { conference, dailyScrumInfo } = this.state;
-
-    const currentUserIndex = dailyScrumInfo.scrumUserOrders.findIndex((d) => d.userId === dailyScrumInfo.currentSpeakerUserId);
-    for (let i = currentUserIndex; i < dailyScrumInfo.scrumUserOrders.length; i += 1) {
-      if (
-        !dailyScrumInfo.scrumUserOrders[i].isDailyScrumDone &&
-        dailyScrumInfo.scrumUserOrders[currentUserIndex].order < dailyScrumInfo.scrumUserOrders[i].order
-      ) {
-        return conference.users.find((d) => d.userId === dailyScrumInfo.scrumUserOrders[i].userId);
-      }
-    }
-
-    return null;
-  };
-
   render() {
-    const { history, t, user } = this.props;
+    const { user } = this.props;
     const {
       code,
       conference,
@@ -1306,91 +1264,15 @@ class Conference extends React.Component {
                     <PageTitle className="d-none">{conference?.name}</PageTitle>
                     <PageContent className="conference-content">
                       <div className="streaming-content">
-                        <div className="info-bar">
-                          <div className="time-info">
-                            <div>
-                              <div>
-                                <span>
-                                  <i className="fas fa-clock" />
-                                </span>
-                                <span>
-                                  {conference.startDate && (
-                                    <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />
-                                  )}{' '}
-                                  {t('시작')}
-                                </span>
-                              </div>
-                              <div className="my-conference-info">
-                                <div>
-                                  <span className="icon">
-                                    <i className="fas fa-compact-disc" />
-                                  </span>
-                                  <span className="count">
-                                    {statistics.count}
-                                    {t('회')}
-                                  </span>
-                                  <span className="times">/</span>
-                                  <span className="duration">{dateUtil.getDurationMinutes(statistics.time)}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          {conference?.scrumMeetingPlanId && dailyScrumInfo?.started && (
-                            <div className="scrum-info-status">
-                              <div>
-                                <span className="tag">NOW</span>
-                              </div>
-                              <div>{this.getCurrentSpeaker()?.alias}</div>
-                              <div>
-                                <i className="fas fa-long-arrow-alt-right" />
-                              </div>
-                              {this.getNextSpeaker() ? (
-                                <>
-                                  <div>
-                                    <span className="tag">NEXT</span>
-                                  </div>
-                                  <div>{this.getNextSpeaker()?.alias}</div>
-                                </>
-                              ) : (
-                                <div>{t('NONE')}</div>
-                              )}
-                            </div>
-                          )}
-                          <div>
-                            {conference.scrumMeetingPlanId && (
-                              <div className="scrum-control">
-                                {dailyScrumInfo !== null && !dailyScrumInfo.started && (
-                                  <div>
-                                    <Button size="md" color="white" onClick={this.dailyScrumStart}>
-                                      데일리 스크럼 시작
-                                    </Button>
-                                  </div>
-                                )}
-                                {dailyScrumInfo !== null && dailyScrumInfo.started && (
-                                  <div>
-                                    <Button size="md" color="white" onClick={this.dailyScrumStop}>
-                                      데일리 스크럼 종료
-                                    </Button>
-                                  </div>
-                                )}
-                                <div>
-                                  <Button
-                                    className="my-daily-button"
-                                    size="md"
-                                    color="white"
-                                    onClick={() => {
-                                      this.setControls('scrumInfo', !controls.scrumInfo);
-                                    }}
-                                  >
-                                    MY DAILY
-                                    {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div>
+                        <ConferenceInfoBar
+                          conference={conference}
+                          controls={controls}
+                          setControls={this.setControls}
+                          statistics={statistics}
+                          answers={answers}
+                          dailyScrumInfo={dailyScrumInfo}
+                        />
+                        <div className="streaming-content-layout">
                           <div className="join-request-manager">
                             <JoinRequestManager
                               code={code}
@@ -1406,12 +1288,11 @@ class Conference extends React.Component {
                             {dailyScrumInfo !== null && dailyScrumInfo.started && (
                               <div className="daily-scrum-content">
                                 <ScrumInfoViewer
+                                  conference={conference}
                                   dailyScrumInfo={dailyScrumInfo}
                                   questions={conference.scrumMeetingQuestions}
                                   answers={answers}
                                   user={user}
-                                  doneUserScrumDone={this.doneUserScrumDone}
-                                  currentUser={this.getCurrentSpeaker()}
                                   stream={user.id === dailyScrumInfo.currentSpeakerUserId ? myStream : this.userStreams[dailyScrumInfo.currentSpeakerUserId]}
                                   onFocus={(id) => {
                                     this.sendToAll('SCRUM_INFO_FOCUS_CHANGED', { id });
@@ -1493,85 +1374,14 @@ class Conference extends React.Component {
                                 })}
                             </div>
                           </div>
-                          <div className="controls">
-                            <div>
-                              <Button
-                                className="first"
-                                size="md"
-                                rounded
-                                color="white"
-                                onClick={() => {
-                                  this.setControls('audio', !controls.audio);
-                                }}
-                              >
-                                {controls.audio && <i className="fas fa-microphone" />}
-                                {!controls.audio && <i className="fas fa-microphone-slash" />}
-                              </Button>
-                              <Button
-                                size="md"
-                                rounded
-                                color="white"
-                                onClick={() => {
-                                  this.setControls('video', !controls.video);
-                                }}
-                              >
-                                {controls.video && <i className="fas fa-video" />}
-                                {!controls.video && <i className="fas fa-video-slash" />}
-                              </Button>
-                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
-                              {!screenShare.sharing && !controls.sharing && (
-                                <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" onClick={this.startScreenShare}>
-                                  <i className="fas fa-desktop" />
-                                </Button>
-                              )}
-                              {!screenShare.sharing && controls.sharing && (
-                                <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
-                                  <i className="fas fa-desktop" />
-                                </Button>
-                              )}
-                              {screenShare.sharing && (
-                                <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
-                                  공유 중지 요청
-                                </Button>
-                              )}
-                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
-                              <Button
-                                size="md"
-                                rounded
-                                color="danger"
-                                onClick={() => {
-                                  history.push('/meetings');
-                                }}
-                              >
-                                <i className="fas fa-times" />
-                              </Button>
-                              <div className="additional-button">
-                                <Button
-                                  size="md"
-                                  rounded
-                                  color="white"
-                                  data-tip={t('참석자 목록')}
-                                  className={controls.participants ? 'selected' : ''}
-                                  onClick={() => {
-                                    this.setControls('participants', !controls.participants);
-                                  }}
-                                >
-                                  <i className="fas fa-child" />
-                                </Button>
-                                <Button
-                                  size="md"
-                                  rounded
-                                  color="white"
-                                  data-tip={t('채팅')}
-                                  className={controls.chatting ? 'selected' : ''}
-                                  onClick={() => {}}
-                                  disabled
-                                >
-                                  <i className="far fa-comment-dots" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
+                          <ConferenceControls
+                            dailyScrumInfo={dailyScrumInfo}
+                            setControls={this.setControls}
+                            controls={controls}
+                            screenShare={screenShare}
+                            startScreenShare={this.startScreenShare}
+                            stopScreenShare={this.stopScreenShare}
+                          />
                         </div>
                       </div>
                       {controls.participants && (
@@ -1625,7 +1435,6 @@ export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(
 Conference.propTypes = {
   t: PropTypes.func,
   user: UserPropTypes,
-  history: HistoryPropTypes,
   match: PropTypes.shape({
     params: PropTypes.shape({
       code: PropTypes.string,

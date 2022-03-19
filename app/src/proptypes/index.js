@@ -30,6 +30,16 @@ const UserPropTypes = PropTypes.shape({
   tel: PropTypes.string,
 });
 
+const SimpleUserPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  userId: PropTypes.number,
+  alias: PropTypes.string,
+  email: PropTypes.string,
+  name: PropTypes.string,
+  imageData: PropTypes.string,
+  imageType: PropTypes.string,
+});
+
 const SprintDailyMeetingQuestionPropTypes = PropTypes.shape({
   id: PropTypes.number,
   question: PropTypes.string,
@@ -128,6 +138,42 @@ const SprintSummaryPropTypes = PropTypes.shape({
   ),
 });
 
+const AnswerPropTypes = PropTypes.shape({
+  answer: PropTypes.string,
+  date: PropTypes.string,
+  id: PropTypes.number,
+  scrumMeetingQuestionId: PropTypes.number,
+  sprintId: PropTypes.number,
+  users: PropTypes.arrayOf(SimpleUserPropTypes),
+});
+
+const ConferencePropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  projectId: PropTypes.number,
+  projectName: PropTypes.string,
+  sprintId: PropTypes.number,
+  sprintName: PropTypes.string,
+  name: PropTypes.string,
+  code: PropTypes.string,
+  roomCode: PropTypes.string,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
+  users: PropTypes.arrayOf(SimpleUserPropTypes),
+  scrumMeetingPlanId: PropTypes.number,
+  scrumMeetingQuestions: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      scrumMeetingPlanId: PropTypes.number,
+      question: PropTypes.string,
+      sortOrder: PropTypes.number,
+    }),
+  ),
+  connectedUserCount: PropTypes.number,
+  smallTalkMeetingPlanId: PropTypes.number,
+  limitUserCount: PropTypes.number,
+  type: PropTypes.string,
+});
+
 export {
   HistoryPropTypes,
   SettingPropTypes,
@@ -139,4 +185,6 @@ export {
   SprintPropTypes,
   SprintSummaryPropTypes,
   MeetingPropTypes,
+  ConferencePropTypes,
+  AnswerPropTypes,
 };
