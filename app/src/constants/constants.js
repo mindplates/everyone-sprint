@@ -309,19 +309,21 @@ const MEETING_TYPES = [
   {
     key: 'MEETING',
     value: '미팅',
-    supportType : 'new',
+    supportType: 'new',
   },
   {
     key: 'SMALLTALK',
     value: '스몰톡 미팅',
-    type : '',
-    supportType : 'new',
+    type: '',
+    supportType: 'new',
   },
   {
     key: 'SCRUM',
     value: '스크럼 미팅',
   },
 ];
+
+const CONFERENCE_URL_PATTERN = /^\/meets|talks\/[A-Za-z0-9]*/;
 
 export {
   PORTS,
@@ -343,4 +345,5 @@ export {
   BODY_PIX,
   ACTIVATES,
   MEETING_TYPES,
+  CONFERENCE_URL_PATTERN,
 };

@@ -3,5 +3,9 @@
   .empty-conference-content {
     background-color: transparent;
     color: $white;
+
+    .message {
+      text-align: center;
+    }
   }
 }

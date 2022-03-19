@@ -1,12 +1,14 @@
 package com.mindplates.everyonesprint.biz.meeting.controller;
 
 import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
+import com.mindplates.everyonesprint.biz.meeting.entity.MeetingUser;
 import com.mindplates.everyonesprint.biz.meeting.entity.Room;
 import com.mindplates.everyonesprint.biz.meeting.entity.RoomUser;
 import com.mindplates.everyonesprint.biz.meeting.redis.Participant;
 import com.mindplates.everyonesprint.biz.meeting.service.DailyScrumService;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
 import com.mindplates.everyonesprint.biz.meeting.service.ParticipantService;
+import com.mindplates.everyonesprint.biz.meeting.vo.request.JoinResponseRequest;
 import com.mindplates.everyonesprint.biz.meeting.vo.request.TalkedRequest;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.DailyScrumStatusResponse;
 import com.mindplates.everyonesprint.biz.meeting.vo.response.MeetingResponse;
@@ -17,6 +19,7 @@ import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import com.mindplates.everyonesprint.framework.annotation.DisableMeetingAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 @Slf4j
@@ -175,6 +179,56 @@ public class MeetController {
             }
         }
 
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @Operation(description = "미팅 참석 요청")
+    @PutMapping("/{code}/request/join")
+    @DisableMeetingAuth
+    public ResponseEntity updateUserRequestJoin(@PathVariable String code, UserSession userSession) {
+
+        Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        if (meeting.getType().equals(MeetingTypeCode.MEETING)) {
+            Participant conferenceCondition = Participant.builder().code(code).build();
+            Iterable<Participant> conferenceUsers = participantService.findAll(conferenceCondition);
+            long connectedUserCount = StreamSupport.stream(conferenceUsers.spliterator(), false).filter(p -> Optional.ofNullable(p.getConnected()).orElse(false)).count();
+            if (connectedUserCount < 1) {
+                return new ResponseEntity(HttpStatus.NOT_FOUND);
+            }
+            Map<String, Object> sendData = new HashMap<>();
+            sendData.put("user", userService.selectUser(userSession.getId()));
+            MessageData data = MessageData.builder().type("JOIN_REQUEST").data(sendData).build();
+            messageSendService.sendTo("meets/" + code, data, userSession);
+        } else {
+            throw new ServiceException(HttpStatus.FORBIDDEN, "common.not.allowed.meetingType");
+        }
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @Operation(description = "미팅 참석 요청 응답")
+    @PutMapping("/{code}/request/join/response")
+    public ResponseEntity updateUserRequestResponseJoin(@PathVariable String code, @RequestBody JoinResponseRequest joinResponseRequest, UserSession userSession) {
+
+        Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        if (meeting.getType().equals(MeetingTypeCode.MEETING)) {
+            if (joinResponseRequest.getAllowed()) {
+                meeting.getUsers().add(MeetingUser.builder().meeting(meeting).user(User.builder().id(joinResponseRequest.getUserId()).build()).build());
+                meetingService.updateMeetingInfo(meeting, userSession);
+            }
+
+            Map<String, Object> sendData = new HashMap<>();
+            sendData.put("userId", joinResponseRequest.getUserId());
+            sendData.put("allowed", joinResponseRequest.getAllowed());
+            MessageData data = MessageData.builder().type("JOIN_REQUEST_RESPONSE").data(sendData).build();
+            messageSendService.sendTo("meets/" + code, data, userSession);
+
+            MessageData responseData = MessageData.builder().type("JOIN_REQUEST_RESULT").data(sendData).build();
+            messageSendService.sendTo("meets/" + code + "/standby/" + joinResponseRequest.getUserId(), responseData, userSession);
+        }
 
         return new ResponseEntity(HttpStatus.OK);
     }

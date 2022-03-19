@@ -2,6 +2,26 @@
   height: 100%;
   display: flex;
   justify-content: center;
+
+  &.black {
+    color: $white;
+    > div {
+      > .new-user {
+        margin-top: 1rem;
+        text-align: center;
+        font-family: pretendard, sans-serif;
+        color: $white;
+
+        a {
+          color: $white;
+          &:visited {
+            color: $white;
+          }
+        }
+      }
+    }
+  }
+
   > div {
     align-self: center;
 

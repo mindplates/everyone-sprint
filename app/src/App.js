@@ -28,13 +28,13 @@ import {
 } from './pages';
 import './App.scss';
 import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
+import { CONFERENCE_URL_PATTERN } from '@/constants/constants';
 
-const CONFERENCE_PATTERN = /^\/meets|talks\/[A-Za-z0-9]*/;
-const NO_MAX_WIDTH_PATTERNS = [CONFERENCE_PATTERN, /^\/login[A-Za-z0-9]*/];
+const NO_MAX_WIDTH_PATTERNS = [CONFERENCE_URL_PATTERN, /^\/login[A-Za-z0-9]*/];
 
 function App({ history, setting }) {
   const noMaxWidth = NO_MAX_WIDTH_PATTERNS.some((pattern) => pattern.test(history.location.pathname));
-  const isConference = CONFERENCE_PATTERN.test(history.location.pathname);
+  const isConference = CONFERENCE_URL_PATTERN.test(history.location.pathname);
 
   return (
     <div className={`app-wrapper ${isConference ? 'conference-page' : ''}`}>

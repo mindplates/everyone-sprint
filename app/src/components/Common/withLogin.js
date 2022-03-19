@@ -8,6 +8,7 @@ import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import { Button, ProductLogo } from '@/components';
 import Spinner from '@/components/Spinner/Spinner';
 import './withLogin.scss';
+import { CONFERENCE_URL_PATTERN } from '@/constants/constants';
 
 const withLogin = (WrappedComponent) => {
   class NeedLogin extends React.Component {
@@ -46,8 +47,10 @@ const withLogin = (WrappedComponent) => {
         return <WrappedComponent {...this.props} />;
       }
 
+      const isConference = CONFERENCE_URL_PATTERN.test(history.location.pathname);
+
       return (
-        <div className="with-login-wrapper">
+        <div className={`with-login-wrapper ${isConference ? 'black' : ''}`}>
           {(!user.tried || (user.tried && !delayed)) && (
             <div>
               <Spinner color="primary" />

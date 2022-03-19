@@ -114,10 +114,12 @@ const EditMeeting = ({
         setSprintUsers(users);
 
         if (info.type !== 'SMALLTALK') {
-          setInfo({
-            ...info,
-            users,
-          });
+          if (type === 'new') {
+            setInfo({
+              ...info,
+              users,
+            });
+          }
         }
       },
       null,
@@ -130,6 +132,7 @@ const EditMeeting = ({
       `/api/meetings/${meetingId}`,
       null,
       (data) => {
+        console.log(data);
         setInfo({
           ...data,
           startDate: dateUtil.getTime(data.startDate),

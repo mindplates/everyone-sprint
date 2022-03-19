@@ -54,7 +54,7 @@ public class MeetingAuthAspect {
     private void cudOperator() {
     }
 
-    @Before("(cudOperator() || selectOperator()) && args(code, ..)")
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableMeetingAuth) && (cudOperator() || selectOperator()) && args(code, ..)")
     public void checkMeetAuth(JoinPoint joinPoint, String code) throws Throwable {
         UserSession userSession = SessionUtil.getUserInfo(request);
 
@@ -71,7 +71,7 @@ public class MeetingAuthAspect {
         }
     }
 
-    @Before("(cudOperator() || selectOperator()) && args(meetingId, ..) && !@annotation(com.mindplates.everyonesprint.framework.annotation.CheckSprintAuth)")
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableMeetingAuth) && (cudOperator() || selectOperator()) && args(meetingId, ..) && !@annotation(com.mindplates.everyonesprint.framework.annotation.CheckSprintAuth)")
     public void checkMeetingAuth(JoinPoint joinPoint, Long meetingId) throws Throwable {
         UserSession userSession = SessionUtil.getUserInfo(request);
 

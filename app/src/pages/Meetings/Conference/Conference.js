@@ -14,6 +14,7 @@ import {
   PageTitle,
   ParticipantsList,
   SocketClient,
+  withLogin,
 } from '@/components';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
@@ -24,6 +25,7 @@ import dateUtil from '@/utils/dateUtil';
 import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
 import ScrumInfoViewer from '@/pages/Meetings/Conference/ScrumInfoViewer';
 import EmptyConference from '../Common/EmptyConference';
+import JoinRequestManager from '@/pages/Meetings/Conference/JoinRequestManager';
 
 const peerConnectionConfig = {
   iceServers: [
@@ -141,6 +143,12 @@ class Conference extends React.Component {
       },
       answers: [],
       dailyScrumInfo: null,
+      allowRequest: {
+        allowed: null,
+        request: null,
+        result: null,
+      },
+      joinRequests: [],
     };
   }
 
@@ -295,11 +303,19 @@ class Conference extends React.Component {
       (error, response) => {
         if (response && response.status === 403) {
           // TODO 권한이 없는 경우, 요청 및 승인 처리
+          this.setState({
+            allowRequest: {
+              allowed: false,
+              request: false,
+              result: null,
+            },
+            conference: {},
+          });
+        } else {
+          this.setState({
+            conference: {},
+          });
         }
-
-        this.setState({
-          conference: {},
-        });
 
         return true;
       },
@@ -382,10 +398,13 @@ class Conference extends React.Component {
     const { conference, code } = this.state;
     if (this.socket && this.socket.state && this.socket.state.connected) {
       if (conference.type === 'SMALLTALK') {
-        this.socket.sendMessage(`/pub/api/message/meets/${code}/rooms/${conference.roomCode}/send`, JSON.stringify({
-          type: messageType,
-          data,
-        }));
+        this.socket.sendMessage(
+          `/pub/api/message/meets/${code}/rooms/${conference.roomCode}/send`,
+          JSON.stringify({
+            type: messageType,
+            data,
+          }),
+        );
       } else {
         this.socket.sendMessage(`/pub/api/message/meets/${code}/send`, JSON.stringify({ type: messageType, data }));
       }
@@ -406,10 +425,13 @@ class Conference extends React.Component {
           JSON.stringify({ type: messageType, data }),
         );
       } else {
-        this.socket.sendMessage(`/pub/api/message/meets/${conference.code}/${userId}/send`, JSON.stringify({
-          type: messageType,
-          data,
-        }));
+        this.socket.sendMessage(
+          `/pub/api/message/meets/${conference.code}/${userId}/send`,
+          JSON.stringify({
+            type: messageType,
+            data,
+          }),
+        );
       }
 
       return true;
@@ -692,7 +714,7 @@ class Conference extends React.Component {
       dailyScrumInfo,
     } = this.state;
 
-    const { user } = this.props;
+    const { user, t } = this.props;
 
     console.log(type, data, senderInfo);
 
@@ -767,6 +789,70 @@ class Conference extends React.Component {
             }
           },
         );
+
+        break;
+      }
+
+      case 'JOIN_REQUEST': {
+        const { joinRequests } = this.state;
+        const nextJoinRequests = joinRequests.slice(0);
+        const alreadyUser = nextJoinRequests.find((d) => d.user.id === data.user.id);
+        if (!alreadyUser) {
+          nextJoinRequests.push({
+            user: data.user,
+            allow: false,
+            visible: true,
+          });
+
+          this.setState({
+            joinRequests: nextJoinRequests,
+          });
+        }
+
+        break;
+      }
+
+      case 'JOIN_REQUEST_RESPONSE': {
+        const { joinRequests } = this.state;
+        const nextJoinRequests = joinRequests.slice(0);
+        const index = nextJoinRequests.findIndex((d) => d.user.id === data.userId);
+        if (index > -1) {
+          nextJoinRequests[index].allow = data.allowed;
+          nextJoinRequests[index].message = data.allowed
+            ? t(`${nextJoinRequests[index].user.alias}님의 참여가 승인되었습니다. [BY ${senderInfo.alias}]`)
+            : t(`${nextJoinRequests[index].user.alias}님의 참여가 거절되었습니다. [BY ${senderInfo.alias}]`);
+
+          this.setState(
+            {
+              joinRequests: nextJoinRequests,
+            },
+            () => {
+              setTimeout(() => {
+                nextJoinRequests.splice(index, 1);
+                this.setState({
+                  joinRequests: nextJoinRequests,
+                });
+              }, 3000);
+            },
+          );
+        }
+
+        break;
+      }
+
+      case 'JOIN_REQUEST_RESULT': {
+        const { allowRequest, code } = this.state;
+
+        this.setState({
+          allowRequest: {
+            ...allowRequest,
+            result: data.allowed,
+          },
+        });
+
+        if (data.allowed) {
+          this.getConference(code);
+        }
 
         break;
       }
@@ -1132,14 +1218,49 @@ class Conference extends React.Component {
 
   render() {
     const { history, t, user } = this.props;
-    const { code, conference, align, supportInfo, videoInfo, controls, screenShare, isSetting, pixInfo, myStream, statistics, answers, dailyScrumInfo } =
-      this.state;
+    const {
+      code,
+      conference,
+      align,
+      supportInfo,
+      videoInfo,
+      controls,
+      screenShare,
+      isSetting,
+      pixInfo,
+      myStream,
+      statistics,
+      answers,
+      dailyScrumInfo,
+      allowRequest,
+      joinRequests,
+    } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
     return (
       <>
-        {conference && !existConference && <EmptyConference/>}
+        {conference && !existConference && (
+          <EmptyConference
+            code={code}
+            allowRequest={allowRequest}
+            setAllowRequest={(data) => {
+              this.setState({
+                allowRequest: data,
+              });
+            }}
+          />
+        )}
+        {conference && !existConference && allowRequest.request && (
+          <SocketClient
+            topics={[`/sub/meets/${code}/standby/${user.id}`]}
+            onMessage={this.onMessage}
+            onConnect={() => {}}
+            setRef={(client) => {
+              this.socket = client;
+            }}
+          />
+        )}
         {existConference && (
           <Page className="conference-wrapper">
             {existConference && (
@@ -1151,8 +1272,7 @@ class Conference extends React.Component {
                       : [`/sub/meets/${code}`, `/sub/meets/${code}/${user.id}`]
                   }
                   onMessage={this.onMessage}
-                  onConnect={() => {
-                  }}
+                  onConnect={() => {}}
                   onDisconnect={() => {
                     request.put(`/api/meets/${conference.code}/status`, {
                       ...statistics,
@@ -1191,12 +1311,11 @@ class Conference extends React.Component {
                             <div>
                               <div>
                                 <span>
-                                  <i className="fas fa-clock"/>
+                                  <i className="fas fa-clock" />
                                 </span>
                                 <span>
                                   {conference.startDate && (
-                                    <ReactTimeAgo locale={user.language || 'ko'}
-                                                  date={dateUtil.getLocalDate(conference.startDate).valueOf()}/>
+                                    <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />
                                   )}{' '}
                                   {t('시작')}
                                 </span>
@@ -1204,7 +1323,7 @@ class Conference extends React.Component {
                               <div className="my-conference-info">
                                 <div>
                                   <span className="icon">
-                                    <i className="fas fa-compact-disc"/>
+                                    <i className="fas fa-compact-disc" />
                                   </span>
                                   <span className="count">
                                     {statistics.count}
@@ -1223,7 +1342,7 @@ class Conference extends React.Component {
                               </div>
                               <div>{this.getCurrentSpeaker()?.alias}</div>
                               <div>
-                                <i className="fas fa-long-arrow-alt-right"/>
+                                <i className="fas fa-long-arrow-alt-right" />
                               </div>
                               {this.getNextSpeaker() ? (
                                 <>
@@ -1264,8 +1383,7 @@ class Conference extends React.Component {
                                     }}
                                   >
                                     MY DAILY
-                                    {answers.filter((answer) => answer.user.id === user.id).length < 1 &&
-                                    <div className="no-register">{t('미등록')}</div>}
+                                    {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
                                   </Button>
                                 </div>
                               </div>
@@ -1273,6 +1391,17 @@ class Conference extends React.Component {
                           </div>
                         </div>
                         <div>
+                          <div className="join-request-manager">
+                            <JoinRequestManager
+                              code={code}
+                              joinRequests={joinRequests}
+                              setJoinRequests={(data) => {
+                                this.setState({
+                                  joinRequests: data,
+                                });
+                              }}
+                            />
+                          </div>
                           <div className={`video-content ${isSharing ? 'sharing' : ''}`}>
                             {dailyScrumInfo !== null && dailyScrumInfo.started && (
                               <div className="daily-scrum-content">
@@ -1293,7 +1422,7 @@ class Conference extends React.Component {
                             {isSharing && (
                               <div className="screen-sharing-content">
                                 <div>
-                                  <video ref={this.myScreenStreamVideo} autoPlay playsInline/>
+                                  <video ref={this.myScreenStreamVideo} autoPlay playsInline />
                                 </div>
                               </div>
                             )}
@@ -1375,8 +1504,8 @@ class Conference extends React.Component {
                                   this.setControls('audio', !controls.audio);
                                 }}
                               >
-                                {controls.audio && <i className="fas fa-microphone"/>}
-                                {!controls.audio && <i className="fas fa-microphone-slash"/>}
+                                {controls.audio && <i className="fas fa-microphone" />}
+                                {!controls.audio && <i className="fas fa-microphone-slash" />}
                               </Button>
                               <Button
                                 size="md"
@@ -1386,29 +1515,26 @@ class Conference extends React.Component {
                                   this.setControls('video', !controls.video);
                                 }}
                               >
-                                {controls.video && <i className="fas fa-video"/>}
-                                {!controls.video && <i className="fas fa-video-slash"/>}
+                                {controls.video && <i className="fas fa-video" />}
+                                {!controls.video && <i className="fas fa-video-slash" />}
                               </Button>
-                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem"/>
+                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
                               {!screenShare.sharing && !controls.sharing && (
-                                <Button size="md" rounded data-tip={t('내 화면 공유')} color="white"
-                                        onClick={this.startScreenShare}>
-                                  <i className="fas fa-desktop"/>
+                                <Button size="md" rounded data-tip={t('내 화면 공유')} color="white" onClick={this.startScreenShare}>
+                                  <i className="fas fa-desktop" />
                                 </Button>
                               )}
                               {!screenShare.sharing && controls.sharing && (
-                                <Button size="md" rounded data-tip={t('공유 중지')} color="danger"
-                                        onClick={this.stopScreenShare}>
-                                  <i className="fas fa-desktop"/>
+                                <Button size="md" rounded data-tip={t('공유 중지')} color="danger" onClick={this.stopScreenShare}>
+                                  <i className="fas fa-desktop" />
                                 </Button>
                               )}
                               {screenShare.sharing && (
-                                <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {
-                                }}>
+                                <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
                                   공유 중지 요청
                                 </Button>
                               )}
-                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem"/>
+                              <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
                               <Button
                                 size="md"
                                 rounded
@@ -1417,7 +1543,7 @@ class Conference extends React.Component {
                                   history.push('/meetings');
                                 }}
                               >
-                                <i className="fas fa-times"/>
+                                <i className="fas fa-times" />
                               </Button>
                               <div className="additional-button">
                                 <Button
@@ -1430,7 +1556,7 @@ class Conference extends React.Component {
                                     this.setControls('participants', !controls.participants);
                                   }}
                                 >
-                                  <i className="fas fa-child"/>
+                                  <i className="fas fa-child" />
                                 </Button>
                                 <Button
                                   size="md"
@@ -1438,11 +1564,10 @@ class Conference extends React.Component {
                                   color="white"
                                   data-tip={t('채팅')}
                                   className={controls.chatting ? 'selected' : ''}
-                                  onClick={() => {
-                                  }}
+                                  onClick={() => {}}
                                   disabled
                                 >
-                                  <i className="far fa-comment-dots"/>
+                                  <i className="far fa-comment-dots" />
                                 </Button>
                               </div>
                             </div>
@@ -1495,7 +1620,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(Conference)));
+export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(Conference))));
 
 Conference.propTypes = {
   t: PropTypes.func,

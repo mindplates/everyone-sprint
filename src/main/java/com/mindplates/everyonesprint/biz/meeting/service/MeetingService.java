@@ -64,6 +64,7 @@ public class MeetingService {
         meeting.setLastUpdateDate(now);
         meeting.setCreatedBy(userSession.getId());
         meeting.setLastUpdatedBy(userSession.getId());
+        meeting.setStarted(false);
         return meetingRepository.save(meeting);
     }
 
