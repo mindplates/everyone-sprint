@@ -14,7 +14,25 @@ const spokenDetectionLimit = 80;
 const spokenSensitive = 2000;
 
 const ConferenceVideoItem = (props) => {
-  const { t, className, controls, alias, muted, tracking, id, imageType, imageData, pixInfo, filter, stream, state, supportInfo, setCanvasStream, addSpeak } = props;
+  const {
+    t,
+    className,
+    controls,
+    alias,
+    muted,
+    tracking,
+    id,
+    imageType,
+    imageData,
+    pixInfo,
+    filter,
+    stream,
+    state,
+    supportInfo,
+    setCanvasStream,
+    addSpeak,
+    my,
+  } = props;
 
   const video = useRef();
 
@@ -29,6 +47,8 @@ const ConferenceVideoItem = (props) => {
   const soundVisualizationFrame = useRef();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [loadedTime, setLoadedTime] = useState(null);
 
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -181,7 +201,11 @@ const ConferenceVideoItem = (props) => {
     [filter, supportInfo, isLoaded, stream, supportInfo, pixInfo],
   );
 
-  const { ref: element } = useResizeDetector({
+  const {
+    width,
+    height,
+    ref: element,
+  } = useResizeDetector({
     refreshMode: 'debounce',
     refreshRate: 200,
     onResize,
@@ -452,9 +476,49 @@ const ConferenceVideoItem = (props) => {
     };
   }, [filter]);
 
+  const size = useMemo(() => {
+    if (width < 200) {
+      return 'xs';
+    }
+
+    if (width < 400) {
+      return 'sm';
+    }
+
+    if (width < 600) {
+      return 'md';
+    }
+
+    return 'lg';
+  }, [width]);
+
+  const controlTop = useMemo(() => {
+    let value = 0;
+    let videoWidth = 0;
+    let videoHeight = 0;
+    if (video.current) {
+      videoWidth = video.current.offsetWidth;
+      videoHeight = videoWidth * (video.current.videoHeight / video.current.videoWidth);
+    }
+
+    if (videoHeight < height) {
+      value = (height - videoHeight) / 2 + 8;
+    }
+
+    return value;
+  }, [width, height, loadedTime]);
+
   return (
-    <div className={`conference-video-item-wrapper g-no-select ${className}}`} ref={element}>
-      <div className='state-info'>{state}</div>
+    <div className={`conference-video-item-wrapper g-no-select ${className}} size-${size}`} ref={element}>
+      <div
+        className="state-info"
+        style={{
+          position: 'absolute',
+          top: `${controlTop}px`,
+        }}
+      >
+        {state}
+      </div>
       {isLoading && (
         <div className="loading">
           <div>
@@ -463,65 +527,90 @@ const ConferenceVideoItem = (props) => {
         </div>
       )}
       <div className="video-element">
-        <div className="control-status">
-          <div className="simple-voice-visualizer">
-            <div className="icon">
-              <div>
-                <i className="fas fa-volume-off" />
+        {loadedTime && (
+          <div
+            className="control-status"
+            style={{
+              position: 'absolute',
+              top: `${controlTop}px`,
+            }}
+          >
+            <div className="simple-voice-visualizer">
+              <div className="values">
+                {sounds.map((value, inx) => {
+                  return (
+                    <div key={inx}>
+                      <div
+                        style={{
+                          height: `${value}%`,
+                        }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
-            <div className="values">
-              {sounds.map((value, inx) => {
-                return (
-                  <div key={inx}>
-                    <div
-                      style={{
-                        height: `${value}%`,
-                      }}
-                    />
+            {!my && controls && (
+              <>
+                <div className="audio-status" data-tip={controls.audio ? '' : t('마이크 꺼짐')}>
+                  <div className="icon audio">
+                    <div>
+                      <i className="fas fa-microphone" />
+                      {!controls.audio && (
+                        <div className="slash">
+                          <div />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+                <div className="video-status">
+                  <div className="icon video">
+                    <div>
+                      <i className="fas fa-video" />
+                      {!controls.video && (
+                        <div className="slash">
+                          <div />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-          {controls && (
-            <>
-              <div className="audio-status" data-tip={controls.audio ? '' : t('마이크 꺼짐')}>
-                <div className="icon audio">
-                  <div>
-                    <i className="fas fa-microphone" />
-                    {!controls.audio && (
-                      <div className="slash">
-                        <div />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="video-status">
-                <div className="icon video">
-                  <div>
-                    <i className="fas fa-video" />
-                    {!controls.video && (
-                      <div className="slash">
-                        <div />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+        )}
         <div className="background-image d-none">
           <img src={pixInfo?.type === 'image' ? pixInfo?.key : ''} alt="background" ref={image} />
         </div>
         <div className="video-canvas">
-          <canvas ref={canvas} className={pixInfo?.enabled ? '' : 'd-none'} />
+          <canvas
+            ref={canvas}
+            className={pixInfo?.enabled ? '' : 'd-none'}
+            onLoadedData={() => {
+              setLoadedTime(Date.now());
+            }}
+          />
         </div>
-        <video className={pixInfo?.enabled ? 'd-none' : ''} id={id} ref={video} autoPlay playsInline muted={muted} />
+        <video
+          className={pixInfo?.enabled ? 'd-none' : ''}
+          id={id}
+          ref={video}
+          autoPlay
+          playsInline
+          muted={muted}
+          onLoadedData={() => {
+            setLoadedTime(Date.now());
+          }}
+        />
         {alias && (
-          <div className="user-info">
+          <div
+            className="user-info"
+            style={{
+              position: 'absolute',
+              bottom: `${controlTop}px`,
+            }}
+          >
             <span className="alias">{alias}</span>
           </div>
         )}
@@ -590,5 +679,6 @@ ConferenceVideoItem.propTypes = {
     }),
   }),
   addSpeak: PropTypes.func,
-  state : PropTypes.string,
+  state: PropTypes.string,
+  my: PropTypes.bool,
 };

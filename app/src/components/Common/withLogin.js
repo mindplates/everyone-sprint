@@ -10,14 +10,14 @@ import Spinner from '@/components/Spinner/Spinner';
 import './withLogin.scss';
 import { CONFERENCE_URL_PATTERN } from '@/constants/constants';
 
-const withLogin = (WrappedComponent) => {
+const withLogin = (WrappedComponent, skipDelay) => {
   class NeedLogin extends React.Component {
     timer = null;
 
     constructor(props) {
       super(props);
       this.state = {
-        delayed: false,
+        delayed: skipDelay === undefined ? false : skipDelay,
       };
     }
 

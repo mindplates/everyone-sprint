@@ -8,7 +8,13 @@ async function getPermissions(names) {
   }
 
   const queryPromises = names.map((name) => {
-    return navigator.permissions.query({ name });
+    try {
+      return navigator.permissions.query({ name });
+    } catch (e) {
+      //
+    }
+
+    return null;
   });
 
   return Promise.all(queryPromises);

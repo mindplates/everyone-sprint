@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
-import { Button, withLogin } from '@/components';
+import { Button } from '@/components';
 import request from '@/utils/request';
 import { AnswerPropTypes, ConferencePropTypes, UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
@@ -143,7 +143,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(ConferenceInfoBar))));
+export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(ConferenceInfoBar)));
 
 ConferenceInfoBar.propTypes = {
   t: PropTypes.func,

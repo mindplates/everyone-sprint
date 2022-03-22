@@ -4,8 +4,8 @@
 
   .join-request-manager {
     position: absolute;
-    right : 0;
-    top : 0;
+    right: 0;
+    top: 0;
     z-index: 4;
   }
 
@@ -24,8 +24,6 @@
       flex-direction: column;
       padding: 120px 1rem 0;
 
-
-
       > div.streaming-content-layout {
         display: flex;
         flex-grow: 1;
@@ -40,6 +38,10 @@
           _margin-bottom: 60px;
           position: relative;
 
+          @media (max-width: 768px) {
+            flex-direction: column;
+          }
+
           > .daily-scrum-content {
             position: absolute;
             top: 0;
@@ -52,21 +54,36 @@
             flex-grow: 1;
             position: relative;
             line-height: 0;
+
+            @media (max-width: 768px) {
+              overflow-y: auto;
+              _height: calc(100% - 200px) !important;
+            }
+
+            &.no-user {
+              display: flex;
+              flex-direction: column;
+            }
             > div {
               display: inline-flex;
               line-height: 160%;
+            }
 
-              &.my-video {
-                position: absolute;
-                bottom: -90px;
-                left: 1rem;
-                width: 200px;
-                height: 200px;
-                z-index: 4;
-                border: 1px solid rgba(255, 255, 255, 0.6);
-                border-radius: 20px;
-                transform: scale(0.2);
-                transform-origin: left bottom;
+            .video-list-content-layout {
+              @media (max-width: 768px) {
+                _max-height: 200px;
+                _margin-bottom: 1rem !important;
+              }
+            }
+
+            .no-users {
+              width: 100%;
+              flex-grow: 1;
+              display: flex;
+              justify-content: center;
+              > div {
+                align-self: center;
+                color: $white;
               }
             }
           }
@@ -104,9 +121,23 @@
               }
             }
           }
+
+          .my-video {
+            position: absolute;
+            bottom: -90px;
+            left: 1rem;
+            width: 200px;
+            height: 200px;
+            z-index: 4;
+
+            @media (max-width: 768px) {
+              position: static;
+              bottom: 0;
+              margin-top: 1rem;
+              width: 100% !important;
+            }
+          }
         }
-
-
       }
     }
 

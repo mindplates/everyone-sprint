@@ -100,16 +100,20 @@ class ConferenceDeviceConfig extends React.Component {
     const names = mediaUtil.getPermissionNames(hasAudio, hasVideo);
     const permissions = await mediaUtil.getPermissions(names);
 
-    permissions.forEach((permission, inx) => {
-      this.permissions[names[inx]] = permission.state;
-      this.showPermissionMessage(permission);
-      permission.onchange = () => {
-        this.permissions[names[inx]] = permission.state;
-        this.onChangePermission(permission);
-      };
-    });
+    if (permissions) {
+      permissions.forEach((permission, inx) => {
+        if (permission) {
+          this.permissions[names[inx]] = permission.state;
+          this.showPermissionMessage(permission);
+          permission.onchange = () => {
+            this.permissions[names[inx]] = permission.state;
+            this.onChangePermission(permission);
+          };
+        }
+      });
 
-    this.setDeviceInfoDebounced();
+      this.setDeviceInfoDebounced();
+    }
   };
 
   onChangePermission = () => {
@@ -421,7 +425,7 @@ class ConferenceDeviceConfig extends React.Component {
     };
 
     const maxHeight = height - 200;
-    const maxWidth = width - 100;
+    const maxWidth = width - 64;
     const rate = videoHeight / videoWidth;
 
     size.width = videoWidth;
@@ -441,11 +445,13 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   render() {
-    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls, stream, history } = this.props;
+    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls, stream, history, width } = this.props;
     const { mediaConfig, enabledAudio, enabledVideo } = supportInfo;
     const { openConfigPopup, openCapabilities, capabilities, pixInfo, openPixInfo, size } = this.state;
 
     const connectedUser = (conference?.users || []).filter((u) => u.participant?.connected && u.userId !== user.id);
+
+    const btnSize = width > 576 ? 'lg' : 'md';
 
     return (
       <div className="conference-device-config-wrapper">
@@ -487,9 +493,10 @@ class ConferenceDeviceConfig extends React.Component {
           )}
           <div className="config-button">
             <Button
-              size="lg"
+              size={btnSize}
               rounded
               color="white"
+              data-tip={t('디바이스 설정')}
               onClick={() => {
                 this.setState({
                   openConfigPopup: !openConfigPopup,
@@ -499,9 +506,10 @@ class ConferenceDeviceConfig extends React.Component {
               <i className="fas fa-cog" />
             </Button>
             <Button
-              size="lg"
+              size={btnSize}
               rounded
               color="white"
+              data-tip={t('카메라 설정')}
               disabled={!enabledVideo}
               onClick={() => {
                 this.setOpenCapabilities(!openCapabilities);
@@ -510,9 +518,10 @@ class ConferenceDeviceConfig extends React.Component {
               <i className="fas fa-sliders-h" />
             </Button>
             <Button
-              size="lg"
+              size={btnSize}
               rounded
               color="white"
+              data-tip={t('영상 효과 설정')}
               disabled={!enabledVideo}
               onClick={() => {
                 this.setOpenPixInfo(!openPixInfo);
@@ -530,14 +539,14 @@ class ConferenceDeviceConfig extends React.Component {
                   height: `${size.height}px`,
                 }}
               >
-                <ConferenceVideoItem filter controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
+                <ConferenceVideoItem filter my={false} controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
               </div>
             </div>
             {openCapabilities && (
               <div
                 className="capabilities-editor"
                 style={{
-                  height: mediaConfig.video.settings.height,
+                  height: size.height,
                 }}
               >
                 <CapabilitiesEditor
@@ -554,7 +563,7 @@ class ConferenceDeviceConfig extends React.Component {
               <div
                 className="pix-info-editor"
                 style={{
-                  height: mediaConfig.video.settings.height,
+                  height: size.height,
                 }}
               >
                 <PixInfoEditor pixInfo={pixInfo} onChange={this.onChangePixInfo} setOpened={this.setOpenPixInfo} />
@@ -565,9 +574,10 @@ class ConferenceDeviceConfig extends React.Component {
             {supportInfo.permissions.microphone === 'prompt' && <span className="is-requesting microphone">{t('권한 요청 중')}</span>}
             {supportInfo.permissions.microphone !== 'prompt' && (
               <Button
-                size="lg"
+                size={btnSize}
                 disabled={!enabledAudio}
                 rounded
+                data-tip={t('음성 OFF')}
                 color={this.getButtonColor(enabledAudio, controls.audio)}
                 onClick={() => {
                   this.disableControl('audio', !controls.audio);
@@ -588,9 +598,10 @@ class ConferenceDeviceConfig extends React.Component {
             )}
             {supportInfo.permissions.camera !== 'prompt' && (
               <Button
-                size="lg"
+                size={btnSize}
                 disabled={!enabledVideo}
                 rounded
+                data-tip={t('영상 OFF')}
                 color={this.getButtonColor(enabledVideo, controls.video)}
                 onClick={() => {
                   this.disableControl('video', !controls.video);
@@ -609,7 +620,7 @@ class ConferenceDeviceConfig extends React.Component {
             <Liner className="enter-liner" display="inline-block" width="1px" height="10px" color="white" margin="0 1rem 0 0.5rem" />
             <div className="enter-button">
               <Button
-                size="lg"
+                size={btnSize}
                 color="white"
                 onClick={() => {
                   onJoinClick();
@@ -620,8 +631,9 @@ class ConferenceDeviceConfig extends React.Component {
             </div>
             <Button
               className="exit-button"
-              size="lg"
+              size={btnSize}
               disabled={!enabledVideo}
+              data-tip={t('나가기')}
               rounded
               color="danger"
               onClick={() => {
@@ -691,7 +703,7 @@ ConferenceDeviceConfig.propTypes = {
     sprintId: PropTypes.number,
     sprintName: PropTypes.string,
     startDate: PropTypes.string,
-    type : PropTypes.string,
+    type: PropTypes.string,
     users: PropTypes.arrayOf(
       PropTypes.shape({
         alias: PropTypes.string,

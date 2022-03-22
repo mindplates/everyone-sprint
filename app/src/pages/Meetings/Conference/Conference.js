@@ -4,15 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import {
-  ConferenceVideoItem,
-  Page,
-  PageContent,
-  PageTitle,
-  ParticipantsList,
-  SocketClient,
-  withLogin,
-} from '@/components';
+import { ConferenceVideoItem, EmptyContent, Page, PageContent, ParticipantsList, SocketClient, withLogin } from '@/components';
 import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Common/ConferenceDeviceConfig';
@@ -49,6 +41,11 @@ const peerConnectionConfig = {
   ],
 };
 
+const MAX_MY_VIDEO_SIZE = {
+  width: 200,
+  height: 160,
+};
+
 class Conference extends React.Component {
   myCanvasStream = null;
 
@@ -81,10 +78,8 @@ class Conference extends React.Component {
       },
       videoInfo: {
         init: false,
-        width: 320,
-        height: 240,
-        videoWidth: 320,
-        videoHeight: 240,
+        rows: 0,
+        cols: 0,
       },
       controls: {
         audio: true,
@@ -1174,8 +1169,21 @@ class Conference extends React.Component {
     });
   };
 
+  getMyVideoSize = (width, height) => {
+    const result = { width: MAX_MY_VIDEO_SIZE.width, height: MAX_MY_VIDEO_SIZE.height };
+    if (width > height) {
+      result.width = width > MAX_MY_VIDEO_SIZE.width ? MAX_MY_VIDEO_SIZE.width : width;
+      result.height = result.width * (height / width);
+    } else {
+      result.heigth = height > MAX_MY_VIDEO_SIZE.height ? MAX_MY_VIDEO_SIZE.height : height;
+      result.width = result.heigth * (width / height);
+    }
+
+    return result;
+  };
+
   render() {
-    const { user } = this.props;
+    const { user, t } = this.props;
     const {
       code,
       conference,
@@ -1195,6 +1203,12 @@ class Conference extends React.Component {
     } = this.state;
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
+
+    const myVideoSize = this.getMyVideoSize(supportInfo.mediaConfig.video.settings.width || 640, supportInfo.mediaConfig.video.settings.height || 480);
+
+    const connectedUsers = conference?.users
+      .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+      .filter((userInfo) => userInfo.participant?.connected);
 
     return (
       <>
@@ -1261,7 +1275,6 @@ class Conference extends React.Component {
                 )}
                 {!isSetting && (
                   <>
-                    <PageTitle className="d-none">{conference?.name}</PageTitle>
                     <PageContent className="conference-content">
                       <div className="streaming-content">
                         <ConferenceInfoBar
@@ -1307,31 +1320,18 @@ class Conference extends React.Component {
                                 </div>
                               </div>
                             )}
-                            <div className="video-list-content" ref={this.videoListContent}>
-                              <div
-                                className="my-video"
-                                style={{
-                                  width: `${supportInfo.mediaConfig.video.settings.width || 640}px`,
-                                  height: `${supportInfo.mediaConfig.video.settings.height || 480}px`,
-                                  transform: `scale(${200 / (supportInfo.mediaConfig.video.settings.width || 640)})`,
-                                }}
-                              >
-                                <ConferenceVideoItem
-                                  filter
-                                  controls={controls}
-                                  supportInfo={supportInfo}
-                                  alias={user.alias}
-                                  muted
-                                  stream={myStream}
-                                  pixInfo={pixInfo}
-                                  setCanvasStream={this.setCanvasStream}
-                                  addSpeak={this.addSpeak}
-                                />
-                              </div>
-                              {conference.users
-                                .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
-                                .filter((userInfo) => userInfo.participant?.connected)
-                                .map((userInfo, index) => {
+                            <div
+                              className={`video-list-content ${!(connectedUsers && connectedUsers.length > 0) ? 'no-user' : ''}`}
+                              ref={this.videoListContent}
+                            >
+                              {!(connectedUsers && connectedUsers.length > 0) && (
+                                <div className="no-users">
+                                  <EmptyContent height="100%" icon={<i className="far fa-smile mb-3" />} message={t('아직 참석한 사용자가 없습니다.')} />
+                                </div>
+                              )}
+                              {connectedUsers &&
+                                connectedUsers.length > 0 &&
+                                connectedUsers.map((userInfo, index) => {
                                   let lastCol = false;
                                   let lastRow = false;
                                   if (index > 0) {
@@ -1347,6 +1347,7 @@ class Conference extends React.Component {
 
                                   return (
                                     <div
+                                      className="video-list-content-layout"
                                       key={userInfo.id}
                                       style={{
                                         height: `calc((100% - ${16 * (videoInfo.rows - 1)}px) / ${videoInfo.rows})`,
@@ -1372,6 +1373,27 @@ class Conference extends React.Component {
                                     </div>
                                   );
                                 })}
+                            </div>
+                            <div
+                              className="my-video"
+                              style={{
+                                width: `${myVideoSize.width}px`,
+                                height: `${myVideoSize.height}px`,
+                                // transform: `scale(${200 / (supportInfo.mediaConfig.video.settings.width || 640)})`,
+                              }}
+                            >
+                              <ConferenceVideoItem
+                                filter
+                                my
+                                controls={controls}
+                                supportInfo={supportInfo}
+                                alias={user.alias}
+                                muted
+                                stream={myStream}
+                                pixInfo={pixInfo}
+                                setCanvasStream={this.setCanvasStream}
+                                addSpeak={this.addSpeak}
+                              />
                             </div>
                           </div>
                           <ConferenceControls
@@ -1430,7 +1452,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(Conference))));
+export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(Conference, true))));
 
 Conference.propTypes = {
   t: PropTypes.func,

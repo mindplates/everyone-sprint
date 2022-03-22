@@ -3,6 +3,10 @@
   padding: 1rem;
   height: 120px;
   display: flex;
+
+  @media (max-width: 768px) {
+    height: auto;
+  }
   > div {
     align-self: center;
     width: 100%;
