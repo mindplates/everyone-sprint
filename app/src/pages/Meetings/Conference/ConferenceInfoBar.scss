@@ -65,27 +65,20 @@
   .scrum-info-status {
     position: absolute;
     bottom: 0;
-    right: -2rem;
-    display: flex;
+    right: 0;
+    left: 0;
     height: 30px;
+    text-align: center;
 
     > div {
       align-self: center;
       margin-right: 0.5rem;
       line-height: 0;
-      font-size: 14px;
-      span.tag {
-        font-size: 10px;
-        font-family: 'Noto Sans', sans-serif;
-        font-weight: bold;
-        display: inline-block;
-        line-height: 100%;
-        background: $primary;
-        padding: 2px 4px;
-        border-radius: 2px;
-      }
-      &:last-child {
-        margin-right: 0;
+      font-size: 13px;
+      display: inline-flex;
+
+      .tag {
+        margin-right: 0.5rem;
       }
     }
   }

@@ -476,7 +476,7 @@ class ConferenceDeviceConfig extends React.Component {
         <div>
           {conference.type !== 'SMALLTALK' && (
             <div className="current-user-info">
-              {connectedUser.length < 1 && <div className="text">{t('아직 참가자가 없습니다.')}</div>}
+              {connectedUser.length < 1 && <div className="text">{t('참가자가 없습니다.')}</div>}
               {connectedUser.length > 0 && (
                 <>
                   <div className="user-count">

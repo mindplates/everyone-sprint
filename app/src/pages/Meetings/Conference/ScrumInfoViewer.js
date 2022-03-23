@@ -43,7 +43,10 @@ const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, conferen
         >
           <div>
             <div>
-              <div className="image-content" />
+              <div className="image-content d-none" />
+              <div className='icon'>
+                <i className="fas fa-chess-knight" />
+              </div>
             </div>
             <div className="message-text">{message}</div>
           </div>
@@ -65,38 +68,40 @@ const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, conferen
       <div className="scrum-info-content">
         <div className="question-answer">
           <div className="scrum-info-title">
-            <BlockTitle size="lg" className="mb-0">
+            <BlockTitle size="lg" className="mb-0" liner={false}>
               {currentUser?.alias}&lsquo;S TODAY
             </BlockTitle>
           </div>
           <div className="question-answer-content">
-            {questions && questions.length > 0 && (
-              <ul>
-                {questions.map((d) => {
-                  const currentAnswer = currentUserAnswers.find((answer) => answer.scrumMeetingQuestionId === d.id)?.answer;
-                  return (
-                    <li
-                      key={d.id}
-                      className={`${dailyScrumInfo.currentFocusId === d.id ? 'focused' : ''} ${myTurn ? 'my-turn' : ''}`}
-                      onClick={() => {
-                        if (dailyScrumInfo.currentFocusId === d.id) {
-                          onFocus(null);
-                        } else {
-                          onFocus(d.id);
-                        }
-                      }}
-                    >
-                      <div className="question">
-                        <span>{d.question}</span>
-                      </div>
-                      <div className="answer">
-                        <span>{currentAnswer || <span>&nbsp;</span>}</span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+            <div>
+              {questions && questions.length > 0 && (
+                <ul>
+                  {questions.map((d) => {
+                    const currentAnswer = currentUserAnswers.find((answer) => answer.scrumMeetingQuestionId === d.id)?.answer;
+                    return (
+                      <li
+                        key={d.id}
+                        className={`${dailyScrumInfo.currentFocusId === d.id ? 'focused' : ''} ${myTurn ? 'my-turn' : ''}`}
+                        onClick={() => {
+                          if (dailyScrumInfo.currentFocusId === d.id) {
+                            onFocus(null);
+                          } else {
+                            onFocus(d.id);
+                          }
+                        }}
+                      >
+                        <div className="question">
+                          <span>{d.question}</span>
+                        </div>
+                        <div className="answer">
+                          <span>{currentAnswer || <span>&nbsp;</span>}</span>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
         <div className="current-user-video">

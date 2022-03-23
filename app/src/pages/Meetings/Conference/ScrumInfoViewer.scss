@@ -1,14 +1,18 @@
 .scrum-info-viewer-wrapper {
-  padding: 2rem;
-  background-color: $gray-200;
+  padding: 1rem;
+  margin: 0 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #222;
   height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow-y: auto;
 
-  margin: 0 2rem;
-  border-radius: 4px;
+  _border-radius: 4px;
+  z-index: 14;
+  border: 1px solid $gray-600;
+  color: $white;
 
   .message-content {
     position: absolute;
@@ -36,6 +40,10 @@
         display: inline-block;
       }
 
+      .icon {
+        font-size: 80px;
+      }
+
       .message-text {
         font-size: 1.4rem;
         font-weight: bold;
@@ -47,27 +55,41 @@
   .scrum-info-content {
     display: flex;
     flex-grow: 1;
+    flex-direction: column;
 
     .question-answer {
       flex-grow: 1;
-      margin-right: 1rem;
+      display: flex;
+      flex-direction: column;
 
       .scrum-info-title {
-        margin: 0 0.5rem 0.5rem;
+        margin-left: 0.5rem;
         font-weight: bold;
         font-family: pretendard, sans-serif;
       }
 
       .question-answer-content {
+        padding-left: 1rem;
+        padding-right: 1rem;
+
+        flex-grow: 1;
+        position: relative;
+        > div {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          overflow-y: auto;
+        }
         ul {
           padding: 0;
           margin: 0;
           list-style: none;
 
           li {
-            background-color: $gray-200;
-            padding: 1rem;
-            margin-bottom: 0;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
 
             &.my-turn {
               cursor: pointer;
@@ -81,33 +103,23 @@
             .question {
               font-family: pretendard, sans-serif;
               text-align: left;
-              margin-bottom: 0.5rem;
 
               > span {
                 display: inline-block;
-                border-bottom: 1px solid $white;
-                border-bottom: 1px solid $black;
                 padding: 0.25rem 0.5rem;
               }
             }
 
             .answer {
               padding: 0;
-              margin: 0 0.5rem;
+              margin: 0 1rem;
               font-weight: bold;
+              white-space: pre-wrap;
 
               > span {
                 display: block;
-                background-color: $gray-300;
-                padding: 0.5rem;
-              }
-            }
 
-            &.focused {
-              .answer {
-                > span {
-                  background-color: lighten($yellow, 12%);
-                }
+                padding: 0.5rem;
               }
             }
 
@@ -120,15 +132,24 @@
     }
 
     .current-user-video {
-      min-width: 400px;
-      margin: 50px 0 0;
+      width: 240px;
+      height: 180px;
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      background-color: #000;
+
+      @media (max-width: 768px) {
+        position: static;
+        width: 100%;
+        margin-top: 1rem;
+      }
 
       .video-element {
         background: transparent;
       }
 
       video {
-        height: auto;
         border-radius: 0;
       }
     }
