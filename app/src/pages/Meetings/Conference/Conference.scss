@@ -24,6 +24,10 @@
       flex-direction: column;
       padding: 120px 1rem 0;
 
+      @media (max-width: 576px) {
+        padding-top: 70px;
+      }
+
       > div.streaming-content-layout {
         display: flex;
         flex-grow: 1;
@@ -73,6 +77,8 @@
               @media (max-width: 768px) {
                 _max-height: 200px;
                 _margin-bottom: 1rem !important;
+                margin-right: 0 !important;
+                margin-bottom: 0 !important;
               }
             }
 
@@ -135,6 +141,10 @@
               bottom: 0;
               margin-top: 1rem;
               width: 100% !important;
+            }
+
+            @media (max-width: 576px) {
+              max-height: 120px;
             }
           }
         }

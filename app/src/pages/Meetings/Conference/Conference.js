@@ -18,6 +18,8 @@ import JoinRequestManager from '@/pages/Meetings/Conference/JoinRequestManager';
 import ConferenceInfoBar from './ConferenceInfoBar';
 import ConferenceControls from './ConferenceControls';
 
+const debugging = true;
+
 const peerConnectionConfig = {
   iceServers: [
     {
@@ -218,7 +220,7 @@ class Conference extends React.Component {
       const contentHeight = this.videoListContent.current.offsetHeight;
 
       const rate = contentWidth / contentHeight;
-      const connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected).length - 1;
+      const connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected || debugging).length - 1;
 
       /*
       if (connectedUserCount < 3) {
@@ -1208,7 +1210,7 @@ class Conference extends React.Component {
 
     const connectedUsers = conference?.users
       .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
-      .filter((userInfo) => userInfo.participant?.connected);
+      .filter((userInfo) => userInfo.participant?.connected || debugging);
 
     return (
       <>
@@ -1357,6 +1359,7 @@ class Conference extends React.Component {
                                       }}
                                     >
                                       <ConferenceVideoItem
+                                        className='video-item'
                                         useVideoInfo={!isSharing}
                                         id={`video-${userInfo.userId}`}
                                         stream={this.userStreams[userInfo.userId]}

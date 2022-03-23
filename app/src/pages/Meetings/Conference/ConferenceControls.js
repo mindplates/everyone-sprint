@@ -60,7 +60,7 @@ const ConferenceControls = ({ t, setControls, controls, screenShare, startScreen
         >
           <i className="fas fa-times" />
         </Button>
-        <div className="additional-button">
+        <div className="additional-button d-none d-sm-inline-block">
           <Button
             size="md"
             rounded

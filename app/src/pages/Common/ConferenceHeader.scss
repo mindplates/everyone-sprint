@@ -181,7 +181,9 @@
     > .product-logo {
       flex-grow: 0;
       padding: 0 1rem;
-
+      @media (max-width: 576px) {
+        padding: 0 0.75rem;
+      }
       > a {
         height: 100%;
         display: block;
@@ -211,6 +213,12 @@
             @media (max-width: 992px) {
               &.logged-in {
                 margin-right: 1rem;
+              }
+            }
+
+            @media (max-width: 576px) {
+              &.logged-in {
+                margin-right: 0.5rem;
               }
             }
             > button {

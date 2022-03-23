@@ -9,6 +9,16 @@
   color: $white;
   z-index: 5;
 
+  > div {
+    align-self: center;
+  }
+
+  @media (max-width: 576px) {
+    height: 70px;
+    left: 56px;
+    right: 60px;
+  }
+
   .time-info {
     position: absolute;
     top: 0;
@@ -79,13 +89,17 @@
       }
     }
   }
-  > div {
-    align-self: center;
+
+  > div.scrum-control-layout {
     display: flex;
+    @media (max-width: 576px) {
+      flex-grow: 1;
+    }
 
     .scrum-control {
       display: inline-flex;
       margin-right: 1rem;
+
       > div {
         align-self: center;
         margin-right: 0.5rem;

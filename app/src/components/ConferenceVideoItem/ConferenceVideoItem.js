@@ -492,29 +492,47 @@ const ConferenceVideoItem = (props) => {
     return 'lg';
   }, [width]);
 
-  const controlTop = useMemo(() => {
-    let value = 0;
+  const controlPosition = useMemo(() => {
+    const result = {
+      top: 8,
+      right: 8,
+    };
+
     let videoWidth = 0;
     let videoHeight = 0;
+
     if (video.current) {
-      videoWidth = video.current.offsetWidth;
+      videoWidth = width;
       videoHeight = videoWidth * (video.current.videoHeight / video.current.videoWidth);
+      if (videoHeight > height) {
+        videoHeight = height;
+        videoWidth = videoHeight * (video.current.videoWidth / video.current.videoHeight);
+      }
+    }
+
+    if (width > videoWidth) {
+      result.right = (width - videoWidth) / 2 + 8;
+    } else {
+      result.right = 8;
     }
 
     if (videoHeight < height) {
-      value = (height - videoHeight) / 2 + 8;
+      result.top = (height - videoHeight) / 2 + 8;
+    } else {
+      result.top = 8;
     }
 
-    return value;
+    return result;
   }, [width, height, loadedTime]);
 
   return (
-    <div className={`conference-video-item-wrapper g-no-select ${className}} size-${size}`} ref={element}>
+    <div className={`conference-video-item-wrapper g-no-select ${className} size-${size}`} ref={element}>
       <div
         className="state-info"
         style={{
           position: 'absolute',
-          top: `${controlTop}px`,
+          top: `${controlPosition.top}px`,
+          left: `${controlPosition.right}px`,
         }}
       >
         {state}
@@ -532,7 +550,8 @@ const ConferenceVideoItem = (props) => {
             className="control-status"
             style={{
               position: 'absolute',
-              top: `${controlTop}px`,
+              top: `${controlPosition.top}px`,
+              right: `${controlPosition.right}px`,
             }}
           >
             <div className="simple-voice-visualizer">
@@ -608,7 +627,7 @@ const ConferenceVideoItem = (props) => {
             className="user-info"
             style={{
               position: 'absolute',
-              bottom: `${controlTop}px`,
+              bottom: `${controlPosition.top}px`,
             }}
           >
             <span className="alias">{alias}</span>

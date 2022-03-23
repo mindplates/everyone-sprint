@@ -99,37 +99,56 @@ class ConferenceInfoBar extends React.Component {
             )}
           </div>
         )}
-        <div>
+        <div className="scrum-control-layout">
           {conference.scrumMeetingPlanId && (
-            <div className="scrum-control">
-              {dailyScrumInfo !== null && !dailyScrumInfo.started && (
+            <>
+              <div className="scrum-control">
+                {dailyScrumInfo !== null && !dailyScrumInfo.started && (
+                  <div>
+                    <Button className="d-none d-sm-inline-block" size="md" color="white" onClick={this.dailyScrumStart}>
+                      데일리 스크럼 시작
+                    </Button>
+                    <Button className="d-inline-block d-sm-none" size="md" color="white" onClick={this.dailyScrumStart}>
+                      <i className="fas fa-play" />
+                    </Button>
+                  </div>
+                )}
+                {dailyScrumInfo !== null && dailyScrumInfo.started && (
+                  <div>
+                    <Button className="d-none d-sm-inline-block" size="md" color="white" onClick={this.dailyScrumStop}>
+                      데일리 스크럼 종료
+                    </Button>
+                    <Button className="d-inline-block d-sm-none" size="md" color="white" onClick={this.dailyScrumStart}>
+                      <i className="fas fa-stop" />
+                    </Button>
+                  </div>
+                )}
                 <div>
-                  <Button size="md" color="white" onClick={this.dailyScrumStart}>
-                    데일리 스크럼 시작
+                  <Button
+                    className="my-daily-button d-none d-sm-inline-block"
+                    size="md"
+                    color="white"
+                    onClick={() => {
+                      setControls('scrumInfo', !controls.scrumInfo);
+                    }}
+                  >
+                    MY DAILY
+                    {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
+                  </Button>
+                  <Button
+                    className="my-daily-button d-inline-block d-sm-none"
+                    size="md"
+                    color="white"
+                    onClick={() => {
+                      setControls('scrumInfo', !controls.scrumInfo);
+                    }}
+                  >
+                    <i className="fas fa-envelope-open-text" />
+                    {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
                   </Button>
                 </div>
-              )}
-              {dailyScrumInfo !== null && dailyScrumInfo.started && (
-                <div>
-                  <Button size="md" color="white" onClick={this.dailyScrumStop}>
-                    데일리 스크럼 종료
-                  </Button>
-                </div>
-              )}
-              <div>
-                <Button
-                  className="my-daily-button"
-                  size="md"
-                  color="white"
-                  onClick={() => {
-                    setControls('scrumInfo', !controls.scrumInfo);
-                  }}
-                >
-                  MY DAILY
-                  {answers.filter((answer) => answer.user.id === user.id).length < 1 && <div className="no-register">{t('미등록')}</div>}
-                </Button>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
