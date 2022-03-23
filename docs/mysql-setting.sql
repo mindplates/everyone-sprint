@@ -1,14 +1,9 @@
-docker exec -it everyone-sprint-mysql-dev bash
---------------------------------------------------------------------
-mysql -u root -p
--> admin1234
---------------------------------------------------------------------
 use mysql;
 create user everyone_sprint_mgr@localhost identified by 'admin1234';
 create user everyone_sprint_app@localhost identified by 'admin1234';
 create user 'everyone_sprint_mgr'@'%' identified by 'admin1234';
 create user 'everyone_sprint_app'@'%' identified by 'admin1234';
-select host, user from user;
+# select host, user from user;
 
 create database everyone_sprint default character set utf8 collate utf8_unicode_ci;
 use everyone_sprint;
