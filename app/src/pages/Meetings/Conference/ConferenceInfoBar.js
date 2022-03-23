@@ -80,20 +80,11 @@ class ConferenceInfoBar extends React.Component {
         </div>
         {conference?.scrumMeetingPlanId && dailyScrumInfo?.started && (
           <div className="scrum-info-status">
-            <div>
-              <span className="tag">NOW</span>
-            </div>
-            <div>{this.getCurrentSpeaker()?.alias}</div>
-            <div>
-              <i className="fas fa-long-arrow-alt-right" />
-            </div>
             {this.getNextSpeaker() ? (
-              <>
-                <div>
-                  <span className="tag">NEXT</span>
-                </div>
+              <div>
+                <div className="tag">NEXT</div>
                 <div>{this.getNextSpeaker()?.alias}</div>
-              </>
+              </div>
             ) : (
               <div>{t('NONE')}</div>
             )}

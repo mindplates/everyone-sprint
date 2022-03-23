@@ -18,7 +18,7 @@ import JoinRequestManager from '@/pages/Meetings/Conference/JoinRequestManager';
 import ConferenceInfoBar from './ConferenceInfoBar';
 import ConferenceControls from './ConferenceControls';
 
-const debugging = true;
+const debugging = false;
 
 const peerConnectionConfig = {
   iceServers: [
@@ -1328,7 +1328,7 @@ class Conference extends React.Component {
                             >
                               {!(connectedUsers && connectedUsers.length > 0) && (
                                 <div className="no-users">
-                                  <EmptyContent height="100%" icon={<i className="far fa-smile mb-3" />} message={t('아직 참석한 사용자가 없습니다.')} />
+                                  <EmptyContent height="100%" icon={<i className="far fa-smile mb-3" />} message={t('참석한 사용자가 없습니다.')} />
                                 </div>
                               )}
                               {connectedUsers &&
