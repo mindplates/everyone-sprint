@@ -9,7 +9,6 @@ import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Common/ConferenceDeviceConfig';
 import mediaUtil from '@/utils/mediaUtil';
-import './Conference.scss';
 import dateUtil from '@/utils/dateUtil';
 import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
 import ScrumInfoViewer from '@/pages/Meetings/Conference/ScrumInfoViewer';
@@ -17,6 +16,7 @@ import EmptyConference from '../Common/EmptyConference';
 import JoinRequestManager from '@/pages/Meetings/Conference/JoinRequestManager';
 import ConferenceInfoBar from './ConferenceInfoBar';
 import ConferenceControls from './ConferenceControls';
+import './Conference.scss';
 
 const debugging = false;
 
@@ -41,11 +41,6 @@ const peerConnectionConfig = {
       credential: 'openrelayproject',
     },
   ],
-};
-
-const MAX_MY_VIDEO_SIZE = {
-  width: 200,
-  height: 160,
 };
 
 class Conference extends React.Component {
@@ -214,26 +209,24 @@ class Conference extends React.Component {
 
   setVideoInfo = () => {
     if (this.videoListContent && this.videoListContent.current) {
+      const { user } = this.props;
+
       const { conference, videoInfo } = this.state;
 
       const contentWidth = this.videoListContent.current.offsetWidth;
       const contentHeight = this.videoListContent.current.offsetHeight;
 
       const rate = contentWidth / contentHeight;
-      const connectedUserCount = conference.users.filter((userInfo) => userInfo.participant?.connected || debugging).length - 1;
-
-      /*
-      if (connectedUserCount < 3) {
-        connectedUserCount = 3;
-      }
-       */
+      const connectedUserCount = conference.users
+        .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+        .filter((userInfo) => userInfo.participant?.connected || debugging).length;
 
       let rows;
       let cols;
 
       if (rate >= 1) {
         const rate1 = contentWidth / contentHeight;
-        rows = Math.floor(connectedUserCount / (rate1 + 1));
+        rows = Math.ceil(connectedUserCount / (rate1 + 1));
         if (rows < 1) {
           rows = 1;
         }
@@ -241,6 +234,7 @@ class Conference extends React.Component {
       } else {
         const rate1 = contentHeight / contentWidth;
         cols = Math.floor(connectedUserCount / (rate1 + 1));
+
         if (cols < 1) {
           cols = 1;
         }
@@ -878,6 +872,10 @@ class Conference extends React.Component {
           });
         }
 
+        setTimeout(() => {
+          this.setVideoInfo();
+        }, 100);
+
         break;
       }
 
@@ -891,6 +889,10 @@ class Conference extends React.Component {
         if (!isMe) {
           this.clearUpScreenSharing(senderInfo.id);
         }
+
+        setTimeout(() => {
+          this.setVideoInfo();
+        }, 100);
 
         break;
       }
@@ -1171,19 +1173,6 @@ class Conference extends React.Component {
     });
   };
 
-  getMyVideoSize = (width, height) => {
-    const result = { width: MAX_MY_VIDEO_SIZE.width, height: MAX_MY_VIDEO_SIZE.height };
-    if (width > height) {
-      result.width = width > MAX_MY_VIDEO_SIZE.width ? MAX_MY_VIDEO_SIZE.width : width;
-      result.height = result.width * (height / width);
-    } else {
-      result.heigth = height > MAX_MY_VIDEO_SIZE.height ? MAX_MY_VIDEO_SIZE.height : height;
-      result.width = result.heigth * (width / height);
-    }
-
-    return result;
-  };
-
   render() {
     const { user, t } = this.props;
     const {
@@ -1206,11 +1195,11 @@ class Conference extends React.Component {
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
-    const myVideoSize = this.getMyVideoSize(supportInfo.mediaConfig.video.settings.width || 640, supportInfo.mediaConfig.video.settings.height || 480);
-
     const connectedUsers = conference?.users
       .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
       .filter((userInfo) => userInfo.participant?.connected || debugging);
+
+    const existConnectedUser = connectedUsers && connectedUsers.length > 0;
 
     return (
       <>
@@ -1277,8 +1266,8 @@ class Conference extends React.Component {
                 )}
                 {!isSetting && (
                   <>
-                    <PageContent className="conference-content">
-                      <div className="streaming-content">
+                    <PageContent className="conference-page-content">
+                      <div className="conference-page-content-layout">
                         <ConferenceInfoBar
                           conference={conference}
                           controls={controls}
@@ -1287,8 +1276,8 @@ class Conference extends React.Component {
                           answers={answers}
                           dailyScrumInfo={dailyScrumInfo}
                         />
-                        <div className="streaming-content-layout">
-                          <div className="join-request-manager">
+                        <div className="conference-page-content-layout-content">
+                          <div className="user-join-request-controller">
                             <JoinRequestManager
                               code={code}
                               joinRequests={joinRequests}
@@ -1299,9 +1288,9 @@ class Conference extends React.Component {
                               }}
                             />
                           </div>
-                          <div className={`video-content ${isSharing ? 'sharing' : ''}`}>
+                          <div className={`streaming-content ${isSharing ? 'sharing' : ''}`}>
                             {dailyScrumInfo !== null && dailyScrumInfo.started && (
-                              <div className="daily-scrum-content">
+                              <div className="g-attach">
                                 <ScrumInfoViewer
                                   conference={conference}
                                   dailyScrumInfo={dailyScrumInfo}
@@ -1316,73 +1305,76 @@ class Conference extends React.Component {
                               </div>
                             )}
                             {isSharing && (
-                              <div className="screen-sharing-content">
-                                <div>
+                              <div className="streaming-screen-sharing-content">
+                                <div className="g-attach">
                                   <video ref={this.myScreenStreamVideo} autoPlay playsInline />
                                 </div>
                               </div>
                             )}
                             <div
-                              className={`video-list-content ${!(connectedUsers && connectedUsers.length > 0) ? 'no-user' : ''}`}
+                              className={`user-video-list-content ${isSharing ? 'is-sharing' : ''} ${
+                                !(connectedUsers && connectedUsers.length > 0) ? 'no-user' : ''
+                              }`}
                               ref={this.videoListContent}
                             >
-                              {!(connectedUsers && connectedUsers.length > 0) && (
+                              {!existConnectedUser && (
                                 <div className="no-users">
                                   <EmptyContent height="100%" icon={<i className="far fa-smile mb-3" />} message={t('참석한 사용자가 없습니다.')} />
                                 </div>
                               )}
-                              {connectedUsers &&
-                                connectedUsers.length > 0 &&
-                                connectedUsers.map((userInfo, index) => {
-                                  let lastCol = false;
-                                  let lastRow = false;
-                                  if (index > 0) {
-                                    const rowNumber = Math.floor(index / videoInfo.cols);
-                                    const colNumber = (index - videoInfo.cols * rowNumber) % videoInfo.cols;
-                                    if (colNumber + 1 === videoInfo.cols) {
-                                      lastCol = true;
+                              {existConnectedUser && (
+                                <div className="user-video-list-content-layout g-dark-scrollbar">
+                                  {connectedUsers.map((userInfo, index) => {
+                                    let lastCol = false;
+                                    let lastRow = false;
+                                    if (index > 0) {
+                                      const rowNumber = Math.floor(index / videoInfo.cols);
+                                      const colNumber = (index - videoInfo.cols * rowNumber) % videoInfo.cols;
+                                      if (colNumber + 1 === videoInfo.cols) {
+                                        lastCol = true;
+                                      }
+                                      if (rowNumber + 1 === videoInfo.rows) {
+                                        lastRow = true;
+                                      }
                                     }
-                                    if (rowNumber + 1 === videoInfo.rows) {
-                                      lastRow = true;
-                                    }
-                                  }
 
-                                  return (
-                                    <div
-                                      className="video-list-content-layout"
-                                      key={userInfo.id}
-                                      style={{
-                                        height: `calc((100% - ${16 * (videoInfo.rows - 1)}px) / ${videoInfo.rows})`,
-                                        width: `calc((100% - ${16 * (videoInfo.cols - 1)}px) / ${videoInfo.cols})`,
-                                        marginRight: `${lastCol ? 0 : '16px'}`,
-                                        marginBottom: `${lastRow ? 0 : '16px'}`,
-                                      }}
-                                    >
-                                      <ConferenceVideoItem
-                                        className='video-item'
-                                        useVideoInfo={!isSharing}
-                                        id={`video-${userInfo.userId}`}
-                                        stream={this.userStreams[userInfo.userId]}
-                                        tracking={userInfo.tracking}
-                                        alias={userInfo.alias}
-                                        imageType={userInfo.imageType}
-                                        imageData={userInfo.imageData}
-                                        state={userInfo.state}
-                                        controls={{
-                                          audio: userInfo.participant?.audio,
-                                          video: userInfo.participant?.video,
+                                    return (
+                                      <div
+                                        className="conference-video-item-content"
+                                        key={userInfo.id}
+                                        style={{
+                                          height: `calc((100% - ${16 * (videoInfo.rows - 1)}px) / ${videoInfo.rows})`,
+                                          width: `calc((100% - ${16 * (videoInfo.cols - 1)}px) / ${videoInfo.cols})`,
+                                          marginRight: `${lastCol ? 0 : '16px'}`,
+                                          marginBottom: `${lastRow ? 0 : '16px'}`,
                                         }}
-                                      />
-                                    </div>
-                                  );
-                                })}
+                                      >
+                                        <ConferenceVideoItem
+                                          useVideoInfo={!isSharing}
+                                          id={`video-${userInfo.userId}`}
+                                          stream={this.userStreams[userInfo.userId]}
+                                          tracking={userInfo.tracking}
+                                          alias={userInfo.alias}
+                                          imageType={userInfo.imageType}
+                                          imageData={userInfo.imageData}
+                                          state={userInfo.state}
+                                          controls={{
+                                            audio: userInfo.participant?.audio,
+                                            video: userInfo.participant?.video,
+                                          }}
+                                        />
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
                             </div>
                             <div
-                              className="my-video"
+                              className="my-video-item-content"
                               style={{
-                                width: `${myVideoSize.width}px`,
-                                height: `${myVideoSize.height}px`,
-                                // transform: `scale(${200 / (supportInfo.mediaConfig.video.settings.width || 640)})`,
+                                width: `${supportInfo.mediaConfig.video.settings.width || 640}px`,
+                                height: `${supportInfo.mediaConfig.video.settings.height || 480}px`,
+                                transform: `scale(${200 / (supportInfo.mediaConfig.video.settings.width || 640)})`,
                               }}
                             >
                               <ConferenceVideoItem
