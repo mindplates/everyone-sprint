@@ -180,6 +180,21 @@
   background-color: #ffa114;
 }
 
+
+
+.g-dark-scrollbar {
+  &::-webkit-scrollbar {
+    height: 5px;
+    width : 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: $gray-800;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $gray-300;
+  }
+}
+
 .g-popup-wrapper {
   background-color: $light;
 }
@@ -211,6 +226,14 @@
       margin-right: 0;
     }
   }
+}
+
+.g-attach {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .g-scroller {
