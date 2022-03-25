@@ -261,7 +261,9 @@ const ConferenceVideoItem = (props) => {
         .then((segmentation) => {
           if (pixInfo.type === 'effect' && pixInfo.key === 'blur') {
             if (canvas.current && video.current) {
-              bodyPix.drawBokehEffect(canvas.current, video.current, segmentation, pixInfo.value, 13, false);
+              if (canvas.current.width > 0 && canvas.current.height > 0) {
+                bodyPix.drawBokehEffect(canvas.current, video.current, segmentation, pixInfo.value, 13, false);
+              }
             }
           }
 

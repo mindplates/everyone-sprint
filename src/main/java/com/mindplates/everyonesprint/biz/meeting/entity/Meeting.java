@@ -67,11 +67,11 @@ public class Meeting extends CommonEntity {
     @Column(name = "type", nullable = false, length = ColumnsDef.CODE)
     private MeetingTypeCode type;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scrum_meeting_plan_id", foreignKey = @ForeignKey(name = "FK_MEETING__SPRINT_DAILY_MEETING"))
     private ScrumMeetingPlan scrumMeetingPlan;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sprint_daily_small_talk_meeting_id", foreignKey = @ForeignKey(name = "FK_MEETING__SPRINT_DAILY_SMALL_TALK_MEETING"))
     private SmallTalkMeetingPlan smallTalkMeetingPlan;
 

@@ -225,9 +225,12 @@ public class SprintService {
         meeting.setStartDate(meetingStartDate);
         meeting.setEndDate(meetingEndDate);
         meeting.setCode(code);
+        meeting.setStarted(false);
+        meeting.setType(MeetingTypeCode.MEETING);
 
         if (abstractDailyMeeting instanceof ScrumMeetingPlan) {
             meeting.setScrumMeetingPlan((ScrumMeetingPlan) abstractDailyMeeting);
+            meeting.setType(MeetingTypeCode.SCRUM);
 
             List<MeetingUser> meetingUsers = Optional.ofNullable(meeting.getUsers()).orElse(new ArrayList<>());
             meetingUsers.clear();
@@ -244,6 +247,7 @@ public class SprintService {
 
         } else if (abstractDailyMeeting instanceof SmallTalkMeetingPlan) {
             meeting.setLimitUserCount(((SmallTalkMeetingPlan) abstractDailyMeeting).getLimitUserCount());
+            meeting.setType(MeetingTypeCode.SMALLTALK);
             meeting.setSmallTalkMeetingPlan((SmallTalkMeetingPlan) abstractDailyMeeting);
         }
 
