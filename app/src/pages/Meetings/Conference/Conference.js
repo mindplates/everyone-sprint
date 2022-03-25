@@ -17,6 +17,8 @@ import JoinRequestManager from '@/pages/Meetings/Conference/JoinRequestManager';
 import ConferenceInfoBar from './ConferenceInfoBar';
 import ConferenceControls from './ConferenceControls';
 import './Conference.scss';
+import dialog from '@/utils/dialog';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
 const debugging = false;
 
@@ -568,8 +570,15 @@ class Conference extends React.Component {
     this.setControls('sharing', false);
   };
 
+  stopScreenShareRequest = () => {
+    const { screenShare } = this.state;
+    if (screenShare.sharing) {
+      this.sendToUser('STOP_SCREEN_SHARING_REQUEST', screenShare.userId);
+    }
+  };
+
   clearOtherUserStreamAndVideo = (userId) => {
-    const { conference } = this.state;
+    const { conference, screenShare } = this.state;
 
     if (!userId) return;
 
@@ -586,13 +595,16 @@ class Conference extends React.Component {
       userInfo.peerConnection = null;
     }
 
-    // TODO 나간 사용자가 화면 공유 중인 경우
-    // this.myScreenStream = null;
-    // this.stopStreamAndVideo(this.myScreenStreamVideo.current);
-
-    this.setState({
-      conference: nextConference,
-    });
+    this.setState(
+      {
+        conference: nextConference,
+      },
+      () => {
+        if (screenShare.sharing && screenShare.userId === userId) {
+          this.clearUpScreenSharing(userId);
+        }
+      },
+    );
   };
 
   clearUpScreenSharing = (userId) => {
@@ -606,8 +618,13 @@ class Conference extends React.Component {
     }
 
     if (userInfo.screenSharePeerConnection) {
+      userInfo.screenSharePeerConnection.close();
       userInfo.screenSharePeerConnection = null;
       this.setState({
+        screenShare: {
+          sharing: false,
+          userId: null,
+        },
         conference: nextConference,
       });
     }
@@ -650,7 +667,7 @@ class Conference extends React.Component {
 
     userInfo.screenSharePeerConnection.ontrack = (event) => {
       const [first] = event.streams;
-      if (this.myScreenStreamVideo.current) {
+      if (this.myScreenStreamVideo.current && !this.myScreenStream) {
         this.myScreenStream = first;
         this.myScreenStreamVideo.current.srcObject = first;
 
@@ -661,7 +678,7 @@ class Conference extends React.Component {
     };
 
     userInfo.screenSharePeerConnection.oniceconnectionstatechange = () => {
-      const state = userInfo.screenSharePeerConnection.iceConnectionState;
+      const state = userInfo.screenSharePeerConnection?.iceConnectionState;
 
       if (state === 'failed' || state === 'closed' || state === 'disconnected') {
         this.setState({
@@ -778,6 +795,12 @@ class Conference extends React.Component {
             if (!isSetting) {
               this.setVideoInfo();
             }
+
+            const { controls } = this.state;
+            if (controls.sharing) {
+              this.sendToUser('START_SCREEN_SHARING', senderInfo.id);
+              this.setUpScreenSharing(senderInfo.id, true);
+            }
           },
         );
 
@@ -872,20 +895,10 @@ class Conference extends React.Component {
           });
         }
 
-        setTimeout(() => {
-          this.setVideoInfo();
-        }, 100);
-
         break;
       }
 
       case 'STOP_SCREEN_SHARING': {
-        this.setState({
-          screenShare: {
-            sharing: false,
-            userId: null,
-          },
-        });
         if (!isMe) {
           this.clearUpScreenSharing(senderInfo.id);
         }
@@ -893,6 +906,19 @@ class Conference extends React.Component {
         setTimeout(() => {
           this.setVideoInfo();
         }, 100);
+
+        break;
+      }
+
+      case 'STOP_SCREEN_SHARING_REQUEST': {
+        dialog.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('화면 공유 중지 요청'),
+          t(`${senderInfo.alias}님이 화면 공유 중지를 요청하였습니다. 화면 공유를 중지하시겠습니까?`),
+          () => {
+            this.stopScreenShare();
+          },
+        );
 
         break;
       }
@@ -1398,6 +1424,7 @@ class Conference extends React.Component {
                             screenShare={screenShare}
                             startScreenShare={this.startScreenShare}
                             stopScreenShare={this.stopScreenShare}
+                            stopScreenShareRequest={this.stopScreenShareRequest}
                           />
                         </div>
                       </div>

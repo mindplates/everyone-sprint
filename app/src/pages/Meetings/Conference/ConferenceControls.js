@@ -6,7 +6,7 @@ import { Button, Liner } from '@/components';
 import { HistoryPropTypes } from '@/proptypes';
 import './ConferenceControls.scss';
 
-const ConferenceControls = ({ t, setControls, controls, screenShare, startScreenShare, stopScreenShare, history }) => {
+const ConferenceControls = ({ t, setControls, controls, screenShare, startScreenShare, stopScreenShare, stopScreenShareRequest, history }) => {
   return (
     <div className="conference-controls-wrapper">
       <div>
@@ -45,7 +45,7 @@ const ConferenceControls = ({ t, setControls, controls, screenShare, startScreen
           </Button>
         )}
         {screenShare.sharing && (
-          <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={() => {}}>
+          <Button size="md" data-tip={t('공유 중지 요청')} color="danger" onClick={stopScreenShareRequest}>
             공유 중지 요청
           </Button>
         )}
@@ -115,4 +115,5 @@ ConferenceControls.propTypes = {
   }),
   startScreenShare: PropTypes.func,
   stopScreenShare: PropTypes.func,
+  stopScreenShareRequest: PropTypes.func,
 };
