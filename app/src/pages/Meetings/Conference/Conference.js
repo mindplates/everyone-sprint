@@ -532,6 +532,10 @@ class Conference extends React.Component {
       .then((stream) => {
         this.myScreenStream = stream;
 
+        stream.getVideoTracks()[0].onended = () => {
+          this.stopScreenShare();
+        };
+
         this.setState(
           {
             screenShare: {
