@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.mindplates'
-version = '0.0.4-SNAPSHOT'
+version = '0.1.0-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {

@@ -49,6 +49,7 @@
             flex-grow: 1;
             position: relative;
             border: 1px solid $gray-800;
+            z-index: 4;
             > div {
               left: 1px;
               top: 1px;
@@ -149,11 +150,9 @@
             transform-origin: left bottom;
 
             @media (max-width: 768px) {
-              display: none;
-            }
-
-            @media (max-width: 576px) {
-              max-height: 120px;
+              opacity: 0;
+              bottom: 0;
+              z-index: 0;
             }
           }
 
@@ -210,7 +209,9 @@
             }
 
             .my-video-item-content {
-              display: none;
+              opacity: 0;
+              bottom: 0;
+              z-index: 0;
             }
           }
         }
