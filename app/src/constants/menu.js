@@ -13,6 +13,12 @@ const MENU = {
     enabled: false,
     submenus: [],
   },
+  spaces: {
+    icon: <i className="fas fa-globe-asia" />,
+    name: '스페이스',
+    enabled: true,
+    submenus: [],
+  },
   projects: {
     icon: <i className="fas fa-archive" />,
     name: '프로젝트',
