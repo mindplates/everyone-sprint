@@ -1,0 +1,14 @@
+.edit-space-wrapper {
+  .description {
+    width: 50%;
+    @media (max-width: 768px) {
+      width: auto;
+    }
+  }
+
+  .code {
+    input {
+      text-transform: uppercase;
+    }
+  }
+}

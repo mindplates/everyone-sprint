@@ -1,7 +1,6 @@
 package com.mindplates.everyonesprint.biz.space.vo.response;
 
 import com.mindplates.everyonesprint.biz.common.vo.response.SimpleUserResponse;
-import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.everyonesprint.biz.space.entity.Space;
 import com.mindplates.everyonesprint.common.code.RoleCode;
@@ -22,6 +21,8 @@ import java.util.stream.Collectors;
 public class SpaceResponse {
     private Long id;
     private String name;
+    private String code;
+    private String description;
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean activated;
@@ -29,12 +30,13 @@ public class SpaceResponse {
     private List<SimpleUserResponse> users;
     private Boolean isMember;
     private Boolean isAdmin;
-    private Long activatedProjectCount = 0L;
     private LocalDateTime creationDate;
 
     public SpaceResponse(Space space, UserSession userSession) {
         this.id = space.getId();
         this.name = space.getName();
+        this.code = space.getCode();
+        this.description = space.getDescription();
         this.allowSearch = space.getAllowSearch();
         this.allowAutoJoin = space.getAllowAutoJoin();
         this.activated = space.getActivated();
@@ -52,17 +54,6 @@ public class SpaceResponse {
                         .imageType(projectUser.getUser().getImageType())
                         .imageData(projectUser.getUser().getImageData())
                         .build()).collect(Collectors.toList());
-
-        if (space.getProjects() != null) {
-            this.activatedProjectCount = space.getProjects().stream().filter(Project::getActivated).count();
-        }
-
-        if (space.getProjects() != null) {
-            this.projects = space.getProjects()
-                    .stream()
-                    .map((project -> new ProjectListResponse(project, userSession)))
-                    .collect(Collectors.toList());
-        }
 
 
     }

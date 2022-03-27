@@ -323,6 +323,17 @@ const MEETING_TYPES = [
   },
 ];
 
+const SPACE_SEARCH_TYPES = [
+  {
+    key: 'my',
+    value: '내 스페이스',
+  },
+  {
+    key: 'search',
+    value: '전체 검색',
+  },
+];
+
 const CONFERENCE_URL_PATTERN = /^\/meets|talks\/[A-Za-z0-9]*/;
 
 export {
@@ -346,4 +357,5 @@ export {
   ACTIVATES,
   MEETING_TYPES,
   CONFERENCE_URL_PATTERN,
+  SPACE_SEARCH_TYPES,
 };

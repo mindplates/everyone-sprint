@@ -29,10 +29,16 @@ public class SpaceController {
         this.spaceService = spaceService;
     }
 
-    @Operation(description = "사용자의 스페이스 목록 조회")
+    @Operation(description = "스페이스 목록 조회")
     @GetMapping("")
-    public List<SpaceListResponse> selectUserSpaceList(@ApiIgnore UserSession userSession) {
-        List<Space> spaces = spaceService.selectUserSpaceList(userSession);
+    public List<SpaceListResponse> selectUserSpaceList(@RequestParam("type") String type, @RequestParam("text") String text, @ApiIgnore UserSession userSession) {
+        List<Space> spaces;
+        if ("my".equals(type)) {
+            spaces = spaceService.selectUserSpaceList(userSession, text);
+        } else {
+            spaces = spaceService.selectSpaceList(text);
+        }
+
         return spaces.stream().map((space -> new SpaceListResponse(space, userSession))).collect(Collectors.toList());
     }
 
@@ -40,7 +46,7 @@ public class SpaceController {
     @PostMapping("")
     public SpaceResponse createSpaceInfo(@Valid @RequestBody SpaceRequest spaceRequest, @ApiIgnore UserSession userSession) {
 
-        Space alreadySpace = spaceService.selectByName(spaceRequest.getName());
+        Space alreadySpace = spaceService.selectByCode(spaceRequest.getCode());
         if (alreadySpace != null) {
             throw new ServiceException("space.duplicated");
         }
@@ -55,6 +61,11 @@ public class SpaceController {
 
         if (!id.equals(spaceRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
+        Space alreadySpace = spaceService.selectByCode(spaceRequest.getId(), spaceRequest.getCode());
+        if (alreadySpace != null) {
+            throw new ServiceException("space.duplicated");
         }
 
         Space spaceInfo = spaceRequest.buildEntity();

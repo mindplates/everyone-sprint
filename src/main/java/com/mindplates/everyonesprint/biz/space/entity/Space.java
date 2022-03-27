@@ -8,6 +8,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +28,12 @@ public class Space extends CommonEntity {
     @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
 
+    @Column(name = "code", nullable = false, length = ColumnsDef.CODE)
+    private String code;
+
+    @Column(name = "description", length = ColumnsDef.TEXT)
+    private String description;
+
     @Column(name = "allow_search")
     private Boolean allowSearch;
 
@@ -35,11 +42,6 @@ public class Space extends CommonEntity {
 
     @Column(name = "activated")
     private Boolean activated;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(updatable = false, insertable = false)
-    @Fetch(value = FetchMode.SELECT)
-    private List<Project> projects;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)

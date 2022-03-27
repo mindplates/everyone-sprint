@@ -8,6 +8,7 @@ import {
   ConferenceHeader,
   EditMeeting,
   EditProject,
+  EditSpace,
   EditSprint,
   Footer,
   Groups,
@@ -20,6 +21,8 @@ import {
   Project,
   Projects,
   PublicPark,
+  Space,
+  Spaces,
   Sprint,
   SprintDaily,
   Sprints,
@@ -48,6 +51,12 @@ function App({ history, setting }) {
           <Route exact path="/home" component={Home} />
           <Route exact path="/public-park" component={PublicPark} />
           <Route exact path="/groups" component={Groups} />
+
+          <Route exact path="/spaces/new" render={() => <EditSpace type="new" />} />
+          <Route exact path="/spaces/:id/edit" render={() => <EditSpace type="edit" />} />
+          <Route exact path="/spaces/:id" component={Space} />
+          <Route exact path="/spaces" component={Spaces} />
+
           <Route exact path="/projects/new" render={() => <EditProject type="new" />} />
           <Route exact path="/projects/:id/edit" render={() => <EditProject type="edit" />} />
           <Route exact path="/projects/:id" component={Project} />

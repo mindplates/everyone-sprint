@@ -12,6 +12,8 @@ public class SpaceRequest {
 
     private Long id;
     private String name;
+    private String code;
+    private String description;
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean activated;
@@ -22,6 +24,8 @@ public class SpaceRequest {
         Space space = Space.builder()
                 .id(id)
                 .name(name)
+                .code(code)
+                .description(description)
                 .allowSearch(allowSearch)
                 .allowAutoJoin(allowAutoJoin)
                 .activated(activated)

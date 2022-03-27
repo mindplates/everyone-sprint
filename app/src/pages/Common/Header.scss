@@ -228,49 +228,8 @@
       }
     }
 
-    > .top-menu {
-      flex: 1 1 0;
-      align-self: center;
-      height: 100%;
-      padding-left: 1rem;
-      @media (max-width: 992px) {
-        padding-left: 0;
-      }
-
-      .mobile-overlay {
-        display: none;
-
-        @media (max-width: 992px) {
-          display: block;
-        }
-      }
-
-      .menu-toggle-button {
-        height: 100%;
-        border-radius: 0;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        color: $white;
-        display: none;
-        border: none;
-
-        @media (min-width: 576px) {
-          &:hover {
-            background-color: $header-hover-bg-color;
-            border: none;
-          }
-        }
-
-        @media (max-width: 992px) {
-          display: inline-block;
-        }
-
-        @media (max-width: 768px) {
-          min-width: 110px;
-          text-align: left;
-        }
-      }
-
+    > .top-menu,
+    .top-button {
       ul {
         vertical-align: top;
         list-style: none;
@@ -373,6 +332,7 @@
             display: inline-flex;
             height: 100%;
             text-decoration: none;
+            color: $white;
 
             @media (max-width: 992px) {
               display: block;
@@ -492,6 +452,52 @@
       }
     }
 
+    > .top-menu {
+      flex: 1 1 0;
+      align-self: center;
+      height: 100%;
+      padding-left: 1rem;
+      @media (max-width: 992px) {
+        padding-left: 0;
+      }
+
+      .mobile-overlay {
+        display: none;
+
+        @media (max-width: 992px) {
+          display: block;
+        }
+      }
+
+      .menu-toggle-button {
+        height: 100%;
+        border-radius: 0;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        color: $white;
+        display: none;
+        border: none;
+
+        @media (min-width: 576px) {
+          &:hover {
+            background-color: $header-hover-bg-color;
+            border: none;
+          }
+        }
+
+        @media (max-width: 992px) {
+          display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+          min-width: 110px;
+          text-align: left;
+        }
+      }
+
+
+    }
+
     > .top-button {
       flex: 1 1 0;
       padding-right: 1rem;
@@ -517,8 +523,12 @@
           align-self: center;
           height: 100%;
 
-          &.user-icon {
+          &.right-menu {
             flex-grow: 1;
+          }
+
+          &.user-icon {
+            flex-grow: 0;
             @media (max-width: 992px) {
               &.logged-in {
                 margin-right: 1rem;

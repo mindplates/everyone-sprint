@@ -10,7 +10,13 @@ import java.util.Optional;
 public interface SpaceRepository extends JpaRepository<Space, Long> {
     Optional<Space> findByName(String name);
 
-    List<Space> findAllByUsersUserId(Long userId);
+    Optional<Space> findByCode(String code);
+
+    Optional<Space> findByIdNotAndCode(Long spaceId, String code);
+
+    List<Space> findAllByUsersUserIdAndNameLike(Long userId, String text);
+
+    List<Space> findAllByNameLikeAndAllowSearchTrueAndActivatedTrue(String text);
 
     Long countBy();
 

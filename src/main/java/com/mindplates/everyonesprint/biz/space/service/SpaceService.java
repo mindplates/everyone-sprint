@@ -34,8 +34,17 @@ public class SpaceService {
         return spaceRepository.findByName(name).orElse(null);
     }
 
+    public Space selectByCode(String code) {
+        return spaceRepository.findByCode(code).orElse(null);
+    }
+
+    public Space selectByCode(Long spaceId, String code) {
+        return spaceRepository.findByIdNotAndCode(spaceId, code).orElse(null);
+    }
+
     public Space createSpaceInfo(Space space, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
+        space.setCode(space.getCode().toUpperCase());
         space.setCreationDate(now);
         space.setLastUpdateDate(now);
         space.setCreatedBy(userSession.getId());
@@ -46,6 +55,7 @@ public class SpaceService {
 
     public Space updateSpaceInfo(Space space, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
+        space.setCode(space.getCode().toUpperCase());
         space.setLastUpdateDate(now);
         space.setLastUpdatedBy(userSession.getId());
         spaceRepository.save(space);
@@ -54,7 +64,10 @@ public class SpaceService {
 
 
     public void deleteSpaceInfo(Space space) {
-        for (Project project : space.getProjects()) {
+
+        List<Project> spaceProjects = projectService.selectSpaceProjectList(space.getId());
+
+        for (Project project : spaceProjects) {
             for (Sprint sprint : project.getSprints()) {
                 sprintService.deleteSprintInfo(sprint.getId());
             }
@@ -63,8 +76,12 @@ public class SpaceService {
         spaceRepository.delete(space);
     }
 
-    public List<Space> selectUserSpaceList(UserSession userSession) {
-        return spaceRepository.findAllByUsersUserId(userSession.getId());
+    public List<Space> selectUserSpaceList(UserSession userSession, String text) {
+        return spaceRepository.findAllByUsersUserIdAndNameLike(userSession.getId(), "%" + text + "%");
+    }
+
+    public List<Space> selectSpaceList(String text) {
+        return spaceRepository.findAllByNameLikeAndAllowSearchTrueAndActivatedTrue("%" + text + "%");
     }
 
     public Optional<Space> selectSpaceInfo(Long id) {

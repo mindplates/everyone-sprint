@@ -117,6 +117,7 @@ const Header = (props) => {
             </li>
             {Object.keys(MENU)
               .filter((menu) => MENU[menu].enabled)
+              .filter((menu) => menuOpen || MENU[menu].side === 'left')
               .map((topMenuKey) => {
                 const menu = MENU[topMenuKey];
                 return (
@@ -149,6 +150,35 @@ const Header = (props) => {
         </div>
         <div className="top-button">
           <div>
+            <div className="right-menu">
+              <ul>
+                {Object.keys(MENU)
+                  .filter((menu) => MENU[menu].enabled)
+                  .filter((menu) => MENU[menu].side === 'right')
+                  .map((topMenuKey) => {
+                    const menu = MENU[topMenuKey];
+                    return (
+                      <li key={topMenuKey} className={`${menuAlias === topMenuKey ? 'selected' : 'no-selected'}`}>
+                        <Link
+                          to={`/${topMenuKey}`}
+                          onClick={() => {
+                            setMenuOpen(false);
+                          }}
+                        >
+                          <div>
+                            <div className={`icon ${topMenuKey}`}>
+                              <div>
+                                <span>{menu.icon}</span>
+                              </div>
+                            </div>
+                            <div className="text">{t(menu.name)}</div>
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+              </ul>
+            </div>
             <div className={`user-icon ${user.id ? 'logged-in' : ''}`}>
               <Button
                 className="config-or-user-button"
