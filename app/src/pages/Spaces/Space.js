@@ -270,6 +270,7 @@ const Space = ({
               editable={{
                 role: false,
                 member: false,
+                add : false
               }}
             />
           </Block>
@@ -277,13 +278,7 @@ const Space = ({
             <Block className="g-last-block">
               <BlockTitle>{t('참여 요청')}</BlockTitle>
               <UserApplicants
-                type="list"
-                showAdmin
                 applicants={space.applicants}
-                editable={{
-                  role: false,
-                  member: false,
-                }}
                 onReject={onReject}
                 onApprove={onApprove}
               />

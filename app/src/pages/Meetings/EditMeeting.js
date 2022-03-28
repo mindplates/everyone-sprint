@@ -516,6 +516,7 @@ const EditMeeting = ({
                 editable={{
                   role: false,
                   member: true,
+                  add : true,
                 }}
               />
             )}

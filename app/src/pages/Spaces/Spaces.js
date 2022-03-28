@@ -104,7 +104,7 @@ const Spaces = ({ t, history }) => {
         {spaces?.length < 1 && (
           <EmptyContent
             height="100%"
-            icon={<i className="fas fa-archive" />}
+            icon={<i className="fas fa-globe-asia" />}
             message={t('참여 중인 스페이스가 없습니다.')}
             additionalContent={
               <div className="mt-3">

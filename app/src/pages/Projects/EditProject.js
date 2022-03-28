@@ -3,20 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {
-  Block,
-  BlockRow,
-  BlockTitle,
-  BottomButtons,
-  Form,
-  Input,
-  Label,
-  Page,
-  PageContent,
-  PageTitle,
-  UserList,
-  withLogin,
-} from '@/components';
+import { Block, BlockRow, BlockTitle, BottomButtons, Form, Input, Label, Page, PageContent, PageTitle, UserList, withLogin } from '@/components';
 import dialog from '@/utils/dialog';
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
@@ -140,17 +127,17 @@ const EditProject = ({
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (project.users.length < 1) {
+    if (project.users.filter((u) => u.CRUD !== 'D').length < 1) {
       dialog.setMessage(MESSAGE_CATEGORY.WARNING, t('사용자 없음'), t('최소 한명의 멤버는 추가되어야 합니다.'));
       return;
     }
 
-    if (project.users.filter((d) => d.role === 'ADMIN').length < 1) {
+    if (project.users.filter((u) => u.CRUD !== 'D').filter((d) => d.role === 'ADMIN').length < 1) {
       dialog.setMessage(MESSAGE_CATEGORY.WARNING, t('어드민 없음'), t('최소 한명의 어드민은 설정되어야 합니다.'));
       return;
     }
 
-    const me = project.users.find((u) => u.userId === user.id);
+    const me = project.users.filter((u) => u.CRUD !== 'D').find((u) => u.userId === user.id);
     if (!me) {
       dialog.setConfirm(
         MESSAGE_CATEGORY.WARNING,
@@ -164,8 +151,6 @@ const EditProject = ({
       save();
     }
   };
-
-  console.log(project);
 
   return (
     <Page className="edit-project-wrapper">
@@ -269,6 +254,7 @@ const EditProject = ({
                 editable={{
                   role: true,
                   member: true,
+                  add: true,
                 }}
               />
             </div>
@@ -277,7 +263,7 @@ const EditProject = ({
             onCancel={() => {
               history.goBack();
             }}
-            onDelete={ project?.isAdmin ? onDelete : null}
+            onDelete={project?.isAdmin ? onDelete : null}
             onDeleteText="삭제"
             onSubmit={type === 'new' || project?.isAdmin}
             onSubmitText="저장"

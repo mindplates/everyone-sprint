@@ -57,7 +57,7 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
               </div>
             );
           })}
-          {editable.member && (
+          {editable.member && editable.add && (
             <div className="user-card">
               {type === 'card' && (
                 <UserCard
@@ -112,6 +112,7 @@ UserList.defaultProps = {
   editable: {
     role: true,
     member: true,
+    add: true,
   },
   type: 'card',
   icon: true,
@@ -125,6 +126,7 @@ UserList.propTypes = {
   editable: PropTypes.shape({
     role: PropTypes.bool,
     member: PropTypes.bool,
+    add: PropTypes.bool,
   }),
   onChange: PropTypes.func,
   onChangeUsers: PropTypes.func,

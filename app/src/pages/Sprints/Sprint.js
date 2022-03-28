@@ -73,8 +73,6 @@ const Sprint = ({
         null,
         () => {
           history.push('/sprints');
-
-
         },
         null,
         t('스프린트를 종료하고 있습니다.'),
@@ -203,6 +201,7 @@ const Sprint = ({
               editable={{
                 role: false,
                 member: false,
+                add: false,
               }}
             />
           </Block>

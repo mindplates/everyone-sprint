@@ -82,6 +82,7 @@ const SprintDeactivate = ({
               editable={{
                 role: false,
                 member: false,
+                add: false,
               }}
             />
           </Block>

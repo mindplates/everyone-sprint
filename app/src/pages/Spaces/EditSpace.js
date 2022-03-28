@@ -130,22 +130,22 @@ const EditSpace = ({
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (space.users.length < 1) {
+    if (space.users.filter((u) => u.CRUD !== 'D').length < 1) {
       dialog.setMessage(MESSAGE_CATEGORY.WARNING, t('사용자 없음'), t('최소 한명의 멤버는 추가되어야 합니다.'));
       return;
     }
 
-    if (space.users.filter((d) => d.role === 'ADMIN').length < 1) {
+    if (space.users.filter((u) => u.CRUD !== 'D').filter((d) => d.role === 'ADMIN').length < 1) {
       dialog.setMessage(MESSAGE_CATEGORY.WARNING, t('어드민 없음'), t('최소 한명의 어드민은 설정되어야 합니다.'));
       return;
     }
 
-    const me = space.users.find((u) => u.userId === user.id);
+    const me = space.users.filter((u) => u.CRUD !== 'D').find((u) => u.userId === user.id);
     if (!me) {
       dialog.setConfirm(
         MESSAGE_CATEGORY.WARNING,
         t('권한 경고'),
-        t('스페이스 멤버에 현재 사용자가 포함되어 있지 않습니다. 변경 후 스페이스에 더 이상 접근이 불가능합니다. 계속하시겠습니까?'),
+        t('프로젝트 멤버에 현재 사용자가 포함되어 있지 않습니다. 변경 후 프로젝트에 더 이상 접근이 불가능합니다. 계속하시겠습니까?'),
         () => {
           save();
         },
@@ -283,8 +283,9 @@ const EditSpace = ({
                 onChange={(val) => changeInfo('users', val)}
                 onChangeUsers={changeUsers}
                 editable={{
-                  role: false,
-                  member: false,
+                  role: type === 'edit',
+                  member: type === 'edit',
+                  add: false,
                 }}
               />
             </div>

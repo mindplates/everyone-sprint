@@ -57,7 +57,7 @@ public class SpaceResponse {
                         .imageData(projectUser.getUser().getImageData())
                         .build()).collect(Collectors.toList());
 
-        if (this.isAdmin) {
+        if (this.isAdmin && space.getApplicants() != null) {
             this.applicants = space.getApplicants().stream().filter((spaceApplicant -> spaceApplicant.getApprovalStatusCode().equals(ApprovalStatusCode.REQUEST))).map(SpaceApplicantResponse::new).collect(Collectors.toList());
         }
 

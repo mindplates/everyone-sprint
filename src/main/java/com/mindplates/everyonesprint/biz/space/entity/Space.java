@@ -45,7 +45,8 @@ public class Space extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<SpaceUser> users;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL)
+    @Column(updatable = false, insertable = false)
     @Fetch(value = FetchMode.SELECT)
     private List<SpaceApplicant> applicants;
 
