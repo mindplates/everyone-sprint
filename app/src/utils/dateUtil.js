@@ -13,7 +13,7 @@ function getUserLocale() {
  * @param format
  * @returns {string}
  */
-function getDateString(val, format) {
+function getDateString(val, format ) {
   return moment
     .utc(val)
     .local()

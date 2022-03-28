@@ -431,6 +431,39 @@ const EditSprint = ({
     setSprint(next);
   };
 
+  const save = (next) => {
+    if (type === 'edit') {
+      request.put(
+        `/api/sprints/${next.id}`,
+        {
+          ...next,
+          startDate: new Date(next.startDate),
+          endDate: new Date(next.endDate),
+          users: next.users.filter((u) => u.CRUD !== 'D'),
+        },
+        (data) => {
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
+            history.push(`/sprints/${data.id}`);
+          });
+        },
+        null,
+        t('스프린트를 변경하고 있습니다.'),
+      );
+    } else {
+      request.post(
+        '/api/sprints',
+        { ...next, startDate: new Date(next.startDate), endDate: new Date(next.endDate) },
+        (data) => {
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
+            history.push(`/sprints/${data.id}`);
+          });
+        },
+        null,
+        t('새로운 스프린트를 만들고 있습니다.'),
+      );
+    }
+  };
+
   const onSubmit = (e) => {
     e.preventDefault();
 
@@ -473,35 +506,28 @@ const EditSprint = ({
       smallTalkMeetingPlan.endTime = endTime.toISOString();
     });
 
-    if (type === 'edit') {
-      request.put(
-        `/api/sprints/${next.id}`,
-        {
-          ...next,
-          startDate: new Date(next.startDate),
-          endDate: new Date(next.endDate),
-          users: next.users.filter((u) => u.CRUD !== 'D'),
+    if (next.users.filter((u) => u.CRUD !== 'D').length < 1) {
+      dialog.setMessage(MESSAGE_CATEGORY.WARNING, t('사용자 없음'), t('최소 한명의 멤버는 추가되어야 합니다.'));
+      return;
+    }
+
+    if (next.users.filter((u) => u.CRUD !== 'D').filter((d) => d.role === 'ADMIN').length < 1) {
+      dialog.setMessage(MESSAGE_CATEGORY.WARNING, t('어드민 없음'), t('최소 한명의 어드민은 설정되어야 합니다.'));
+      return;
+    }
+
+    const me = next.users.filter((u) => u.CRUD !== 'D').find((u) => u.userId === user.id);
+    if (!me) {
+      dialog.setConfirm(
+        MESSAGE_CATEGORY.WARNING,
+        t('권한 경고'),
+        t('스프린트  멤버에 현재 사용자가 포함되어 있지 않습니다. 변경 후 스프린트에 더 이상 접근이 불가능합니다. 계속하시겠습니까?'),
+        () => {
+          save(next);
         },
-        (data) => {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/sprints/${data.id}`);
-          });
-        },
-        null,
-        t('스프린트를 변경하고 있습니다.'),
       );
     } else {
-      request.post(
-        '/api/sprints',
-        { ...next, startDate: new Date(next.startDate), endDate: new Date(next.endDate) },
-        (data) => {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/sprints/${data.id}`);
-          });
-        },
-        null,
-        t('새로운 스프린트를 만들고 있습니다.'),
-      );
+      save(next);
     }
   };
 
@@ -824,6 +850,7 @@ const EditSprint = ({
                 editable={{
                   role: true,
                   member: true,
+                  add: true,
                 }}
               />
             </Block>

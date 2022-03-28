@@ -1,8 +1,6 @@
-package com.mindplates.everyonesprint.biz.project.entity;
+package com.mindplates.everyonesprint.biz.space.entity;
 
 import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
-import com.mindplates.everyonesprint.biz.space.entity.Space;
-import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -13,12 +11,12 @@ import java.util.List;
 
 @Entity
 @Builder
-@Table(name = "project")
+@Table(name = "space")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Project extends CommonEntity {
+public class Space extends CommonEntity {
 
     @Id
     @Column(name = "id")
@@ -27,6 +25,12 @@ public class Project extends CommonEntity {
 
     @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
+
+    @Column(name = "code", nullable = false, length = ColumnsDef.CODE)
+    private String code;
+
+    @Column(name = "description", length = ColumnsDef.TEXT)
+    private String description;
 
     @Column(name = "allow_search")
     private Boolean allowSearch;
@@ -37,17 +41,13 @@ public class Project extends CommonEntity {
     @Column(name = "activated")
     private Boolean activated;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<SpaceUser> users;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL)
     @Column(updatable = false, insertable = false)
     @Fetch(value = FetchMode.SELECT)
-    private List<Sprint> sprints;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
-    private List<ProjectUser> users;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_PROJECT__SPACE"))
-    private Space space;
+    private List<SpaceApplicant> applicants;
 
 }

@@ -1,0 +1,18 @@
+.space-wrapper {
+  .space-content {
+    display: flex;
+    flex-direction: column;
+
+    .space-requesting-info {
+      .space-name {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .button {
+        margin-top: 1rem;
+      }
+    }
+  }
+}

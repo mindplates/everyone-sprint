@@ -59,6 +59,10 @@ public class ProjectService {
         return projectRepository.findAllByUsersUserId(userSession.getId());
     }
 
+    public List<Project> selectSpaceProjectList(Long spaceId) {
+        return projectRepository.findAllBySpaceId(spaceId);
+    }
+
     public Optional<Project> selectProjectInfo(Long id) {
         return projectRepository.findById(id);
     }

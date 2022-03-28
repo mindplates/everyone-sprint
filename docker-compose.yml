@@ -19,6 +19,7 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
     volumes:
       # -v 옵션 (다렉토리 마운트 설정)
       - d:/docker/everyone-spring/data:/var/lib/mysql

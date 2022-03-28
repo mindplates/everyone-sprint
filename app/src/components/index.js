@@ -52,6 +52,8 @@ import IconSelector from '@/components/IconMaker/IconSelector/IconSelector';
 import ImageMaker from '@/components/IconMaker/ImageMaker/ImageMaker';
 import PictureMaker from '@/components/IconMaker/PictureMaker/PictureMaker';
 import TextMaker from '@/components/IconMaker/TextMaker/TextMaker';
+import SpaceList from '@/components/SpaceList/SpaceList';
+import UserApplicants from '@/components/UserApplicants/UserApplicants';
 
 export {
   MessageDialog,
@@ -109,4 +111,6 @@ export {
   ImageMaker,
   PictureMaker,
   TextMaker,
+  SpaceList,
+  UserApplicants,
 };

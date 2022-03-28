@@ -30,7 +30,7 @@ EmptyContent.defaultProps = {
 EmptyContent.propTypes = {
   className: PropTypes.string,
   icon: PropTypes.node,
-  message: PropTypes.string,
+  message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   height: PropTypes.string,
   additionalContent: PropTypes.node,
 };

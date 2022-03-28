@@ -45,11 +45,13 @@ public class ProjectAuthAspect {
     private void selectOperator() {
     }
 
-    @Pointcut("createOperator() || updateOperator() || deleteOperator()")
-    private void cudOperator() {
+    @Pointcut("updateOperator() || deleteOperator()")
+    private void udOperator() {
     }
 
-    @Before("cudOperator() && args(projectId, ..)")
+    // TODO 프로젝트 생성 시 스페이스 멤버인지 확인
+
+    @Before("udOperator() && args(projectId, ..)")
     public void checkIsProjectAdminUser(JoinPoint joinPoint, long projectId) throws Throwable {
 
         UserSession userSession = SessionUtil.getUserInfo(request);

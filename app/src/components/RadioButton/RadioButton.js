@@ -59,7 +59,7 @@ RadioButton.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       key: PropTypes.oneOfType([PropTypes.bool, PropTypes.number, PropTypes.string]),
-      value: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+      value: PropTypes.oneOfType([PropTypes.bool, PropTypes.number, PropTypes.string, PropTypes.node]),
       tooltip: PropTypes.shape({
         text: PropTypes.string,
         place: PropTypes.string,

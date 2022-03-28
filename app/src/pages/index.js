@@ -22,6 +22,10 @@ import Project from './Projects/Project';
 import SprintDaily from './Sprints/SprintDaily';
 import SprintSummary from './Sprints/SprintSummary';
 
+import Spaces from './Spaces/Spaces';
+import EditSpace from './Spaces/EditSpace';
+import Space from './Spaces/Space';
+
 export {
   PublicPark,
   Common,
@@ -46,4 +50,7 @@ export {
   Project,
   SprintDaily,
   SprintSummary,
+  Spaces,
+  EditSpace,
+  Space,
 };

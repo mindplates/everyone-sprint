@@ -14,17 +14,12 @@
     resize: none;
     line-height: 160%;
     padding: 0.5rem 0.75rem;
-    border-radius: $input-radius;
     background-color: $white;
     -webkit-appearance: none;
 
     &:focus {
       box-shadow: none;
       outline: none;
-    }
-
-    &:invalid {
-      border-bottom: 1px solid $border-color;
     }
   }
 

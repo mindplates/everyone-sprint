@@ -85,6 +85,7 @@ const Project = ({
                     editable={{
                       role: false,
                       member: false,
+                      add : false,
                     }}
                     showAdmin
                   />
