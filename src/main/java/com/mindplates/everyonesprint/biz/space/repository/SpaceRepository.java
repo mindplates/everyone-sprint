@@ -20,5 +20,7 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
 
     Long countBy();
 
+    boolean existsByIdAndUsersUserId(Long spaceId, Long userId);
+
 }
 

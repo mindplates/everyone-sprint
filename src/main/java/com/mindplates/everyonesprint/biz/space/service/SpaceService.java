@@ -3,9 +3,16 @@ package com.mindplates.everyonesprint.biz.space.service;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.project.service.ProjectService;
 import com.mindplates.everyonesprint.biz.space.entity.Space;
+import com.mindplates.everyonesprint.biz.space.entity.SpaceApplicant;
+import com.mindplates.everyonesprint.biz.space.entity.SpaceUser;
+import com.mindplates.everyonesprint.biz.space.repository.SpaceApplicantRepository;
 import com.mindplates.everyonesprint.biz.space.repository.SpaceRepository;
+import com.mindplates.everyonesprint.biz.space.repository.SpaceUserRepository;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
+import com.mindplates.everyonesprint.biz.user.entity.User;
+import com.mindplates.everyonesprint.common.code.ApprovalStatusCode;
+import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +27,20 @@ public class SpaceService {
 
     final private SpaceRepository spaceRepository;
 
+    final private SpaceApplicantRepository spaceApplicantRepository;
+
+    final private SpaceUserRepository spaceUserRepository;
+
     final private ProjectService projectService;
 
     final private SprintService sprintService;
 
-    public SpaceService(SpaceRepository spaceRepository, ProjectService projectService, SprintService sprintService) {
+    public SpaceService(SpaceRepository spaceRepository, ProjectService projectService, SprintService sprintService, SpaceApplicantRepository spaceApplicantRepository, SpaceUserRepository spaceUserRepository) {
         this.spaceRepository = spaceRepository;
         this.projectService = projectService;
         this.sprintService = sprintService;
+        this.spaceApplicantRepository = spaceApplicantRepository;
+        this.spaceUserRepository = spaceUserRepository;
     }
 
     public Space selectByName(String name) {
@@ -91,6 +104,91 @@ public class SpaceService {
 
     public Long selectAllSpaceCount() {
         return spaceRepository.countBy();
+    }
+
+    public boolean selectIsSpaceMember(Long spaceId, UserSession userSession) {
+        return spaceRepository.existsByIdAndUsersUserId(spaceId, userSession.getId());
+    }
+
+    public Optional<SpaceApplicant> selectIsSpaceMember(Long spaceId, Long userId) {
+        return spaceApplicantRepository.findBySpaceIdAndUserId(spaceId, userId);
+    }
+
+    public SpaceApplicant createSpaceApplicantInfo(SpaceApplicant spaceApplicant, UserSession userSession) {
+        LocalDateTime now = LocalDateTime.now();
+        spaceApplicant.setApprovalStatusCode(ApprovalStatusCode.REQUEST);
+        spaceApplicant.setCreationDate(now);
+        spaceApplicant.setLastUpdateDate(now);
+        spaceApplicant.setCreatedBy(userSession.getId());
+        spaceApplicant.setLastUpdatedBy(userSession.getId());
+        spaceApplicantRepository.save(spaceApplicant);
+        return spaceApplicant;
+    }
+
+    public SpaceApplicant updateApplicantReject(SpaceApplicant spaceApplicant, UserSession userSession) {
+        LocalDateTime now = LocalDateTime.now();
+        spaceApplicant.setLastUpdateDate(now);
+        spaceApplicant.setLastUpdatedBy(userSession.getId());
+        spaceApplicant.setApprovalStatusCode(ApprovalStatusCode.REJECTED);
+        spaceApplicantRepository.save(spaceApplicant);
+        return spaceApplicant;
+    }
+
+    public SpaceApplicant updateApplicantInfo(SpaceApplicant spaceApplicant, UserSession userSession) {
+        LocalDateTime now = LocalDateTime.now();
+        spaceApplicant.setLastUpdateDate(now);
+        spaceApplicant.setLastUpdatedBy(userSession.getId());
+        spaceApplicantRepository.save(spaceApplicant);
+        return spaceApplicant;
+    }
+
+    public SpaceApplicant updateApplicantApprove(SpaceApplicant spaceApplicant, UserSession userSession) {
+
+        LocalDateTime now = LocalDateTime.now();
+        spaceApplicant.setLastUpdateDate(now);
+        spaceApplicant.setLastUpdatedBy(userSession.getId());
+        spaceApplicant.setApprovalStatusCode(ApprovalStatusCode.APPROVAL);
+        spaceApplicantRepository.save(spaceApplicant);
+
+        boolean isMember = spaceUserRepository.existsBySpaceIdAndUserId(spaceApplicant.getSpace().getId(), spaceApplicant.getUser().getId());
+        if (!isMember) {
+            SpaceUser spaceUser = SpaceUser.builder()
+                    .user(User.builder().id(spaceApplicant.getUser().getId()).build())
+                    .role(RoleCode.MEMBER)
+                    .space(Space.builder().id(spaceApplicant.getSpace().getId()).build())
+                    .build();
+
+            spaceUserRepository.save(spaceUser);
+        }
+
+
+        return spaceApplicant;
+    }
+
+
+    public SpaceUser createSpaceUserInfo(SpaceUser spaceUser, UserSession userSession) {
+        if (!spaceUserRepository.existsBySpaceIdAndUserId(spaceUser.getSpace().getId(), spaceUser.getUser().getId())) {
+            LocalDateTime now = LocalDateTime.now();
+            spaceUser.setCreationDate(now);
+            spaceUser.setLastUpdateDate(now);
+            spaceUser.setCreatedBy(userSession.getId());
+            spaceUser.setLastUpdatedBy(userSession.getId());
+            spaceUserRepository.save(spaceUser);
+        }
+        return spaceUser;
+    }
+
+    public Optional<SpaceApplicant> selectSpaceApplicantInfo(Long spaceId, Long userId) {
+        return spaceApplicantRepository.findBySpaceIdAndUserId(spaceId, userId);
+    }
+
+    public Optional<SpaceApplicant> selectSpaceApplicantInfo(Long id) {
+        return spaceApplicantRepository.findById(id);
+    }
+
+
+    public void deleteSpaceApplicantInfo(SpaceApplicant spaceApplicant) {
+        spaceApplicantRepository.delete(spaceApplicant);
     }
 
 

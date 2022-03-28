@@ -1,14 +1,12 @@
 package com.mindplates.everyonesprint.biz.space.entity;
 
 import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
-import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,5 +44,9 @@ public class Space extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<SpaceUser> users;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<SpaceApplicant> applicants;
 
 }

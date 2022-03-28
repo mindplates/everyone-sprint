@@ -3,141 +3,15 @@
     display: flex;
     flex-direction: column;
 
-    .tabs {
-      flex-grow: 0;
-      padding: 1.5rem 2rem 0;
-      display: none;
-
-      @media (max-width: 1200px) {
-        display: block;
+    .space-requesting-info {
+      .space-name {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        margin-top: 0.5rem;
       }
 
-      @media (max-width: 576px) {
-        padding: 1rem 1rem 0;
-      }
-    }
-
-    .space-info {
-      display: flex;
-      flex-grow: 1;
-      flex-direction: row;
-      > div {
-        &.general-info {
-          padding: 1rem 0 0 2rem;
-          min-width: 400px;
-          max-width: 400px;
-          display: flex;
-          flex-direction: column;
-
-          @media (max-width: 1200px) {
-            display: none;
-          }
-
-          .space-card {
-            margin-bottom: 1rem;
-            margin-left: 0.5rem;
-
-            .space-name {
-              font-family: pretendard, sans-serif;
-              font-weight: bold;
-              font-size: 1.2rem;
-
-              &.deactivate {
-                text-decoration: line-through;
-              }
-            }
-
-            .space-info-tag {
-              margin-top: 0.5rem;
-              line-height: 100%;
-              > span {
-                display: inline-block;
-                font-size: 12px;
-                margin-right: 0.5rem;
-                padding: 0.4rem;
-                line-height: 100%;
-                border-radius: 2px;
-                &.allowed {
-                  background-color: $green;
-                  color: $white;
-                }
-
-                &.deactivated {
-                  background-color: $warning;
-                  color: $white;
-                }
-              }
-            }
-          }
-
-          .space-user-list {
-            flex-grow: 1;
-            overflow-y: auto;
-            position: relative;
-            border: $border;
-            background-color: $gray-100;
-          }
-        }
-
-        &.sprint-timeline {
-          padding: 1rem 2rem 0;
-          flex-grow: 1;
-          display: flex;
-          flex-direction: column;
-
-          @media (max-width: 1200px) {
-            display: none;
-          }
-
-          @media (max-width: 992px) {
-            padding: 1rem 1rem 0;
-          }
-
-          @media (max-width: 576px) {
-            margin-bottom: 1rem;
-          }
-
-          .sprint-timeline-content {
-            flex-grow: 1;
-            position: relative;
-          }
-        }
-      }
-    }
-
-    .content-title {
-      position: relative;
-
-      @media (max-width: 1200px) {
-        display: none;
-      }
-    }
-
-    &.space {
-      .space-info {
-        .general-info {
-          @media (max-width: 1200px) {
-            display: flex;
-            flex-grow: 1;
-            min-width: auto;
-            max-width: none;
-            padding-right: 2rem;
-          }
-
-          @media (max-width: 576px) {
-            padding: 1rem;
-          }
-        }
-      }
-    }
-
-    &.timeline {
-      .space-info {
-        .sprint-timeline {
-          @media (max-width: 1200px) {
-            display: flex;
-          }
-        }
+      .button {
+        margin-top: 1rem;
       }
     }
   }

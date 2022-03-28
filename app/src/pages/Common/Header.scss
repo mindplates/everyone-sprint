@@ -503,6 +503,10 @@
       padding-right: 1rem;
       display: flex;
 
+      .right-menu {
+        margin-right: 1rem;
+      }
+
       @media (max-width: 992px) {
         padding-right: 0;
       }

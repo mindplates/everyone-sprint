@@ -13,11 +13,11 @@ function getUserLocale() {
  * @param format
  * @returns {string}
  */
-function getDateString(val, format) {
+function getDateString(val, format = DATE_FORMATS_TYPES.full) {
   return moment
     .utc(val)
     .local()
-    .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.full].moment);
+    .format(DATE_FORMATS[getUserLocale()][format].moment);
 }
 
 function getLocalDateISOString(val) {

@@ -116,7 +116,11 @@ function processError(error, failHandler) {
       }
 
       default: {
-        dialog.setMessage(MESSAGE_CATEGORY.ERROR, '오류', error.response && error.response.data && error.response.data.message);
+        dialog.setMessage(
+          MESSAGE_CATEGORY.ERROR,
+          '오류',
+          (error.response && error.response.data && error.response.data.message) || '알 수 없는 오류가 발생했습니다.',
+        );
 
         break;
       }

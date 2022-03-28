@@ -10,8 +10,6 @@ class UserListItem extends React.PureComponent {
 
     const CRUD = (user || {}).CRUD || 'S';
 
-    console.log(user);
-
     return (
       <div
         className={`user-list-item-wrapper ${className} ${CRUD === 'D' ? 'deleted' : ''} ${addCard ? 'add-card' : ''}`}

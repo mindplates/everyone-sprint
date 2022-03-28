@@ -234,7 +234,6 @@ const EditSpace = ({
                 size="md"
                 value={space.description}
                 onChange={(val) => changeInfo('description', val)}
-                outline
                 simple
                 minLength={1}
               />

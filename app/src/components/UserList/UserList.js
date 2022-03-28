@@ -1,12 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
-import './UserList.scss';
+import { withTranslation } from 'react-i18next';
 import { UserPropTypes } from '@/proptypes';
 import { Popup, UserCard, UserListItem } from '@/components';
 import UserSelector from '@/components/UserList/UserSelector';
 import withLoader from '@/components/Common/withLoader';
+import './UserList.scss';
 
-const UserList = ({ className, users, editable, onChange, onChangeUsers, type, icon, showAdmin }) => {
+const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type, icon, showAdmin }) => {
   const [popup, setPopup] = useState(false);
 
   const changeUser = useCallback(
@@ -36,7 +37,7 @@ const UserList = ({ className, users, editable, onChange, onChangeUsers, type, i
     <div className={`user-list-wrapper ${className} type-${type}`}>
       {!editable.member && users.length < 1 && (
         <div className="empty-message">
-          <div>등록된 멤버가 없습니다.</div>
+          <div>{t('등록된 멤버가 없습니다.')}</div>
         </div>
       )}
       {(editable.member || users.length > 0) && (
@@ -104,7 +105,7 @@ const UserList = ({ className, users, editable, onChange, onChangeUsers, type, i
   );
 };
 
-export default withLoader(UserList, 'users');
+export default withLoader(withTranslation()(UserList), 'users');
 
 UserList.defaultProps = {
   className: '',
@@ -119,6 +120,7 @@ UserList.defaultProps = {
 
 UserList.propTypes = {
   className: PropTypes.string,
+  t: PropTypes.func,
   users: PropTypes.arrayOf(UserPropTypes),
   editable: PropTypes.shape({
     role: PropTypes.bool,

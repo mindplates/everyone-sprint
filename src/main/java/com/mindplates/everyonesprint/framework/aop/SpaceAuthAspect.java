@@ -46,10 +46,10 @@ public class SpaceAuthAspect {
     }
 
     @Pointcut("createOperator() || updateOperator() || deleteOperator()")
-    private void udOperator() {
+    private void cudOperator() {
     }
 
-    @Before("udOperator() && args(spaceId, ..)")
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableAuth) && cudOperator() && args(spaceId, ..)")
     public void checkIsSpaceAdminUser(JoinPoint joinPoint, long spaceId) throws Throwable {
 
         UserSession userSession = SessionUtil.getUserInfo(request);
@@ -60,7 +60,7 @@ public class SpaceAuthAspect {
         }
     }
 
-    @Before("selectOperator() && args(spaceId, ..)")
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableAuth) && selectOperator() && args(spaceId, ..)")
     public void checkIsProjectUser(JoinPoint joinPoint, long spaceId) throws Throwable {
         UserSession userSession = SessionUtil.getUserInfo(request);
         Space space = spaceService.selectSpaceInfo(spaceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
