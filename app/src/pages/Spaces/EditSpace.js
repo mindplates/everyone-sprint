@@ -9,6 +9,7 @@ import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/co
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { setSpaceInfo } from '@/store/actions';
 import './EditSpace.scss';
 
 const labelMinWidth = '140px';
@@ -21,6 +22,7 @@ const EditSpace = ({
   match: {
     params: { id },
   },
+  setSpaceInfo: setSpaceInfoReducer,
 }) => {
   const [space, setSpace] = useState({
     name: '',
@@ -101,6 +103,7 @@ const EditSpace = ({
         '/api/spaces',
         { ...space },
         (data) => {
+          setSpaceInfoReducer(data);
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
             history.push(`/spaces/${data.id}`);
           });
@@ -312,7 +315,13 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(EditSpace))));
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(withLogin(EditSpace))));
 
 EditSpace.propTypes = {
   t: PropTypes.func,
@@ -324,4 +333,5 @@ EditSpace.propTypes = {
       id: PropTypes.string,
     }),
   }),
+  setSpaceInfo: PropTypes.func,
 };

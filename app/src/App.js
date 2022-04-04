@@ -11,17 +11,18 @@ import {
   EditSpace,
   EditSprint,
   Footer,
-  Groups,
   Header,
   Home,
   Join,
   Login,
   Meetings,
   Message,
+  MySpaces,
   Project,
   Projects,
   PublicPark,
   Space,
+  SpaceHome,
   Spaces,
   Sprint,
   SprintDaily,
@@ -42,40 +43,49 @@ function App({ history, setting }) {
   return (
     <div className={`app-wrapper ${isConference ? 'conference-page' : ''}`}>
       <div className="app-header">
-        {isConference && <ConferenceHeader />}
-        {!isConference && <Header />}
+        <Switch>
+          meets|talks
+          <Route exact path="/:spaceCode/meets" component={ConferenceHeader} />
+          <Route exact path="/:spaceCode/talks" component={ConferenceHeader} />
+          <Route path="/:spaceCode" component={Header} />
+          <Route component={Header} />
+        </Switch>
       </div>
       <div className={`app-content ${noMaxWidth ? 'no-max-width' : ''}`}>
         <Switch>
           <Route exact path="/" component={Stats} />
           <Route exact path="/home" component={Home} />
           <Route exact path="/public-park" component={PublicPark} />
-          <Route exact path="/groups" component={Groups} />
 
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/join" component={Join} />
+
+          <Route exact path="/spaces" component={Spaces} />
+          <Route exact path="/spaces/my" component={MySpaces} />
           <Route exact path="/spaces/new" render={() => <EditSpace type="new" />} />
           <Route exact path="/spaces/:id/edit" render={() => <EditSpace type="edit" />} />
           <Route exact path="/spaces/:id" component={Space} />
-          <Route exact path="/spaces" component={Spaces} />
 
-          <Route exact path="/projects/new" render={() => <EditProject type="new" />} />
-          <Route exact path="/projects/:id/edit" render={() => <EditProject type="edit" />} />
-          <Route exact path="/projects/:id" component={Project} />
-          <Route exact path="/projects" component={Projects} />
-          <Route exact path="/sprints/new" render={() => <EditSprint type="new" />} />
-          <Route exact path="/sprints/:id/deactivate" render={() => <SprintSummary type="close" />} />
-          <Route exact path="/sprints/:id/daily/:date" component={SprintDaily} />
-          <Route exact path="/sprints/:id/daily" component={SprintDaily} />
-          <Route exact path="/sprints/:id/summary" render={() => <SprintSummary type="summary" />} />
-          <Route exact path="/sprints/:id/edit" render={() => <EditSprint type="edit" />} />
-          <Route exact path="/sprints/:id" component={Sprint} />
-          <Route exact path="/sprints" component={Sprints} />
-          <Route exact path="/meetings/new" render={() => <EditMeeting type="new" />} />
-          <Route exact path="/meetings/:id/edit" render={() => <EditMeeting type="edit" />} />
-          <Route exact path="/meetings" component={Meetings} />
-          <Route exact path="/meets/:code" component={Conference} />
-          <Route exact path="/meets" component={Conference} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/join" component={Join} />
+          <Route exact path="/:spaceCode/projects/new" render={() => <EditProject type="new" />} />
+          <Route exact path="/:spaceCode/projects/:id/edit" render={() => <EditProject type="edit" />} />
+          <Route exact path="/:spaceCode/projects/:id" component={Project} />
+          <Route exact path="/:spaceCode/projects" component={Projects} />
+          <Route exact path="/:spaceCode/sprints/new" render={() => <EditSprint type="new" />} />
+          <Route exact path="/:spaceCode/sprints/:id/deactivate" render={() => <SprintSummary type="close" />} />
+          <Route exact path="/:spaceCode/sprints/:id/daily/:date" component={SprintDaily} />
+          <Route exact path="/:spaceCode/sprints/:id/daily" component={SprintDaily} />
+          <Route exact path="/:spaceCode/sprints/:id/summary" render={() => <SprintSummary type="summary" />} />
+          <Route exact path="/:spaceCode/sprints/:id/edit" render={() => <EditSprint type="edit" />} />
+          <Route exact path="/:spaceCode/sprints/:id" component={Sprint} />
+          <Route exact path="/:spaceCode/sprints" component={Sprints} />
+          <Route exact path="/:spaceCode/meetings/new" render={() => <EditMeeting type="new" />} />
+          <Route exact path="/:spaceCode/meetings/:id/edit" render={() => <EditMeeting type="edit" />} />
+          <Route exact path="/:spaceCode/meetings" component={Meetings} />
+          <Route exact path="/:spaceCode/meets/:code" component={Conference} />
+          <Route exact path="/:spaceCode/meets" component={Conference} />
+          <Route exact path="/:spaceCode/home" component={Home} />
+          <Route exact path="/:spaceCode" component={SpaceHome} />
+
           <Route render={() => <Message code="404" />} />
         </Switch>
       </div>

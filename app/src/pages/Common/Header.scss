@@ -53,38 +53,26 @@
     color: $white;
   }
 
+  > div.space-popup,
   > div.config-popup {
     position: absolute;
-    top: 59px;
+    top: 56px;
     left: 0;
     right: 0;
     z-index: 4;
     border-radius: 0;
 
-    &.logged-in {
-      > div.config-popup-layout {
-        > div {
-          .arrow {
-            right: 19px;
-
-            @media (max-width: 992px) {
-              right: 19px;
-            }
-          }
-        }
-      }
-    }
-
-    > div.config-popup-overlay {
+    > div.popup-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
       z-index: 1;
+      background-color: rgba(0, 0, 0, 0.05);
     }
 
-    > div.config-popup-layout {
+    > div.popup-layout {
       max-width: $wrapper-width;
       width: 100%;
       margin: 0 auto;
@@ -122,7 +110,7 @@
           }
         }
 
-        .config-popup-content {
+        .popup-content {
           color: $black;
           .user-info {
             display: flex;
@@ -197,6 +185,100 @@
     }
   }
 
+  > div.space-popup {
+    &.logged-in {
+      > div.popup-layout {
+        > div {
+          .arrow {
+            right: 17px;
+
+            @media (max-width: 992px) {
+              right: 17px;
+            }
+          }
+        }
+      }
+    }
+
+    .popup-layout {
+      > div {
+        width: auto !important;
+        min-width: 200px;
+        margin-right: 100px;
+        padding: 0.75rem !important;
+      }
+
+      .popup-content {
+        .label {
+          font-size: 12px;
+          color: $gray-600;
+          margin-bottom: 0.5rem;
+          text-align: right;
+          padding: 0 0.5rem;
+        }
+        ul {
+          padding: 0;
+          margin: 0;
+          list-style: none;
+          font-size: 13px;
+          max-height: 240px;
+          overflow-y: auto;
+
+          li {
+            padding: 0.5rem 0.5rem;
+            line-height: 100%;
+            cursor: pointer;
+            border-bottom: 1px solid $gray-100;
+            max-width: 300px;
+
+            &:last-child {
+              border-bottom: none;
+            }
+            &:hover {
+              background-color: $light;
+            }
+            &.selected {
+              background-color: $yellow;
+            }
+          }
+
+          .other-button {
+            text-align: center;
+            padding: 0.75rem 0.5rem 0;
+            > div {
+              text-align: center;
+              margin-bottom: 0.5rem;
+
+              > button {
+                min-width: 120px;
+              }
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  > div.config-popup {
+    &.logged-in {
+      > div.popup-layout {
+        > div {
+          .arrow {
+            right: 19px;
+
+            @media (max-width: 992px) {
+              right: 19px;
+            }
+          }
+        }
+      }
+    }
+  }
+
   > div.header-content {
     align-self: center;
     display: flex;
@@ -230,7 +312,7 @@
 
     > .top-menu,
     .top-button {
-      ul {
+      ul.menu-list {
         vertical-align: top;
         list-style: none;
         padding: 0;
@@ -494,8 +576,6 @@
           text-align: left;
         }
       }
-
-
     }
 
     > .top-button {
@@ -528,7 +608,70 @@
           height: 100%;
 
           &.right-menu {
+            flex-grow: 0;
+          }
+
+          &.space-selector {
+            display: flex;
             flex-grow: 1;
+            justify-content: end;
+            margin-right: 1rem;
+            color: $white;
+
+            > div {
+              align-self: center;
+            }
+
+            .label {
+              color: $white;
+              font-size: 12px;
+              margin-right: 0.5rem;
+            }
+
+            .current-space-info {
+              display: flex;
+              height: 100%;
+              padding: 0 0.5rem;
+
+              &.clickable {
+                &:hover {
+                  background-color: $point;
+                  cursor: pointer;
+                }
+              }
+
+              &.opened {
+                background-color: $point;
+              }
+
+              > div {
+                align-self: center;
+                line-height: 100%;
+
+                &.text {
+                  font-weight: bold;
+                  font-family: pretendard, sans-serif;
+                }
+
+                &.icon {
+                  margin-left: 0.5rem;
+                }
+              }
+            }
+
+            .space-config {
+              height: 100%;
+              display: flex;
+              padding: 0 0.5rem;
+              margin-right: 0.5rem;
+              > div {
+                align-self: center;
+              }
+              &:hover {
+                background-color: $point;
+                cursor: pointer;
+              }
+            }
           }
 
           &.user-icon {

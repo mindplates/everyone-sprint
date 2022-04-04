@@ -72,5 +72,9 @@ public class ProjectService {
         return projectRepository.countBy();
     }
 
+    public Long selectAllProjectCount(String spaceCode) {
+        return projectRepository.countBySpaceCode(spaceCode);
+    }
+
 
 }

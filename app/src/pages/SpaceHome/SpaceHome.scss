@@ -1,0 +1,371 @@
+@keyframes horizontal {
+  0% {
+    _animation-timing-function: cubic-bezier(0.3, 0.27, 0.07, 1.64);
+    transform: translateX(-50px);
+  }
+
+  25% {
+    _animation-timing-function: cubic-bezier(0.3, 0.27, 0.07, 1.64);
+    transform: translateX(0px);
+  }
+
+  50% {
+    _animation-timing-function: cubic-bezier(0.3, 0.27, 0.07, 1.64);
+    transform: translateX(50px);
+  }
+
+  75% {
+    _animation-timing-function: cubic-bezier(0.3, 0.27, 0.07, 1.64);
+    transform: translateX(0px);
+  }
+
+  100% {
+    _animation-timing-function: cubic-bezier(0.3, 0.27, 0.07, 1.64);
+    transform: translateX(-50px);
+  }
+}
+
+@keyframes vertical {
+  0% {
+    _animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+    animation-timing-function: linear;
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  20% {
+    _animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+    animation-timing-function: linear;
+    transform: translateY(-20px) rotate(-15deg);
+  }
+
+  40% {
+    _animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+    transform: translateY(0px) rotate(15deg);
+  }
+
+  60% {
+    transform: translateY(10px) rotate(165deg);
+  }
+
+  80% {
+    _animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+    transform: translateY(20px) rotate(165deg);
+  }
+
+  90% {
+    _animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+    transform: translateY(0px) rotate(195deg);
+  }
+
+  100% {
+    _animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+    transform: translateY(0px) rotate(360deg);
+  }
+}
+
+.space-home-wrapper {
+  .page-content {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+
+    > div.summary-content {
+      align-self: center;
+      width: 100%;
+      flex-grow: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .no-space-message {
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        > div {
+          align-self: center;
+        }
+      }
+
+      .request-available-message {
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+
+        > div {
+          align-self: center;
+
+          .space-card {
+            margin-bottom: 2rem;
+          }
+
+          .space-name {
+            background-color: #333;
+            color: $white;
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            line-height: 100%;
+            border-radius: 30px;
+            margin-right: 0.5rem;
+            font-size: 14px;
+          }
+        }
+      }
+
+      .user-space-content {
+        margin-top: 1rem;
+        .user-space-list-content {
+          .sub-title {
+            text-align: center;
+            position: relative;
+            top: 1.25rem;
+            > span {
+              display: inline-block;
+              background-color: $white;
+              line-height: 100%;
+              padding: 0.75rem;
+              border: $border;
+              border-radius: 20px;
+            }
+          }
+          .user-space-list {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: $gray-200;
+            padding: 2rem;
+            white-space: nowrap;
+            width: 100%;
+            overflow: auto;
+            text-align: center;
+            > div {
+              display: inline-block;
+              vertical-align: top;
+              margin-right: 1rem;
+            }
+          }
+        }
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 3rem;
+
+        @media (max-width: 768px) {
+          margin-bottom: 3rem;
+        }
+
+        @media (max-height: 800px) {
+          display: none;
+        }
+
+        .product-logo-wrapper {
+          transform: scale(2);
+          transition: all 0.5s;
+        }
+      }
+
+      .current-space-info {
+        align-self: center;
+        flex-grow: 1;
+        width: 100%;
+        display: flex;
+        > div {
+          align-self: center;
+          width: 100%;
+        }
+      }
+
+      .space-info {
+        text-align: center;
+        margin-bottom: 3rem;
+
+        .message {
+          margin-top: 2rem;
+        }
+      }
+
+      .stats {
+        display: flex;
+        flex-direction: row;
+        max-width: 800px;
+        margin: 0 auto;
+
+        @media (max-width: 768px) {
+          display: block;
+          margin: 0 1rem;
+        }
+
+        > div {
+          flex: 1 1 0;
+          text-align: center;
+
+          @media (max-width: 768px) {
+            display: inline-block;
+            width: 50%;
+            margin-bottom: 3rem;
+          }
+
+          .icon {
+            font-size: 2rem;
+            position: relative;
+
+            @media (max-width: 768px) {
+              line-height: 100%;
+            }
+
+            &.plane {
+              .horizontal {
+                display: inline-block;
+                _animation: horizontal 2.5s infinite cubic-bezier(0.02, 0.01, 0.21, 1);
+                animation: horizontal 5s infinite;
+
+                .vertical {
+                  display: inline-block;
+                  _animation: vertical 2.5s infinite cubic-bezier(0.3, 0.27, 0.07, 1.64);
+                  animation: vertical 5s infinite;
+                }
+              }
+            }
+          }
+
+          .count {
+            font-size: 3rem;
+            font-family: pretendard, sans-serif;
+            font-weight: bold;
+            @media (max-width: 768px) {
+              font-size: 2.5rem;
+              line-height: 100%;
+            }
+          }
+
+          .label {
+            font-family: pretendard, sans-serif;
+            font-weight: bold;
+
+            @media (max-width: 768px) {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .home-page-content {
+    .home-layout {
+      flex-grow: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .tabs {
+        flex-grow: 0;
+        padding: 1.5rem 2rem 0;
+        display: none;
+
+        @media (max-width: 1200px) {
+          display: block;
+        }
+
+        @media (max-width: 576px) {
+          padding: 1rem 1rem 0;
+        }
+
+        .tab-side-content {
+          font-family: pretendard, sans-serif;
+          font-weight: bold;
+          text-align: right;
+          font-size: 14px;
+        }
+      }
+
+      .home-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+
+        .content-title {
+          position: relative;
+          .today {
+            position: absolute;
+            right: 0;
+            font-size: 16px;
+          }
+          @media (max-width: 1200px) {
+            display: none;
+          }
+        }
+
+        .timeline-content {
+          min-width: 500px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          padding: 1rem 0 2rem 2rem;
+
+          @media (max-width: 1600px) {
+            min-width: 400px;
+          }
+
+          @media (max-width: 1500px) {
+            min-width: 350px;
+          }
+
+          @media (max-width: 1200px) {
+            display: none;
+          }
+
+          .timeline-meeting {
+            position: relative;
+            flex-grow: 1;
+            background-color: $gray-100;
+          }
+        }
+
+        .my-sprints {
+          padding: 1rem 2rem 2rem;
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+
+          @media (max-width: 1200px) {
+            display: none;
+          }
+
+          @media (max-width: 576px) {
+            padding: 1rem;
+          }
+
+          .my-sprints-content {
+            position: relative;
+            flex-grow: 1;
+          }
+        }
+
+        &.meeting {
+          .timeline-content {
+            @media (max-width: 1200px) {
+              display: flex;
+              flex-grow: 1;
+              min-width: auto;
+              padding-right: 2rem;
+            }
+
+            @media (max-width: 576px) {
+              padding: 1rem;
+            }
+          }
+        }
+
+        &.sprint {
+          .my-sprints {
+            @media (max-width: 1200px) {
+              display: flex;
+            }
+          }
+        }
+      }
+    }
+  }
+}

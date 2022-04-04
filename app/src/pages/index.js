@@ -1,7 +1,6 @@
 import PublicPark from './PublicPark/PublicPark';
 import Login from './Login/Login';
 import Join from './Join/Join';
-import Groups from './Groups/Groups';
 import Sprints from './Sprints/Sprints';
 import EditSprint from './Sprints/EditSprint';
 import Sprint from './Sprints/Sprint';
@@ -21,17 +20,17 @@ import EditProject from './Projects/EditProject';
 import Project from './Projects/Project';
 import SprintDaily from './Sprints/SprintDaily';
 import SprintSummary from './Sprints/SprintSummary';
-
 import Spaces from './Spaces/Spaces';
+import MySpaces from './Spaces/MySpaces';
 import EditSpace from './Spaces/EditSpace';
 import Space from './Spaces/Space';
+import SpaceHome from './SpaceHome/SpaceHome';
 
 export {
   PublicPark,
   Common,
   Header,
   Footer,
-  Groups,
   Sprints,
   EditSprint,
   Sprint,
@@ -53,4 +52,6 @@ export {
   Spaces,
   EditSpace,
   Space,
+  SpaceHome,
+  MySpaces,
 };

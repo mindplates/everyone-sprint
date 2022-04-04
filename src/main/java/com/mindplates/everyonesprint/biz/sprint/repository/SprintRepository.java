@@ -15,6 +15,8 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
 
     Long countBy();
 
+    Long countByProjectSpaceCode(String spaceCode);
+
     Long countByProjectIdAndActivatedTrue(Long projectId);
 
 }

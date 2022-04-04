@@ -25,6 +25,10 @@ public class SpaceListResponse {
     private Boolean isAdmin;
 
     public SpaceListResponse(Space space, UserSession userSession) {
+        this(space, userSession.getId());
+    }
+
+    public SpaceListResponse(Space space, Long userId) {
         this.id = space.getId();
         this.name = space.getName();
         this.code = space.getCode();
@@ -32,8 +36,8 @@ public class SpaceListResponse {
         this.allowSearch = space.getAllowSearch();
         this.allowAutoJoin = space.getAllowAutoJoin();
         this.activated = space.getActivated();
-        this.isMember = space.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userSession.getId())));
-        this.isAdmin = space.getUsers().stream().anyMatch((projectUser -> projectUser.getRole().equals(RoleCode.ADMIN) && projectUser.getUser().getId().equals(userSession.getId())));
+        this.isMember = space.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userId)));
+        this.isAdmin = space.getUsers().stream().anyMatch((projectUser -> projectUser.getRole().equals(RoleCode.ADMIN) && projectUser.getUser().getId().equals(userId)));
     }
 
 

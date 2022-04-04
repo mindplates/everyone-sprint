@@ -6,16 +6,17 @@ import { debounce as debounceFunc } from 'lodash';
 import PropTypes from 'prop-types';
 import qs from 'qs';
 import { Button, CheckBox, Form, Input, Liner, Page, PageContent, ProductLogo } from '@/components';
-import { setUserInfo } from '@/store/actions';
+import { setSpaceInfo, setUserInfo } from '@/store/actions';
 import request from '@/utils/request';
 import storage from '@/utils/storage';
 import { HistoryPropTypes, LocationPropTypes } from '@/proptypes';
 import { COLORS } from '@/constants/constants';
 import './Login.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const enableTypingEffect = true;
 
-const Login = ({ t, history, location, setUserInfo: setUserInfoReducer }) => {
+const Login = ({ t, history, location, setUserInfo: setUserInfoReducer, setSpaceInfo: setSpaceInfoReducer }) => {
   const bgRef = useRef(null);
 
   const [info, setInfo] = useState({ email: '', password: '', autoLogin: false });
@@ -88,6 +89,7 @@ const Login = ({ t, history, location, setUserInfo: setUserInfoReducer }) => {
         }
 
         setUserInfoReducer(data);
+        setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
         if (url) {
           history.push(url);
         } else {
@@ -180,6 +182,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setUserInfo: (user) => dispatch(setUserInfo(user)),
+    setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
   };
 };
 
@@ -193,4 +196,5 @@ Login.propTypes = {
   history: HistoryPropTypes,
   setUserInfo: PropTypes.func,
   location: LocationPropTypes,
+  setSpaceInfo: PropTypes.func,
 };

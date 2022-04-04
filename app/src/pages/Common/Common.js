@@ -6,12 +6,13 @@ import ReactTooltip from 'react-tooltip';
 import PropTypes from 'prop-types';
 import TimeAgo from 'javascript-time-ago';
 
-import { setSystemInfo, setUserInfo } from '@/store/actions';
+import { setSpaceInfo, setSystemInfo, setUserInfo } from '@/store/actions';
 import { MessageDialog } from '@/components';
 import request from '@/utils/request';
 import storage from '@/utils/storage';
-import './Common.scss';
 import Spinner from '@/components/Spinner/Spinner';
+import './Common.scss';
+import commonUtil from '@/utils/commonUtil';
 
 class Common extends React.Component {
   componentDidMount() {
@@ -27,7 +28,11 @@ class Common extends React.Component {
   };
 
   getMyInfo = () => {
+    const { setSpaceInfo: setSpaceInfoReducer } = this.props;
+
     request.get('/api/users/my-info', null, (data) => {
+      setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
+
       const token = storage.setItem('auth', 'token');
       if (!data.id && token) {
         storage.setItem('auth', 'token', null);
@@ -62,12 +67,12 @@ class Common extends React.Component {
           />
         )}
         <div className={`g-overlay loader ${requests.length > 0 ? 'show-loading' : 'hide-loading'}`}>
-          <div className='loading-message-content'>
+          <div className="loading-message-content">
             {requests.map((info, inx) => {
               return (
                 <div key={inx}>
                   <div className="loading-message show-loading">
-                    <Spinner className='spinner' color="yellow" type="bar" size="40px" />
+                    <Spinner className="spinner" color="yellow" type="bar" size="40px" />
                     <div>{info.text}</div>
                   </div>
                 </div>
@@ -101,6 +106,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setUserInfo: (user) => dispatch(setUserInfo(user)),
     setSystemInfo: (systemInfo) => dispatch(setSystemInfo(systemInfo)),
+    setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
   };
 };
 
@@ -135,4 +141,5 @@ Common.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string,
   }),
+  setSpaceInfo: PropTypes.func,
 };

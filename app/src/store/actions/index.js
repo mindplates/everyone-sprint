@@ -8,6 +8,14 @@ export const REMOVE_LOADING = 'REMOVE_LOADING';
 export const SET_CONFIRM = 'SET_CONFIRM';
 export const SET_SYSTEM_INFO = 'SET_SYSTEM_INFO';
 export const SET_SETTING = 'SET_SETTING';
+export const SET_SPACE = 'SET_SPACE';
+
+export function setSpaceInfo(space) {
+  return {
+    type: SET_SPACE,
+    space,
+  };
+}
 
 export function setUserInfo(user) {
   return {

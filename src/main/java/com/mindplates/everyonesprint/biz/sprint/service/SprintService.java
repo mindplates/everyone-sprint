@@ -318,6 +318,10 @@ public class SprintService {
         return sprintRepository.countBy();
     }
 
+    public Long selectAllSprintCount(String sprintCode) {
+        return sprintRepository.countByProjectSpaceCode(sprintCode);
+    }
+
     public Long selectProjectActivatedSprintCount(Long projectId) {
         return sprintRepository.countByProjectIdAndActivatedTrue(projectId);
     }

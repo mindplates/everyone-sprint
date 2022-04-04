@@ -4,21 +4,35 @@ import { withTranslation } from 'react-i18next';
 import TimeAgo from 'javascript-time-ago/modules/TimeAgo';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { HistoryPropTypes, SettingPropTypes, UserPropTypes } from '@/proptypes';
+import { HistoryPropTypes, SettingPropTypes, SpacePropTypes, UserPropTypes } from '@/proptypes';
 import storage from '@/utils/storage';
 import MENU from '@/constants/menu';
 import { BlockTitle, Button, Liner, Overlay, ProductLogo, UserImage } from '@/components';
-import { setSetting, setUserInfo } from '@/store/actions';
+import { setSetting, setSpaceInfo, setUserInfo } from '@/store/actions';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
 import './Header.scss';
 
 const Header = (props) => {
-  const { setSetting: setSettingReducer, setUserInfo: setUserInfoReducer, setting, location, t, user, i18n, history } = props;
+  const {
+    setSetting: setSettingReducer,
+    setUserInfo: setUserInfoReducer,
+    setSpaceInfo: setSpaceInfoReducer,
+    setting,
+    location,
+    t,
+    user,
+    i18n,
+    history,
+    space,
+  } = props;
+
+  console.log(space);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
+  const [spaceOpen, setSpaceOpen] = useState(false);
 
   useEffect(() => {}, []);
 
@@ -40,6 +54,7 @@ const Header = (props) => {
           ...USER_STUB,
           language: user.language,
         });
+        setSpaceInfoReducer({});
         history.push('/');
       },
       null,
@@ -102,7 +117,7 @@ const Header = (props) => {
               }}
             />
           )}
-          <ul className={menuOpen ? 'opened' : ''}>
+          <ul className={`menu-list ${menuOpen ? 'opened' : ''}`}>
             <li className="menu-toggle-list-button">
               <Button
                 className="menu-toggle-button"
@@ -123,7 +138,7 @@ const Header = (props) => {
                 return (
                   <li key={topMenuKey} className={`${menuAlias === topMenuKey ? 'selected' : 'no-selected'}`}>
                     <Link
-                      to={`/${topMenuKey}`}
+                      to={space.code ? `/${space.code}/${topMenuKey}` : `/${topMenuKey}`}
                       onClick={() => {
                         setMenuOpen(false);
                       }}
@@ -150,8 +165,66 @@ const Header = (props) => {
         </div>
         <div className="top-button">
           <div>
-            <div className="right-menu">
-              <ul>
+            {user.id && (
+              <div className="space-selector">
+                {user?.spaces?.length > 0 && <div className="label">{t('스페이스')}</div>}
+                <div
+                  className={`current-space-info ${spaceOpen ? 'opened' : ''} ${user?.spaces?.length > 1 ? 'clickable' : ''}`}
+                  onClick={() => {
+                    if (user?.spaces?.length > 1) {
+                      setSpaceOpen(!spaceOpen);
+                    }
+                  }}
+                >
+                  {user?.spaces?.length > 0 && <div className="text">{space?.name || t('SELECT SPACE')}</div>}
+                  {user?.spaces?.length < 1 && <div className="text">{t('NO SPACE')}</div>}
+                  {user?.spaces?.length > 0 && (
+                    <div className="icon">
+                      <i className="fas fa-chevron-down" />
+                    </div>
+                  )}
+                </div>
+                {user?.spaces?.length > 0 && (
+                  <div
+                    className="space-config"
+                    onClick={() => {
+                      history.push('/spaces/my');
+                    }}
+                  >
+                    <div>
+                      <i className="fas fa-cog" />
+                    </div>
+                  </div>
+                )}
+                {user?.spaces?.length < 1 && (
+                  <>
+                    <div
+                      className="space-config"
+                      onClick={() => {
+                        history.push('/spaces/new');
+                      }}
+                    >
+                      <div>
+                        <i className="fas fa-plus" />
+                      </div>
+                    </div>
+                    <div
+                      className="space-config"
+                      onClick={() => {
+                        history.push('/spaces');
+                      }}
+                    >
+                      <div>
+                        <i className="fas fa-search" />
+                      </div>
+                    </div>
+                  </>
+                )}
+                <Liner height="10px" color="white" />
+              </div>
+            )}
+            <div className={`${user.id ? 'd-none' : 'flex-grow-1'} right-menu`}>
+              <ul className="menu-list">
                 {Object.keys(MENU)
                   .filter((menu) => MENU[menu].enabled)
                   .filter((menu) => MENU[menu].side === 'right')
@@ -220,20 +293,88 @@ const Header = (props) => {
           </div>
         </div>
       </div>
-      {configOpen && (
-        <div className={`config-popup ${user.id ? 'logged-in' : ''}`}>
+      {spaceOpen && (
+        <div className={`space-popup ${user.id ? 'logged-in' : ''}`}>
           <div
-            className="config-popup-overlay"
+            className="popup-overlay"
             onClick={() => {
-              setConfigOpen(false);
+              setSpaceOpen(false);
             }}
           />
-          <div className="config-popup-layout">
+          <div className="popup-layout">
             <div>
               <div className="arrow">
                 <div />
               </div>
-              <div className="config-popup-content">
+              <div className="popup-content">
+                <div className="label">내 스페이스</div>
+                <ul>
+                  {user?.spaces?.map((d) => {
+                    return (
+                      <li
+                        key={d.id}
+                        className={space?.code === d.code ? 'selected' : ''}
+                        onClick={() => {
+                          storage.setItem('setting', 'space', d.code);
+                          setSpaceInfoReducer(d);
+                          history.push(`/${d.code}`);
+                          setSpaceOpen(false);
+                        }}
+                      >
+                        {d.name}
+                      </li>
+                    );
+                  })}
+                  <div className="other-button">
+                    <div>
+                      <Button
+                        type="submit"
+                        size="xs"
+                        color="white"
+                        outline
+                        onClick={() => {
+                          history.push('/spaces/new');
+                          setSpaceOpen(false);
+                        }}
+                      >
+                        <i className="fas fa-plus" /> {t('새 스페이스')}
+                      </Button>
+                    </div>
+                    <div>
+                      <Button
+                        type="submit"
+                        size="xs"
+                        color="white"
+                        outline
+                        onClick={() => {
+                          history.push('/spaces');
+                          setSpaceOpen(false);
+                        }}
+                      >
+                        <i className="fas fa-search" /> {t('스페이스 검색')}
+                      </Button>
+                    </div>
+                  </div>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {configOpen && (
+        <div className={`config-popup ${user.id ? 'logged-in' : ''}`}>
+          <div
+            className="popup-overlay"
+            onClick={() => {
+              setConfigOpen(false);
+            }}
+          />
+          <div className="popup-layout">
+            <div>
+              <div className="arrow">
+                <div />
+              </div>
+              <div className="popup-content">
                 {user && user.id && (
                   <div className="user-info">
                     <div>
@@ -343,6 +484,7 @@ const mapStateToProps = (state) => {
     systemInfo: state.systemInfo,
     setting: state.setting,
     user: state.user,
+    space: state.space,
   };
 };
 
@@ -350,6 +492,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setSetting: (key, value) => dispatch(setSetting(key, value)),
     setUserInfo: (user) => dispatch(setUserInfo(user)),
+    setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
   };
 };
 
@@ -369,4 +512,6 @@ Header.propTypes = {
   user: UserPropTypes,
   setUserInfo: PropTypes.func,
   history: HistoryPropTypes,
+  space: SpacePropTypes,
+  setSpaceInfo: PropTypes.func,
 };
