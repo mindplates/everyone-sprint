@@ -16,5 +16,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Long countBy();
 
+    Long countBySpaceCode(String spaceCode);
+
 }
 

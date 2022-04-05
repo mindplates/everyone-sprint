@@ -1,5 +1,7 @@
 package com.mindplates.everyonesprint.biz.user.controller;
 
+import com.mindplates.everyonesprint.biz.space.entity.Space;
+import com.mindplates.everyonesprint.biz.space.service.SpaceService;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.biz.user.vo.request.LoginRequest;
@@ -28,10 +30,12 @@ public class UserController {
 
     final private UserService userService;
     final private SessionUtil sessionUtil;
+    final private SpaceService spaceService;
 
-    public UserController(UserService userService, SessionUtil sessionUtil) {
+    public UserController(UserService userService, SessionUtil sessionUtil, SpaceService spaceService) {
         this.userService = userService;
         this.sessionUtil = sessionUtil;
+        this.spaceService = spaceService;
     }
 
     @DisableLogin
@@ -56,7 +60,8 @@ public class UserController {
 
         if (userSession != null) {
             User user = userService.selectUser(userSession.getId());
-            return new MyInfoResponse(user);
+            List<Space> spaces = spaceService.selectUserActivatedSpaceList(userSession.getId());
+            return new MyInfoResponse(user, spaces);
         } else {
             return new MyInfoResponse();
         }
@@ -84,8 +89,8 @@ public class UserController {
         }
 
         sessionUtil.login(request, user);
-        return new MyInfoResponse(user);
-
+        List<Space> spaces = spaceService.selectUserActivatedSpaceList(user.getId());
+        return new MyInfoResponse(user, spaces);
     }
 
     @DisableLogin

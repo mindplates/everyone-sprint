@@ -1,0 +1,96 @@
+.space-card-wrapper {
+  display: inline-block;
+  border: $border;
+  min-width: 340px;
+  max-width: 340px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
+  background-color: $white;
+  position: relative;
+
+  .space-name-code {
+    padding: 0.75rem 1rem;
+    line-height: 100%;
+    border-bottom: $border;
+
+    .space-label {
+      > span {
+        display: inline-block;
+        line-height: 100%;
+        font-size: 12px;
+        margin-bottom: 0.25rem;
+        background-color: #333;
+        color: $white;
+        border-radius: 5px;
+        padding: 0.25rem;
+      }
+    }
+    .name {
+      font-weight: bold;
+      font-size: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .code {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .user-info {
+    padding: 0.75rem;
+
+    .icon {
+      font-size: 24px;
+    }
+
+    > div.tags {
+      > div {
+        display: inline-block;
+        font-size: 12px;
+        margin-right: 0.25rem;
+        line-height: 100%;
+        padding: 0.25rem;
+        min-width: 60px;
+
+        &.is-admin {
+          background-color: $danger;
+          color: $white;
+        }
+
+        &.is-member {
+          background-color: $green;
+          color: $white;
+        }
+
+        &.is-no-auth {
+          background-color: $danger;
+          color: $white;
+        }
+      }
+    }
+  }
+  .activated {
+    position: absolute;
+    font-size: 12px;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-family: muli, sans-serif;
+    color: $gray-600;
+  }
+
+  .description {
+    font-size: 11px;
+    padding: 0.5rem;
+    max-height: 50px;
+    overflow-y: auto;
+
+    > div {
+      background-color: $light;
+      padding: 0.5rem;
+    }
+  }
+}

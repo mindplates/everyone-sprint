@@ -16,6 +16,8 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
 
     List<Space> findAllByUsersUserIdAndNameLike(Long userId, String text);
 
+    List<Space> findAllByUsersUserIdAndActivatedTrue(Long userId);
+
     List<Space> findAllByNameLikeAndAllowSearchTrueAndActivatedTrue(String text);
 
     Long countBy();

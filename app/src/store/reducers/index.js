@@ -10,6 +10,7 @@ import {
   SET_SUPPORTED,
   SET_SYSTEM_INFO,
   SET_USER,
+  SET_SPACE,
 } from '../actions';
 import storage from '@/utils/storage';
 import { USER_STUB } from '@/constants/constants';
@@ -25,6 +26,22 @@ const user = (state = userState, action) => {
         ...action.user,
         tried: true,
         isAdmin: action.user.activeRoleCode === 'SUPER_MAN',
+      };
+
+    default:
+      return state;
+  }
+};
+
+const spaceState = {
+
+};
+
+const space = (state = spaceState, action) => {
+  switch (action.type) {
+    case SET_SPACE:
+      return {
+        ...action.space,
       };
 
     default:
@@ -163,6 +180,7 @@ const reducers = combineReducers({
   confirm,
   systemInfo,
   setting,
+  space,
 });
 
 export default reducers;

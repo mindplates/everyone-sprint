@@ -93,6 +93,10 @@ public class SpaceService {
         return spaceRepository.findAllByUsersUserIdAndNameLike(userSession.getId(), "%" + text + "%");
     }
 
+    public List<Space> selectUserActivatedSpaceList(Long userId) {
+        return spaceRepository.findAllByUsersUserIdAndActivatedTrue(userId);
+    }
+
     public List<Space> selectSpaceList(String text) {
         return spaceRepository.findAllByNameLikeAndAllowSearchTrueAndActivatedTrue("%" + text + "%");
     }

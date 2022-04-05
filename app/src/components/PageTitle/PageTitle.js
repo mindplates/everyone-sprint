@@ -23,7 +23,7 @@ const PageTitle = ({ className, children, control, buttons, tabs, tab, onChangeT
           <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
           {buttons.map((button, inx) => {
             return (
-              <Button key={inx} size="md" color="white" outline onClick={button.handler}>
+              <Button className='mr-3' key={inx} size="md" color="white" outline onClick={button.handler}>
                 {button.icon && <span>{button.icon}</span>} {button.text}
               </Button>
             );

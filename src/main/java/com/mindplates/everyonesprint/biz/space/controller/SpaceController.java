@@ -1,5 +1,8 @@
 package com.mindplates.everyonesprint.biz.space.controller;
 
+import com.mindplates.everyonesprint.biz.common.vo.response.StatsInfoResponse;
+import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
+import com.mindplates.everyonesprint.biz.project.service.ProjectService;
 import com.mindplates.everyonesprint.biz.space.entity.Space;
 import com.mindplates.everyonesprint.biz.space.entity.SpaceApplicant;
 import com.mindplates.everyonesprint.biz.space.entity.SpaceUser;
@@ -9,7 +12,9 @@ import com.mindplates.everyonesprint.biz.space.vo.request.SpaceRequest;
 import com.mindplates.everyonesprint.biz.space.vo.response.SpaceApplicantResponse;
 import com.mindplates.everyonesprint.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.everyonesprint.biz.space.vo.response.SpaceResponse;
+import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.user.entity.User;
+import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.common.code.ApprovalStatusCode;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
@@ -33,10 +38,32 @@ import java.util.stream.Collectors;
 public class SpaceController {
 
     final private SpaceService spaceService;
+    final private SprintService sprintService;
+    final private MeetingService meetingService;
+    final private ProjectService projectService;
+    final private UserService userService;
 
-    public SpaceController(SpaceService spaceService) {
+
+    public SpaceController(SpaceService spaceService, SprintService sprintService, MeetingService meetingService, ProjectService projectService, UserService userService) {
         this.spaceService = spaceService;
+        this.sprintService = sprintService;
+        this.meetingService = meetingService;
+        this.projectService = projectService;
+        this.userService = userService;
     }
+
+    @GetMapping("/{spaceCode}/stats")
+    @Operation(summary = "스페이스 데이터의 통계", description = "주요 데이터의 통계")
+    public StatsInfoResponse selectStatsInfo(@PathVariable String spaceCode) {
+
+        return StatsInfoResponse.builder()
+                .sprintCount(sprintService.selectAllSprintCount(spaceCode))
+                .meetingCount(meetingService.selectAllMeetingCount(spaceCode))
+                .userCount(userService.selectAllUserCount(spaceCode))
+                .projectCount(projectService.selectAllProjectCount(spaceCode))
+                .build();
+    }
+
 
     @Operation(description = "스페이스 목록 조회")
     @GetMapping("")
@@ -68,6 +95,32 @@ public class SpaceController {
             } else {
                 SpaceResponse response = new SpaceResponse(space.get(), userSession);
                 response.setUserApplicantStatus(new SpaceApplicantResponse(spaceService.selectSpaceApplicantInfo(space.get().getId(), userSession.getId()).orElse(null)));
+                response.getUsers().clear();
+                return response;
+            }
+
+        }
+
+        throw new ServiceException(HttpStatus.NOT_FOUND);
+    }
+
+    @Operation(description = "스페이스 조회")
+    @GetMapping("/codes/{code}")
+    @DisableAuth
+    public SpaceResponse selectSpaceInfo(@PathVariable String code, @ApiIgnore UserSession userSession) {
+        Space space = spaceService.selectByCode(code);
+
+        if (space != null) {
+            boolean isMember = spaceService.selectIsSpaceMember(space.getId(), userSession);
+            if (isMember) {
+                return new SpaceResponse(space, userSession);
+            } else if (!space.getActivated()) {
+                throw new ServiceException(HttpStatus.LOCKED);
+            } else if (!space.getAllowSearch()) {
+                throw new ServiceException(HttpStatus.LOCKED);
+            } else {
+                SpaceResponse response = new SpaceResponse(space, userSession);
+                response.setUserApplicantStatus(new SpaceApplicantResponse(spaceService.selectSpaceApplicantInfo(space.getId(), userSession.getId()).orElse(null)));
                 response.getUsers().clear();
                 return response;
             }

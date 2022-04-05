@@ -39,6 +39,8 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     Long countBy();
 
+    Long countBySprintProjectSpaceCode(String spaceCode);
+
     List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEqualsAndSprintClosedFalse(LocalDateTime date, LocalDateTime nextDay, Long userId, MeetingTypeCode type);
     List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEqualsAndSprintClosedFalse(Long sprintId, LocalDateTime date, LocalDateTime nextDay, Long userId, MeetingTypeCode type);
 

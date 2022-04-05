@@ -34,6 +34,10 @@ public class SpaceResponse {
     private SpaceApplicantResponse userApplicantStatus;
 
     public SpaceResponse(Space space, UserSession userSession) {
+        this(space, userSession.getId());
+    }
+
+    public SpaceResponse(Space space, Long userId) {
         this.id = space.getId();
         this.name = space.getName();
         this.code = space.getCode();
@@ -41,8 +45,8 @@ public class SpaceResponse {
         this.allowSearch = space.getAllowSearch();
         this.allowAutoJoin = space.getAllowAutoJoin();
         this.activated = space.getActivated();
-        this.isMember = space.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userSession.getId())));
-        this.isAdmin = space.getUsers().stream().anyMatch((projectUser -> projectUser.getRole().equals(RoleCode.ADMIN) && projectUser.getUser().getId().equals(userSession.getId())));
+        this.isMember = space.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userId)));
+        this.isAdmin = space.getUsers().stream().anyMatch((projectUser -> projectUser.getRole().equals(RoleCode.ADMIN) && projectUser.getUser().getId().equals(userId)));
 
         this.creationDate = space.getCreationDate();
         this.users = space.getUsers().stream().map(

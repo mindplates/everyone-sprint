@@ -16,6 +16,30 @@ const SettingPropTypes = PropTypes.shape({
   collapsed: PropTypes.bool,
 });
 
+const SpaceListPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+  code: PropTypes.string,
+  description: PropTypes.string,
+  allowSearch: PropTypes.bool,
+  allowAutoJoin: PropTypes.bool,
+  activated: PropTypes.bool,
+  isMember: PropTypes.bool,
+  isAdmin: PropTypes.bool,
+});
+
+const SpacePropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+  code: PropTypes.string,
+  description: PropTypes.string,
+  allowSearch: PropTypes.bool,
+  allowAutoJoin: PropTypes.bool,
+  activated: PropTypes.bool,
+  isMember: PropTypes.bool,
+  isAdmin: PropTypes.bool,
+});
+
 const UserPropTypes = PropTypes.shape({
   id: PropTypes.number,
   alias: PropTypes.string,
@@ -28,6 +52,7 @@ const UserPropTypes = PropTypes.shape({
   loginToken: PropTypes.string,
   name: PropTypes.string,
   tel: PropTypes.string,
+  spaces: PropTypes.arrayOf(SpaceListPropTypes),
 });
 
 const SimpleUserPropTypes = PropTypes.shape({
@@ -187,4 +212,5 @@ export {
   MeetingPropTypes,
   ConferencePropTypes,
   AnswerPropTypes,
+  SpacePropTypes,
 };

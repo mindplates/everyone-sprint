@@ -368,6 +368,10 @@ public class MeetingService {
         return meetingRepository.countBy();
     }
 
+    public Long selectAllMeetingCount(String spaceCode) {
+        return meetingRepository.countBySprintProjectSpaceCode(spaceCode);
+    }
+
     public Long selectRoomCount(Long meetingId, String code) {
         return roomRepository.countByMeetingIdAndCode(meetingId, code);
     }

@@ -3,22 +3,20 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { Button, EmptyContent, Input, Page, PageContent, PageTitle, SpaceList, withLogin } from '@/components';
+import { Button, EmptyContent, Page, PageContent, PageTitle, SpaceList, withLogin } from '@/components';
 import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
-import './Spaces.scss';
 
 const Spaces = ({ t, history }) => {
   const [spaces, setSpaces] = useState(null);
-  const [search, setSearch] = useState({
-    type: 'search',
-    text: '',
-  });
 
   const getSpaces = () => {
     request.get(
       '/api/spaces',
-      search,
+      {
+        type: 'my',
+        text: '',
+      },
       (list) => {
         setSpaces(list);
       },
@@ -29,7 +27,7 @@ const Spaces = ({ t, history }) => {
 
   useEffect(() => {
     getSpaces();
-  }, [search.type]);
+  }, []);
 
   return (
     <Page className="spaces-wrapper">
@@ -45,10 +43,10 @@ const Spaces = ({ t, history }) => {
             },
           },
           {
-            icon: <i className="fas fa-map-marker-alt" />,
-            text: t('내 스페이스'),
+            icon: <i className="fas fa-search" />,
+            text: t('검색'),
             handler: () => {
-              history.push('/spaces/my');
+              history.push('/spaces');
             },
           },
         ]}
@@ -59,54 +57,31 @@ const Spaces = ({ t, history }) => {
           },
           {
             link: '/spaces',
-            name: t('스페이스 검색'),
+            name: t('스페이스 목록'),
             current: true,
           },
         ]}
       >
-        {t('스페이스 검색')}
+        {t('내 스페이스')}
       </PageTitle>
-      <div className="search">
-        <div className="text">
-          <Input
-            simple
-            outline
-            type="text"
-            size="sm"
-            value={search.text}
-            onChange={(val) => {
-              setSearch({
-                ...search,
-                text: val,
-              });
-            }}
-            onEnter={getSpaces}
-          />
-        </div>
-        <div className="search-button">
-          <Button size="sm" color="white" outline onClick={getSpaces}>
-            {t('검색')}
-          </Button>
-        </div>
-      </div>
+
       <PageContent listLayout={spaces === null || spaces?.length > 0}>
         {spaces?.length > 0 && <SpaceList spaces={spaces} />}
         {spaces?.length < 1 && (
           <EmptyContent
             height="100%"
             icon={<i className="fas fa-globe-asia" />}
-            message={t('검색된 스페이스가 없습니다.')}
+            message={t('참여 중인 스페이스가 없습니다.')}
             additionalContent={
               <div className="mt-3">
                 <Button
                   size="md"
-                  color="white"
-                  outline
+                  color="point"
                   onClick={() => {
                     history.push('/spaces/new');
                   }}
                 >
-                  <i className="fas fa-plus" /> {t('새로운 스페이스 만들기')}
+                  <i className="fas fa-plus" /> {t('새 스페이스')}
                 </Button>
               </div>
             }

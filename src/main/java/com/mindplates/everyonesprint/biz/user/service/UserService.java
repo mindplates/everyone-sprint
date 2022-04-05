@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.user.service;
 
+import com.mindplates.everyonesprint.biz.space.repository.SpaceUserRepository;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.repository.UserRepository;
 import com.mindplates.everyonesprint.common.code.RoleCode;
@@ -17,9 +18,11 @@ public class UserService {
 
     final private UserRepository userRepository;
     final private EncryptUtil encryptUtil;
+    final private SpaceUserRepository spaceUserRepository;
 
-    public UserService(UserRepository userRepository, EncryptUtil encryptUtil) {
+    public UserService(UserRepository userRepository,  SpaceUserRepository spaceUserRepository, EncryptUtil encryptUtil) {
         this.userRepository = userRepository;
+        this.spaceUserRepository = spaceUserRepository;
         this.encryptUtil = encryptUtil;
     }
 
@@ -106,6 +109,10 @@ public class UserService {
 
     public Long selectAllUserCount() {
         return userRepository.countBy();
+    }
+
+    public Long selectAllUserCount(String spaceCode) {
+        return spaceUserRepository.countBySpaceCode(spaceCode);
     }
 
 

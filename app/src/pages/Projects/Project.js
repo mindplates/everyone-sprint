@@ -13,7 +13,7 @@ const Project = ({
   t,
   history,
   match: {
-    params: { id },
+    params: { id, spaceCode },
   },
 }) => {
   const tabs = [
@@ -26,6 +26,8 @@ const Project = ({
       value: t('스프린트 타임라인'),
     },
   ];
+
+  console.log(spaceCode);
 
   const [project, setProject] = useState(null);
   const [tab, setTab] = useState('project');
@@ -85,7 +87,7 @@ const Project = ({
                     editable={{
                       role: false,
                       member: false,
-                      add : false,
+                      add: false,
                     }}
                     showAdmin
                   />
@@ -132,6 +134,7 @@ Project.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,
+      spaceCode: PropTypes.string,
     }),
   }),
 };
