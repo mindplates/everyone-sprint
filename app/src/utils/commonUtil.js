@@ -1,4 +1,11 @@
 import storage from '@/utils/storage';
+import store from '@/store';
+import { SYSTEM_PATHS } from '@/constants/constants';
+
+function getCurrentSpaceCode() {
+  const state = store.getState();
+  return `${state.space.code || ''}`;
+}
 
 function fullscreen(value) {
   const elem = document.documentElement;
@@ -36,43 +43,51 @@ function fullscreen(value) {
 
 function getUserSpace(spaces) {
   const paths = window.location.pathname.split('/');
-  let spaceSelected = false;
 
-  console.log(paths);
-
-  if ((paths || []).length > 1) {
+  if ((paths || []).length > 1 && paths[1] && !SYSTEM_PATHS.includes(paths[1])) {
     // URL 우선 처리
     const spaceCode = paths[1];
     const space = (spaces || []).find((d) => d.code === spaceCode);
     if (space) {
-      spaceSelected = true;
       return space;
     }
     return {};
   }
 
-  if (!spaceSelected) {
-    const lastSpaceCode = storage.getItem('setting', 'space');
-    const lastSpace = (spaces || []).find((d) => d.code === lastSpaceCode);
-    if (lastSpace) {
-      console.log(1);
-      return lastSpace;
-    }
+  const lastSpaceCode = storage.getItem('setting', 'space');
+  const lastSpace = (spaces || []).find((d) => d.code === lastSpaceCode);
+  if (lastSpace) {
+    return lastSpace;
   }
 
-  if (!spaceSelected) {
-    if ((spaces || []).length > 0) {
-      console.log(2);
-      return spaces[0];
-    }
+  if ((spaces || []).length > 0) {
+    return spaces[0];
   }
 
   return {};
 }
 
+function move(url) {
+  const state = store.getState();
+  state.history.push(`/${getCurrentSpaceCode()}${url}`);
+}
+
+function goBack() {
+  const state = store.getState();
+  state.history.goBack();
+}
+
+function getSpaceUrl(url) {
+  return `/${getCurrentSpaceCode()}${url}`;
+}
+
 const commonUtil = {
   fullscreen,
   getUserSpace,
+  move,
+  getSpaceUrl,
+  getCurrentSpaceCode,
+  goBack,
 };
 
 export default commonUtil;

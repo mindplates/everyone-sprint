@@ -25,8 +25,8 @@ public class ProjectService {
         this.sprintService = sprintService;
     }
 
-    public Project selectByName(String name) {
-        return projectRepository.findByName(name).orElse(null);
+    public Project selectByName(String spaceCode, String name) {
+        return projectRepository.findBySpaceCodeAndName(spaceCode, name).orElse(null);
     }
 
     public Project createProjectInfo(Project project, UserSession userSession) {
@@ -55,16 +55,16 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public List<Project> selectUserProjectList(UserSession userSession) {
-        return projectRepository.findAllByUsersUserId(userSession.getId());
+    public List<Project> selectUserProjectList(String spaceCode, UserSession userSession) {
+        return projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userSession.getId());
     }
 
     public List<Project> selectSpaceProjectList(Long spaceId) {
         return projectRepository.findAllBySpaceId(spaceId);
     }
 
-    public Optional<Project> selectProjectInfo(Long id) {
-        return projectRepository.findById(id);
+    public Optional<Project> selectProjectInfo(String spaceCode, Long id) {
+        return projectRepository.findBySpaceCodeAndId(spaceCode, id);
     }
 
 

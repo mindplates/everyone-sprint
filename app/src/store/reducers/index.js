@@ -10,7 +10,7 @@ import {
   SET_SUPPORTED,
   SET_SYSTEM_INFO,
   SET_USER,
-  SET_SPACE,
+  SET_SPACE, SET_HISTORY,
 } from '../actions';
 import storage from '@/utils/storage';
 import { USER_STUB } from '@/constants/constants';
@@ -152,6 +152,7 @@ const systemInfo = (state = systemInfoState, action) => {
   }
 };
 
+
 const storageSetting = storage.getCategory('setting');
 
 const settingState = {
@@ -172,6 +173,19 @@ const setting = (state = settingState, action) => {
   }
 };
 
+const historyState = {
+  version: '',
+};
+
+const history = (state = historyState, action) => {
+  switch (action.type) {
+    case SET_HISTORY:
+      return { ...state, ...action.history };
+    default:
+      return state;
+  }
+};
+
 const reducers = combineReducers({
   supported,
   user,
@@ -181,6 +195,7 @@ const reducers = combineReducers({
   systemInfo,
   setting,
   space,
+  history,
 });
 
 export default reducers;

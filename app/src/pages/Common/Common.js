@@ -6,18 +6,22 @@ import ReactTooltip from 'react-tooltip';
 import PropTypes from 'prop-types';
 import TimeAgo from 'javascript-time-ago';
 
-import { setSpaceInfo, setSystemInfo, setUserInfo } from '@/store/actions';
+import { setHistory, setSpaceInfo, setSystemInfo, setUserInfo } from '@/store/actions';
 import { MessageDialog } from '@/components';
 import request from '@/utils/request';
 import storage from '@/utils/storage';
 import Spinner from '@/components/Spinner/Spinner';
 import './Common.scss';
 import commonUtil from '@/utils/commonUtil';
+import { HistoryPropTypes } from '@/proptypes';
 
 class Common extends React.Component {
   componentDidMount() {
     this.getSystemInfo();
     this.getMyInfo();
+    const { history } = this.props;
+    const { setHistory: setHistoryReducer } = this.props;
+    setHistoryReducer(history);
   }
 
   getSystemInfo = () => {
@@ -107,6 +111,7 @@ const mapDispatchToProps = (dispatch) => {
     setUserInfo: (user) => dispatch(setUserInfo(user)),
     setSystemInfo: (systemInfo) => dispatch(setSystemInfo(systemInfo)),
     setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
+    setHistory: (history) => dispatch(setHistory(history)),
   };
 };
 
@@ -138,8 +143,10 @@ Common.propTypes = {
   }),
   setUserInfo: PropTypes.func,
   setSystemInfo: PropTypes.func,
+  setHistory: PropTypes.func,
   location: PropTypes.shape({
     pathname: PropTypes.string,
   }),
   setSpaceInfo: PropTypes.func,
+  history: HistoryPropTypes,
 };

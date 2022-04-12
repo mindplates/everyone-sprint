@@ -323,6 +323,8 @@ const MEETING_TYPES = [
   },
 ];
 
+const SYSTEM_PATHS = ['login', 'spaces', 'home', 'public-park'];
+
 const CONFERENCE_URL_PATTERN = /^\/meets|talks\/[A-Za-z0-9]*/;
 
 export {
@@ -346,4 +348,5 @@ export {
   ACTIVATES,
   MEETING_TYPES,
   CONFERENCE_URL_PATTERN,
+  SYSTEM_PATHS,
 };

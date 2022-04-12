@@ -37,8 +37,7 @@ public class Project extends CommonEntity {
     @Column(name = "activated")
     private Boolean activated;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(updatable = false, insertable = false)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project")
     @Fetch(value = FetchMode.SELECT)
     private List<Sprint> sprints;
 

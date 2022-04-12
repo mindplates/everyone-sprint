@@ -7,9 +7,11 @@ import { withRouter } from 'react-router-dom';
 import { Button } from '@/components';
 import { HistoryPropTypes, ProjectPropTypes } from '@/proptypes';
 import withLoader from '@/components/Common/withLoader';
+import commonUtil from '@/utils/commonUtil';
 import './ProjectList.scss';
 
-const ProjectList = ({ className, t, history, projects }) => {
+const ProjectList = (props) => {
+  const { className, t, history, projects } = props;
   return (
     <ul className={`project-list-wrapper ${className}`}>
       {projects.map((project) => {
@@ -17,7 +19,8 @@ const ProjectList = ({ className, t, history, projects }) => {
           <li
             key={project.id}
             onClick={() => {
-              history.push(`/projects/${project.id}`);
+              history.push();
+              commonUtil.move(`/projects/${project.id}`);
             }}
           >
             <div>
@@ -33,7 +36,7 @@ const ProjectList = ({ className, t, history, projects }) => {
                       data-tip={t('')}
                       onClick={(e) => {
                         e.stopPropagation();
-                        history.push(`/projects/${project.id}/edit`);
+                        commonUtil.move(`/projects/${project.id}/edit`);
                       }}
                     >
                       <i className="fas fa-cog" />

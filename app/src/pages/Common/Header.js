@@ -13,6 +13,7 @@ import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
 import './Header.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const Header = (props) => {
   const {
@@ -188,7 +189,8 @@ const Header = (props) => {
                   <div
                     className="space-config"
                     onClick={() => {
-                      history.push('/spaces/my');
+                      // history.push('/spaces/my');
+                      history.push(`/spaces/${commonUtil.getCurrentSpaceCode()}`);
                     }}
                   >
                     <div>
@@ -338,6 +340,20 @@ const Header = (props) => {
                         }}
                       >
                         <i className="fas fa-plus" /> {t('새 스페이스')}
+                      </Button>
+                    </div>
+                    <div>
+                      <Button
+                        type="submit"
+                        size="xs"
+                        color="white"
+                        outline
+                        onClick={() => {
+                          history.push('/spaces/my');
+                          setSpaceOpen(false);
+                        }}
+                      >
+                        <i className="fas fa-house-user" /> {t('내 스페이스')}
                       </Button>
                     </div>
                     <div>

@@ -3,19 +3,20 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, BottomButtons, Form, Input, Label, Page, PageContent, PageTitle, UserList, withLogin } from '@/components';
+import { Block, BlockRow, BlockTitle, BottomButtons, Form, Input, Label, Page, PageContent, PageTitle, Text, UserList, withLogin } from '@/components';
 import dialog from '@/utils/dialog';
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { SpacePropTypes, UserPropTypes } from '@/proptypes';
+import commonUtil from '@/utils/commonUtil';
 
 const labelMinWidth = '140px';
 
 const EditProject = ({
   t,
   type,
-  history,
+  space,
   user,
   match: {
     params: { id },
@@ -32,7 +33,7 @@ const EditProject = ({
   useEffect(() => {
     if (id && type === 'edit')
       request.get(
-        `/api/projects/${id}`,
+        `/api/{spaceCode}/projects/${id}`,
         null,
         (data) => {
           setProject(data);
@@ -80,14 +81,14 @@ const EditProject = ({
   const save = () => {
     if (type === 'edit') {
       request.put(
-        `/api/projects/${project.id}`,
+        `/api/{spaceCode}/projects/${project.id}`,
         {
           ...project,
           users: project.users.filter((u) => u.CRUD !== 'D'),
         },
         (data) => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/projects/${data.id}`);
+            commonUtil.move(`/projects/${data.id}`);
           });
         },
         null,
@@ -95,11 +96,11 @@ const EditProject = ({
       );
     } else {
       request.post(
-        '/api/projects',
+        '/api/{spaceCode}/projects',
         { ...project },
         (data) => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/projects/${data.id}`);
+            commonUtil.move(`/projects/${data.id}`);
           });
         },
         null,
@@ -111,11 +112,11 @@ const EditProject = ({
   const onDelete = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('데이터 삭제 경고'), t('프로젝트를 삭제하시겠습니까?'), () => {
       request.del(
-        `/api/projects/${id}`,
+        `/api/{spaceCode}/projects/${id}`,
         null,
         () => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
-            history.push('/projects');
+            commonUtil.move('/projects');
           });
         },
         null,
@@ -159,34 +160,34 @@ const EditProject = ({
           type === 'new'
             ? [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/projects',
+                  link: commonUtil.getSpaceUrl('/projects'),
                   name: t('프로젝트 목록'),
                 },
                 {
-                  link: '/projects/new',
+                  link: commonUtil.getSpaceUrl('/projects/new'),
                   name: t('새 프로젝트'),
                   current: true,
                 },
               ]
             : [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/projects',
+                  link: commonUtil.getSpaceUrl('/projects'),
                   name: t('프로젝트 목록'),
                 },
                 {
-                  link: `/projects/${project?.id}`,
+                  link: commonUtil.getSpaceUrl(`/projects/${project?.id}`),
                   name: project?.name,
                 },
                 {
-                  link: `/projects/${project?.id}/edit`,
+                  link: commonUtil.getSpaceUrl(`/projects/${project?.id}/edit`),
                   name: t('변경'),
                   current: true,
                 },
@@ -199,6 +200,12 @@ const EditProject = ({
         <Form className="new-project-content" onSubmit={onSubmit}>
           <Block className="pt-0">
             <BlockTitle>{t('프로젝트 정보')}</BlockTitle>
+            <BlockRow>
+              <Label minWidth={labelMinWidth} required>
+                {t('스페이스')}
+              </Label>
+              <Text>{space.name}</Text>
+            </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
                 {t('이름')}
@@ -261,7 +268,7 @@ const EditProject = ({
           </Block>
           <BottomButtons
             onCancel={() => {
-              history.goBack();
+              commonUtil.goBack();
             }}
             onDelete={project?.isAdmin ? onDelete : null}
             onDeleteText="삭제"
@@ -278,6 +285,7 @@ const EditProject = ({
 const mapStateToProps = (state) => {
   return {
     user: state.user,
+    space: state.space,
   };
 };
 
@@ -286,7 +294,7 @@ export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(
 EditProject.propTypes = {
   t: PropTypes.func,
   user: UserPropTypes,
-  history: HistoryPropTypes,
+  space: SpacePropTypes,
   type: PropTypes.string,
   match: PropTypes.shape({
     params: PropTypes.shape({

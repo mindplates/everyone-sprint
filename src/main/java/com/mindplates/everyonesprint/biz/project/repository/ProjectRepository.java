@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    Optional<Project> findByName(String name);
+    Optional<Project> findBySpaceCodeAndName(String spaceCode, String name);
 
-    List<Project> findAllByUsersUserId(Long userId);
+    List<Project> findAllBySpaceCodeAndUsersUserId(String spaceCode, Long userId);
 
     List<Project> findAllBySpaceId(Long spaceId);
+
+    Optional<Project> findBySpaceCodeAndId(String spaceCode, Long spaceId);
 
     Long countBy();
 

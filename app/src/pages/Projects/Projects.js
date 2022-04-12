@@ -4,15 +4,15 @@ import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button, EmptyContent, Page, PageContent, PageTitle, ProjectList, withLogin } from '@/components';
-import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
+import commonUtil from '@/utils/commonUtil';
 
-const Projects = ({ t, history }) => {
+const Projects = ({ t }) => {
   const [projects, setProjects] = useState(null);
 
   const getProjects = () => {
     request.get(
-      '/api/projects',
+      `/api/${commonUtil.getCurrentSpaceCode()}/projects`,
       null,
       (list) => {
         setProjects(list);
@@ -35,17 +35,17 @@ const Projects = ({ t, history }) => {
             icon: <i className="fas fa-plus" />,
             text: t('새 프로젝트'),
             handler: () => {
-              history.push('/projects/new');
+              commonUtil.move('/projects/new');
             },
           },
         ]}
         breadcrumbs={[
           {
-            link: '/',
+            link: commonUtil.getSpaceUrl('/'),
             name: t('TOP'),
           },
           {
-            link: '/projects',
+            link: commonUtil.getSpaceUrl('/projects'),
             name: t('프로젝트 목록'),
             current: true,
           },
@@ -66,7 +66,7 @@ const Projects = ({ t, history }) => {
                   size="md"
                   color="point"
                   onClick={() => {
-                    history.push('/projects/new');
+                    commonUtil.move('/projects/new');
                   }}
                 >
                   <i className="fas fa-plus" /> {t('새 프로젝트')}
@@ -84,5 +84,4 @@ export default compose(withLogin, withRouter, withTranslation())(Projects);
 
 Projects.propTypes = {
   t: PropTypes.func,
-  history: HistoryPropTypes,
 };

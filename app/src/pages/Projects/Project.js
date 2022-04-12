@@ -8,12 +8,13 @@ import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES } from '@/constants/constants'
 import request from '@/utils/request';
 import { HistoryPropTypes } from '@/proptypes';
 import './Project.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const Project = ({
   t,
   history,
   match: {
-    params: { id, spaceCode },
+    params: { id },
   },
 }) => {
   const tabs = [
@@ -27,13 +28,11 @@ const Project = ({
     },
   ];
 
-  console.log(spaceCode);
-
   const [project, setProject] = useState(null);
   const [tab, setTab] = useState('project');
 
   useEffect(() => {
-    request.get(`/api/projects/${id}`, null, setProject, null, t('프로젝트 정보를 가져오고 있습니다.'));
+    request.get(`/api/{spaceCode}/projects/${id}`, null, setProject, null, t('프로젝트 정보를 가져오고 있습니다.'));
   }, [id]);
 
   const allowSearch = ALLOW_SEARCHES.find((d) => d.key === project?.allowSearch) || {};
@@ -50,11 +49,11 @@ const Project = ({
           name: t('TOP'),
         },
         {
-          link: '/projects',
+          link: commonUtil.getSpaceUrl('/projects'),
           name: t('프로젝트 목록'),
         },
         {
-          link: `/projects/${project?.id}`,
+          link: commonUtil.getSpaceUrl(`/projects/${project?.id}`),
           name: project?.name,
           current: true,
         },

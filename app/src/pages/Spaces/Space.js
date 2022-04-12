@@ -31,7 +31,7 @@ const Space = ({
   history,
   user,
   match: {
-    params: { id },
+    params: { spaceCode },
   },
 }) => {
   const [space, setSpace] = useState(null);
@@ -39,7 +39,7 @@ const Space = ({
 
   const getSpace = () => {
     request.get(
-      `/api/spaces/${id}`,
+      `/api/spaces/${spaceCode}`,
       null,
       (data) => {
         setAllowed(true);
@@ -59,12 +59,12 @@ const Space = ({
 
   useEffect(() => {
     getSpace();
-  }, [id]);
+  }, [spaceCode]);
 
   const onJoin = () => {
     request.post(
-      `/api/spaces/${id}/join`,
-      { userId: user.id, spaceId: id },
+      `/api/spaces/${spaceCode}/join`,
+      { userId: user.id },
       () => {
         getSpace();
         dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스 가입을 요청하였습니다.'));
@@ -76,8 +76,8 @@ const Space = ({
 
   const onJoinCancel = () => {
     request.del(
-      `/api/spaces/${id}/join`,
-      { userId: user.id, spaceId: id },
+      `/api/spaces/${spaceCode}/join`,
+      { userId: user.id },
       () => {
         getSpace();
         dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스 가입 요청을 취소되었습니다.'));
@@ -89,7 +89,7 @@ const Space = ({
 
   const onReject = (applicantId) => {
     request.put(
-      `/api/spaces/${id}/applicants/${applicantId}/reject`,
+      `/api/spaces/${spaceCode}/applicants/${applicantId}/reject`,
       null,
       () => {
         getSpace();
@@ -102,7 +102,7 @@ const Space = ({
 
   const onApprove = (applicantId) => {
     request.put(
-      `/api/spaces/${id}/applicants/${applicantId}/approve`,
+      `/api/spaces/${spaceCode}/applicants/${applicantId}/approve`,
       null,
       () => {
         getSpace();
@@ -270,18 +270,14 @@ const Space = ({
               editable={{
                 role: false,
                 member: false,
-                add : false
+                add: false,
               }}
             />
           </Block>
           {space.isAdmin && (
             <Block className="g-last-block">
               <BlockTitle>{t('참여 요청')}</BlockTitle>
-              <UserApplicants
-                applicants={space.applicants}
-                onReject={onReject}
-                onApprove={onApprove}
-              />
+              <UserApplicants applicants={space.applicants} onReject={onReject} onApprove={onApprove} />
             </Block>
           )}
           <BottomButtons
@@ -291,7 +287,7 @@ const Space = ({
             onEdit={
               space?.isAdmin
                 ? () => {
-                    history.push(`/spaces/${id}/edit`);
+                    history.push(`/spaces/${spaceCode}/edit`);
                   }
                 : null
             }
@@ -317,7 +313,7 @@ Space.propTypes = {
   history: HistoryPropTypes,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      id: PropTypes.string,
+      spaceCode: PropTypes.string,
     }),
   }),
 };

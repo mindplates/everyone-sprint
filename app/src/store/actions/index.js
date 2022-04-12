@@ -9,6 +9,8 @@ export const SET_CONFIRM = 'SET_CONFIRM';
 export const SET_SYSTEM_INFO = 'SET_SYSTEM_INFO';
 export const SET_SETTING = 'SET_SETTING';
 export const SET_SPACE = 'SET_SPACE';
+export const SET_HISTORY = 'SET_HISTORY';
+
 
 export function setSpaceInfo(space) {
   return {
@@ -81,6 +83,13 @@ export function setSetting(key, value) {
     type: SET_SETTING,
     key,
     value,
+  };
+}
+
+export function setHistory(history) {
+  return {
+    type: SET_HISTORY,
+    history,
   };
 }
 

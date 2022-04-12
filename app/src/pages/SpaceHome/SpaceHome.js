@@ -45,7 +45,7 @@ const SpaceHome = ({
     getStats();
     if (!space?.id && spaceCode) {
       request.get(
-        `/api/spaces/codes/${spaceCode}`,
+        `/api/spaces/${spaceCode}`,
         null,
         (data) => {
           setInfo(data);
@@ -120,7 +120,9 @@ const SpaceHome = ({
                   {user.spaces.map((d) => {
                     return (
                       <div>
-                        <SpaceCard space={d} description={false} />
+                        <SpaceCard space={d} description={false} onClick={() => {
+                          // TODO RESUME HERE
+                        }} />
                       </div>
                     );
                   })}
