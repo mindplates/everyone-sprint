@@ -3,12 +3,29 @@ const PORTS = {
   LOCAL_API_PORT: 15000,
 };
 
+const LANGUAGES = {
+  ko: '한글',
+  en: 'English',
+};
+
+const COUNTRIES = {
+  KR: '한국',
+  US: 'US',
+};
+
+const locales = (window.navigator.language || '').split('-');
+const defaultLanguage = locales[0];
+const defaultCountry = locales[1];
+
+const language = Object.keys(LANGUAGES).includes(defaultLanguage) ? defaultLanguage : 'en';
+const country = Object.keys(COUNTRIES).includes(defaultCountry) ? defaultCountry : 'US';
+
 const USER_STUB = {
   id: null,
   alias: '',
   autoLogin: false,
-  language: 'ko',
-  country: 'KR',
+  language,
+  country,
   email: '',
   imageData: '',
   imageType: '',
@@ -150,16 +167,6 @@ const DEFAULT_INPUT_VALIDATION_MESSAGE = {
 const USER_ROLES = {
   ADMIN: '어드민',
   MEMBER: '사용자',
-};
-
-const LANGUAGES = {
-  ko: '한글',
-  en: 'English',
-};
-
-const COUNTRIES = {
-  KR: '한국',
-  US: 'US',
 };
 
 const VENDORS = {
@@ -325,7 +332,7 @@ const MEETING_TYPES = [
 
 const SYSTEM_PATHS = ['login', 'spaces', 'home', 'public-park'];
 
-const CONFERENCE_URL_PATTERN = /^\/meets|talks\/[A-Za-z0-9]*/;
+const CONFERENCE_URL_PATTERN = /^\/[A-Za-z0-9]*\/meets|talks\/[A-Za-z0-9]*/;
 
 export {
   PORTS,

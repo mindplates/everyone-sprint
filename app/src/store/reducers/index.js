@@ -4,13 +4,14 @@ import {
   CLEAR_MESSAGE,
   REMOVE_LOADING,
   SET_CONFIRM,
+  SET_HISTORY,
   SET_LOADING,
   SET_MESSAGE,
   SET_SETTING,
+  SET_SPACE,
   SET_SUPPORTED,
   SET_SYSTEM_INFO,
   SET_USER,
-  SET_SPACE, SET_HISTORY,
 } from '../actions';
 import storage from '@/utils/storage';
 import { USER_STUB } from '@/constants/constants';
@@ -33,9 +34,7 @@ const user = (state = userState, action) => {
   }
 };
 
-const spaceState = {
-
-};
+const spaceState = {};
 
 const space = (state = spaceState, action) => {
   switch (action.type) {
@@ -151,7 +150,6 @@ const systemInfo = (state = systemInfoState, action) => {
       return state;
   }
 };
-
 
 const storageSetting = storage.getCategory('setting');
 

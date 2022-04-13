@@ -382,7 +382,7 @@ const SprintDaily = ({
                                     <div className="list-content">
                                       <div className="name">
                                         <span className={`time-ago ${dateUtil.getTime(d.startDate) > now.getTime() ? 'future' : 'past'}`}>
-                                          <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getTime(d.startDate)} />
+                                          <ReactTimeAgo locale={user.language} date={dateUtil.getTime(d.startDate)} />
                                         </span>
                                         <span className="text">{d.name}</span>
                                       </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import {
   Block,
@@ -20,11 +21,13 @@ import {
   PageTitle,
   Selector,
   UserList,
+  withLogin,
 } from '@/components';
 import dialog from '@/utils/dialog';
+
 import { MEETING_TYPES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './EditMeeting.scss';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
@@ -52,7 +55,6 @@ const durations = [1000 * 60 * 10, 1000 * 60 * 30, 1000 * 60 * 60, 1000 * 60 * 1
 const EditMeeting = ({
   t,
   type,
-  history,
   user,
   match: {
     params: { id },
@@ -73,7 +75,7 @@ const EditMeeting = ({
 
   const getSprints = () => {
     request.get(
-      '/api/sprints',
+      '/api/{spaceCode}/sprints',
       null,
       (list) => {
         setSprints(
@@ -98,7 +100,7 @@ const EditMeeting = ({
 
   const getSprint = (sprintId) => {
     request.get(
-      `/api/sprints/${sprintId}`,
+      `/api/{spaceCode}/sprints/${sprintId}`,
       null,
       (data) => {
         const users = data.users.map((u) => {
@@ -130,7 +132,7 @@ const EditMeeting = ({
 
   const getMeeting = (meetingId) => {
     request.get(
-      `/api/meetings/${meetingId}`,
+      `/api/{spaceCode}/meetings/${meetingId}`,
       null,
       (data) => {
         console.log(data);
@@ -241,7 +243,7 @@ const EditMeeting = ({
 
     if (type === 'edit') {
       request.put(
-        `/api/meetings/${info.id}`,
+        `/api/{spaceCode}/meetings/${info.id}`,
         {
           ...info,
           startDate: new Date(info.startDate),
@@ -250,7 +252,7 @@ const EditMeeting = ({
         },
         () => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 변경되었습니다.'), () => {
-            history.push('/meetings');
+            commonUtil.move('/meetings');
           });
         },
         null,
@@ -258,11 +260,11 @@ const EditMeeting = ({
       );
     } else {
       request.post(
-        '/api/meetings',
+        '/api/{spaceCode}/meetings',
         { ...info, startDate: new Date(info.startDate), endDate: new Date(info.endDate) },
         () => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push('/meetings');
+            commonUtil.move('/meetings');
           });
         },
         null,
@@ -517,14 +519,14 @@ const EditMeeting = ({
                 editable={{
                   role: false,
                   member: true,
-                  add : true,
+                  add: true,
                 }}
               />
             )}
           </Block>
           <BottomButtons
             onCancel={() => {
-              history.goBack();
+              commonUtil.goBack();
             }}
             onSubmit
             onSubmitIcon={<i className="fas fa-plane" />}
@@ -542,12 +544,11 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(EditMeeting)));
+export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(withLogin(EditMeeting));
 
 EditMeeting.propTypes = {
   t: PropTypes.func,
   user: UserPropTypes,
-  history: HistoryPropTypes,
   type: PropTypes.string,
   match: PropTypes.shape({
     params: PropTypes.shape({

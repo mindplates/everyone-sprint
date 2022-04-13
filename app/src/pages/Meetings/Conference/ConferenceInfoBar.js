@@ -59,7 +59,7 @@ class ConferenceInfoBar extends React.Component {
                 <i className="fas fa-clock" />
               </span>
               <span>
-                {conference.startDate && <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />}{' '}
+                {conference.startDate && <ReactTimeAgo locale={user.language} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />}{' '}
                 {t('시작')}
               </span>
             </div>

@@ -119,7 +119,7 @@ class ParticipantsList extends React.PureComponent {
                                 {d.participant.connected && d.participant.joinTime && (
                                   <span>
                                     <span className="mr-1">
-                                      <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getDate(d.participant.joinTime)} />
+                                      <ReactTimeAgo locale={user.language} date={dateUtil.getDate(d.participant.joinTime)} />
                                     </span>
                                     <span className="attendance-statue">{t('참석')}</span>
                                   </span>
@@ -127,7 +127,7 @@ class ParticipantsList extends React.PureComponent {
                                 {!d.participant.connected && d.participant.leaveTime && (
                                   <span>
                                     <span className="mr-1">
-                                      <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getDate(d.participant.leaveTime)} />
+                                      <ReactTimeAgo locale={user.language} date={dateUtil.getDate(d.participant.leaveTime)} />
                                     </span>
                                     <span className="attendance-status">{t('나감')}</span>
                                   </span>

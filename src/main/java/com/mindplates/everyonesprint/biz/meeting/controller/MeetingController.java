@@ -49,7 +49,7 @@ public class MeetingController {
     @Operation(description = "미팅 생성")
     @PostMapping("")
     @CheckSprintAuth
-    public MeetingResponse createMeetingInfo(@Valid @RequestBody MeetingRequest meetingRequest, UserSession userSession) {
+    public MeetingResponse createMeetingInfo(@PathVariable String spaceCode, @Valid @RequestBody MeetingRequest meetingRequest, UserSession userSession) {
         Meeting meeting = meetingRequest.buildEntity();
         return new MeetingResponse(meetingService.createMeetingInfo(meeting, userSession));
     }
@@ -67,7 +67,7 @@ public class MeetingController {
 
     @Operation(description = "미팅 정보 변경")
     @PutMapping("/{id}")
-    public MeetingResponse updateMeetingInfo(@PathVariable Long id, @Valid @RequestBody MeetingRequest meetingRequest, @ApiIgnore UserSession userSession) {
+    public MeetingResponse updateMeetingInfo(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody MeetingRequest meetingRequest, @ApiIgnore UserSession userSession) {
 
         if (!id.equals(meetingRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
@@ -94,7 +94,7 @@ public class MeetingController {
 
     @Operation(description = "미팅 정보 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteMeetingInfo(@PathVariable Long id, @ApiIgnore UserSession userSession) {
+    public ResponseEntity deleteMeetingInfo(@PathVariable String spaceCode, @PathVariable Long id, @ApiIgnore UserSession userSession) {
         Meeting meeting = meetingService.selectMeetingInfo(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if (!userSession.getId().equals(meeting.getCreatedBy())) {
             throw new ServiceException("common.not.authorized");
@@ -105,7 +105,7 @@ public class MeetingController {
 
     @Operation(description = "미팅 정보 조회")
     @GetMapping("/{id}")
-    public MeetingResponse selectMeetingInfo(@PathVariable Long id) {
+    public MeetingResponse selectMeetingInfo(@PathVariable String spaceCode, @PathVariable Long id) {
         return new MeetingResponse(meetingService.selectMeetingInfo(id).get());
     }
 }

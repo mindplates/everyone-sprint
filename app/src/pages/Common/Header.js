@@ -36,10 +36,11 @@ const Header = (props) => {
   useEffect(() => {}, []);
 
   const values = (location.pathname.split('/') || []).filter((value) => value);
-  const [, currentTopMenu] = values;
+  const [firstPath, secondPath] = values;
+  const menuPath = secondPath || firstPath;
 
-  let menuAlias = currentTopMenu;
-  if (currentTopMenu === 'meets') {
+  let menuAlias = menuPath;
+  if (menuPath === 'meets') {
     menuAlias = 'meetings';
   }
 
@@ -62,35 +63,49 @@ const Header = (props) => {
   };
 
   const updateLanguage = (language) => {
-    i18n.changeLanguage(language || 'ko');
-    request.put(
-      '/api/users/my-info/language',
-      { language },
-      () => {
-        TimeAgo.setDefaultLocale(language || 'ko');
-        setUserInfoReducer({
-          ...user,
-          language,
-        });
-      },
-      null,
-      t('언어 설정을 변경하고 있습니다.'),
-    );
+    i18n.changeLanguage(language);
+    if (user.id) {
+      request.put(
+        '/api/users/my-info/language',
+        { language },
+        () => {
+          TimeAgo.setDefaultLocale(language);
+          setUserInfoReducer({
+            ...user,
+            language,
+          });
+        },
+        null,
+        t('언어 설정을 변경하고 있습니다.'),
+      );
+    } else {
+      setUserInfoReducer({
+        ...user,
+        language,
+      });
+    }
   };
 
   const updateCountry = (country) => {
-    request.put(
-      '/api/users/my-info/country',
-      { country },
-      () => {
-        setUserInfoReducer({
-          ...user,
-          country,
-        });
-      },
-      null,
-      t('지역 설정을 변경하고 있습니다.'),
-    );
+    if (user.id) {
+      request.put(
+        '/api/users/my-info/country',
+        { country },
+        () => {
+          setUserInfoReducer({
+            ...user,
+            country,
+          });
+        },
+        null,
+        t('지역 설정을 변경하고 있습니다.'),
+      );
+    } else {
+      setUserInfoReducer({
+        ...user,
+        country,
+      });
+    }
   };
 
   return (
@@ -267,7 +282,7 @@ const Header = (props) => {
             </div>
             {!(user && user.id) && (
               <div className="login">
-                <div className={currentTopMenu === 'starting-line' ? 'selected' : ''}>
+                <div className={menuPath === 'starting-line' ? 'selected' : ''}>
                   <Link to="/login">
                     <span>{t('로그인')}</span>
                   </Link>
@@ -434,7 +449,7 @@ const Header = (props) => {
                 </BlockTitle>
                 <div className="d-flex quick-menu">
                   <div className="quick-menu-label small align-self-center">
-                    <span>언어</span>
+                    <span>{t('언어')}</span>
                   </div>
                   <div className="quick-menu-icon language-icon align-self-center">
                     <span className="icon">
@@ -449,6 +464,10 @@ const Header = (props) => {
                         return {
                           key,
                           value: LANGUAGES[key],
+                          tooltip: {
+                            text: '',
+                            place: '',
+                          },
                         };
                       })}
                       value={user.language}
@@ -460,7 +479,7 @@ const Header = (props) => {
                 </div>
                 <div className="d-flex quick-menu">
                   <div className="quick-menu-label small align-self-center">
-                    <span>지역</span>
+                    <span>{t('지역')}</span>
                   </div>
                   <div className="quick-menu-icon align-self-center">
                     <span className="icon">
@@ -475,6 +494,10 @@ const Header = (props) => {
                         return {
                           key,
                           value: COUNTRIES[key],
+                          tooltip: {
+                            text: '',
+                            place: '',
+                          },
                         };
                       })}
                       value={user.country}

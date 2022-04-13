@@ -34,7 +34,7 @@ const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
             <div>
               <div className="status">
                 <span className="time-ago">
-                  <ReactTimeAgo locale={user.language || 'ko'} date={startDate} />
+                  <ReactTimeAgo locale={user.language} date={startDate} />
                 </span>
               </div>
               <div className="name-and-date">
@@ -54,7 +54,7 @@ const MeetingList = ({ t, meetings, user, onClick, onJoin, onConfig }) => {
                   )}
                   <span className="text">{meeting.name}</span>
                   <span className="time-ago">
-                    <ReactTimeAgo locale={user.language || 'ko'} date={startDate} />
+                    <ReactTimeAgo locale={user.language} date={startDate} />
                   </span>
                 </div>
                 <div className="meeting-date">

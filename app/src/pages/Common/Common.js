@@ -14,6 +14,7 @@ import Spinner from '@/components/Spinner/Spinner';
 import './Common.scss';
 import commonUtil from '@/utils/commonUtil';
 import { HistoryPropTypes } from '@/proptypes';
+import { USER_STUB } from '@/constants/constants';
 
 class Common extends React.Component {
   componentDidMount() {
@@ -42,9 +43,15 @@ class Common extends React.Component {
         storage.setItem('auth', 'token', null);
       }
       const { setUserInfo: setUserInfoReducer, i18n } = this.props;
-      setUserInfoReducer(data);
-      i18n.changeLanguage(data.language || 'ko');
-      TimeAgo.setDefaultLocale(data.language || 'ko');
+      if (data.id) {
+        setUserInfoReducer(data);
+        i18n.changeLanguage(data.language);
+        TimeAgo.setDefaultLocale(data.language);
+      } else {
+        setUserInfoReducer({...USER_STUB});
+        i18n.changeLanguage(USER_STUB.language);
+        TimeAgo.setDefaultLocale(USER_STUB.language);
+      }
     });
   };
 
