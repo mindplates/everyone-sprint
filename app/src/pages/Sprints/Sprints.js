@@ -4,16 +4,16 @@ import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button, EmptyContent, Page, PageContent, PageTitle, SprintList, withLogin } from '@/components';
-import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
+import commonUtil from '@/utils/commonUtil';
 
-const Sprints = ({ t, history }) => {
+const Sprints = ({ t }) => {
   const [sprints, setSprints] = useState(null);
 
   const getSprints = () => {
     request.get(
-      '/api/sprints',
+      '/api/{spaceCode}/sprints',
       null,
       (list) => {
         setSprints(
@@ -44,17 +44,17 @@ const Sprints = ({ t, history }) => {
             icon: <i className="fas fa-plus" />,
             text: t('새 스프린트'),
             handler: () => {
-              history.push('/sprints/new');
+              commonUtil.move('/sprints/new');
             },
           },
         ]}
         breadcrumbs={[
           {
-            link: '/',
+            link: commonUtil.getSpaceUrl('/'),
             name: t('TOP'),
           },
           {
-            link: '/sprints',
+            link: commonUtil.getSpaceUrl('/sprints'),
             name: t('스프린트 목록'),
             current: true,
           },
@@ -75,7 +75,7 @@ const Sprints = ({ t, history }) => {
                   size="md"
                   color="point"
                   onClick={() => {
-                    history.push('/sprints/new');
+                    commonUtil.move('/sprints/new');
                   }}
                 >
                   <i className="fas fa-plus" /> {t('새 스프린트')}
@@ -93,5 +93,4 @@ export default compose(withLogin, withRouter, withTranslation())(Sprints);
 
 Sprints.propTypes = {
   t: PropTypes.func,
-  history: HistoryPropTypes,
 };

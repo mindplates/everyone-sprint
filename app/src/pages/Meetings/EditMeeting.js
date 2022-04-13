@@ -29,6 +29,7 @@ import dateUtil from '@/utils/dateUtil';
 import './EditMeeting.scss';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 import RadioButton from '@/components/RadioButton/RadioButton';
+import commonUtil from '@/utils/commonUtil';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -279,34 +280,34 @@ const EditMeeting = ({
           type === 'new'
             ? [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/meetings',
+                  link: commonUtil.getSpaceUrl('/meetings'),
                   name: t('미팅 목록'),
                 },
                 {
-                  link: '/meetings/new',
+                  link: commonUtil.getSpaceUrl('/meetings/new'),
                   name: t('새 미팅'),
                   current: true,
                 },
               ]
             : [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/meetings',
+                  link: commonUtil.getSpaceUrl('/meetings'),
                   name: t('미팅 목록'),
                 },
                 {
-                  link: `/meetings/${info?.id}`,
+                  link: commonUtil.getSpaceUrl(`/meetings/${info?.id}`),
                   name: info?.name,
                 },
                 {
-                  link: `/meetings/${info?.id}/edit`,
+                  link: commonUtil.getSpaceUrl(`/meetings/${info?.id}/edit`),
                   name: t('변경'),
                   current: true,
                 },

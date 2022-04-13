@@ -7,7 +7,7 @@ import { Alert, Table } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { Block, BlockRow, BlockTitle, Button, DateRangeText, Label, Page, PageContent, PageTitle, Text, UserImage, withLogin } from '@/components';
 import request from '@/utils/request';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 import dateUtil from '@/utils/dateUtil';
 
@@ -15,6 +15,7 @@ import './SprintCommon.scss';
 import './SprintSummary.scss';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
+import commonUtil from '@/utils/commonUtil';
 
 const labelMinWidth = '140px';
 
@@ -25,7 +26,6 @@ const SprintSummary = ({
     params: { id: idString },
   },
   type,
-  history,
 }) => {
   const id = Number(idString);
 
@@ -34,7 +34,7 @@ const SprintSummary = ({
 
   const getSprint = (sprintId) => {
     request.get(
-      `/api/sprints/${sprintId}`,
+      `/api/{spaceCode}/sprints/${sprintId}`,
       null,
       (data) => {
         setSprint(sprintUtil.getSprint(data));
@@ -46,7 +46,7 @@ const SprintSummary = ({
 
   const getSprintSummary = () => {
     request.get(
-      `/api/sprints/${id}/summary`,
+      `/api/{spaceCode}/sprints/${id}/summary`,
       null,
       (data) => {
         setSprintSummary(data);
@@ -237,19 +237,19 @@ const SprintSummary = ({
       <PageTitle
         breadcrumbs={[
           {
-            link: '/',
+            link: commonUtil.getSpaceUrl('/'),
             name: t('TOP'),
           },
           {
-            link: '/sprints',
+            link: commonUtil.getSpaceUrl('/sprints'),
             name: t('스프린트 목록'),
           },
           {
-            link: `/sprints/${sprint?.id}`,
+            link: commonUtil.getSpaceUrl(`/sprints/${sprint?.id}`),
             name: sprint?.name,
           },
           {
-            link: `/sprints/${sprint?.id}/summary`,
+            link: commonUtil.getSpaceUrl(`/sprints/${sprint?.id}/summary`),
             name: t('통계'),
             current: true,
           },
@@ -275,10 +275,10 @@ const SprintSummary = ({
                       onClick={() => {
                         dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 다시 열기'), t('스프린트를 오픈하시겠습니까?'), () => {
                           request.put(
-                            `/api/sprints/${id}/open`,
+                            `/api/{spaceCode}/sprints/${id}/open`,
                             null,
                             () => {
-                              history.push('/sprints');
+                              commonUtil.move('/sprints');
                             },
                             null,
                             t('스프린트를 다시 활성화하고 있습니다.'),
@@ -302,10 +302,10 @@ const SprintSummary = ({
                       onClick={() => {
                         dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 종료'), t('스프린트를 종료하시겠습니까?'), () => {
                           request.put(
-                            `/api/sprints/${id}/close`,
+                            `/api/{spaceCode}/sprints/${id}/close`,
                             null,
                             () => {
-                              history.push('/sprints');
+                              commonUtil.move('/sprints');
                             },
                             null,
                             t('스프린트를 종료하고 있습니다.'),
@@ -389,10 +389,7 @@ const SprintSummary = ({
                     <Table className="user-table g-scrollbar" responsive bordered>
                       <thead>
                         <tr>
-                          <th
-                            rowSpan={2}
-                            className="sticky"
-                          >
+                          <th rowSpan={2} className="sticky">
                             {t('사용자')}
                           </th>
                           <th colSpan={6} className="text-center">
@@ -430,9 +427,7 @@ const SprintSummary = ({
                         {sprint.users.map((u) => {
                           return (
                             <tr key={u.id}>
-                              <td
-                                className="user-info sticky"
-                              >
+                              <td className="user-info sticky">
                                 <UserImage
                                   border={false}
                                   rounded
@@ -577,5 +572,4 @@ SprintSummary.propTypes = {
     }),
   }),
   type: PropTypes.string,
-  history: HistoryPropTypes,
 };

@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/meetings")
+@RequestMapping("/api/{spaceCode}/meetings")
 public class MeetingController {
 
     final private MeetingService meetingService;
@@ -41,8 +41,8 @@ public class MeetingController {
     @Operation(description = "사용자가 참석 가능한 미팅 목록 조회")
     @GetMapping("")
     @CheckSprintAuth
-    public List<MeetingResponse> selectUserMeetingList(@RequestParam(value = "sprintId", required = false) Long sprintId, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @ApiIgnore UserSession userSession) {
-        List<Meeting> meetings = meetingService.selectUserMeetingList(sprintId, date, userSession);
+    public List<MeetingResponse> selectUserMeetingList(@PathVariable String spaceCode, @RequestParam(value = "sprintId", required = false) Long sprintId, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @ApiIgnore UserSession userSession) {
+        List<Meeting> meetings = meetingService.selectUserMeetingList(spaceCode, sprintId, date, userSession);
         return meetings.stream().map(MeetingResponse::new).collect(Collectors.toList());
     }
 
@@ -57,8 +57,9 @@ public class MeetingController {
     @Operation(description = "특정일자의 미팅 목록 조회")
     @GetMapping("/day")
     @CheckSprintAuth
-    public List<MeetingResponse> selectUserMeetingListWithConnectionCount(@RequestParam(value = "sprintId", required = false) Long sprintId, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @ApiIgnore UserSession userSession) {
-        List<Meeting> meetings = meetingService.selectUserMeetingList(sprintId, date, userSession);
+    public List<MeetingResponse> selectUserMeetingListWithConnectionCount(@PathVariable String spaceCode, @RequestParam(value = "sprintId", required = false) Long sprintId, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @ApiIgnore UserSession userSession) {
+
+        List<Meeting> meetings = meetingService.selectUserMeetingList(spaceCode, sprintId, date, userSession);
         return meetings.stream().map(MeetingResponse::new).peek((meetingResponse -> {
             meetingResponse.setConnectedUserCount(participantService.countByCodeAndConnectedTrue(meetingResponse.getCode()));
         })).collect(Collectors.toList());

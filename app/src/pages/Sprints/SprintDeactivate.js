@@ -8,13 +8,13 @@ import { Block, BlockRow, BlockTitle, BottomButtons, DateRangeText, Label, Page,
 import dialog from '@/utils/dialog';
 import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { UserPropTypes } from '@/proptypes';
+import commonUtil from '@/utils/commonUtil';
 
 const labelMinWidth = '140px';
 
 const SprintDeactivate = ({
   t,
-  history,
   user,
   match: {
     params: { id },
@@ -41,7 +41,7 @@ const SprintDeactivate = ({
         null,
         () => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
-            history.push('/sprints');
+            commonUtil.move('/sprints');
           });
         },
         null,
@@ -113,10 +113,10 @@ const SprintDeactivate = ({
           </Block>
           <BottomButtons
             onList={() => {
-              history.push('/sprints');
+              commonUtil.move('/sprints');
             }}
             onEdit={() => {
-              history.push(`/sprints/${id}/edit`);
+              commonUtil.move(`/sprints/${id}/edit`);
             }}
             onDelete={onDelete}
             onDeleteText="삭제"
@@ -138,7 +138,6 @@ export default compose(withLogin, connect(mapStateToProps, undefined), withRoute
 SprintDeactivate.propTypes = {
   t: PropTypes.func,
   user: UserPropTypes,
-  history: HistoryPropTypes,
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,

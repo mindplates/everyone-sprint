@@ -11,6 +11,7 @@ import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import { setSpaceInfo } from '@/store/actions';
 import './EditSpace.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const labelMinWidth = '140px';
 
@@ -165,34 +166,34 @@ const EditSpace = ({
           type === 'new'
             ? [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/spaces',
+                  link: commonUtil.getSpaceUrl('/spaces'),
                   name: t('스페이스 목록'),
                 },
                 {
-                  link: '/spaces/new',
+                  link: commonUtil.getSpaceUrl('/spaces/new'),
                   name: t('새 스페이스'),
                   current: true,
                 },
               ]
             : [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/spaces',
+                  link: commonUtil.getSpaceUrl('/spaces'),
                   name: t('스페이스 목록'),
                 },
                 {
-                  link: `/spaces/${space?.id}`,
+                  link: commonUtil.getSpaceUrl(`/spaces/${space?.id}`),
                   name: space?.name,
                 },
                 {
-                  link: `/spaces/${space?.id}/edit`,
+                  link: commonUtil.getSpaceUrl(`/spaces/${space?.id}/edit`),
                   name: t('변경'),
                   current: true,
                 },

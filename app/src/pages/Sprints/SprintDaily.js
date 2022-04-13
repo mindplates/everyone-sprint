@@ -22,7 +22,7 @@ import {
   withLogin,
 } from '@/components';
 import request from '@/utils/request';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 import dateUtil from '@/utils/dateUtil';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
@@ -31,10 +31,10 @@ import RadioButton from '@/components/RadioButton/RadioButton';
 import dialog from '@/utils/dialog';
 import './SprintCommon.scss';
 import './SprintDaily.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const SprintDaily = ({
   t,
-  history,
   user,
   match: {
     params: { id: idString, date },
@@ -119,7 +119,7 @@ const SprintDaily = ({
 
   const getSprint = (sprintId) => {
     request.get(
-      `/api/sprints/${sprintId}`,
+      `/api/{spaceCode}/sprints/${sprintId}`,
       null,
       (data) => {
         setSprint(sprintUtil.getSprint(data));
@@ -131,7 +131,7 @@ const SprintDaily = ({
 
   const getBoardInfo = (start, end, dayString) => {
     request.get(
-      `/api/sprints/${id}/daily?start=${start.toISOString()}&end=${end.toISOString()}&date=${dayString}`,
+      `/api/{spaceCode}/sprints/${id}/daily?start=${start.toISOString()}&end=${end.toISOString()}&date=${dayString}`,
       null,
       (data) => {
         setMeetings(data.scrumMeetings);
@@ -144,7 +144,7 @@ const SprintDaily = ({
 
   const saveDailyMeetingAnswers = () => {
     request.post(
-      `/api/sprints/${id}/answers?date=${localDayString}`,
+      `/api/{spaceCode}/sprints/${id}/answers?date=${localDayString}`,
       selectedAnswers,
       () => {
         getBoardInfo(startDate, endDate, localDayString);
@@ -183,7 +183,7 @@ const SprintDaily = ({
   const now = new Date();
 
   const moveDate = (nextData) => {
-    history.push(`/sprints/${id}/daily/${nextData.toLocaleDateString('sv').substring(0, 10)}`);
+    commonUtil.move(`/sprints/${id}/daily/${nextData.toLocaleDateString('sv').substring(0, 10)}`);
   };
 
   const onChangeAnswer = (questionId, value) => {
@@ -198,7 +198,7 @@ const SprintDaily = ({
     const { scrumMeetingPlanId } = meeting;
 
     request.get(
-      `/api/sprints/${id}/meetings/${scrumMeetingPlanId}/answers/latest?date=${localDayString}`,
+      `/api/{spaceCode}/sprints/${id}/meetings/${scrumMeetingPlanId}/answers/latest?date=${localDayString}`,
       null,
       (answers) => {
         if (answers.length < 1) {
@@ -212,9 +212,7 @@ const SprintDaily = ({
 
         const nextSelectedAnswers = selectedAnswers.slice(0);
         answers.forEach((answer) => {
-          const info = nextSelectedAnswers.find(
-            (d) => d.scrumMeetingQuestionId === answer.scrumMeetingQuestionId && d.sprintId === answer.sprintId,
-          );
+          const info = nextSelectedAnswers.find((d) => d.scrumMeetingQuestionId === answer.scrumMeetingQuestionId && d.sprintId === answer.sprintId);
           info.answer = answer.answer;
         });
 
@@ -236,19 +234,19 @@ const SprintDaily = ({
       <PageTitle
         breadcrumbs={[
           {
-            link: '/',
+            link: commonUtil.getSpaceUrl('/'),
             name: t('TOP'),
           },
           {
-            link: '/sprints',
+            link: commonUtil.getSpaceUrl('/sprints'),
             name: t('스프린트 목록'),
           },
           {
-            link: `/sprints/${sprint?.id}`,
+            link: commonUtil.getSpaceUrl(`/sprints/${sprint?.id}`),
             name: sprint?.name,
           },
           {
-            link: `/sprints/${sprint?.id}/daily`,
+            link: commonUtil.getSpaceUrl(`/sprints/${sprint?.id}/daily`),
             name: t('데일리'),
             current: true,
           },
@@ -337,7 +335,7 @@ const SprintDaily = ({
                           <i className="fas fa-angle-right" />
                         </Button>
                       </div>
-                      <div className='break' />
+                      <div className="break" />
                       <div className="meeting-list-selector">
                         <Selector
                           outline
@@ -402,7 +400,7 @@ const SprintDaily = ({
                                         outline
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          history.push(`/meetings/${d.id}`);
+                                          commonUtil.move(`/meetings/${d.id}/edit`);
                                         }}
                                       >
                                         <i className="fas fa-cog" />
@@ -414,7 +412,7 @@ const SprintDaily = ({
                                         outline
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          history.push(`/meets/${d.code}`);
+                                          commonUtil.move(`/meets/${d.code}`);
                                         }}
                                       >
                                         <i className="fas fa-arrow-right" />
@@ -592,9 +590,8 @@ const SprintDaily = ({
                                                     </div>
                                                     <div className="answer">
                                                       {
-                                                        dailyAnswers.find(
-                                                          (answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId,
-                                                        )?.answer
+                                                        dailyAnswers.find((answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId)
+                                                          ?.answer
                                                       }
                                                     </div>
                                                   </div>
@@ -621,9 +618,8 @@ const SprintDaily = ({
                                                     </div>
                                                     <div className="answer">
                                                       {
-                                                        dailyAnswers.find(
-                                                          (answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId,
-                                                        )?.answer
+                                                        dailyAnswers.find((answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId)
+                                                          ?.answer
                                                       }
                                                     </div>
                                                   </div>
@@ -747,9 +743,8 @@ const SprintDaily = ({
                                                   <div className="answer">
                                                     <div>
                                                       {
-                                                        dailyAnswers.find(
-                                                          (answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId,
-                                                        )?.answer
+                                                        dailyAnswers.find((answer) => answer.scrumMeetingQuestionId === d.id && answer.user.id === u.userId)
+                                                          ?.answer
                                                       }
                                                     </div>
                                                   </div>
@@ -805,7 +800,7 @@ export default compose(withLogin, connect(mapStateToProps, undefined), withRoute
 SprintDaily.propTypes = {
   t: PropTypes.func,
   user: UserPropTypes,
-  history: HistoryPropTypes,
+
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,

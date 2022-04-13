@@ -25,6 +25,7 @@ import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import './Space.scss';
 import dialog from '@/utils/dialog';
 import dateUtil from '@/utils/dateUtil';
+import commonUtil from '@/utils/commonUtil';
 
 const Space = ({
   t,
@@ -124,15 +125,15 @@ const Space = ({
       <PageTitle
         breadcrumbs={[
           {
-            link: '/',
+            link: commonUtil.getSpaceUrl('/'),
             name: t('TOP'),
           },
           {
-            link: '/spaces',
+            link: commonUtil.getSpaceUrl('/spaces'),
             name: t('스페이스 목록'),
           },
           {
-            link: `/spaces/${space?.id}`,
+            link: commonUtil.getSpaceUrl(`/spaces/${space?.id}`),
             name: space?.name,
             current: true,
           },

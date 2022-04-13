@@ -7,11 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SprintRepository extends JpaRepository<Sprint, Long> {
-    Long countByProjectIdAndIdNotAndName(Long projectId, Long sprintId, String name);
+    Long countByProjectSpaceCodeAndProjectIdAndIdNotAndName(String spaceCode, Long projectId, Long sprintId, String name);
 
-    Long countByProjectIdAndName(Long projectId, String name);
+    Long countByProjectSpaceCodeAndProjectIdAndName(String spaceCode, Long projectId, String name);
 
-    List<Sprint> findAllByUsersUserIdAndClosed(Long userId, Boolean closed);
+    List<Sprint> findAllByProjectSpaceCodeAndUsersUserIdAndClosed(String spaceCode, Long userId, Boolean closed);
 
     Long countBy();
 

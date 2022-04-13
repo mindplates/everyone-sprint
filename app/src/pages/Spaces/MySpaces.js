@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { Button, EmptyContent, Page, PageContent, PageTitle, SpaceList, withLogin } from '@/components';
 import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
+import commonUtil from '@/utils/commonUtil';
 
 const Spaces = ({ t, history }) => {
   const [spaces, setSpaces] = useState(null);
@@ -52,11 +53,11 @@ const Spaces = ({ t, history }) => {
         ]}
         breadcrumbs={[
           {
-            link: '/',
+            link: commonUtil.getSpaceUrl('/'),
             name: t('TOP'),
           },
           {
-            link: '/spaces',
+            link: commonUtil.getSpaceUrl('/spaces'),
             name: t('스페이스 목록'),
             current: true,
           },

@@ -29,8 +29,6 @@ const Header = (props) => {
     space,
   } = props;
 
-  console.log(space);
-
   const [menuOpen, setMenuOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [spaceOpen, setSpaceOpen] = useState(false);
@@ -38,7 +36,7 @@ const Header = (props) => {
   useEffect(() => {}, []);
 
   const values = (location.pathname.split('/') || []).filter((value) => value);
-  const [currentTopMenu] = values;
+  const [, currentTopMenu] = values;
 
   let menuAlias = currentTopMenu;
   if (currentTopMenu === 'meets') {

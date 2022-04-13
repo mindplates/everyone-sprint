@@ -5,13 +5,14 @@ import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button, Liner } from '@/components';
-import { HistoryPropTypes, SprintPropTypes } from '@/proptypes';
+import { SprintPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './SprintList.scss';
 import withLoader from '@/components/Common/withLoader';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
+import commonUtil from '@/utils/commonUtil';
 
-const SprintList = ({ className, t, history, sprints }) => {
+const SprintList = ({ className, t, sprints }) => {
   const now = Date.now();
   return (
     <ul className={`sprint-list-wrapper ${className}`}>
@@ -22,7 +23,7 @@ const SprintList = ({ className, t, history, sprints }) => {
           <li
             key={sprint.id}
             onClick={() => {
-              history.push(`/sprints/${sprint.id}/daily`);
+              commonUtil.move(`/sprints/${sprint.id}/daily`);
             }}
           >
             <div>
@@ -57,7 +58,7 @@ const SprintList = ({ className, t, history, sprints }) => {
                       color="danger"
                       onClick={(e) => {
                         e.stopPropagation();
-                        history.push(`/sprints/${sprint.id}/deactivate`);
+                        commonUtil.move(`/sprints/${sprint.id}/deactivate`);
                       }}
                     >
                       <i className="far fa-stop-circle" /> {t('종료')}
@@ -77,7 +78,7 @@ const SprintList = ({ className, t, history, sprints }) => {
                     outline
                     onClick={(e) => {
                       e.stopPropagation();
-                      history.push(`/sprints/${sprint.id}/daily`);
+                      commonUtil.move(`/sprints/${sprint.id}/daily`);
                     }}
                   >
                     <div className="label">{t('데일리')}</div>
@@ -93,7 +94,7 @@ const SprintList = ({ className, t, history, sprints }) => {
                     outline
                     onClick={(e) => {
                       e.stopPropagation();
-                      history.push(`/sprints/${sprint.id}/summary`);
+                      commonUtil.move(`/sprints/${sprint.id}/summary`);
                     }}
                   >
                     <div className="label">{t('요약')}</div>
@@ -116,7 +117,7 @@ const SprintList = ({ className, t, history, sprints }) => {
                       rounded
                       onClick={(e) => {
                         e.stopPropagation();
-                        history.push(`/sprints/${sprint.id}`);
+                        commonUtil.move(`/sprints/${sprint.id}`);
                       }}
                     >
                       <i className="fas fa-cog" />
@@ -148,5 +149,4 @@ SprintList.propTypes = {
   className: PropTypes.string,
   t: PropTypes.func,
   sprints: PropTypes.arrayOf(SprintPropTypes),
-  history: HistoryPropTypes,
 };

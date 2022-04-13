@@ -33,6 +33,7 @@ import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes } from '@/proptypes';
 import { setUserInfo } from '@/store/actions';
 import './Join.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const labelMinWidth = '140px';
 
@@ -96,11 +97,11 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer }) => {
       <PageTitle
         breadcrumbs={[
           {
-            link: '/',
+            link: commonUtil.getSpaceUrl('/'),
             name: t('TOP'),
           },
           {
-            link: '/home',
+            link: commonUtil.getSpaceUrl('/home'),
             name: t('HOME'),
             current: true,
           },

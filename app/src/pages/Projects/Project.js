@@ -6,13 +6,11 @@ import PropTypes from 'prop-types';
 import { BlockTitle, BottomButtons, Page, PageContent, SprintTimeLine, Tabs, UserList, withLogin } from '@/components';
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES } from '@/constants/constants';
 import request from '@/utils/request';
-import { HistoryPropTypes } from '@/proptypes';
 import './Project.scss';
 import commonUtil from '@/utils/commonUtil';
 
 const Project = ({
   t,
-  history,
   match: {
     params: { id },
   },
@@ -45,7 +43,7 @@ const Project = ({
       title={false}
       breadcrumbs={[
         {
-          link: '/',
+          link: commonUtil.getSpaceUrl('/'),
           name: t('TOP'),
         },
         {
@@ -102,12 +100,12 @@ const Project = ({
           </div>
           <BottomButtons
             onList={() => {
-              history.push('/projects');
+              commonUtil.move('/projects');
             }}
             onEdit={
               project?.isAdmin
                 ? () => {
-                    history.push(`/projects/${id}/edit`);
+                    commonUtil.move(`/projects/${id}/edit`);
                   }
                 : null
             }
@@ -129,7 +127,6 @@ export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(
 
 Project.propTypes = {
   t: PropTypes.func,
-  history: HistoryPropTypes,
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,
