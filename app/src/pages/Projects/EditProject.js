@@ -2,8 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, BottomButtons, Form, Input, Label, Page, PageContent, PageTitle, Text, UserList, withLogin } from '@/components';
+import {
+  Block,
+  BlockRow,
+  BlockTitle,
+  BottomButtons,
+  Form,
+  Input,
+  Label,
+  Page,
+  PageContent,
+  PageTitle,
+  Text,
+  UserList,
+  withLogin,
+  withSpace,
+} from '@/components';
 import dialog from '@/utils/dialog';
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
@@ -289,7 +305,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(EditProject))));
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(EditProject);
 
 EditProject.propTypes = {
   t: PropTypes.func,

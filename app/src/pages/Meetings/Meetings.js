@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { UserPropTypes } from '@/proptypes';
-import { Button, CheckBox, DatePicker, EmptyContent, Liner, MeetingList, Page, PageContent, PageTitle, Selector, withLogin } from '@/components';
+import { Button, CheckBox, DatePicker, EmptyContent, Liner, MeetingList, Page, PageContent, PageTitle, Selector, withLogin, withSpace } from '@/components';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
@@ -301,7 +301,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(withLogin(Meetings));
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(Meetings);
 
 Meetings.propTypes = {
   t: PropTypes.func,

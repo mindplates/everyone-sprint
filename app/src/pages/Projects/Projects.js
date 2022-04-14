@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { Button, EmptyContent, Page, PageContent, PageTitle, ProjectList, withLogin } from '@/components';
+import { Button, EmptyContent, Page, PageContent, PageTitle, ProjectList, withLogin, withSpace } from '@/components';
 import request from '@/utils/request';
 import commonUtil from '@/utils/commonUtil';
 
@@ -80,7 +80,7 @@ const Projects = ({ t }) => {
   );
 };
 
-export default compose(withLogin, withRouter, withTranslation())(Projects);
+export default compose(withLogin, withSpace, withRouter, withTranslation())(Projects);
 
 Projects.propTypes = {
   t: PropTypes.func,

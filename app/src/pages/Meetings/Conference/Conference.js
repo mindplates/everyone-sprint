@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { ConferenceVideoItem, EmptyContent, Page, PageContent, ParticipantsList, SocketClient, withLogin } from '@/components';
+import { ConferenceVideoItem, EmptyContent, Page, PageContent, ParticipantsList, SocketClient, withLogin, withSpace } from '@/components';
 import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Common/ConferenceDeviceConfig';
@@ -1478,7 +1478,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(Conference, true))));
+export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withSpace(withLogin(Conference, true)))));
 
 Conference.propTypes = {
   t: PropTypes.func,

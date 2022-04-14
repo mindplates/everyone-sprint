@@ -50,8 +50,9 @@ public class UserController {
         User user = userRequest.buildEntity();
         User result = userService.createUser(user);
         sessionUtil.login(request, result);
+        List<Space> spaces = spaceService.selectUserActivatedSpaceList(sessionUtil.getUserId(request));
 
-        return new MyInfoResponse(result);
+        return new MyInfoResponse(result, spaces);
     }
 
     @DisableLogin

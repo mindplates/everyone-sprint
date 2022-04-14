@@ -19,7 +19,7 @@ import {
   Tabs,
   TextArea,
   UserImage,
-  withLogin,
+  withLogin, withSpace,
 } from '@/components';
 import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
@@ -795,7 +795,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(SprintDaily);
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(SprintDaily);
 
 SprintDaily.propTypes = {
   t: PropTypes.func,

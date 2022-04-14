@@ -22,6 +22,7 @@ import {
   Selector,
   UserList,
   withLogin,
+  withSpace,
 } from '@/components';
 import dialog from '@/utils/dialog';
 
@@ -29,10 +30,10 @@ import { MEETING_TYPES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
-import './EditMeeting.scss';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import commonUtil from '@/utils/commonUtil';
+import './EditMeeting.scss';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -544,7 +545,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(withLogin(EditMeeting));
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(EditMeeting);
 
 EditMeeting.propTypes = {
   t: PropTypes.func,

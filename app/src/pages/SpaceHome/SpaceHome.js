@@ -4,7 +4,7 @@ import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Button, Page, PageContent, ProductLogo, SpaceCard, withLogin } from '@/components';
+import { Button, Page, PageContent, ProductLogo, SpaceCard, withLogin, withSpace } from '@/components';
 import { HistoryPropTypes, SpacePropTypes, UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import './SpaceHome.scss';
@@ -120,9 +120,13 @@ const SpaceHome = ({
                   {user.spaces.map((d) => {
                     return (
                       <div>
-                        <SpaceCard space={d} description={false} onClick={() => {
-                          // TODO RESUME HERE
-                        }} />
+                        <SpaceCard
+                          space={d}
+                          description={false}
+                          onClick={() => {
+                            // TODO RESUME HERE
+                          }}
+                        />
                       </div>
                     );
                   })}
@@ -189,7 +193,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, withRouter, withTranslation())(connect(mapStateToProps, undefined)(SpaceHome));
+export default compose(withLogin, withSpace, withRouter, withTranslation())(connect(mapStateToProps, undefined)(SpaceHome));
 
 SpaceHome.propTypes = {
   t: PropTypes.func,

@@ -25,6 +25,7 @@ import {
   Selector,
   UserList,
   withLogin,
+  withSpace,
 } from '@/components';
 import dialog from '@/utils/dialog';
 import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
@@ -880,7 +881,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(EditSprint);
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(EditSprint);
 
 EditSprint.propTypes = {
   t: PropTypes.func,

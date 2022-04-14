@@ -5,7 +5,21 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { Alert, Table } from 'reactstrap';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, Button, DateRangeText, Label, Page, PageContent, PageTitle, Text, UserImage, withLogin } from '@/components';
+import {
+  Block,
+  BlockRow,
+  BlockTitle,
+  Button,
+  DateRangeText,
+  Label,
+  Page,
+  PageContent,
+  PageTitle,
+  Text,
+  UserImage,
+  withLogin,
+  withSpace,
+} from '@/components';
 import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
@@ -559,7 +573,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(SprintSummary);
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(SprintSummary);
 
 SprintSummary.propTypes = {
   t: PropTypes.func,

@@ -4,7 +4,21 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, BottomButtons, DateRangeText, Label, Page, PageContent, PageTitle, Text, UserList, withLogin } from '@/components';
+import {
+  Block,
+  BlockRow,
+  BlockTitle,
+  BottomButtons,
+  DateRangeText,
+  Label,
+  Page,
+  PageContent,
+  PageTitle,
+  Text,
+  UserList,
+  withLogin,
+  withSpace,
+} from '@/components';
 import dialog from '@/utils/dialog';
 import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
@@ -133,7 +147,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(SprintDeactivate);
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(SprintDeactivate);
 
 SprintDeactivate.propTypes = {
   t: PropTypes.func,

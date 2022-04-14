@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { Button, EmptyContent, Page, PageContent, PageTitle, SprintList, withLogin } from '@/components';
+import { Button, EmptyContent, Page, PageContent, PageTitle, SprintList, withLogin, withSpace } from '@/components';
 import request from '@/utils/request';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 import commonUtil from '@/utils/commonUtil';
@@ -89,7 +89,7 @@ const Sprints = ({ t }) => {
   );
 };
 
-export default compose(withLogin, withRouter, withTranslation())(Sprints);
+export default compose(withLogin, withSpace, withRouter, withTranslation())(Sprints);
 
 Sprints.propTypes = {
   t: PropTypes.func,

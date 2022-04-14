@@ -19,7 +19,7 @@ import {
   PageTitle,
   Text,
   UserList,
-  withLogin,
+  withLogin, withSpace,
 } from '@/components';
 import dialog from '@/utils/dialog';
 import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
@@ -236,7 +236,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(Sprint);
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(Sprint);
 
 Sprint.propTypes = {
   t: PropTypes.func,
