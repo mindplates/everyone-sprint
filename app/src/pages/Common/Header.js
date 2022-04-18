@@ -183,9 +183,9 @@ const Header = (props) => {
               <div className="space-selector">
                 {user?.spaces?.length > 0 && <div className="label">{t('스페이스')}</div>}
                 <div
-                  className={`current-space-info ${spaceOpen ? 'opened' : ''} ${user?.spaces?.length > 1 ? 'clickable' : ''}`}
+                  className={`current-space-info ${spaceOpen ? 'opened' : ''} ${user?.spaces?.length > 0 ? 'clickable' : ''}`}
                   onClick={() => {
-                    if (user?.spaces?.length > 1) {
+                    if (user?.spaces?.length > 0) {
                       setSpaceOpen(!spaceOpen);
                     }
                   }}

@@ -4,14 +4,15 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { HistoryPropTypes, ProjectPropTypes } from '@/proptypes';
+import { ProjectPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './SprintTimeLine.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
 import withLoader from '@/components/Common/withLoader';
+import commonUtil from '@/utils/commonUtil';
 import { Button } from '@/components';
 
-const SprintTimeLine = ({ className, t, history, project }) => {
+const SprintTimeLine = ({ className, t,  project }) => {
   const now = Date.now();
 
   const element = useRef(null);
@@ -85,7 +86,7 @@ const SprintTimeLine = ({ className, t, history, project }) => {
                 size="sm"
                 color="point"
                 onClick={() => {
-                  history.push(`/sprints/new?projectId=${project.id}`);
+                  commonUtil.move(`/sprints/new?projectId=${project.id}`);
                 }}
               >
                 <i className="fas fa-plane" /> {t('스프린트 생성')}
@@ -151,13 +152,13 @@ const SprintTimeLine = ({ className, t, history, project }) => {
                                 className={`point-${point} ${sprint.closed ? 'closed' : ''}`}
                                 onClick={() => {
                                   if (sprint.closed) {
-                                    history.push(`/sprints/${sprint.id}`);
+                                    commonUtil.move(`/sprints/${sprint.id}`);
                                   } else if (point === 'past') {
-                                    history.push(`/sprints/${sprint.id}/summary`);
+                                    commonUtil.move(`/sprints/${sprint.id}/summary`);
                                   } else if (point === 'current') {
-                                    history.push(`/sprints/${sprint.id}/daily`);
+                                    commonUtil.move(`/sprints/${sprint.id}/daily`);
                                   } else {
-                                    history.push(`/sprints/${sprint.id}`);
+                                    commonUtil.move(`/sprints/${sprint.id}`);
                                   }
                                 }}
                               >
@@ -196,5 +197,4 @@ SprintTimeLine.propTypes = {
   className: PropTypes.string,
   t: PropTypes.func,
   project: ProjectPropTypes,
-  history: HistoryPropTypes,
 };

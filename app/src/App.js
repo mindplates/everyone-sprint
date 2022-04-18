@@ -62,7 +62,7 @@ function App({ history, setting }) {
           <Route exact path="/spaces" component={Spaces} />
           <Route exact path="/spaces/my" component={MySpaces} />
           <Route exact path="/spaces/new" render={() => <EditSpace type="new" />} />
-          <Route exact path="/spaces/:id/edit" render={() => <EditSpace type="edit" />} />
+          <Route exact path="/spaces/:spaceCode/edit" render={() => <EditSpace type="edit" />} />
           <Route exact path="/spaces/:spaceCode" component={Space} />
 
           <Route exact path="/:spaceCode/projects/new" render={() => <EditProject type="new" />} />

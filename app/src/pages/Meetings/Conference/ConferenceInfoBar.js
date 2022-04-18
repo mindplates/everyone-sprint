@@ -15,14 +15,14 @@ class ConferenceInfoBar extends React.Component {
     const { t } = this.props;
     const { conference } = this.props;
 
-    request.put(`/api/meets/${conference.code}/scrum?operation=start`, null, null, null, t('데일리 스크럼 시작을 위한 정보를 생성합니다.'));
+    request.put(`/api/{spaceCode}/meets/${conference.code}/scrum?operation=start`, null, null, null, t('데일리 스크럼 시작을 위한 정보를 생성합니다.'));
   };
 
   dailyScrumStop = () => {
     const { t } = this.props;
     const { conference } = this.props;
 
-    request.put(`/api/meets/${conference.code}/scrum?operation=stop`, null, null, null, t('데일리 스크럼을 종료하고 있습니다.'));
+    request.put(`/api/{spaceCode}/meets/${conference.code}/scrum?operation=stop`, null, null, null, t('데일리 스크럼을 종료하고 있습니다.'));
   };
 
   getCurrentSpeaker = () => {

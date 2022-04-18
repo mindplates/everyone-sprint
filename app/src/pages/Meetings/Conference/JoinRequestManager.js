@@ -9,7 +9,7 @@ import request from '@/utils/request';
 const JoinRequestManager = ({ t, code, joinRequests, setJoinRequests }) => {
   const onJoinRequestResponse = (userId, allowed) => {
     request.put(
-      `/api/meets/${code}/request/join/response`,
+      `/api/{spaceCode}/meets/${code}/request/join/response`,
       {
         userId,
         allowed,

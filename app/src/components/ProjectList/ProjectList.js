@@ -5,13 +5,13 @@ import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button } from '@/components';
-import { HistoryPropTypes, ProjectPropTypes } from '@/proptypes';
+import { ProjectPropTypes } from '@/proptypes';
 import withLoader from '@/components/Common/withLoader';
 import commonUtil from '@/utils/commonUtil';
 import './ProjectList.scss';
 
 const ProjectList = (props) => {
-  const { className, t, history, projects } = props;
+  const { className, t, projects } = props;
   return (
     <ul className={`project-list-wrapper ${className}`}>
       {projects.map((project) => {
@@ -19,7 +19,6 @@ const ProjectList = (props) => {
           <li
             key={project.id}
             onClick={() => {
-              history.push();
               commonUtil.move(`/projects/${project.id}`);
             }}
           >
@@ -85,5 +84,4 @@ ProjectList.propTypes = {
   className: PropTypes.string,
   t: PropTypes.func,
   projects: PropTypes.arrayOf(ProjectPropTypes),
-  history: HistoryPropTypes,
 };

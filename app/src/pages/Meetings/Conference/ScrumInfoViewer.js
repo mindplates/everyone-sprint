@@ -12,7 +12,7 @@ const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, conferen
   const [currentUserMessage, setCurrentUserMessage] = useState(null);
 
   const doneUserScrumDone = () => {
-    request.put(`/api/meets/${conference.code}/scrum?operation=next`, null, null, null, t('다음 데일리 스크럼 사용자를 찾고 있습니다.'));
+    request.put(`/api/{spaceCode}/meets/${conference.code}/scrum?operation=next`, null, null, null, t('다음 데일리 스크럼 사용자를 찾고 있습니다.'));
   };
 
   const currentUser = conference.users.find((d) => d.userId === dailyScrumInfo.currentSpeakerUserId);
@@ -44,7 +44,7 @@ const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, conferen
           <div>
             <div>
               <div className="image-content d-none" />
-              <div className='icon'>
+              <div className="icon">
                 <i className="fas fa-chess-knight" />
               </div>
             </div>
@@ -83,10 +83,12 @@ const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, conferen
                         key={d.id}
                         className={`${dailyScrumInfo.currentFocusId === d.id ? 'focused' : ''} ${myTurn ? 'my-turn' : ''}`}
                         onClick={() => {
-                          if (dailyScrumInfo.currentFocusId === d.id) {
-                            onFocus(null);
-                          } else {
-                            onFocus(d.id);
+                          if (myTurn) {
+                            if (dailyScrumInfo.currentFocusId === d.id) {
+                              onFocus(null);
+                            } else {
+                              onFocus(d.id);
+                            }
                           }
                         }}
                       >

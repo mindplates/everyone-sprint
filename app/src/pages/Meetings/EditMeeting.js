@@ -136,7 +136,6 @@ const EditMeeting = ({
       `/api/{spaceCode}/meetings/${meetingId}`,
       null,
       (data) => {
-        console.log(data);
         setInfo({
           ...data,
           startDate: dateUtil.getTime(data.startDate),

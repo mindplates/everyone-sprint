@@ -33,7 +33,7 @@ import java.util.stream.StreamSupport;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/meets")
+@RequestMapping("/api/{spaceCode}/meets")
 public class MeetController {
 
     final private MeetingService meetingService;
@@ -52,7 +52,7 @@ public class MeetController {
 
     @Operation(description = "회의 정보 조회")
     @GetMapping("/{code}")
-    public MeetingResponse selectMeetingInfo(@PathVariable String code, UserSession userSession) {
+    public MeetingResponse selectMeetingInfo(@PathVariable String spaceCode, @PathVariable String code, UserSession userSession) {
         Meeting meeting = meetingService.selectMeetingInfo(code).get();
         if (meeting.getType().equals(MeetingTypeCode.SMALLTALK)) {
 
@@ -95,7 +95,7 @@ public class MeetController {
 
     @Operation(description = "회의 참석자 목록 조회")
     @GetMapping("/{code}/users")
-    public Iterable<Participant> selectMeetingUserList(@PathVariable String code, UserSession userSession) {
+    public Iterable<Participant> selectMeetingUserList(@PathVariable String spaceCode, @PathVariable String code, UserSession userSession) {
         Meeting meeting = meetingService.selectMeetingInfo(code).get();
         Participant participant = Participant.builder().code(code).build();
         if (meeting.getType().equals(MeetingTypeCode.SMALLTALK)) {
@@ -108,7 +108,7 @@ public class MeetController {
 
     @Operation(description = "스크럼 공유 상태 변경")
     @PutMapping("/{code}/scrum")
-    public ResponseEntity updateScrumInfo(@PathVariable String code, @RequestParam("operation") String operation, UserSession userSession) {
+    public ResponseEntity updateScrumInfo(@PathVariable String spaceCode, @PathVariable String code, @RequestParam("operation") String operation, UserSession userSession) {
 
         Meeting meeting = meetingService.selectMeetingInfo(code).get();
         boolean started = false;
@@ -149,7 +149,7 @@ public class MeetController {
 
     @Operation(description = "사용자 참석 정보 변경")
     @PutMapping("/{code}/status")
-    public ResponseEntity updateUserTalkedInfo(@PathVariable String code, @RequestBody TalkedRequest talkedRequest, UserSession userSession) {
+    public ResponseEntity updateUserTalkedInfo(@PathVariable String spaceCode, @PathVariable String code, @RequestBody TalkedRequest talkedRequest, UserSession userSession) {
 
         Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
@@ -186,7 +186,7 @@ public class MeetController {
     @Operation(description = "미팅 참석 요청")
     @PutMapping("/{code}/request/join")
     @DisableMeetingAuth
-    public ResponseEntity updateUserRequestJoin(@PathVariable String code, UserSession userSession) {
+    public ResponseEntity updateUserRequestJoin(@PathVariable String spaceCode, @PathVariable String code, UserSession userSession) {
 
         Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
@@ -210,7 +210,7 @@ public class MeetController {
 
     @Operation(description = "미팅 참석 요청 응답")
     @PutMapping("/{code}/request/join/response")
-    public ResponseEntity updateUserRequestResponseJoin(@PathVariable String code, @RequestBody JoinResponseRequest joinResponseRequest, UserSession userSession) {
+    public ResponseEntity updateUserRequestResponseJoin(@PathVariable String spaceCode, @PathVariable String code, @RequestBody JoinResponseRequest joinResponseRequest, UserSession userSession) {
 
         Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 

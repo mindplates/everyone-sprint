@@ -32,7 +32,7 @@ const withLogin = (WrappedComponent, skipDelay) => {
         this.setState({
           delayed: true,
         });
-      }, 500);
+      }, 10);
     }
 
     componentWillUnmount() {

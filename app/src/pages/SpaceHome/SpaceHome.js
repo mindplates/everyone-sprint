@@ -49,7 +49,6 @@ const SpaceHome = ({
         null,
         (data) => {
           setInfo(data);
-          console.log(data);
         },
         (error, response) => {
           if (response && response.status === 404) {
@@ -61,13 +60,8 @@ const SpaceHome = ({
         },
         t('스페이스 정보를 가져오고 있습니다.'),
       );
-      console.log(spaceCode);
     }
   }, [space, spaceCode]);
-
-  console.log(history);
-
-  console.log(user);
 
   return (
     <Page className="space-home-wrapper">

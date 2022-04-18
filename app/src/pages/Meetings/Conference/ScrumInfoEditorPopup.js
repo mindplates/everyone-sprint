@@ -29,7 +29,7 @@ const ScrumInfoEditorPopup = ({
 
   const getLastMeetingAnswer = () => {
     request.get(
-      `/api/sprints/${sprintId}/meetings/${scrumMeetingPlanId}/answers/latest?date=${date}`,
+      `/api/{spaceCode}/sprints/${sprintId}/meetings/${scrumMeetingPlanId}/answers/latest?date=${date}`,
       null,
       (result) => {
         if (result.length < 1) {
@@ -78,7 +78,7 @@ const ScrumInfoEditorPopup = ({
 
   const saveDailyMeetingAnswers = () => {
     request.post(
-      `/api/sprints/${sprintId}/answers?date=${date}`,
+      `/api/{spaceCode}/sprints/${sprintId}/answers?date=${date}`,
       answers,
       () => {
         if (onSaveComplete) {

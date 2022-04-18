@@ -12,7 +12,7 @@ const Projects = ({ t }) => {
 
   const getProjects = () => {
     request.get(
-      `/api/${commonUtil.getCurrentSpaceCode()}/projects`,
+      '/api/{spaceCode}/projects',
       null,
       (list) => {
         setProjects(list);

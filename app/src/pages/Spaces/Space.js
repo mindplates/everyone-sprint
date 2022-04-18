@@ -68,10 +68,10 @@ const Space = ({
       { userId: user.id },
       () => {
         getSpace();
-        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스 가입을 요청하였습니다.'));
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스 가입에 가입하였습니다.'));
       },
       null,
-      t('스페이스 참여를 요청하는 중입니다.'),
+      t('스페이스에 사용자 정보를 추가하고 있습니다.'),
     );
   };
 
