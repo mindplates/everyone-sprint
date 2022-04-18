@@ -19,20 +19,20 @@ import {
   PageTitle,
   Text,
   UserList,
-  withLogin,
+  withLogin, withSpace,
 } from '@/components';
 import dialog from '@/utils/dialog';
 import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { UserPropTypes } from '@/proptypes';
 import sprintUtil from './sprintUtil';
 import dateUtil from '@/utils/dateUtil';
+import commonUtil from '@/utils/commonUtil';
 
 const labelMinWidth = '140px';
 
 const Sprint = ({
   t,
-  history,
   user,
   match: {
     params: { id },
@@ -42,7 +42,7 @@ const Sprint = ({
 
   useEffect(() => {
     request.get(
-      `/api/sprints/${id}`,
+      `/api/{spaceCode}/sprints/${id}`,
       null,
       (data) => {
         setSprint(sprintUtil.getSprint(data));
@@ -55,10 +55,10 @@ const Sprint = ({
   const onOpen = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 다시 열기'), t('스프린트를 오픈하시겠습니까?'), () => {
       request.put(
-        `/api/sprints/${id}/open`,
+        `/api/{spaceCode}/sprints/${id}/open`,
         null,
         () => {
-          history.push('/sprints');
+          commonUtil.move('/sprints');
         },
         null,
         t('스프린트를 다시 활성화하고 있습니다.'),
@@ -69,10 +69,10 @@ const Sprint = ({
   const onClose = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 종료'), t('스프린트를 종료하시겠습니까?'), () => {
       request.put(
-        `/api/sprints/${id}/close`,
+        `/api/{spaceCode}/sprints/${id}/close`,
         null,
         () => {
-          history.push('/sprints');
+          commonUtil.move('/sprints');
         },
         null,
         t('스프린트를 종료하고 있습니다.'),
@@ -95,15 +95,15 @@ const Sprint = ({
       <PageTitle
         breadcrumbs={[
           {
-            link: '/',
+            link: commonUtil.getSpaceUrl('/'),
             name: t('TOP'),
           },
           {
-            link: '/sprints',
+            link: commonUtil.getSpaceUrl('/sprints'),
             name: t('스프린트 목록'),
           },
           {
-            link: `/sprints/${sprint?.id}`,
+            link: commonUtil.getSpaceUrl(`/sprints/${sprint?.id}`),
             name: sprint?.name,
             current: true,
           },
@@ -207,18 +207,18 @@ const Sprint = ({
           </Block>
           <BottomButtons
             onList={() => {
-              history.push('/sprints');
+              commonUtil.move('/sprints');
             }}
             onEdit={
               sprint?.isAdmin
                 ? () => {
-                    history.push(`/sprints/${id}/edit`);
+                    commonUtil.move(`/sprints/${id}/edit`);
                   }
                 : null
             }
             onEditText="변경"
             onInfo={() => {
-              history.push(`/sprints/${sprint.id}/summary`);
+              commonUtil.move(`/sprints/${sprint.id}/summary`);
             }}
             onInfoText="통계"
             onClose={getOpenCloseHandler()}
@@ -236,12 +236,11 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(Sprint);
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(Sprint);
 
 Sprint.propTypes = {
   t: PropTypes.func,
   user: UserPropTypes,
-  history: HistoryPropTypes,
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,

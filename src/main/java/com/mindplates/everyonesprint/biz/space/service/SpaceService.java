@@ -47,9 +47,7 @@ public class SpaceService {
         return spaceRepository.findByName(name).orElse(null);
     }
 
-    public Space selectByCode(String code) {
-        return spaceRepository.findByCode(code).orElse(null);
-    }
+
 
     public Space selectByCode(Long spaceId, String code) {
         return spaceRepository.findByIdNotAndCode(spaceId, code).orElse(null);
@@ -105,17 +103,20 @@ public class SpaceService {
         return spaceRepository.findById(id);
     }
 
+    public Optional<Space> selectSpaceInfo(String spaceCode) {
+        return spaceRepository.findByCode(spaceCode);
+    }
 
     public Long selectAllSpaceCount() {
         return spaceRepository.countBy();
     }
 
-    public boolean selectIsSpaceMember(Long spaceId, UserSession userSession) {
-        return spaceRepository.existsByIdAndUsersUserId(spaceId, userSession.getId());
+    public boolean selectIsSpaceMember(String spaceCode, UserSession userSession) {
+        return spaceRepository.existsByCodeAndUsersUserId(spaceCode, userSession.getId());
     }
 
-    public Optional<SpaceApplicant> selectIsSpaceMember(Long spaceId, Long userId) {
-        return spaceApplicantRepository.findBySpaceIdAndUserId(spaceId, userId);
+    public Optional<SpaceApplicant> selectIsSpaceMember(String spaceCode, Long userId) {
+        return spaceApplicantRepository.findBySpaceCodeAndUserId(spaceCode, userId);
     }
 
     public SpaceApplicant createSpaceApplicantInfo(SpaceApplicant spaceApplicant, UserSession userSession) {
@@ -182,8 +183,8 @@ public class SpaceService {
         return spaceUser;
     }
 
-    public Optional<SpaceApplicant> selectSpaceApplicantInfo(Long spaceId, Long userId) {
-        return spaceApplicantRepository.findBySpaceIdAndUserId(spaceId, userId);
+    public Optional<SpaceApplicant> selectSpaceApplicantInfo(String spaceCode, Long userId) {
+        return spaceApplicantRepository.findBySpaceCodeAndUserId(spaceCode, userId);
     }
 
     public Optional<SpaceApplicant> selectSpaceApplicantInfo(Long id) {

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface SpaceApplicantRepository extends JpaRepository<SpaceApplicant, Long> {
 
-    Optional<SpaceApplicant> findBySpaceIdAndUserId(Long spaceId, Long userId);
+    Optional<SpaceApplicant> findBySpaceCodeAndUserId(String spaceCode, Long userId);
 
 
 }

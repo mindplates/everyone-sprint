@@ -12,6 +12,7 @@ import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPop
 import './Home.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
+import commonUtil from '@/utils/commonUtil';
 
 const Home = ({ t, user }) => {
   const tabs = [
@@ -39,7 +40,7 @@ const Home = ({ t, user }) => {
 
   const getMeetings = () => {
     request.get(
-      '/api/meetings/day',
+      '/api/{spaceCode}/meetings/day',
       { date: dateUtil.getToday() },
       (list) => {
         setMeetings(list.sort((a, b) => dateUtil.getTime(a.startDate) - dateUtil.getTime(b.startDate)));
@@ -54,7 +55,7 @@ const Home = ({ t, user }) => {
     // 클라이언트에서 서버로 날짜를 보낼때는 dateUtil.getLocalDateISOString()로 날짜 문자열로 전송 (2022-02-14)
 
     request.get(
-      `/api/sprints?date=${dateUtil.getLocalDateISOString(today)}&startDate=${today.toISOString()}`,
+      `/api/{spaceCode}/sprints?date=${dateUtil.getLocalDateISOString(today)}&startDate=${today.toISOString()}`,
       null,
       (list) => {
         setSprints(
@@ -123,7 +124,7 @@ const Home = ({ t, user }) => {
     if (isOpen) {
       const todayString = dateUtil.getLocalDateISOString(Date.now());
       request.get(
-        `/api/sprints/${sprintId}/scrums?date=${todayString}&startDate=${today.toISOString()}`,
+        `/api/{spaceCode}/sprints/${sprintId}/scrums?date=${todayString}&startDate=${today.toISOString()}`,
         null,
         (scrumMeetingPlans) => {
           const nextScrumInfo = { ...scrumInfo };
@@ -157,11 +158,11 @@ const Home = ({ t, user }) => {
       className="home-wrapper"
       breadcrumbs={[
         {
-          link: '/',
+          link: commonUtil.getSpaceUrl('/'),
           name: t('TOP'),
         },
         {
-          link: '/home',
+          link: commonUtil.getSpaceUrl('/home'),
           name: t('HOME'),
           current: true,
         },

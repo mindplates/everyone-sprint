@@ -16,9 +16,9 @@ const SpaceList = ({ className, t, history, spaces }) => {
         const isMember = space.isAdmin || space.isMember;
         return (
           <li
-            key={space.id}
+            key={space.code}
             onClick={() => {
-              history.push(`/spaces/${space.id}`);
+              history.push(`/spaces/${space.code}`);
             }}
           >
             <div>
@@ -34,7 +34,7 @@ const SpaceList = ({ className, t, history, spaces }) => {
                       data-tip={t('')}
                       onClick={(e) => {
                         e.stopPropagation();
-                        history.push(`/spaces/${space.id}/edit`);
+                        history.push(`/spaces/${space.code}/edit`);
                       }}
                     >
                       <i className="fas fa-cog" />

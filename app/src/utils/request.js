@@ -6,6 +6,7 @@ import configUtil from '@/utils/configUtil';
 import { addLoading, removeLoading, setLoading, setUserInfo } from '@/store/actions';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialog from '@/utils/dialog';
+import commonUtil from '@/utils/commonUtil';
 
 const loadingTime = 500;
 
@@ -144,10 +145,20 @@ function afterRequest(response, showLoading) {
   }
 }
 
+function getSpaceApiUrl(uri) {
+  let spaceUrl = uri;
+  if (uri.indexOf('{spaceCode}') > -1) {
+    spaceUrl = uri.replaceAll('{spaceCode}', commonUtil.getCurrentSpaceCode());
+  }
+
+  return spaceUrl;
+}
+
 function get(uri, params, successHandler, failHandler, showLoading) {
-  beforeRequest(showLoading, uri, 'get');
+  const spaceUrl = getSpaceApiUrl(uri);
+  beforeRequest(showLoading, spaceUrl, 'get');
   return axios
-    .get(`${base}${uri}`, {
+    .get(`${base}${spaceUrl}`, {
       params,
       ...axiosConfig,
     })
@@ -163,9 +174,10 @@ function get(uri, params, successHandler, failHandler, showLoading) {
 }
 
 function post(uri, params, successHandler, failHandler, showLoading) {
-  beforeRequest(showLoading, uri, 'post');
+  const spaceUrl = getSpaceApiUrl(uri);
+  beforeRequest(showLoading, spaceUrl, 'post');
   return axios
-    .post(`${base}${uri}`, params, axiosConfig)
+    .post(`${base}${spaceUrl}`, params, axiosConfig)
     .then((response) => {
       processSuccess(response, successHandler);
     })
@@ -178,9 +190,10 @@ function post(uri, params, successHandler, failHandler, showLoading) {
 }
 
 function put(uri, params, successHandler, failHandler, showLoading) {
-  beforeRequest(showLoading, uri, 'put');
+  const spaceUrl = getSpaceApiUrl(uri);
+  beforeRequest(showLoading, spaceUrl, 'put');
   return axios
-    .put(`${base}${uri}`, params, axiosConfig)
+    .put(`${base}${spaceUrl}`, params, axiosConfig)
     .then((response) => {
       processSuccess(response, successHandler);
     })
@@ -193,9 +206,10 @@ function put(uri, params, successHandler, failHandler, showLoading) {
 }
 
 function del(uri, params, successHandler, failHandler, showLoading) {
-  beforeRequest(showLoading, uri, 'del');
+  const spaceUrl = getSpaceApiUrl(uri);
+  beforeRequest(showLoading, spaceUrl, 'del');
   return axios
-    .delete(`${base}${uri}`, { ...axiosConfig, data: { ...params } })
+    .delete(`${base}${spaceUrl}`, { ...axiosConfig, data: { ...params } })
     .then((response) => {
       processSuccess(response, successHandler);
     })

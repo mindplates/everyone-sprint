@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { BlockTitle, BottomButtons, Page, PageContent, SprintTimeLine, Tabs, UserList, withLogin } from '@/components';
+import { BlockTitle, BottomButtons, Page, PageContent, SprintTimeLine, Tabs, UserList, withLogin, withSpace } from '@/components';
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES } from '@/constants/constants';
 import request from '@/utils/request';
-import { HistoryPropTypes } from '@/proptypes';
 import './Project.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const Project = ({
   t,
-  history,
   match: {
-    params: { id, spaceCode },
+    params: { id },
   },
 }) => {
   const tabs = [
@@ -27,13 +27,11 @@ const Project = ({
     },
   ];
 
-  console.log(spaceCode);
-
   const [project, setProject] = useState(null);
   const [tab, setTab] = useState('project');
 
   useEffect(() => {
-    request.get(`/api/projects/${id}`, null, setProject, null, t('프로젝트 정보를 가져오고 있습니다.'));
+    request.get(`/api/{spaceCode}/projects/${id}`, null, setProject, null, t('프로젝트 정보를 가져오고 있습니다.'));
   }, [id]);
 
   const allowSearch = ALLOW_SEARCHES.find((d) => d.key === project?.allowSearch) || {};
@@ -46,15 +44,15 @@ const Project = ({
       title={false}
       breadcrumbs={[
         {
-          link: '/',
+          link: commonUtil.getSpaceUrl('/'),
           name: t('TOP'),
         },
         {
-          link: '/projects',
+          link: commonUtil.getSpaceUrl('/projects'),
           name: t('프로젝트 목록'),
         },
         {
-          link: `/projects/${project?.id}`,
+          link: commonUtil.getSpaceUrl(`/projects/${project?.id}`),
           name: project?.name,
           current: true,
         },
@@ -103,12 +101,12 @@ const Project = ({
           </div>
           <BottomButtons
             onList={() => {
-              history.push('/projects');
+              commonUtil.move('/projects');
             }}
             onEdit={
               project?.isAdmin
                 ? () => {
-                    history.push(`/projects/${id}/edit`);
+                    commonUtil.move(`/projects/${id}/edit`);
                   }
                 : null
             }
@@ -126,11 +124,10 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(Project))));
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(Project);
 
 Project.propTypes = {
   t: PropTypes.func,
-  history: HistoryPropTypes,
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,

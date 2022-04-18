@@ -17,7 +17,7 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     List<Meeting> findAllBySprintId(Long sprintId);
 
-    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserIdAndSprintClosedFalse(LocalDateTime date, LocalDateTime nextDay, Long userId);
+    List<Meeting> findAllBySprintProjectSpaceCodeAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserIdAndSprintClosedFalse(String spaceCode, LocalDateTime date, LocalDateTime nextDay, Long userId);
 
     List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserIdAndSprintClosedFalse(Long sprintId, LocalDateTime date, LocalDateTime nextDay, Long userId);
 
@@ -41,7 +41,8 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     Long countBySprintProjectSpaceCode(String spaceCode);
 
-    List<Meeting> findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEqualsAndSprintClosedFalse(LocalDateTime date, LocalDateTime nextDay, Long userId, MeetingTypeCode type);
+    List<Meeting> findAllBySprintProjectSpaceCodeAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEqualsAndSprintClosedFalse(String spaceCode, LocalDateTime date, LocalDateTime nextDay, Long userId, MeetingTypeCode type);
+
     List<Meeting> findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEqualsAndSprintClosedFalse(Long sprintId, LocalDateTime date, LocalDateTime nextDay, Long userId, MeetingTypeCode type);
 
 }

@@ -18,6 +18,7 @@ import {
   Meetings,
   Message,
   MySpaces,
+  Notice,
   Project,
   Projects,
   PublicPark,
@@ -28,7 +29,6 @@ import {
   SprintDaily,
   Sprints,
   SprintSummary,
-  Stats,
 } from './pages';
 import './App.scss';
 import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
@@ -44,16 +44,15 @@ function App({ history, setting }) {
     <div className={`app-wrapper ${isConference ? 'conference-page' : ''}`}>
       <div className="app-header">
         <Switch>
-          meets|talks
-          <Route exact path="/:spaceCode/meets" component={ConferenceHeader} />
-          <Route exact path="/:spaceCode/talks" component={ConferenceHeader} />
+          <Route exact path="/:spaceCode/meets/*" component={ConferenceHeader} />
+          <Route exact path="/:spaceCode/talks/*" component={ConferenceHeader} />
           <Route path="/:spaceCode" component={Header} />
           <Route component={Header} />
         </Switch>
       </div>
       <div className={`app-content ${noMaxWidth ? 'no-max-width' : ''}`}>
         <Switch>
-          <Route exact path="/" component={Stats} />
+          <Route exact path="/" component={Notice} />
           <Route exact path="/home" component={Home} />
           <Route exact path="/public-park" component={PublicPark} />
 
@@ -63,8 +62,8 @@ function App({ history, setting }) {
           <Route exact path="/spaces" component={Spaces} />
           <Route exact path="/spaces/my" component={MySpaces} />
           <Route exact path="/spaces/new" render={() => <EditSpace type="new" />} />
-          <Route exact path="/spaces/:id/edit" render={() => <EditSpace type="edit" />} />
-          <Route exact path="/spaces/:id" component={Space} />
+          <Route exact path="/spaces/:spaceCode/edit" render={() => <EditSpace type="edit" />} />
+          <Route exact path="/spaces/:spaceCode" component={Space} />
 
           <Route exact path="/:spaceCode/projects/new" render={() => <EditProject type="new" />} />
           <Route exact path="/:spaceCode/projects/:id/edit" render={() => <EditProject type="edit" />} />

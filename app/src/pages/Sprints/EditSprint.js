@@ -25,13 +25,15 @@ import {
   Selector,
   UserList,
   withLogin,
+  withSpace,
 } from '@/components';
 import dialog from '@/utils/dialog';
 import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
-import { HistoryPropTypes, LocationPropTypes, UserPropTypes } from '@/proptypes';
+import { LocationPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
+import commonUtil from '@/utils/commonUtil';
 
 const start = new Date();
 start.setHours(9);
@@ -51,7 +53,6 @@ const labelMinWidth = '140px';
 const EditSprint = ({
   t,
   type,
-  history,
   user,
   match: {
     params: { id },
@@ -81,7 +82,7 @@ const EditSprint = ({
   useEffect(() => {
     if (id && type === 'edit')
       request.get(
-        `/api/sprints/${id}`,
+        `/api/{spaceCode}/sprints/${id}`,
         null,
         (data) => {
           setSprint(sprintUtil.getSprint(data));
@@ -93,7 +94,7 @@ const EditSprint = ({
 
   const getProjects = () => {
     request.get(
-      '/api/projects',
+      '/api/{spaceCode}/projects',
       null,
       (list) => {
         setProjects(list);
@@ -434,7 +435,7 @@ const EditSprint = ({
   const save = (next) => {
     if (type === 'edit') {
       request.put(
-        `/api/sprints/${next.id}`,
+        `/api/{spaceCode}/sprints/${next.id}`,
         {
           ...next,
           startDate: new Date(next.startDate),
@@ -443,7 +444,7 @@ const EditSprint = ({
         },
         (data) => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/sprints/${data.id}`);
+            commonUtil.move(`/sprints/${data.id}`);
           });
         },
         null,
@@ -451,11 +452,11 @@ const EditSprint = ({
       );
     } else {
       request.post(
-        '/api/sprints',
+        '/api/{spaceCode}/sprints',
         { ...next, startDate: new Date(next.startDate), endDate: new Date(next.endDate) },
         (data) => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/sprints/${data.id}`);
+            commonUtil.move(`/sprints/${data.id}`);
           });
         },
         null,
@@ -534,11 +535,11 @@ const EditSprint = ({
   const onDelete = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('데이터 삭제 경고'), t('스프린트를 삭제하시겠습니까?'), () => {
       request.del(
-        `/api/sprints/${id}`,
+        `/api/{spaceCode}/sprints/${id}`,
         null,
         () => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
-            history.push('/sprints');
+            commonUtil.move('/sprints');
           });
         },
         null,
@@ -550,10 +551,10 @@ const EditSprint = ({
   const onOpen = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 다시 열기'), t('스프린트를 오픈하시겠습니까?'), () => {
       request.put(
-        `/api/sprints/${id}/open`,
+        `/api/{spaceCode}/sprints/${id}/open`,
         null,
         () => {
-          history.push('/sprints');
+          commonUtil.move('/sprints');
         },
         null,
         t('스프린트를 다시 활성화하고 있습니다.'),
@@ -564,10 +565,10 @@ const EditSprint = ({
   const onClose = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('스프린트 종료'), t('스프린트를 종료하시겠습니까?'), () => {
       request.put(
-        `/api/sprints/${id}/close`,
+        `/api/{spaceCode}/sprints/${id}/close`,
         null,
         () => {
-          history.push('/sprints');
+          commonUtil.move('/sprints');
         },
         null,
         t('스프린트를 종료하고 있습니다.'),
@@ -590,34 +591,34 @@ const EditSprint = ({
           type === 'new'
             ? [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/sprints',
+                  link: commonUtil.getSpaceUrl('/sprints'),
                   name: t('스프린트 목록'),
                 },
                 {
-                  link: '/sprints/new',
+                  link: commonUtil.getSpaceUrl('/sprints/new'),
                   name: t('새 스프린트'),
                   current: true,
                 },
               ]
             : [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/sprints',
+                  link: commonUtil.getSpaceUrl('/sprints'),
                   name: t('스프린트 목록'),
                 },
                 {
-                  link: `/sprints/${sprint?.id}`,
+                  link: commonUtil.getSpaceUrl(`/sprints/${sprint?.id}`),
                   name: sprint?.name,
                 },
                 {
-                  link: `/sprints/${sprint?.id}/edit`,
+                  link: commonUtil.getSpaceUrl(`/sprints/${sprint?.id}/edit`),
                   name: t('변경'),
                   current: true,
                 },
@@ -637,7 +638,7 @@ const EditSprint = ({
                   size="md"
                   color="point"
                   onClick={() => {
-                    history.push('/projects/new');
+                    commonUtil.move('/projects/new');
                   }}
                 >
                   <i className="fas fa-plus" /> {t('새 프로젝트')}
@@ -856,7 +857,7 @@ const EditSprint = ({
             </Block>
             <BottomButtons
               onCancel={() => {
-                history.goBack();
+                commonUtil.goBack();
               }}
               onDelete={sprint?.isAdmin ? onDelete : null}
               onDeleteText="삭제"
@@ -880,12 +881,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(EditSprint);
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(EditSprint);
 
 EditSprint.propTypes = {
   t: PropTypes.func,
   user: UserPropTypes,
-  history: HistoryPropTypes,
+
   type: PropTypes.string,
   match: PropTypes.shape({
     params: PropTypes.shape({

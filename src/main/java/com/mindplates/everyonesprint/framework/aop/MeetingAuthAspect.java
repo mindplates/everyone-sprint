@@ -54,11 +54,11 @@ public class MeetingAuthAspect {
     private void cudOperator() {
     }
 
-    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableMeetingAuth) && (cudOperator() || selectOperator()) && args(code, ..)")
-    public void checkMeetAuth(JoinPoint joinPoint, String code) throws Throwable {
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableMeetingAuth) && (cudOperator() || selectOperator()) && args(spaceCode, meetingCode, ..)")
+    public void checkMeetAuth(JoinPoint joinPoint, String spaceCode, String meetingCode) throws Throwable {
         UserSession userSession = SessionUtil.getUserInfo(request);
 
-        Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Meeting meeting = meetingService.selectMeetingInfo(meetingCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         if (meeting.getType().equals(MeetingTypeCode.SMALLTALK)) {
             if (meeting.getSprint().getUsers().stream().noneMatch(sprintUser -> sprintUser.getUser().getId().equals(userSession.getId()))) {

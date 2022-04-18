@@ -4,8 +4,8 @@ import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import { Button, CheckBox, DatePicker, EmptyContent, Liner, MeetingList, Page, PageContent, PageTitle, Selector, withLogin } from '@/components';
+import { UserPropTypes } from '@/proptypes';
+import { Button, CheckBox, DatePicker, EmptyContent, Liner, MeetingList, Page, PageContent, PageTitle, Selector, withLogin, withSpace } from '@/components';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
@@ -26,7 +26,7 @@ const ranges = [
   },
 ];
 
-const Meetings = ({ t, user, history }) => {
+const Meetings = ({ t, user }) => {
   const [tabs] = useState([
     {
       key: 'list',
@@ -53,7 +53,7 @@ const Meetings = ({ t, user, history }) => {
 
   const getSprints = () => {
     request.get(
-      '/api/sprints',
+      '/api/{spaceCode}/sprints',
       null,
       (list) => {
         setSprints(
@@ -69,7 +69,7 @@ const Meetings = ({ t, user, history }) => {
 
   const getMeetings = () => {
     request.get(
-      '/api/meetings',
+      '/api/{spaceCode}/meetings',
       query,
       (list) => {
         setMeetings(list.sort((a, b) => dateUtil.getTime(a.startDate) - dateUtil.getTime(b.startDate)));
@@ -97,7 +97,7 @@ const Meetings = ({ t, user, history }) => {
             icon: <i className="fas fa-plus" />,
             text: t('새 미팅'),
             handler: () => {
-              history.push('/meetings/new');
+              commonUtil.move('/meetings/new');
             },
           },
         ]}
@@ -257,14 +257,14 @@ const Meetings = ({ t, user, history }) => {
                 meetings={list}
                 onClick={(code) => {
                   commonUtil.fullscreen(true);
-                  history.push(`/meets/${code}`);
+                  commonUtil.move(`/meets/${code}`);
                 }}
                 onJoin={(code) => {
                   commonUtil.fullscreen(true);
-                  history.push(`/meets/${code}`);
+                  commonUtil.move(`/meets/${code}`);
                 }}
                 onConfig={(meetingId) => {
-                  history.push(`/meetings/${meetingId}/edit`);
+                  commonUtil.move(`/meetings/${meetingId}/edit`);
                 }}
               />
             )}
@@ -278,7 +278,7 @@ const Meetings = ({ t, user, history }) => {
                       size="sm"
                       color="point"
                       onClick={() => {
-                        history.push('/meetings/new');
+                        commonUtil.move('/meetings/new');
                       }}
                     >
                       <i className="fas fa-plus" /> {t('새 미팅')}
@@ -301,10 +301,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(withLogin(Meetings));
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(Meetings);
 
 Meetings.propTypes = {
   t: PropTypes.func,
-  history: HistoryPropTypes,
   user: UserPropTypes,
 };

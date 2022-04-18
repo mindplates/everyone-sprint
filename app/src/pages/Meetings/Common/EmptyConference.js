@@ -15,7 +15,7 @@ class EmptyConference extends React.PureComponent {
 
     const joinMeetingRequest = () => {
       request.put(
-        `/api/meets/${code}/request/join`,
+        `/api/{spaceCode}/meets/${code}/request/join`,
         null,
         () => {
           setAllowRequest({

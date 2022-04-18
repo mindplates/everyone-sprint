@@ -1,0 +1,30 @@
+.notice-wrapper {
+  .notice-board {
+    > div {
+      width: 50%;
+
+      .title {
+        margin-bottom: 0.5rem;
+        > span {
+          display: inline-block;
+          padding: 0 0.5rem;
+        }
+      }
+
+      .content {
+        border: $border;
+        background-color: $white;
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+
+          li {
+            padding: 1rem;
+          }
+        }
+      }
+    }
+  }
+}

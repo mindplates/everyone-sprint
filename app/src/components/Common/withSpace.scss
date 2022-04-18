@@ -1,0 +1,75 @@
+.with-space-wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+
+  &.black {
+    color: $white;
+    > div {
+      > .new-user {
+        margin-top: 1rem;
+        text-align: center;
+        font-family: pretendard, sans-serif;
+        color: $white;
+
+        a {
+          color: $white;
+          &:visited {
+            color: $white;
+          }
+        }
+      }
+    }
+  }
+
+  > div {
+    align-self: center;
+
+    > .logo {
+      text-align: center;
+      margin-bottom: 4rem;
+
+      .product-logo-wrapper {
+        transform: scale(3);
+        transition: all 0.5s;
+
+        @media (max-width: 768px) {
+          transform: scale(2);
+          transition: all 0.5s;
+        }
+      }
+    }
+
+    > div {
+      .message {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        padding: 0 1rem;
+        text-align: center;
+        font-family: pretendard, sans-serif;
+      }
+
+      .search-space {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+
+      .new-space {
+        text-align: center;
+        a {
+          color: $point;
+          text-decoration: none;
+        }
+      }
+
+      .space-selector {
+        text-align: center;
+        color: $black;
+      }
+
+      .liner {
+        padding: 0 1rem;
+      }
+    }
+  }
+}

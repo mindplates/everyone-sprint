@@ -42,35 +42,49 @@ const ConferenceHeader = (props) => {
   };
 
   const updateLanguage = (language) => {
-    i18n.changeLanguage(language || 'ko');
-    request.put(
-      '/api/users/my-info/language',
-      { language },
-      () => {
-        TimeAgo.setDefaultLocale(language || 'ko');
-        setUserInfoReducer({
-          ...user,
-          language,
-        });
-      },
-      null,
-      t('언어 설정을 변경하고 있습니다.'),
-    );
+    i18n.changeLanguage(language);
+    if (user.id) {
+      request.put(
+        '/api/users/my-info/language',
+        { language },
+        () => {
+          TimeAgo.setDefaultLocale(language);
+          setUserInfoReducer({
+            ...user,
+            language,
+          });
+        },
+        null,
+        t('언어 설정을 변경하고 있습니다.'),
+      );
+    } else {
+      setUserInfoReducer({
+        ...user,
+        language,
+      });
+    }
   };
 
   const updateCountry = (country) => {
-    request.put(
-      '/api/users/my-info/country',
-      { country },
-      () => {
-        setUserInfoReducer({
-          ...user,
-          country,
-        });
-      },
-      null,
-      t('지역 설정을 변경하고 있습니다.'),
-    );
+    if (user.id) {
+      request.put(
+        '/api/users/my-info/country',
+        { country },
+        () => {
+          setUserInfoReducer({
+            ...user,
+            country,
+          });
+        },
+        null,
+        t('지역 설정을 변경하고 있습니다.'),
+      );
+    } else {
+      setUserInfoReducer({
+        ...user,
+        country,
+      });
+    }
   };
 
   return (

@@ -34,12 +34,12 @@ public class SprintService {
         this.scrumMeetingPlanAnswerRepository = scrumMeetingPlanAnswerRepository;
     }
 
-    public boolean selectIsExistProjectSprintName(Long projectId, Long sprintId, String name) {
+    public boolean selectIsExistProjectSprintName(String spaceCode, Long projectId, Long sprintId, String name) {
         if (sprintId == null) {
-            return sprintRepository.countByProjectIdAndName(projectId, name) > 0L;
+            return sprintRepository.countByProjectSpaceCodeAndProjectIdAndName(spaceCode, projectId, name) > 0L;
         }
 
-        return sprintRepository.countByProjectIdAndIdNotAndName(projectId, sprintId, name) > 0L;
+        return sprintRepository.countByProjectSpaceCodeAndProjectIdAndIdNotAndName(spaceCode, projectId, sprintId, name) > 0L;
     }
 
     public Sprint createSprintInfo(Sprint sprint, UserSession userSession) {
@@ -268,8 +268,8 @@ public class SprintService {
         sprintRepository.deleteById(sprintId);
     }
 
-    public List<Sprint> selectUserSprintList(UserSession userSession, Boolean closed) {
-        return sprintRepository.findAllByUsersUserIdAndClosed(userSession.getId(), closed);
+    public List<Sprint> selectUserSprintList(String spaceCode, UserSession userSession, Boolean closed) {
+        return sprintRepository.findAllByProjectSpaceCodeAndUsersUserIdAndClosed(spaceCode, userSession.getId(), closed);
     }
 
     public Optional<Sprint> selectSprintInfo(Long id) {

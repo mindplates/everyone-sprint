@@ -47,6 +47,7 @@ import ProjectList from '@/components/ProjectList/ProjectList';
 import SprintTimeLine from '@/components/SprintTimeLine/SprintTimeLine';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 import withLogin from '@/components/Common/withLogin';
+import withSpace from '@/components/Common/withSpace';
 import DailySmallTalkMeeting from '@/components/DailySmallTalkMeeting/DailySmallTalkMeeting';
 import IconSelector from '@/components/IconMaker/IconSelector/IconSelector';
 import ImageMaker from '@/components/IconMaker/ImageMaker/ImageMaker';
@@ -115,4 +116,5 @@ export {
   SpaceList,
   UserApplicants,
   SpaceCard,
+  withSpace,
 };

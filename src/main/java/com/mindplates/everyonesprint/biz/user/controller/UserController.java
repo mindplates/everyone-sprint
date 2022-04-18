@@ -7,7 +7,6 @@ import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.biz.user.vo.request.LoginRequest;
 import com.mindplates.everyonesprint.biz.user.vo.request.UserRequest;
 import com.mindplates.everyonesprint.biz.user.vo.response.MyInfoResponse;
-import com.mindplates.everyonesprint.biz.user.vo.response.UserResponse;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
@@ -21,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -50,8 +48,9 @@ public class UserController {
         User user = userRequest.buildEntity();
         User result = userService.createUser(user);
         sessionUtil.login(request, result);
+        List<Space> spaces = spaceService.selectUserActivatedSpaceList(sessionUtil.getUserId(request));
 
-        return new MyInfoResponse(result);
+        return new MyInfoResponse(result, spaces);
     }
 
     @DisableLogin
@@ -106,12 +105,6 @@ public class UserController {
         }
 
         sessionUtil.logout(request);
-    }
-
-    @GetMapping("")
-    public List<UserResponse> selectUsers(@RequestParam("word") String word) {
-        List<User> users = userService.selectUserList(word + "%", word + "%");
-        return users.stream().map(UserResponse::new).collect(Collectors.toList());
     }
 
 }

@@ -68,7 +68,7 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
         </div>
         {height > 40 && (
           <div className="time-ago">
-            <ReactTimeAgo locale={user.language || 'ko'} date={dateUtil.getTime(meeting.startDate)} />
+            <ReactTimeAgo locale={user.language} date={dateUtil.getTime(meeting.startDate)} />
           </div>
         )}
       </div>

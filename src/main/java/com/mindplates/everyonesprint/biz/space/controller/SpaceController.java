@@ -12,9 +12,11 @@ import com.mindplates.everyonesprint.biz.space.vo.request.SpaceRequest;
 import com.mindplates.everyonesprint.biz.space.vo.response.SpaceApplicantResponse;
 import com.mindplates.everyonesprint.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.everyonesprint.biz.space.vo.response.SpaceResponse;
+import com.mindplates.everyonesprint.biz.space.vo.response.UserAndSpaceResponse;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.service.UserService;
+import com.mindplates.everyonesprint.biz.user.vo.response.MyInfoResponse;
 import com.mindplates.everyonesprint.common.code.ApprovalStatusCode;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
@@ -79,13 +81,13 @@ public class SpaceController {
     }
 
     @Operation(description = "스페이스 조회")
-    @GetMapping("/{id}")
+    @GetMapping("/{spaceCode}")
     @DisableAuth
-    public SpaceResponse selectSpaceInfo(@PathVariable Long id, @ApiIgnore UserSession userSession) {
-        Optional<Space> space = spaceService.selectSpaceInfo(id);
+    public SpaceResponse selectSpaceInfo(@PathVariable String spaceCode, @ApiIgnore UserSession userSession) {
+        Optional<Space> space = spaceService.selectSpaceInfo(spaceCode);
 
         if (space.isPresent()) {
-            boolean isMember = spaceService.selectIsSpaceMember(space.get().getId(), userSession);
+            boolean isMember = spaceService.selectIsSpaceMember(spaceCode, userSession);
             if (isMember) {
                 return new SpaceResponse(space.get(), userSession);
             } else if (!space.get().getActivated()) {
@@ -94,33 +96,7 @@ public class SpaceController {
                 throw new ServiceException(HttpStatus.LOCKED);
             } else {
                 SpaceResponse response = new SpaceResponse(space.get(), userSession);
-                response.setUserApplicantStatus(new SpaceApplicantResponse(spaceService.selectSpaceApplicantInfo(space.get().getId(), userSession.getId()).orElse(null)));
-                response.getUsers().clear();
-                return response;
-            }
-
-        }
-
-        throw new ServiceException(HttpStatus.NOT_FOUND);
-    }
-
-    @Operation(description = "스페이스 조회")
-    @GetMapping("/codes/{code}")
-    @DisableAuth
-    public SpaceResponse selectSpaceInfo(@PathVariable String code, @ApiIgnore UserSession userSession) {
-        Space space = spaceService.selectByCode(code);
-
-        if (space != null) {
-            boolean isMember = spaceService.selectIsSpaceMember(space.getId(), userSession);
-            if (isMember) {
-                return new SpaceResponse(space, userSession);
-            } else if (!space.getActivated()) {
-                throw new ServiceException(HttpStatus.LOCKED);
-            } else if (!space.getAllowSearch()) {
-                throw new ServiceException(HttpStatus.LOCKED);
-            } else {
-                SpaceResponse response = new SpaceResponse(space, userSession);
-                response.setUserApplicantStatus(new SpaceApplicantResponse(spaceService.selectSpaceApplicantInfo(space.getId(), userSession.getId()).orElse(null)));
+                response.setUserApplicantStatus(new SpaceApplicantResponse(spaceService.selectSpaceApplicantInfo(spaceCode, userSession.getId()).orElse(null)));
                 response.getUsers().clear();
                 return response;
             }
@@ -131,9 +107,9 @@ public class SpaceController {
     }
 
     @Operation(description = "스페이스 참여 승인/거절")
-    @PutMapping("/{id}/applicants/{applicantId}/{operation}")
-    public ResponseEntity updateSpaceApplicantInfo(@PathVariable Long id, @PathVariable Long applicantId, @PathVariable String operation, @ApiIgnore UserSession userSession) {
-        Space space = spaceService.selectSpaceInfo(id).get();
+    @PutMapping("/{spaceCode}/applicants/{applicantId}/{operation}")
+    public ResponseEntity updateSpaceApplicantInfo(@PathVariable String spaceCode, @PathVariable Long applicantId, @PathVariable String operation, @ApiIgnore UserSession userSession) {
+        Space space = spaceService.selectSpaceInfo(spaceCode).get();
         SpaceApplicant spaceApplicant = spaceService.selectSpaceApplicantInfo(applicantId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if (!spaceApplicant.getApprovalStatusCode().equals(ApprovalStatusCode.REQUEST)) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
@@ -155,13 +131,13 @@ public class SpaceController {
     }
 
     @Operation(description = "스페이스 참여 요청")
-    @PostMapping("/{id}/join")
+    @PostMapping("/{spaceCode}/join")
     @DisableAuth
-    public ResponseEntity createSpaceApplicantInfo(@PathVariable Long id, @Valid @RequestBody SpaceApplicantRequest spaceApplicantRequest, @ApiIgnore UserSession userSession) {
-        Optional<Space> space = spaceService.selectSpaceInfo(id);
+    public ResponseEntity createSpaceApplicantInfo(@PathVariable String spaceCode, @Valid @RequestBody SpaceApplicantRequest spaceApplicantRequest, @ApiIgnore UserSession userSession) {
+        Optional<Space> space = spaceService.selectSpaceInfo(spaceCode);
 
         if (space.isPresent()) {
-            boolean isMember = spaceService.selectIsSpaceMember(space.get().getId(), userSession);
+            boolean isMember = spaceService.selectIsSpaceMember(spaceCode, userSession);
             if (isMember) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST, "space.already.member");
             } else if (!space.get().getActivated()) {
@@ -176,12 +152,12 @@ public class SpaceController {
                         .build();
                 spaceService.createSpaceUserInfo(spaceUser, userSession);
             } else {
-                Optional<SpaceApplicant> existApplicant = spaceService.selectIsSpaceMember(spaceApplicantRequest.getSpaceId(), spaceApplicantRequest.getUserId());
+                Optional<SpaceApplicant> existApplicant = spaceService.selectIsSpaceMember(spaceCode, spaceApplicantRequest.getUserId());
                 if (existApplicant.isPresent()) {
                     existApplicant.get().setApprovalStatusCode(ApprovalStatusCode.REQUEST);
                     spaceService.updateApplicantInfo(existApplicant.get(), userSession);
                 } else {
-                    SpaceApplicant spaceApplicant = spaceApplicantRequest.buildEntity();
+                    SpaceApplicant spaceApplicant = spaceApplicantRequest.buildEntity(space.get());
                     spaceService.createSpaceApplicantInfo(spaceApplicant, userSession);
                 }
 
@@ -194,10 +170,10 @@ public class SpaceController {
     }
 
     @Operation(description = "스페이스 참여 요청 취소")
-    @DeleteMapping("/{id}/join")
+    @DeleteMapping("/{spaceCode}/join")
     @DisableAuth
-    public ResponseEntity deleteSpaceApplicantInfo(@PathVariable Long id, @Valid @RequestBody SpaceApplicantRequest spaceApplicantRequest, @ApiIgnore UserSession userSession) {
-        Optional<SpaceApplicant> spaceApplicant = spaceService.selectSpaceApplicantInfo(id, userSession.getId());
+    public ResponseEntity deleteSpaceApplicantInfo(@PathVariable String spaceCode, @Valid @RequestBody SpaceApplicantRequest spaceApplicantRequest, @ApiIgnore UserSession userSession) {
+        Optional<SpaceApplicant> spaceApplicant = spaceService.selectSpaceApplicantInfo(spaceCode, userSession.getId());
 
         if (spaceApplicant.isPresent()) {
             spaceService.deleteSpaceApplicantInfo(spaceApplicant.get());
@@ -210,22 +186,27 @@ public class SpaceController {
     @Operation(description = "스페이스 생성")
     @PostMapping("")
     @DisableAuth
-    public SpaceResponse createSpaceInfo(@Valid @RequestBody SpaceRequest spaceRequest, @ApiIgnore UserSession userSession) {
+    public UserAndSpaceResponse createSpaceInfo(@Valid @RequestBody SpaceRequest spaceRequest, @ApiIgnore UserSession userSession) {
 
-        Space alreadySpace = spaceService.selectByCode(spaceRequest.getCode());
-        if (alreadySpace != null) {
+        Optional<Space> alreadySpace = spaceService.selectSpaceInfo(spaceRequest.getCode());
+        if (alreadySpace.isPresent()) {
             throw new ServiceException("space.duplicated");
         }
 
         Space space = spaceRequest.buildEntity();
-        return new SpaceResponse(spaceService.createSpaceInfo(space, userSession), userSession);
+        SpaceResponse spaceResponse = new SpaceResponse(spaceService.createSpaceInfo(space, userSession), userSession);
+        List<Space> spaces = spaceService.selectUserActivatedSpaceList(userSession.getId());
+        User user = userService.selectUser(userSession.getId());
+        MyInfoResponse userResponse = new MyInfoResponse(user, spaces);
+        UserAndSpaceResponse userAndSpaceResponse = UserAndSpaceResponse.builder().space(spaceResponse).user(userResponse).build();
+        return userAndSpaceResponse;
     }
 
     @Operation(description = "스페이스 수정")
-    @PutMapping("/{id}")
-    public SpaceResponse updateSpaceInfo(@PathVariable Long id, @Valid @RequestBody SpaceRequest spaceRequest, @ApiIgnore UserSession userSession) {
+    @PutMapping("/{spaceCode}")
+    public UserAndSpaceResponse updateSpaceInfo(@PathVariable String spaceCode, @Valid @RequestBody SpaceRequest spaceRequest, @ApiIgnore UserSession userSession) {
 
-        if (!id.equals(spaceRequest.getId())) {
+        if (!spaceCode.equals(spaceRequest.getCode())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
@@ -234,16 +215,26 @@ public class SpaceController {
             throw new ServiceException("space.duplicated");
         }
 
-        Space spaceInfo = spaceRequest.buildEntity();
-        return new SpaceResponse(spaceService.updateSpaceInfo(spaceInfo, userSession), userSession);
+        Space space = spaceRequest.buildEntity();
+        SpaceResponse spaceResponse = new SpaceResponse(spaceService.updateSpaceInfo(space, userSession), userSession);
+        List<Space> spaces = spaceService.selectUserActivatedSpaceList(userSession.getId());
+        User user = userService.selectUser(userSession.getId());
+        MyInfoResponse userResponse = new MyInfoResponse(user, spaces);
+        UserAndSpaceResponse userAndSpaceResponse = UserAndSpaceResponse.builder().space(spaceResponse).user(userResponse).build();
+        return userAndSpaceResponse;
     }
 
     @Operation(description = "스페이스 삭제")
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteSpaceInfo(@PathVariable Long id) {
-        Space space = spaceService.selectSpaceInfo(id).get();
+    @DeleteMapping("/{spaceCode}")
+    public UserAndSpaceResponse deleteSpaceInfo(@PathVariable String spaceCode, @ApiIgnore UserSession userSession) {
+        Space space = spaceService.selectSpaceInfo(spaceCode).get();
         spaceService.deleteSpaceInfo(space);
-        return new ResponseEntity(HttpStatus.OK);
+
+        List<Space> spaces = spaceService.selectUserActivatedSpaceList(userSession.getId());
+        User user = userService.selectUser(userSession.getId());
+        MyInfoResponse userResponse = new MyInfoResponse(user, spaces);
+        UserAndSpaceResponse userAndSpaceResponse = UserAndSpaceResponse.builder().user(userResponse).build();
+        return userAndSpaceResponse;
     }
 
 

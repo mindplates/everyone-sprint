@@ -31,12 +31,13 @@ import { MESSAGE_CATEGORY, TIMEZONES, USER_STUB } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes } from '@/proptypes';
-import { setUserInfo } from '@/store/actions';
+import { setSpaceInfo, setUserInfo } from '@/store/actions';
 import './Join.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const labelMinWidth = '140px';
 
-const Join = ({ t, history, setUserInfo: setUserInfoReducer }) => {
+const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSpaceInfoReducer }) => {
   const [info, setInfo] = useState({
     ...USER_STUB,
     password: '',
@@ -78,9 +79,12 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer }) => {
         const { autoLogin, ...last } = data;
         if (data.autoLogin) {
           storage.setItem('auth', 'token', data.loginToken);
+        } else {
+          storage.setItem('auth', 'token', null);
         }
 
         setUserInfoReducer(last);
+        setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
 
         dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
           history.push('/');
@@ -96,11 +100,11 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer }) => {
       <PageTitle
         breadcrumbs={[
           {
-            link: '/',
+            link: commonUtil.getSpaceUrl('/'),
             name: t('TOP'),
           },
           {
-            link: '/home',
+            link: commonUtil.getSpaceUrl('/home'),
             name: t('HOME'),
             current: true,
           },
@@ -420,6 +424,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setUserInfo: (user) => dispatch(setUserInfo(user)),
+    setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
   };
 };
 
@@ -432,4 +437,5 @@ Join.propTypes = {
   }),
   history: HistoryPropTypes,
   setUserInfo: PropTypes.func,
+  setSpaceInfo: PropTypes.func,
 };

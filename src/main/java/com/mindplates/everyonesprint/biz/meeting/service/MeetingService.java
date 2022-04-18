@@ -90,7 +90,7 @@ public class MeetingService {
         meetingRepository.delete(meeting);
     }
 
-    public List<Meeting> selectUserMeetingList(Long sprintId, LocalDateTime date, UserSession userSession) {
+    public List<Meeting> selectUserMeetingList(String spaceCode, Long sprintId, LocalDateTime date, UserSession userSession) {
         LocalDateTime nextDay = date.plusDays(1);
 
         List<Meeting> meetings = new ArrayList<>();
@@ -99,8 +99,8 @@ public class MeetingService {
             meetings.addAll(meetingRepository.findAllBySprintIdAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserIdAndSprintClosedFalse(sprintId, date, nextDay, userSession.getId()));
             return meetings;
         } else {
-            meetings.addAll(meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEqualsAndSprintClosedFalse(date, nextDay, userSession.getId(), MeetingTypeCode.SMALLTALK));
-            meetings.addAll(meetingRepository.findAllByStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserIdAndSprintClosedFalse(date, nextDay, userSession.getId()));
+            meetings.addAll(meetingRepository.findAllBySprintProjectSpaceCodeAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndSprintUsersUserIdAndTypeEqualsAndSprintClosedFalse(spaceCode, date, nextDay, userSession.getId(), MeetingTypeCode.SMALLTALK));
+            meetings.addAll(meetingRepository.findAllBySprintProjectSpaceCodeAndStartDateGreaterThanEqualAndStartDateLessThanEqualAndUsersUserIdAndSprintClosedFalse(spaceCode, date, nextDay, userSession.getId()));
         }
 
 

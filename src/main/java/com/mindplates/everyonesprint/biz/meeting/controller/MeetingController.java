@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/meetings")
+@RequestMapping("/api/{spaceCode}/meetings")
 public class MeetingController {
 
     final private MeetingService meetingService;
@@ -41,15 +41,15 @@ public class MeetingController {
     @Operation(description = "사용자가 참석 가능한 미팅 목록 조회")
     @GetMapping("")
     @CheckSprintAuth
-    public List<MeetingResponse> selectUserMeetingList(@RequestParam(value = "sprintId", required = false) Long sprintId, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @ApiIgnore UserSession userSession) {
-        List<Meeting> meetings = meetingService.selectUserMeetingList(sprintId, date, userSession);
+    public List<MeetingResponse> selectUserMeetingList(@PathVariable String spaceCode, @RequestParam(value = "sprintId", required = false) Long sprintId, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @ApiIgnore UserSession userSession) {
+        List<Meeting> meetings = meetingService.selectUserMeetingList(spaceCode, sprintId, date, userSession);
         return meetings.stream().map(MeetingResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "미팅 생성")
     @PostMapping("")
     @CheckSprintAuth
-    public MeetingResponse createMeetingInfo(@Valid @RequestBody MeetingRequest meetingRequest, UserSession userSession) {
+    public MeetingResponse createMeetingInfo(@PathVariable String spaceCode, @Valid @RequestBody MeetingRequest meetingRequest, UserSession userSession) {
         Meeting meeting = meetingRequest.buildEntity();
         return new MeetingResponse(meetingService.createMeetingInfo(meeting, userSession));
     }
@@ -57,8 +57,9 @@ public class MeetingController {
     @Operation(description = "특정일자의 미팅 목록 조회")
     @GetMapping("/day")
     @CheckSprintAuth
-    public List<MeetingResponse> selectUserMeetingListWithConnectionCount(@RequestParam(value = "sprintId", required = false) Long sprintId, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @ApiIgnore UserSession userSession) {
-        List<Meeting> meetings = meetingService.selectUserMeetingList(sprintId, date, userSession);
+    public List<MeetingResponse> selectUserMeetingListWithConnectionCount(@PathVariable String spaceCode, @RequestParam(value = "sprintId", required = false) Long sprintId, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date, @ApiIgnore UserSession userSession) {
+
+        List<Meeting> meetings = meetingService.selectUserMeetingList(spaceCode, sprintId, date, userSession);
         return meetings.stream().map(MeetingResponse::new).peek((meetingResponse -> {
             meetingResponse.setConnectedUserCount(participantService.countByCodeAndConnectedTrue(meetingResponse.getCode()));
         })).collect(Collectors.toList());
@@ -66,7 +67,7 @@ public class MeetingController {
 
     @Operation(description = "미팅 정보 변경")
     @PutMapping("/{id}")
-    public MeetingResponse updateMeetingInfo(@PathVariable Long id, @Valid @RequestBody MeetingRequest meetingRequest, @ApiIgnore UserSession userSession) {
+    public MeetingResponse updateMeetingInfo(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody MeetingRequest meetingRequest, @ApiIgnore UserSession userSession) {
 
         if (!id.equals(meetingRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
@@ -93,7 +94,7 @@ public class MeetingController {
 
     @Operation(description = "미팅 정보 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteMeetingInfo(@PathVariable Long id, @ApiIgnore UserSession userSession) {
+    public ResponseEntity deleteMeetingInfo(@PathVariable String spaceCode, @PathVariable Long id, @ApiIgnore UserSession userSession) {
         Meeting meeting = meetingService.selectMeetingInfo(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if (!userSession.getId().equals(meeting.getCreatedBy())) {
             throw new ServiceException("common.not.authorized");
@@ -104,7 +105,7 @@ public class MeetingController {
 
     @Operation(description = "미팅 정보 조회")
     @GetMapping("/{id}")
-    public MeetingResponse selectMeetingInfo(@PathVariable Long id) {
+    public MeetingResponse selectMeetingInfo(@PathVariable String spaceCode, @PathVariable Long id) {
         return new MeetingResponse(meetingService.selectMeetingInfo(id).get());
     }
 }

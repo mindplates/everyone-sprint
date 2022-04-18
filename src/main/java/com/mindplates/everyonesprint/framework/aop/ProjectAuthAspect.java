@@ -51,21 +51,21 @@ public class ProjectAuthAspect {
 
     // TODO 프로젝트 생성 시 스페이스 멤버인지 확인
 
-    @Before("udOperator() && args(projectId, ..)")
-    public void checkIsProjectAdminUser(JoinPoint joinPoint, long projectId) throws Throwable {
+    @Before("udOperator() && args(spaceCode, projectId, ..)")
+    public void checkIsProjectAdminUser(JoinPoint joinPoint, String spaceCode, long projectId) throws Throwable {
 
         UserSession userSession = SessionUtil.getUserInfo(request);
-        Project project = projectService.selectProjectInfo(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Project project = projectService.selectProjectInfo(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         if (project.getUsers().stream().noneMatch(projectUser -> projectUser.getUser().getId().equals(userSession.getId()) && projectUser.getRole().equals(RoleCode.ADMIN))) {
             throw new ServiceException("common.not.authorized");
         }
     }
 
-    @Before("selectOperator() && args(projectId, ..)")
-    public void checkIsProjectUser(JoinPoint joinPoint, long projectId) throws Throwable {
+    @Before("selectOperator() && args(spaceCode, projectId, ..)")
+    public void checkIsProjectUser(JoinPoint joinPoint, String spaceCode, long projectId) throws Throwable {
         UserSession userSession = SessionUtil.getUserInfo(request);
-        Project project = projectService.selectProjectInfo(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Project project = projectService.selectProjectInfo(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         if (project.getUsers().stream().noneMatch(projectUser -> projectUser.getUser().getId().equals(userSession.getId()))) {
             throw new ServiceException("common.not.authorized");

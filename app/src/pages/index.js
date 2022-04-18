@@ -10,7 +10,6 @@ import Conference from './Meetings/Conference/Conference';
 import Common from './Common/Common';
 import Header from './Common/Header';
 import Footer from './Common/Footer';
-import SprintDeactivate from './Sprints/SprintDeactivate';
 import ConferenceHeader from './Common/ConferenceHeader';
 import Home from './Home/Home';
 import Stats from './Stats/Stats';
@@ -25,6 +24,7 @@ import MySpaces from './Spaces/MySpaces';
 import EditSpace from './Spaces/EditSpace';
 import Space from './Spaces/Space';
 import SpaceHome from './SpaceHome/SpaceHome';
+import Notice from './Notice/Notice';
 
 export {
   PublicPark,
@@ -39,7 +39,6 @@ export {
   Login,
   Join,
   Conference,
-  SprintDeactivate,
   ConferenceHeader,
   Home,
   Stats,
@@ -54,4 +53,5 @@ export {
   Space,
   SpaceHome,
   MySpaces,
+  Notice,
 };

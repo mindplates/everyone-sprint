@@ -17,7 +17,7 @@ const UserSelector = ({ t, users: parentUsers, close, onChangeUsers, editable })
 
   const getUsers = () => {
     request.get(
-      '/api/users',
+      '/api/{spaceCode}/users',
       { word },
       (list) => {
         setUsers(list);

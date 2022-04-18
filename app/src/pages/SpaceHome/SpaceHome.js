@@ -4,7 +4,7 @@ import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Button, Page, PageContent, ProductLogo, SpaceCard, withLogin } from '@/components';
+import { Button, Page, PageContent, ProductLogo, SpaceCard, withLogin, withSpace } from '@/components';
 import { HistoryPropTypes, SpacePropTypes, UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import './SpaceHome.scss';
@@ -45,11 +45,10 @@ const SpaceHome = ({
     getStats();
     if (!space?.id && spaceCode) {
       request.get(
-        `/api/spaces/codes/${spaceCode}`,
+        `/api/spaces/${spaceCode}`,
         null,
         (data) => {
           setInfo(data);
-          console.log(data);
         },
         (error, response) => {
           if (response && response.status === 404) {
@@ -61,13 +60,8 @@ const SpaceHome = ({
         },
         t('스페이스 정보를 가져오고 있습니다.'),
       );
-      console.log(spaceCode);
     }
   }, [space, spaceCode]);
-
-  console.log(history);
-
-  console.log(user);
 
   return (
     <Page className="space-home-wrapper">
@@ -120,7 +114,13 @@ const SpaceHome = ({
                   {user.spaces.map((d) => {
                     return (
                       <div>
-                        <SpaceCard space={d} description={false} />
+                        <SpaceCard
+                          space={d}
+                          description={false}
+                          onClick={() => {
+                            // TODO RESUME HERE
+                          }}
+                        />
                       </div>
                     );
                   })}
@@ -187,7 +187,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withLogin, withRouter, withTranslation())(connect(mapStateToProps, undefined)(SpaceHome));
+export default compose(withLogin, withSpace, withRouter, withTranslation())(connect(mapStateToProps, undefined)(SpaceHome));
 
 SpaceHome.propTypes = {
   t: PropTypes.func,

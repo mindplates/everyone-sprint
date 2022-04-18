@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import { ConferenceVideoItem, EmptyContent, Page, PageContent, ParticipantsList, SocketClient, withLogin } from '@/components';
+import { ConferenceVideoItem, EmptyContent, Page, PageContent, ParticipantsList, SocketClient, withLogin, withSpace } from '@/components';
 import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
 import ConferenceDeviceConfig from '@/pages/Meetings/Common/ConferenceDeviceConfig';
@@ -258,7 +258,7 @@ class Conference extends React.Component {
   getAnswers = (sprintId, scrumMeetingPlanId, date, loading) => {
     const { t } = this.props;
     request.get(
-      `/api/sprints/${sprintId}/meetings/${scrumMeetingPlanId}/answers?date=${dateUtil.getLocalDateISOString(date)}`,
+      `/api/{spaceCode}/sprints/${sprintId}/meetings/${scrumMeetingPlanId}/answers?date=${dateUtil.getLocalDateISOString(date)}`,
       null,
       (answers) => {
         this.setState({
@@ -274,7 +274,7 @@ class Conference extends React.Component {
     const { t } = this.props;
 
     request.get(
-      `/api/meets/${code}`,
+      `/api/{spaceCode}/meets/${code}`,
       null,
       (conference) => {
         this.setState(
@@ -347,7 +347,7 @@ class Conference extends React.Component {
     const { t } = this.props;
 
     request.get(
-      `/api/meets/${conference.code}/users`,
+      `/api/{spaceCode}/meets/${conference.code}/users`,
       null,
       (participants) => {
         const nextConference = this.getMergeUsersWithParticipants(participants);
@@ -1225,8 +1225,7 @@ class Conference extends React.Component {
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
-    const connectedUsers = conference?.users
-      .filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+    const connectedUsers = conference?.users?.filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
       .filter((userInfo) => userInfo.participant?.connected || debugging);
 
     const existConnectedUser = connectedUsers && connectedUsers.length > 0;
@@ -1267,7 +1266,7 @@ class Conference extends React.Component {
                   onMessage={this.onMessage}
                   onConnect={() => {}}
                   onDisconnect={() => {
-                    request.put(`/api/meets/${conference.code}/status`, {
+                    request.put(`/api/{spaceCode}/meets/${conference.code}/status`, {
                       ...statistics,
                       time: Math.round(statistics.time / 1000),
                     });
@@ -1478,7 +1477,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(Conference, true))));
+export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withSpace(withLogin(Conference, true)))));
 
 Conference.propTypes = {
   t: PropTypes.func,

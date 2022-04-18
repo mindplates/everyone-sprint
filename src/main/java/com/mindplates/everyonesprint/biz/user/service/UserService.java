@@ -11,16 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class UserService {
 
     final private UserRepository userRepository;
+
     final private EncryptUtil encryptUtil;
     final private SpaceUserRepository spaceUserRepository;
 
-    public UserService(UserRepository userRepository,  SpaceUserRepository spaceUserRepository, EncryptUtil encryptUtil) {
+    public UserService(UserRepository userRepository, SpaceUserRepository spaceUserRepository, EncryptUtil encryptUtil) {
         this.userRepository = userRepository;
         this.spaceUserRepository = spaceUserRepository;
         this.encryptUtil = encryptUtil;
@@ -38,8 +40,9 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public List<User> selectUserList(String email, String alias) {
-        return userRepository.findAllByUseYnTrueAndEmailLikeOrAliasLike(email, alias);
+    public List<User> selectSpaceUserList(String spaceCode, String email, String alias) {
+        return spaceUserRepository.findAllByUserUseYnTrueAndSpaceCodeAndUserEmailLikeOrUserUseYnTrueAndSpaceCodeAndUserAliasLike(spaceCode, email, spaceCode, alias)
+                .stream().map((d) -> d.getUser()).collect(Collectors.toList());
     }
 
     public User createUser(User user) {

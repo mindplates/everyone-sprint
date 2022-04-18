@@ -9,8 +9,9 @@ import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/co
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import { setSpaceInfo } from '@/store/actions';
+import { setSpaceInfo, setUserInfo } from '@/store/actions';
 import './EditSpace.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const labelMinWidth = '140px';
 
@@ -20,9 +21,10 @@ const EditSpace = ({
   history,
   user,
   match: {
-    params: { id },
+    params: { spaceCode },
   },
   setSpaceInfo: setSpaceInfoReducer,
+  setUserInfo: setUserInfoReducer,
 }) => {
   const [space, setSpace] = useState({
     name: '',
@@ -35,9 +37,9 @@ const EditSpace = ({
   });
 
   useEffect(() => {
-    if (id && type === 'edit')
+    if (spaceCode && type === 'edit')
       request.get(
-        `/api/spaces/${id}`,
+        `/api/spaces/${spaceCode}`,
         null,
         (data) => {
           setSpace(data);
@@ -45,7 +47,7 @@ const EditSpace = ({
         null,
         t('스페이스 정보를 가져오고 있습니다'),
       );
-  }, [id, type]);
+  }, [spaceCode, type]);
 
   useEffect(() => {
     if (type === 'new') {
@@ -85,14 +87,17 @@ const EditSpace = ({
   const save = () => {
     if (type === 'edit') {
       request.put(
-        `/api/spaces/${space.id}`,
+        `/api/spaces/${space.code}`,
         {
           ...space,
           users: space.users.filter((u) => u.CRUD !== 'D'),
         },
         (data) => {
+          setSpaceInfoReducer(data.space);
+          setUserInfoReducer(data.user);
+
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/spaces/${data.id}`);
+            history.push(`/spaces/${data.space.code}`);
           });
         },
         null,
@@ -103,9 +108,11 @@ const EditSpace = ({
         '/api/spaces',
         { ...space },
         (data) => {
-          setSpaceInfoReducer(data);
+          setSpaceInfoReducer(data.space);
+          setUserInfoReducer(data.user);
+
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/spaces/${data.id}`);
+            history.push(`/spaces/${data.space.code}`);
           });
         },
         null,
@@ -117,9 +124,11 @@ const EditSpace = ({
   const onDelete = () => {
     dialog.setConfirm(MESSAGE_CATEGORY.WARNING, t('데이터 삭제 경고'), t('스페이스를 삭제하시겠습니까?'), () => {
       request.del(
-        `/api/spaces/${id}`,
+        `/api/spaces/${spaceCode}`,
         null,
-        () => {
+        (data) => {
+          setSpaceInfoReducer(commonUtil.getUserSpace(data.user.spaces));
+          setUserInfoReducer(data.user);
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
             history.push('/spaces');
           });
@@ -165,34 +174,34 @@ const EditSpace = ({
           type === 'new'
             ? [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/spaces',
+                  link: commonUtil.getSpaceUrl('/spaces'),
                   name: t('스페이스 목록'),
                 },
                 {
-                  link: '/spaces/new',
+                  link: commonUtil.getSpaceUrl('/spaces/new'),
                   name: t('새 스페이스'),
                   current: true,
                 },
               ]
             : [
                 {
-                  link: '/',
+                  link: commonUtil.getSpaceUrl('/'),
                   name: t('TOP'),
                 },
                 {
-                  link: '/spaces',
+                  link: commonUtil.getSpaceUrl('/spaces'),
                   name: t('스페이스 목록'),
                 },
                 {
-                  link: `/spaces/${space?.id}`,
+                  link: commonUtil.getSpaceUrl(`/spaces/${space?.id}`),
                   name: space?.name,
                 },
                 {
-                  link: `/spaces/${space?.id}/edit`,
+                  link: commonUtil.getSpaceUrl(`/spaces/${space?.id}/edit`),
                   name: t('변경'),
                   current: true,
                 },
@@ -318,6 +327,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
+    setUserInfo: (user) => dispatch(setUserInfo(user)),
   };
 };
 
@@ -330,8 +340,9 @@ EditSpace.propTypes = {
   type: PropTypes.string,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      id: PropTypes.string,
+      spaceCode: PropTypes.string,
     }),
   }),
   setSpaceInfo: PropTypes.func,
+  setUserInfo: PropTypes.func,
 };

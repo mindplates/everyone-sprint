@@ -13,6 +13,7 @@ import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
 import './Header.scss';
+import commonUtil from '@/utils/commonUtil';
 
 const Header = (props) => {
   const {
@@ -28,8 +29,6 @@ const Header = (props) => {
     space,
   } = props;
 
-  console.log(space);
-
   const [menuOpen, setMenuOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [spaceOpen, setSpaceOpen] = useState(false);
@@ -37,10 +36,11 @@ const Header = (props) => {
   useEffect(() => {}, []);
 
   const values = (location.pathname.split('/') || []).filter((value) => value);
-  const [currentTopMenu] = values;
+  const [firstPath, secondPath] = values;
+  const menuPath = secondPath || firstPath;
 
-  let menuAlias = currentTopMenu;
-  if (currentTopMenu === 'meets') {
+  let menuAlias = menuPath;
+  if (menuPath === 'meets') {
     menuAlias = 'meetings';
   }
 
@@ -63,35 +63,49 @@ const Header = (props) => {
   };
 
   const updateLanguage = (language) => {
-    i18n.changeLanguage(language || 'ko');
-    request.put(
-      '/api/users/my-info/language',
-      { language },
-      () => {
-        TimeAgo.setDefaultLocale(language || 'ko');
-        setUserInfoReducer({
-          ...user,
-          language,
-        });
-      },
-      null,
-      t('언어 설정을 변경하고 있습니다.'),
-    );
+    i18n.changeLanguage(language);
+    if (user.id) {
+      request.put(
+        '/api/users/my-info/language',
+        { language },
+        () => {
+          TimeAgo.setDefaultLocale(language);
+          setUserInfoReducer({
+            ...user,
+            language,
+          });
+        },
+        null,
+        t('언어 설정을 변경하고 있습니다.'),
+      );
+    } else {
+      setUserInfoReducer({
+        ...user,
+        language,
+      });
+    }
   };
 
   const updateCountry = (country) => {
-    request.put(
-      '/api/users/my-info/country',
-      { country },
-      () => {
-        setUserInfoReducer({
-          ...user,
-          country,
-        });
-      },
-      null,
-      t('지역 설정을 변경하고 있습니다.'),
-    );
+    if (user.id) {
+      request.put(
+        '/api/users/my-info/country',
+        { country },
+        () => {
+          setUserInfoReducer({
+            ...user,
+            country,
+          });
+        },
+        null,
+        t('지역 설정을 변경하고 있습니다.'),
+      );
+    } else {
+      setUserInfoReducer({
+        ...user,
+        country,
+      });
+    }
   };
 
   return (
@@ -169,9 +183,9 @@ const Header = (props) => {
               <div className="space-selector">
                 {user?.spaces?.length > 0 && <div className="label">{t('스페이스')}</div>}
                 <div
-                  className={`current-space-info ${spaceOpen ? 'opened' : ''} ${user?.spaces?.length > 1 ? 'clickable' : ''}`}
+                  className={`current-space-info ${spaceOpen ? 'opened' : ''} ${user?.spaces?.length > 0 ? 'clickable' : ''}`}
                   onClick={() => {
-                    if (user?.spaces?.length > 1) {
+                    if (user?.spaces?.length > 0) {
                       setSpaceOpen(!spaceOpen);
                     }
                   }}
@@ -188,7 +202,8 @@ const Header = (props) => {
                   <div
                     className="space-config"
                     onClick={() => {
-                      history.push('/spaces/my');
+                      // history.push('/spaces/my');
+                      history.push(`/spaces/${commonUtil.getCurrentSpaceCode()}`);
                     }}
                   >
                     <div>
@@ -267,7 +282,7 @@ const Header = (props) => {
             </div>
             {!(user && user.id) && (
               <div className="login">
-                <div className={currentTopMenu === 'starting-line' ? 'selected' : ''}>
+                <div className={menuPath === 'starting-line' ? 'selected' : ''}>
                   <Link to="/login">
                     <span>{t('로그인')}</span>
                   </Link>
@@ -338,6 +353,20 @@ const Header = (props) => {
                         }}
                       >
                         <i className="fas fa-plus" /> {t('새 스페이스')}
+                      </Button>
+                    </div>
+                    <div>
+                      <Button
+                        type="submit"
+                        size="xs"
+                        color="white"
+                        outline
+                        onClick={() => {
+                          history.push('/spaces/my');
+                          setSpaceOpen(false);
+                        }}
+                      >
+                        <i className="fas fa-house-user" /> {t('내 스페이스')}
                       </Button>
                     </div>
                     <div>
@@ -420,7 +449,7 @@ const Header = (props) => {
                 </BlockTitle>
                 <div className="d-flex quick-menu">
                   <div className="quick-menu-label small align-self-center">
-                    <span>언어</span>
+                    <span>{t('언어')}</span>
                   </div>
                   <div className="quick-menu-icon language-icon align-self-center">
                     <span className="icon">
@@ -435,6 +464,10 @@ const Header = (props) => {
                         return {
                           key,
                           value: LANGUAGES[key],
+                          tooltip: {
+                            text: '',
+                            place: '',
+                          },
                         };
                       })}
                       value={user.language}
@@ -446,7 +479,7 @@ const Header = (props) => {
                 </div>
                 <div className="d-flex quick-menu">
                   <div className="quick-menu-label small align-self-center">
-                    <span>지역</span>
+                    <span>{t('지역')}</span>
                   </div>
                   <div className="quick-menu-icon align-self-center">
                     <span className="icon">
@@ -461,6 +494,10 @@ const Header = (props) => {
                         return {
                           key,
                           value: COUNTRIES[key],
+                          tooltip: {
+                            text: '',
+                            place: '',
+                          },
                         };
                       })}
                       value={user.country}

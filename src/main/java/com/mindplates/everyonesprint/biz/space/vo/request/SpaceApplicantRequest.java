@@ -10,15 +10,14 @@ import lombok.Data;
 public class SpaceApplicantRequest {
     private Long id;
     private Long userId;
-    private Long spaceId;
     private ApprovalStatusCode approvalStatusCode;
 
-    public SpaceApplicant buildEntity() {
+    public SpaceApplicant buildEntity(Space space) {
 
         SpaceApplicant spaceApplicant = SpaceApplicant.builder()
                 .id(id)
                 .user(User.builder().id(userId).build())
-                .space(Space.builder().id(spaceId).build())
+                .space(space)
                 .approvalStatusCode(approvalStatusCode)
                 .build();
 
