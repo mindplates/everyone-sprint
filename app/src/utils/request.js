@@ -17,7 +17,7 @@ const axiosConfig = {
   },
 };
 
-const logging = true;
+const logging = commonUtil.isDev();
 const base = configUtil.getBaseUrl();
 
 function getBase() {
