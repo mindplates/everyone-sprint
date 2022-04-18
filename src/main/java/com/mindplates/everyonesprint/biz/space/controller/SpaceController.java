@@ -151,6 +151,7 @@ public class SpaceController {
                         .space(space.get())
                         .build();
                 spaceService.createSpaceUserInfo(spaceUser, userSession);
+                return new ResponseEntity(HttpStatus.OK);
             } else {
                 Optional<SpaceApplicant> existApplicant = spaceService.selectIsSpaceMember(spaceCode, spaceApplicantRequest.getUserId());
                 if (existApplicant.isPresent()) {
@@ -161,9 +162,8 @@ public class SpaceController {
                     spaceService.createSpaceApplicantInfo(spaceApplicant, userSession);
                 }
 
+                return new ResponseEntity(HttpStatus.CREATED);
             }
-
-            return new ResponseEntity(HttpStatus.OK);
         }
 
         throw new ServiceException(HttpStatus.NOT_FOUND);

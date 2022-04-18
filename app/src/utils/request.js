@@ -55,7 +55,7 @@ function processSuccess(response, successHandler) {
 
   if (successHandler && typeof successHandler === 'function') {
     try {
-      successHandler(response.data);
+      successHandler(response.data, response);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
