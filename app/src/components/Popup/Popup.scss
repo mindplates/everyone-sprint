@@ -1,6 +1,15 @@
 .popup-wrapper {
   align-items: center;
   overflow-y: auto;
+
+  &.popup-position-top {
+    align-items: flex-start;
+    padding-top: 4rem;
+
+    > div {
+      align-self: flex-start !important;
+    }
+  }
   > div {
     max-width: 1400px;
     margin: 0 auto;
