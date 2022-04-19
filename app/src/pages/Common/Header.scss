@@ -312,6 +312,60 @@
 
     > .top-menu,
     .top-button {
+      .space-info {
+        display: none;
+        @media (max-width: 992px) {
+          display: block;
+        }
+
+        .no-space {
+          text-align: center;
+          margin-top: 0.5rem;
+        }
+        .space-info-title {
+          padding: 0.5rem 1rem;
+          margin-top: 1rem;
+          display: flex;
+          > div {
+            &.title {
+              flex-grow: 1;
+              font-weight: bold;
+              font-family: pretendard, sans-serif;
+            }
+            align-self: center;
+
+            &.space-button {
+              > a {
+                color: $white;
+                text-decoration: none;
+                font-size: 14px;
+                border-bottom: 1px solid $white;
+                padding: 0 0.25rem;
+              }
+
+              > button {
+                margin-left: 0.5rem;
+              }
+            }
+          }
+        }
+
+        .space-selector {
+          padding: 0 1rem;
+          > div {
+            width: 100%;
+
+            .selected {
+              background-color: $yellow;
+            }
+          }
+        }
+
+        .selector {
+          color: $black;
+        }
+      }
+
       ul.menu-list {
         vertical-align: top;
         list-style: none;
@@ -333,7 +387,7 @@
             background-color: $point;
             z-index: 11;
             width: 60%;
-            min-width: 200px;
+            min-width: 360px;
             max-width: 400px;
           }
         }
@@ -572,7 +626,6 @@
         }
 
         @media (max-width: 768px) {
-          min-width: 110px;
           text-align: left;
         }
       }
@@ -612,6 +665,10 @@
           }
 
           &.space-selector {
+            @media (max-width: 992px) {
+              display: none;
+            }
+
             display: flex;
             flex-grow: 1;
             justify-content: end;
@@ -677,6 +734,7 @@
           &.user-icon {
             flex-grow: 0;
             @media (max-width: 992px) {
+              flex-grow: 1;
               &.logged-in {
                 margin-right: 1rem;
               }
