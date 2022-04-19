@@ -140,8 +140,6 @@ const PublicPark = ({ user, t }) => {
       senderInfo,
       data: { type, data },
     } = info;
-    // console.log(info);
-    // console.log(type, data, senderInfo);
 
     switch (type) {
       case 'PUBLIC-PARK-ENTER': {

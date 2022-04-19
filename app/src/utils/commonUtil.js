@@ -37,7 +37,7 @@ function fullscreen(value) {
       }
     }
   } catch (e) {
-    console.log(e);
+    //
   }
 }
 
@@ -81,6 +81,10 @@ function getSpaceUrl(url) {
   return `/${getCurrentSpaceCode()}${url}`;
 }
 
+function isDev() {
+  return window.location.hostname === 'localhost';
+}
+
 const commonUtil = {
   fullscreen,
   getUserSpace,
@@ -88,6 +92,7 @@ const commonUtil = {
   getSpaceUrl,
   getCurrentSpaceCode,
   goBack,
+  isDev,
 };
 
 export default commonUtil;

@@ -26,6 +26,7 @@ import './Space.scss';
 import dialog from '@/utils/dialog';
 import dateUtil from '@/utils/dateUtil';
 import commonUtil from '@/utils/commonUtil';
+import { setSpaceInfo, setUserInfo } from '@/store/actions';
 
 const Space = ({
   t,
@@ -34,6 +35,8 @@ const Space = ({
   match: {
     params: { spaceCode },
   },
+  setSpaceInfo: setSpaceInfoReducer,
+  setUserInfo: setUserInfoReducer,
 }) => {
   const [space, setSpace] = useState(null);
   const [allowed, setAllowed] = useState(null);
@@ -62,16 +65,28 @@ const Space = ({
     getSpace();
   }, [spaceCode]);
 
+  const getMyInfo = () => {
+    request.get('/api/users/my-info', null, (data) => {
+      setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
+      setUserInfoReducer(data);
+    });
+  };
+
   const onJoin = () => {
     request.post(
       `/api/spaces/${spaceCode}/join`,
       { userId: user.id },
-      () => {
+      (d, r) => {
         getSpace();
-        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스 가입에 가입하였습니다.'));
+        if (r.status === 201) {
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스에 가입을 요청하였습니다.'));
+        } else {
+          getMyInfo();
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스 가입에 가입하였습니다.'));
+        }
       },
       null,
-      t('스페이스에 사용자 정보를 추가하고 있습니다.'),
+      t('스페이스에 참여 의사를 전달 중입니다.'),
     );
   };
 
@@ -306,7 +321,14 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withLogin(Space))));
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
+    setUserInfo: (user) => dispatch(setUserInfo(user)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(withLogin(Space))));
 
 Space.propTypes = {
   t: PropTypes.func,
@@ -317,4 +339,6 @@ Space.propTypes = {
       spaceCode: PropTypes.string,
     }),
   }),
+  setSpaceInfo: PropTypes.func,
+  setUserInfo: PropTypes.func,
 };

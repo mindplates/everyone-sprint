@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { HistoryPropTypes, SettingPropTypes, SpacePropTypes, UserPropTypes } from '@/proptypes';
 import storage from '@/utils/storage';
 import MENU from '@/constants/menu';
-import { BlockTitle, Button, Liner, Overlay, ProductLogo, UserImage } from '@/components';
+import { BlockTitle, Button, Liner, Overlay, ProductLogo, Selector, UserImage } from '@/components';
 import { setSetting, setSpaceInfo, setUserInfo } from '@/store/actions';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
@@ -144,6 +144,97 @@ const Header = (props) => {
                 <i className="fas fa-bars" />
               </Button>
             </li>
+
+            <div>
+              <div className="space-info">
+                <div className="space-info-title">
+                  <div className="title">{t('스페이스')}</div>
+                  <div className="space-button">
+                    <Link
+                      to="/spaces/my"
+                      onClick={() => {
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <i className="fas fa-house-user" /> 내 스페이스
+                    </Link>
+                    <Button
+                      size="sm"
+                      rounded
+                      color="point"
+                      outline
+                      onClick={() => {
+                        setMenuOpen(false);
+                        history.push('/spaces');
+                      }}
+                    >
+                      <i className="fas fa-search" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      rounded
+                      color="point"
+                      outline
+                      onClick={() => {
+                        setMenuOpen(false);
+                        history.push('/spaces/new');
+                      }}
+                    >
+                      <i className="fas fa-plus" />
+                    </Button>
+                    {user?.spaces?.length > 0 && (
+                      <Button
+                        size="sm"
+                        rounded
+                        color="point"
+                        outline
+                        onClick={() => {
+                          setMenuOpen(false);
+                          history.push(`/spaces/${commonUtil.getCurrentSpaceCode()}`);
+                        }}
+                      >
+                        <i className="fas fa-cog" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {!(user?.spaces?.length > 0) && <div className="no-space">NO SPACE</div>}
+                {user?.spaces?.length > 0 && (
+                  <div className="space-selector">
+                    <Selector
+                      className="selector"
+                      outline
+                      size="md"
+                      items={(user?.spaces?.length < 1
+                        ? [
+                            {
+                              key: '',
+                              value: t('스페이스를 선택해주세요'),
+                            },
+                          ]
+                        : []
+                      ).concat(
+                        user?.spaces
+                          ? user?.spaces?.map((d) => {
+                              return {
+                                key: d.code,
+                                value: d.name,
+                              };
+                            })
+                          : [],
+                      )}
+                      value={space?.code}
+                      onChange={(val) => {
+                        if (val) {
+                          setSpaceInfoReducer((user.spaces || []).find((d) => d.code === val));
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+                <Liner width="100%" height="1px" color="gray" margin={user?.spaces?.length > 0 ? '1.5rem 1rem 1rem' : '1.5rem 1rem 1rem'} />
+              </div>
+            </div>
             {Object.keys(MENU)
               .filter((menu) => MENU[menu].enabled)
               .filter((menu) => menuOpen || MENU[menu].side === 'left')

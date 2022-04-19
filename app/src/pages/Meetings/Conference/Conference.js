@@ -19,6 +19,7 @@ import ConferenceControls from './ConferenceControls';
 import './Conference.scss';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
+import commonUtil from '@/utils/commonUtil';
 
 const debugging = false;
 
@@ -728,7 +729,9 @@ class Conference extends React.Component {
 
     const { user, t } = this.props;
 
-    console.log(type, data, senderInfo);
+    if (commonUtil.isDev()) {
+      console.log(type, data, senderInfo);
+    }
 
     const isMe = Number(senderInfo.id) === Number(user.id);
 
@@ -1225,7 +1228,8 @@ class Conference extends React.Component {
     const existConference = conference?.id;
     const isSharing = screenShare.sharing || controls.sharing;
 
-    const connectedUsers = conference?.users?.filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
+    const connectedUsers = conference?.users
+      ?.filter((userInfo) => Number(userInfo.userId) !== Number(user.id))
       .filter((userInfo) => userInfo.participant?.connected || debugging);
 
     const existConnectedUser = connectedUsers && connectedUsers.length > 0;
