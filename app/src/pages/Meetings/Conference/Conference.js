@@ -2,6 +2,7 @@ import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import { ConferenceVideoItem, EmptyContent, Page, PageContent, ParticipantsList, SocketClient, withLogin, withSpace } from '@/components';
@@ -1481,7 +1482,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(withSpace(withLogin(Conference, true)))));
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(Conference, true);
 
 Conference.propTypes = {
   t: PropTypes.func,

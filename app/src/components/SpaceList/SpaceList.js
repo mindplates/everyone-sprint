@@ -11,7 +11,7 @@ import './SpaceList.scss';
 
 const SpaceList = ({ className, t, history, spaces }) => {
   return (
-    <ul className={`project-list-wrapper ${className}`}>
+    <ul className={`space-list-wrapper ${className}`}>
       {spaces.map((space) => {
         const isMember = space.isAdmin || space.isMember;
         return (

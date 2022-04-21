@@ -82,13 +82,29 @@
         }
       }
 
+      .description {
+        background-color: $light;
+        font-size: 0.9rem;
+        padding: 0.5rem;
+        margin-left: -0.25rem;
+        margin-right: -0.25rem;
+        height: 55px;
+        overflow: hidden;
+      }
+
       .status {
         font-size: 12px;
-        margin-bottom: 0.5rem;
+        margin-top: 0.5rem;
+        display: flex;
         > span {
-          display: inline-block;
+          flex: 1 1 0;
           padding: 0.25rem;
           font-weight: bold;
+          text-align: right;
+
+          &.sprint-count {
+            text-align: left;
+          }
 
           &.activated {
             color: $green;
@@ -96,32 +112,6 @@
 
           &.deactivated {
             color: $warning;
-          }
-        }
-      }
-
-      .counts {
-        display: flex;
-        flex-direction: row;
-        > div {
-          text-align: center;
-          margin-right: 1rem;
-
-          > div {
-            background-color: $light;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 2px;
-            padding: 0.5rem;
-            min-width: 80px;
-            .label {
-              font-family: pretendard, sans-serif;
-              font-size: 14px;
-            }
-
-            .value {
-              font-family: righteous, sans-serif;
-              font-size: 20px;
-            }
           }
         }
       }

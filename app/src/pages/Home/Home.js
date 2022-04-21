@@ -4,15 +4,25 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { BlockTitle, MeetingTimeLine, MySprintSummaryList, Page, PageContent, SocketClient, Tabs, withLogin } from '@/components';
+import {
+  BlockTitle,
+  MeetingTimeLine,
+  MySprintSummaryList,
+  Page,
+  PageContent,
+  SocketClient,
+  Tabs,
+  withLogin,
+  withSpace,
+} from '@/components';
 import { UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import dateUtil from '@/utils/dateUtil';
 import ScrumInfoEditorPopup from '@/pages/Meetings/Conference/ScrumInfoEditorPopup';
-import './Home.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 import commonUtil from '@/utils/commonUtil';
+import './Home.scss';
 
 const Home = ({ t, user }) => {
   const tabs = [
@@ -226,7 +236,6 @@ const Home = ({ t, user }) => {
           answers={scrumInfo.scrumMeetingPlans.find((d) => d.id === scrumInfo.currentSprintDailyMeetingId)?.scrumMeetingAnswers}
           onSaveComplete={() => {
             getSprints();
-            // this.sendToAll('SCRUM_INFO_CHANGED');
           }}
         />
       )}
@@ -241,7 +250,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation(), withLogin)(Home);
+export default compose(withLogin, withSpace, connect(mapStateToProps, undefined), withRouter, withTranslation())(Home);
 
 Home.propTypes = {
   t: PropTypes.func,

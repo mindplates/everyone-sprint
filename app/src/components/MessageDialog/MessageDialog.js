@@ -1,10 +1,11 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { Button, Overlay } from '@/components';
-import './MessageDialog.scss';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
+import './MessageDialog.scss';
 
 class MessageDialog extends React.PureComponent {
   componentDidMount() {
@@ -116,7 +117,7 @@ class MessageDialog extends React.PureComponent {
   }
 }
 
-export default withTranslation()(MessageDialog);
+export default compose(withTranslation())(MessageDialog);
 
 MessageDialog.defaultProps = {
   className: '',

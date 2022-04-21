@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import { setSetting } from '@/store/actions';
 import { CompanyLogo, ExitButton, Liner } from '@/components';
@@ -58,7 +59,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Footer);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(Footer);
 
 Footer.defaultProps = {
   className: '',

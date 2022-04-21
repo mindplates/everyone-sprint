@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import { useResizeDetector } from 'react-resize-detector';
 import * as bodyPix from '@tensorflow-models/body-pix';
 import _, { debounce, throttle } from 'lodash';
 import PropTypes from 'prop-types';
 import Spinner from '@/components/Spinner/Spinner';
 import { UserImage } from '@/components';
-import './ConferenceVideoItem.scss';
-
 import { BODY_PIX } from '@/constants/constants';
+import './ConferenceVideoItem.scss';
 
 const spokenDetectionLimit = 80;
 const spokenSensitive = 2000;
@@ -647,7 +647,7 @@ const ConferenceVideoItem = (props) => {
   );
 };
 
-export default withTranslation()(ConferenceVideoItem);
+export default compose(withTranslation())(ConferenceVideoItem);
 
 ConferenceVideoItem.defaultProps = {
   className: '',

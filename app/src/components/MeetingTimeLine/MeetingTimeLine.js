@@ -1,16 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import { withResizeDetector } from 'react-resize-detector';
 import _ from 'lodash';
 import dateUtil from '@/utils/dateUtil';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
-import { HistoryPropTypes, MeetingPropTypes, UserPropTypes } from '@/proptypes';
-import './MeetingTimeLine.scss';
+import { MeetingPropTypes, UserPropTypes } from '@/proptypes';
 import { TimeLineItem } from '@/components';
 import withLoader from '@/components/Common/withLoader';
+import './MeetingTimeLine.scss';
+import commonUtil from '@/utils/commonUtil';
 
-const MeetingTimeLine = ({ className, date: paramDate, user, meetings, history, height }) => {
+const MeetingTimeLine = ({ className, date: paramDate, user, meetings, height }) => {
   let meetingCount = 0;
   const now = Date.now();
 
@@ -95,7 +97,7 @@ const MeetingTimeLine = ({ className, date: paramDate, user, meetings, history, 
                           baseTime={d}
                           user={user}
                           onClick={() => {
-                            history.push(`/meets/${meeting.code}`);
+                            commonUtil.move(`/meets/${meeting.code}`);
                           }}
                         />
                       </div>
@@ -110,7 +112,7 @@ const MeetingTimeLine = ({ className, date: paramDate, user, meetings, history, 
   );
 };
 
-export default withRouter(withResizeDetector(withLoader(MeetingTimeLine, 'meetings')));
+export default compose(withRouter, withResizeDetector)(withLoader(MeetingTimeLine, 'meetings'));
 
 MeetingTimeLine.defaultProps = {
   className: '',
@@ -120,7 +122,6 @@ MeetingTimeLine.propTypes = {
   className: PropTypes.string,
   date: PropTypes.instanceOf(Date),
   user: UserPropTypes,
-  history: HistoryPropTypes,
   meetings: PropTypes.arrayOf(MeetingPropTypes),
   height: PropTypes.number,
 };

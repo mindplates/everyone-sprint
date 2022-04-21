@@ -28,6 +28,9 @@ public class Project extends CommonEntity {
     @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
 
+    @Column(name = "description", length = ColumnsDef.TEXT)
+    private String description;
+
     @Column(name = "allow_search")
     private Boolean allowSearch;
 

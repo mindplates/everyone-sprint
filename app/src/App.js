@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import {
   Common,
   Conference,
@@ -30,9 +31,9 @@ import {
   Sprints,
   SprintSummary,
 } from './pages';
-import './App.scss';
 import { HistoryPropTypes, SettingPropTypes } from '@/proptypes';
 import { CONFERENCE_URL_PATTERN } from '@/constants/constants';
+import './App.scss';
 
 const NO_MAX_WIDTH_PATTERNS = [CONFERENCE_URL_PATTERN, /^\/login[A-Za-z0-9]*/];
 
@@ -104,7 +105,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withRouter(App));
+export default compose(connect(mapStateToProps, undefined), withRouter)(App);
 
 App.propTypes = {
   location: PropTypes.shape({

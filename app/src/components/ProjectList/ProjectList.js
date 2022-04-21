@@ -43,22 +43,12 @@ const ProjectList = (props) => {
                   </div>
                 )}
               </div>
-              <div className="status">
-                {project.activated ? <span className="activated">ACTIVATED</span> : <span className="deactivated">DEACTIVATED</span>}
+              <div className="description">
+                <div className="text">{project.description}</div>
               </div>
-              <div className="counts">
-                <div>
-                  <div>
-                    <div className="label">SPRINT</div>
-                    <div className="value">{project.activatedSprintCount}</div>
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <div className="label">USER</div>
-                    <div className="value">{project.users.length}</div>
-                  </div>
-                </div>
+              <div className="status">
+                <span className='sprint-count'>{project.activatedSprintCount} SPRINTS</span>
+                {project.activated ? <span className="activated">ACTIVATED</span> : <span className="deactivated">DEACTIVATED</span>}
               </div>
             </div>
           </li>
@@ -74,7 +64,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(withLoader(ProjectList, 'projects'));
+export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(withLoader(ProjectList, 'projects'));
 
 ProjectList.defaultProps = {
   className: '',

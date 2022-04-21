@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import { debounce as debounceFunc } from 'lodash';
 import PropTypes from 'prop-types';
 import qs from 'qs';
@@ -11,8 +12,8 @@ import request from '@/utils/request';
 import storage from '@/utils/storage';
 import { HistoryPropTypes, LocationPropTypes } from '@/proptypes';
 import { COLORS } from '@/constants/constants';
-import './Login.scss';
 import commonUtil from '@/utils/commonUtil';
+import './Login.scss';
 
 const enableTypingEffect = true;
 
@@ -186,7 +187,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(Login)));
+export default compose(connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(Login);
 
 Login.propTypes = {
   t: PropTypes.func,

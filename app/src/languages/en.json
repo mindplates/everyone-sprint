@@ -6,10 +6,8 @@
   "취소": "Cancel",
   "확인": "Confirm",
 
-  "사용자의 스프린트 목록을 모으고 있습니다.": "Collecting the user's sprint list.",
-  "새 스프린트": "New Sprint",
   "스프린트": "Sprint",
-  "스프린트가 없습니다.": "There's no sprint.",
+
   "사용자": "User",
   "JIRA": "JIRA",
   "자동 승인": "AUTO APRV",
@@ -28,5 +26,26 @@
   "validation.valid": "올바른 입력 값입니다.",
   "validation.invalidEmail": "올바른 이메일 형식이 아닙니다.",
   "validation.notEqualPassword": "입력하신 패스워드가 일치하지 않습니다.",
-  "validation.alreadyJoinedEmail": "이미 가입된 이메일입니다"
+  "validation.alreadyJoinedEmail": "이미 가입된 이메일입니다",
+  "오늘의 미팅": "TODAY'S MEETING",
+  "오늘의 스프린트": "TODAY'S SPRINT",
+  "사용자의 미팅 목록을 모으고 있습니다.": "Gathering a list of user's meetings.",
+  "사용자의 스프린트 목록을 모으고 있습니다.": "Gathering a list of user's sprints.",
+  "데일리 스크럼": "Daily Scrum",
+  "스프린트가 없습니다.": "There is no sprint.",
+  "새 스프린트": "New Sprint",
+  "스트린트 종료일이 지났습니다.": "The end date of the sprint has passed.",
+  "미등록": "Not registered",
+  "NO DAILY SCRUM": "NO DAILY SCRUM",
+  "일 남았습니다.": "There are {{day}} days left.",
+  "일 후 시작됩니다.": "It will start in {{day}} days.",
+  "데이터 없음": "No Data",
+  "이전에 작성된 정보가 없습니다.": "There is no information written before {{day}}.",
+  "지난 마지막 스크럼 정보를 불러오고 있습니다.": "Loading last last scrum information.",
+  "입력하신 스크럼 정보를 저장하고 있습니다.": "Saving the scrum information you entered.",
+  "데일리 스크럼 정보": "Daily Scrum Information",
+  "지난 마지막 스크럼 정보 불러오기": "Load last scrum information",
+  "저장": "Save",
+
+  "": ""
 }

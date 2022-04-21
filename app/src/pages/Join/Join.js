@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import {
   Block,
@@ -32,8 +33,8 @@ import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes } from '@/proptypes';
 import { setSpaceInfo, setUserInfo } from '@/store/actions';
-import './Join.scss';
 import commonUtil from '@/utils/commonUtil';
+import './Join.scss';
 
 const labelMinWidth = '140px';
 
@@ -428,7 +429,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(Join)));
+export default compose(connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(Join);
 
 Join.propTypes = {
   t: PropTypes.func,

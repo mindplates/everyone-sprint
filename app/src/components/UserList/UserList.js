@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { UserPropTypes } from '@/proptypes';
 import { Popup, UserCard, UserListItem } from '@/components';
@@ -83,7 +84,7 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
       )}
       {popup && (
         <Popup
-          title="사용자 검색"
+          title="스페이스 사용자 검색"
           open
           size="md"
           setOpen={() => {
@@ -105,7 +106,7 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
   );
 };
 
-export default withLoader(withTranslation()(UserList), 'users');
+export default compose(withTranslation())(withLoader(UserList, 'users'));
 
 UserList.defaultProps = {
   className: '',

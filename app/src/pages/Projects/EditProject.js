@@ -40,6 +40,7 @@ const EditProject = ({
 }) => {
   const [project, setProject] = useState({
     name: '',
+    description: '',
     allowSearch: true,
     allowAutoJoin: true,
     activated: true,
@@ -215,7 +216,7 @@ const EditProject = ({
       <PageContent className="d-flex" info>
         <Form className="new-project-content" onSubmit={onSubmit}>
           <Block className="pt-0">
-            <BlockTitle>{t('프로젝트 정보')}</BlockTitle>
+            <BlockTitle>{t('기본 정보')}</BlockTitle>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
                 {t('스페이스')}
@@ -227,6 +228,12 @@ const EditProject = ({
                 {t('이름')}
               </Label>
               <Input type="text" size="md" value={project.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth} required>
+                {t('설명')}
+              </Label>
+              <Input className="w-100" type="text" size="md" value={project.description} onChange={(val) => changeInfo('description', val)} outline simple />
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('활성화')}</Label>

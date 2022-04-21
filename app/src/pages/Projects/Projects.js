@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
+import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button, EmptyContent, Page, PageContent, PageTitle, ProjectList, withLogin, withSpace } from '@/components';
 import request from '@/utils/request';
 import commonUtil from '@/utils/commonUtil';
+import { SpacePropTypes } from '@/proptypes';
 
-const Projects = ({ t }) => {
+const Projects = ({ t, space }) => {
   const [projects, setProjects] = useState(null);
 
   const getProjects = () => {
@@ -24,7 +26,7 @@ const Projects = ({ t }) => {
 
   useEffect(() => {
     getProjects();
-  }, []);
+  }, [space]);
 
   return (
     <Page>
@@ -80,8 +82,15 @@ const Projects = ({ t }) => {
   );
 };
 
-export default compose(withLogin, withSpace, withRouter, withTranslation())(Projects);
+const mapStateToProps = (state) => {
+  return {
+    space: state.space,
+  };
+};
+
+export default compose(withLogin, withSpace, withRouter, withTranslation(), connect(mapStateToProps, undefined))(Projects);
 
 Projects.propTypes = {
   t: PropTypes.func,
+  space: SpacePropTypes,
 };

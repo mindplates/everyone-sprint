@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { Button } from '@/components';
 import './PictureMaker.scss';
 
@@ -400,7 +401,7 @@ const PictureMaker = ({ t, close, onChange }) => {
   );
 };
 
-export default withTranslation()(PictureMaker);
+export default compose(withTranslation())(PictureMaker);
 
 PictureMaker.propTypes = {
   t: PropTypes.func,

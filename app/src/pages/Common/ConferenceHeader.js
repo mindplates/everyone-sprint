@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import TimeAgo from 'javascript-time-ago/modules/TimeAgo';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -8,11 +9,11 @@ import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import storage from '@/utils/storage';
 import { BlockTitle, Button, Liner, ProductLogo, UserImage } from '@/components';
 import { setUserInfo } from '@/store/actions';
-import './ConferenceHeader.scss';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
 import commonUtil from '@/utils/commonUtil';
+import './ConferenceHeader.scss';
 
 const ConferenceHeader = (props) => {
   const { setUserInfo: setUserInfoReducer, location, t, user, i18n, history } = props;
@@ -260,7 +261,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default withRouter(withTranslation()(connect(mapStateToProps, mapDispatchToProps)(ConferenceHeader)));
+export default compose(connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(ConferenceHeader);
 
 ConferenceHeader.propTypes = {
   t: PropTypes.func,

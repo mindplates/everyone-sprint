@@ -1,4 +1,16 @@
+@keyframes right-to-left {
+  from {
+    right : -340px;
+  }
+
+  to {
+    right : 0;
+  }
+}
+
+
 .notice-wrapper {
+  overflow: hidden;
   .notice-page-content {
     @media (max-width: 992px) {
       display: flex;
@@ -55,6 +67,9 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    animation-duration: 0.7s;
+    animation-name: right-to-left;
+    animation-timing-function: ease-out;
 
     @media (max-width: 992px) {
       position: relative;

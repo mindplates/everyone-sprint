@@ -1,17 +1,18 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import { Button, Page, PageContent } from '@/components';
-import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './EmptyConference.scss';
+import commonUtil from '@/utils/commonUtil';
 
 class EmptyConference extends React.PureComponent {
   render() {
-    const { history, t, code, allowRequest, setAllowRequest } = this.props;
+    const { t, code, allowRequest, setAllowRequest } = this.props;
 
     const joinMeetingRequest = () => {
       request.put(
@@ -63,7 +64,7 @@ class EmptyConference extends React.PureComponent {
                       color="white"
                       outline
                       onClick={() => {
-                        history.push('/meetings/new');
+                        commonUtil.move('/meetings/new');
                       }}
                     >
                       <i className="fas fa-plus" /> {t('새 미팅')}
@@ -78,12 +79,12 @@ class EmptyConference extends React.PureComponent {
     );
   }
 }
-export default withTranslation()(withRouter(EmptyConference));
+
+export default compose(withRouter, withTranslation())(EmptyConference);
 
 EmptyConference.propTypes = {
   t: PropTypes.func,
   code: PropTypes.string,
-  history: HistoryPropTypes,
   match: PropTypes.shape({
     params: PropTypes.shape({
       code: PropTypes.string,

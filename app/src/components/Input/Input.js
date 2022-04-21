@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { debounce as debounceFunc } from 'lodash';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import { DEFAULT_INPUT_VALIDATION_MESSAGE, VALIDATIONS } from '@/constants/constants';
 import './Input.scss';
 
@@ -237,4 +238,4 @@ Input.propTypes = {
   focus: PropTypes.bool,
 };
 
-export default withTranslation()(Input);
+export default compose(withTranslation())(Input);

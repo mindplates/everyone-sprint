@@ -1,5 +1,6 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { Block, BlockRow, Label, Popup, Selector } from '@/components';
@@ -182,7 +183,7 @@ class MediaDeviceConfigPopup extends React.Component {
   }
 }
 
-export default withTranslation()(MediaDeviceConfigPopup);
+export default compose(withTranslation())(MediaDeviceConfigPopup);
 
 MediaDeviceConfigPopup.propTypes = {
   t: PropTypes.func,

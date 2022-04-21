@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import TimeAgo from 'javascript-time-ago/modules/TimeAgo';
+import { compose } from 'recompose';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { HistoryPropTypes, SettingPropTypes, SpacePropTypes, UserPropTypes } from '@/proptypes';
@@ -12,8 +13,8 @@ import { setSetting, setSpaceInfo, setUserInfo } from '@/store/actions';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { COUNTRIES, LANGUAGES, USER_STUB } from '@/constants/constants';
-import './Header.scss';
 import commonUtil from '@/utils/commonUtil';
+import './Header.scss';
 
 const Header = (props) => {
   const {
@@ -624,7 +625,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default withRouter(withTranslation()(connect(mapStateToProps, mapDispatchToProps)(Header)));
+export default compose(connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(Header);
 
 Header.propTypes = {
   t: PropTypes.func,

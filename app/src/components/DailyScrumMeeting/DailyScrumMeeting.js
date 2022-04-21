@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import { UserPropTypes } from '@/proptypes';
 import { BlockRow, Button, CheckBox, DateRange, DateRangeText, Input, Label, Liner, Text } from '@/components';
 import './DailyScrumMeeting.scss';
@@ -241,7 +242,7 @@ const DailyScrumMeeting = ({
   );
 };
 
-export default withTranslation()(withRouter(DailyScrumMeeting));
+export default compose(withRouter, withTranslation())(DailyScrumMeeting);
 
 DailyScrumMeeting.defaultProps = {
   className: '',

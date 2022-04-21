@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class ProjectListResponse {
     private Long id;
     private String name;
+    private String description;
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean activated;
@@ -31,6 +32,7 @@ public class ProjectListResponse {
     public ProjectListResponse(Project project, UserSession userSession) {
         this.id = project.getId();
         this.name = project.getName();
+        this.description = project.getDescription();
         this.allowSearch = project.getAllowSearch();
         this.allowAutoJoin = project.getAllowAutoJoin();
         this.activated = project.getActivated();

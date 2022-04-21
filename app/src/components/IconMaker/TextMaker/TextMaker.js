@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { Button, Input } from '@/components';
 import './TextMaker.scss';
 
@@ -73,7 +74,7 @@ const TextMaker = ({ t, close, onChange }) => {
   );
 };
 
-export default withTranslation()(TextMaker);
+export default compose(withTranslation())(TextMaker);
 
 TextMaker.propTypes = {
   t: PropTypes.func,

@@ -1,14 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTimeAgo from 'react-time-ago';
+import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
-import { withResizeDetector } from 'react-resize-detector';
 import dateUtil from '@/utils/dateUtil';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
 import { MeetingPropTypes, UserPropTypes } from '@/proptypes';
+import commonUtil from '@/utils/commonUtil';
 import './TimeLineItem.scss';
 
 const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }) => {
+
+  console.log(meeting);
+
   return (
     <div
       className={`time-line-item-wrapper ${className} ${meeting.type}`}
@@ -24,7 +28,7 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
       <div className="tooltip-info" onClick={(e) => e.stopPropagation()}>
         <div>
           <div className="move">
-            <a href={`/meets/${meeting.code}`}>{t('클릭하여 이동')}</a>
+            <a href={commonUtil.getSpaceUrl(`/meets/${meeting.code}`)}>{t('클릭하여 이동')}</a>
           </div>
           <div className="meeting-name">
             <span>{meeting.name}</span>
@@ -42,6 +46,9 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
               <span className="connected-count">{meeting.connectedUserCount} 명 참가중</span>
             </div>
           )}
+          <div className="sprint-name">
+            <span>{meeting.sprintName}</span>
+          </div>
         </div>
       </div>
       {meeting.type === 'SMALLTALK' && (
@@ -83,7 +90,7 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
   );
 };
 
-export default withResizeDetector(withTranslation()(TimeLineItem));
+export default compose(withTranslation())(TimeLineItem);
 
 TimeLineItem.defaultProps = {
   className: '',

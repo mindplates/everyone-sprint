@@ -5,16 +5,16 @@ import { withTranslation } from 'react-i18next';
 import ReactTooltip from 'react-tooltip';
 import PropTypes from 'prop-types';
 import TimeAgo from 'javascript-time-ago';
-
+import { compose } from 'recompose';
 import { setHistory, setSpaceInfo, setSystemInfo, setUserInfo } from '@/store/actions';
 import { MessageDialog } from '@/components';
 import request from '@/utils/request';
 import storage from '@/utils/storage';
 import Spinner from '@/components/Spinner/Spinner';
-import './Common.scss';
 import commonUtil from '@/utils/commonUtil';
 import { HistoryPropTypes } from '@/proptypes';
 import { USER_STUB } from '@/constants/constants';
+import './Common.scss';
 
 class Common extends React.Component {
   componentDidMount() {
@@ -48,7 +48,7 @@ class Common extends React.Component {
         i18n.changeLanguage(data.language);
         TimeAgo.setDefaultLocale(data.language);
       } else {
-        setUserInfoReducer({...USER_STUB});
+        setUserInfoReducer({ ...USER_STUB });
         i18n.changeLanguage(USER_STUB.language);
         TimeAgo.setDefaultLocale(USER_STUB.language);
       }
@@ -122,7 +122,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default withRouter(withTranslation()(connect(mapStateToProps, mapDispatchToProps)(Common)));
+export default compose(connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(Common);
 
 Common.propTypes = {
   i18n: PropTypes.objectOf(PropTypes.any),
