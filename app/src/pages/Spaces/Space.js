@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -22,11 +23,11 @@ import {
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import './Space.scss';
 import dialog from '@/utils/dialog';
 import dateUtil from '@/utils/dateUtil';
 import commonUtil from '@/utils/commonUtil';
 import { setSpaceInfo, setUserInfo } from '@/store/actions';
+import './Space.scss';
 
 const Space = ({
   t,
@@ -328,7 +329,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(withLogin(Space))));
+export default compose(withLogin, connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(Space);
 
 Space.propTypes = {
   t: PropTypes.func,

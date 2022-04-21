@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import './Selector.scss';
 
@@ -13,8 +14,7 @@ class Selector extends React.Component {
 
   render() {
     const { open } = this.state;
-    const { className, onChange, items, value, addAll, outline, color, size, separator, minWidth, radius, disabled } =
-      this.props;
+    const { className, onChange, items, value, addAll, outline, color, size, separator, minWidth, radius, disabled } = this.props;
     let selectedItem = items.find((item) => String(item.key) === String(value));
     if (addAll && value === '') {
       selectedItem = {
@@ -25,9 +25,7 @@ class Selector extends React.Component {
 
     return (
       <div
-        className={`selector-wrapper g-no-select ${className} size-${size} ${radius ? 'radius' : ''} ${
-          disabled ? 'disabled' : ''
-        }`}
+        className={`selector-wrapper g-no-select ${className} size-${size} ${radius ? 'radius' : ''} ${disabled ? 'disabled' : ''}`}
         style={{
           minWidth: `${minWidth}`,
         }}
@@ -103,7 +101,7 @@ class Selector extends React.Component {
   }
 }
 
-export default withTranslation()(Selector);
+export default compose(withTranslation())(Selector);
 
 Selector.defaultProps = {
   className: '',

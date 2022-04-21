@@ -1,5 +1,6 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Button, Liner } from '@/components';
@@ -82,7 +83,7 @@ const ConferenceControls = ({ t, setControls, controls, screenShare, startScreen
   );
 };
 
-export default withTranslation()(withRouter(ConferenceControls));
+export default compose(withRouter, withTranslation())(ConferenceControls);
 
 ConferenceControls.propTypes = {
   t: PropTypes.func,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import { Button } from '@/components';
 import './IconSelector.scss';
@@ -321,7 +322,7 @@ const IconSelector = ({ t, close, onChange }) => {
   );
 };
 
-export default withTranslation()(IconSelector);
+export default compose(withTranslation())(IconSelector);
 
 IconSelector.propTypes = {
   t: PropTypes.func,

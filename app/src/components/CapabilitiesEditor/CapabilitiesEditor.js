@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { Button, ExitButton, Input } from '@/components';
@@ -117,7 +118,7 @@ const CapabilitiesEditor = ({ className, metas, capabilities, onChange, t, setOp
   );
 };
 
-export default withTranslation()(CapabilitiesEditor);
+export default compose(withTranslation())(CapabilitiesEditor);
 
 CapabilitiesEditor.defaultProps = {
   className: '',

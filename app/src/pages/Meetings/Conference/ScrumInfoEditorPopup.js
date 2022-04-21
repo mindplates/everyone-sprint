@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { Button, Liner, Popup, TextArea } from '@/components';
-import './ScrumInfoEditorPopup.scss';
 import request from '@/utils/request';
 import dialog from '@/utils/dialog';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
+import './ScrumInfoEditorPopup.scss';
 
 const ScrumInfoEditorPopup = ({
   t,
@@ -217,7 +218,7 @@ const ScrumInfoEditorPopup = ({
   );
 };
 
-export default withTranslation()(ScrumInfoEditorPopup);
+export default compose(withTranslation())(ScrumInfoEditorPopup);
 
 ScrumInfoEditorPopup.propTypes = {
   t: PropTypes.func,

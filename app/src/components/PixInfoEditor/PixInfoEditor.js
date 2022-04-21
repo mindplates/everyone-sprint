@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { ExitButton } from '@/components';
-import './PixInfoEditor.scss';
 import filters from '@/images/filters';
+import './PixInfoEditor.scss';
 
 const PixInfoEditor = ({ className, pixInfo, onChange, t, setOpened }) => {
   const options = {
@@ -98,7 +99,7 @@ const PixInfoEditor = ({ className, pixInfo, onChange, t, setOpened }) => {
   );
 };
 
-export default withTranslation()(PixInfoEditor);
+export default compose(withTranslation())(PixInfoEditor);
 
 PixInfoEditor.defaultProps = {
   className: '',

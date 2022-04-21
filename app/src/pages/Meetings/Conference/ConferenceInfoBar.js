@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 import ReactTimeAgo from 'react-time-ago';
 import PropTypes from 'prop-types';
 import { Button } from '@/components';
@@ -59,8 +60,7 @@ class ConferenceInfoBar extends React.Component {
                 <i className="fas fa-clock" />
               </span>
               <span>
-                {conference.startDate && <ReactTimeAgo locale={user.language} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />}{' '}
-                {t('시작')}
+                {conference.startDate && <ReactTimeAgo locale={user.language} date={dateUtil.getLocalDate(conference.startDate).valueOf()} />} {t('시작')}
               </span>
             </div>
             <div className="my-conference-info">
@@ -153,7 +153,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(ConferenceInfoBar)));
+export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(ConferenceInfoBar);
 
 ConferenceInfoBar.propTypes = {
   t: PropTypes.func,

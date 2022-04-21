@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Block, BlockRow, BlockTitle, BottomButtons, Form, Input, Label, Page, PageContent, PageTitle, TextArea, UserList, withLogin } from '@/components';
@@ -10,8 +11,8 @@ import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import { setSpaceInfo, setUserInfo } from '@/store/actions';
-import './EditSpace.scss';
 import commonUtil from '@/utils/commonUtil';
+import './EditSpace.scss';
 
 const labelMinWidth = '140px';
 
@@ -331,7 +332,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(withLogin(EditSpace))));
+export default compose(withLogin, connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(EditSpace);
 
 EditSpace.propTypes = {
   t: PropTypes.func,

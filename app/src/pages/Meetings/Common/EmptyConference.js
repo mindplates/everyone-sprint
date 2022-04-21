@@ -1,6 +1,7 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import { Button, Page, PageContent } from '@/components';
 import { HistoryPropTypes } from '@/proptypes';
@@ -78,7 +79,8 @@ class EmptyConference extends React.PureComponent {
     );
   }
 }
-export default withTranslation()(withRouter(EmptyConference));
+
+export default compose(withRouter, withTranslation())(EmptyConference);
 
 EmptyConference.propTypes = {
   t: PropTypes.func,

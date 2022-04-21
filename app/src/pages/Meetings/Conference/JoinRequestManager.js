@@ -1,10 +1,11 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import './JoinRequestManager.scss';
+import { compose } from 'recompose';
 import { UserPropTypes } from '@/proptypes';
 import { Button } from '@/components';
 import request from '@/utils/request';
+import './JoinRequestManager.scss';
 
 const JoinRequestManager = ({ t, code, joinRequests, setJoinRequests }) => {
   const onJoinRequestResponse = (userId, allowed) => {
@@ -85,7 +86,7 @@ const JoinRequestManager = ({ t, code, joinRequests, setJoinRequests }) => {
   );
 };
 
-export default withTranslation()(JoinRequestManager);
+export default compose(withTranslation())(JoinRequestManager);
 
 JoinRequestManager.propTypes = {
   t: PropTypes.func,

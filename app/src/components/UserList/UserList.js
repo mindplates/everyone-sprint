@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { UserPropTypes } from '@/proptypes';
 import { Popup, UserCard, UserListItem } from '@/components';
@@ -105,7 +106,7 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
   );
 };
 
-export default withLoader(withTranslation()(UserList), 'users');
+export default compose(withTranslation())(withLoader(UserList, 'users'));
 
 UserList.defaultProps = {
   className: '',

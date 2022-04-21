@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import { ExitButton } from '@/components';
 import './Popup.scss';
 
@@ -65,7 +66,7 @@ Popup.defaultProps = {
   title: '',
   full: false,
   size: 'lg',
-  position : 'center'
+  position: 'center',
 };
 
 Popup.propTypes = {
@@ -77,7 +78,7 @@ Popup.propTypes = {
   full: PropTypes.bool,
   onClick: PropTypes.func,
   size: PropTypes.string,
-  position : PropTypes.string,
+  position: PropTypes.string,
 };
 
-export default withTranslation()(Popup);
+export default compose(withTranslation())(Popup);

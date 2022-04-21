@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
-import './UserSelector.scss';
 import { Button, Input, Liner, UserImage } from '@/components';
 import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
+import './UserSelector.scss';
 
 const UserSelector = ({ t, users: parentUsers, close, onChangeUsers, editable }) => {
   const [word, setWord] = useState('');
@@ -105,9 +106,7 @@ const UserSelector = ({ t, users: parentUsers, close, onChangeUsers, editable })
           <div className="g-scrollbar">
             <ul>
               {users.map((user, inx) => {
-                const currentUser = currentUsers
-                  .filter((info) => info.CRUD !== 'D')
-                  .find((info) => info.userId === user.id);
+                const currentUser = currentUsers.filter((info) => info.CRUD !== 'D').find((info) => info.userId === user.id);
                 return (
                   <li
                     key={inx}
@@ -188,7 +187,7 @@ const UserSelector = ({ t, users: parentUsers, close, onChangeUsers, editable })
   );
 };
 
-export default withTranslation()(UserSelector);
+export default compose(withTranslation())(UserSelector);
 
 UserSelector.defaultProps = {
   editable: true,

@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
+import { withRouter } from 'react-router-dom';
 import { UserPropTypes } from '@/proptypes';
 import { Button, UserImage } from '@/components';
+
 import withLoader from '@/components/Common/withLoader';
 import './UserApplicants.scss';
 
@@ -70,7 +73,7 @@ const UserApplicants = ({ className, t, applicants, icon, onReject, onApprove })
   );
 };
 
-export default withLoader(withTranslation()(UserApplicants), 'applicants');
+export default compose(withLoader, withRouter, withTranslation())(UserApplicants, 'applicants');
 
 UserApplicants.defaultProps = {
   className: '',

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import { BlockTitle, Button, ConferenceVideoItem, FadeMessage } from '@/components';
-import './ScrumInfoViewer.scss';
 import { UserPropTypes } from '@/proptypes';
 import request from '@/utils/request';
+import './ScrumInfoViewer.scss';
 
 const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, conference, stream, onFocus }) => {
   const initMessage = useRef(false);
@@ -132,7 +133,7 @@ const ScrumInfoViewer = ({ t, user, questions, answers, dailyScrumInfo, conferen
   );
 };
 
-export default withTranslation()(ScrumInfoViewer);
+export default compose(withTranslation())(ScrumInfoViewer);
 
 ScrumInfoViewer.propTypes = {
   t: PropTypes.func,

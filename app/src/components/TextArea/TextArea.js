@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'recompose';
 import { DEFAULT_INPUT_VALIDATION_MESSAGE, VALIDATIONS } from '@/constants/constants';
 import './TextArea.scss';
 
@@ -171,4 +172,4 @@ TextArea.propTypes = {
   maxLength: PropTypes.number,
 };
 
-export default withTranslation()(TextArea);
+export default compose(withTranslation())(TextArea);

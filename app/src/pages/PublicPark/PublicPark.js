@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import * as d3 from 'd3';
 import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { Button, PageTitle, SocketClient } from '@/components';
 import { UserPropTypes } from '@/proptypes';
-import './PublicPark.scss';
 import request from '@/utils/request';
+import './PublicPark.scss';
 
 const viewer = React.createRef();
 const userIconRadius = 20;
@@ -331,7 +332,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(withRouter(PublicPark)));
+export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(PublicPark);
 
 PublicPark.propTypes = {
   t: PropTypes.func,

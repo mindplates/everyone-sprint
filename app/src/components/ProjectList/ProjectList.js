@@ -74,7 +74,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withRouter, withTranslation(), connect(mapStateToProps, undefined))(withLoader(ProjectList, 'projects'));
+export default compose(connect(mapStateToProps, undefined), withRouter, withTranslation())(withLoader(ProjectList, 'projects'));
 
 ProjectList.defaultProps = {
   className: '',

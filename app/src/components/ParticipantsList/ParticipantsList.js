@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import ReactTimeAgo from 'react-time-ago';
 import dateUtil from '@/utils/dateUtil';
 import { Block, BlockTitle, ExitButton, UserImage } from '@/components';
@@ -172,7 +173,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, undefined)(withTranslation()(ParticipantsList));
+export default compose(connect(mapStateToProps, undefined), withTranslation())(ParticipantsList);
 
 ParticipantsList.defaultProps = {
   className: '',

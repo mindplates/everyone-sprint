@@ -1,6 +1,7 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 import { withResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -12,8 +13,8 @@ import images from '@/images';
 import MediaDeviceConfigPopup from '@/pages/Meetings/Conference/MediaDeviceConfigPopup';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
 import mediaUtil from '@/utils/mediaUtil';
-import './ConferenceDeviceConfig.scss';
 import commonUtil from '@/utils/commonUtil';
+import './ConferenceDeviceConfig.scss';
 
 const browser = detect();
 
@@ -539,7 +540,16 @@ class ConferenceDeviceConfig extends React.Component {
                   height: `${size.height}px`,
                 }}
               >
-                <ConferenceVideoItem filter my={false} controls={controls} supportInfo={supportInfo} alias={user.alias} muted stream={stream} pixInfo={pixInfo} />
+                <ConferenceVideoItem
+                  filter
+                  my={false}
+                  controls={controls}
+                  supportInfo={supportInfo}
+                  alias={user.alias}
+                  muted
+                  stream={stream}
+                  pixInfo={pixInfo}
+                />
               </div>
             </div>
             {openCapabilities && (
@@ -650,7 +660,7 @@ class ConferenceDeviceConfig extends React.Component {
   }
 }
 
-export default withTranslation()(withRouter(withResizeDetector(ConferenceDeviceConfig)));
+export default compose(withRouter, withTranslation(), withResizeDetector)(ConferenceDeviceConfig);
 
 ConferenceDeviceConfig.propTypes = {
   t: PropTypes.func,

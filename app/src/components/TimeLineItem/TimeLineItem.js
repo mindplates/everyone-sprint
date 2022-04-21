@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTimeAgo from 'react-time-ago';
+import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
-import { withResizeDetector } from 'react-resize-detector';
 import dateUtil from '@/utils/dateUtil';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
 import { MeetingPropTypes, UserPropTypes } from '@/proptypes';
@@ -83,7 +83,7 @@ const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }
   );
 };
 
-export default withResizeDetector(withTranslation()(TimeLineItem));
+export default compose(withTranslation())(TimeLineItem);
 
 TimeLineItem.defaultProps = {
   className: '',
