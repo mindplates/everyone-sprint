@@ -12,6 +12,7 @@ public class ProjectRequest {
 
     private Long id;
     private String name;
+    private String description;
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean activated;
@@ -22,6 +23,7 @@ public class ProjectRequest {
         Project project = Project.builder()
                 .id(id)
                 .name(name)
+                .description(description)
                 .allowSearch(allowSearch)
                 .allowAutoJoin(allowAutoJoin)
                 .activated(activated)

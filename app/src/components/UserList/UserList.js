@@ -84,7 +84,7 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
       )}
       {popup && (
         <Popup
-          title="사용자 검색"
+          title="스페이스 사용자 검색"
           open
           size="md"
           setOpen={() => {
