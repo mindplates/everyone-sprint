@@ -11,7 +11,7 @@ import { Button, CapabilitiesEditor, ConferenceVideoItem, Liner, PixInfoEditor }
 import { CAPABILITIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import images from '@/images';
 import MediaDeviceConfigPopup from '@/pages/Meetings/Conference/MediaDeviceConfigPopup';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { UserPropTypes } from '@/proptypes';
 import mediaUtil from '@/utils/mediaUtil';
 import commonUtil from '@/utils/commonUtil';
 import './ConferenceDeviceConfig.scss';
@@ -446,7 +446,7 @@ class ConferenceDeviceConfig extends React.Component {
   };
 
   render() {
-    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls, stream, history, width } = this.props;
+    const { supportInfo, setSupportInfo, t, conference, user, onJoinClick, controls, stream, width } = this.props;
     const { mediaConfig, enabledAudio, enabledVideo } = supportInfo;
     const { openConfigPopup, openCapabilities, capabilities, pixInfo, openPixInfo, size } = this.state;
 
@@ -648,7 +648,7 @@ class ConferenceDeviceConfig extends React.Component {
               color="danger"
               onClick={() => {
                 commonUtil.fullscreen(false);
-                history.push('/meetings');
+                commonUtil.move('/meetings');
               }}
             >
               <i className="fas fa-times" />
@@ -664,7 +664,6 @@ export default compose(withRouter, withTranslation(), withResizeDetector)(Confer
 
 ConferenceDeviceConfig.propTypes = {
   t: PropTypes.func,
-  history: HistoryPropTypes,
   supportInfo: PropTypes.shape({
     permissions: PropTypes.shape({
       microphone: PropTypes.string,

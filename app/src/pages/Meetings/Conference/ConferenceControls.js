@@ -4,10 +4,10 @@ import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Button, Liner } from '@/components';
-import { HistoryPropTypes } from '@/proptypes';
+import commonUtil from '@/utils/commonUtil';
 import './ConferenceControls.scss';
 
-const ConferenceControls = ({ t, setControls, controls, screenShare, startScreenShare, stopScreenShare, stopScreenShareRequest, history }) => {
+const ConferenceControls = ({ t, setControls, controls, screenShare, startScreenShare, stopScreenShare, stopScreenShareRequest}) => {
   return (
     <div className="conference-controls-wrapper">
       <div>
@@ -56,7 +56,7 @@ const ConferenceControls = ({ t, setControls, controls, screenShare, startScreen
           rounded
           color="danger"
           onClick={() => {
-            history.push('/meetings');
+            commonUtil.move('/meetings');
           }}
         >
           <i className="fas fa-times" />
@@ -100,7 +100,6 @@ ConferenceControls.propTypes = {
     currentSpeakerUserId: PropTypes.number,
     currentFocusId: PropTypes.number,
   }),
-  history: HistoryPropTypes,
   controls: PropTypes.shape({
     audio: PropTypes.bool,
     video: PropTypes.bool,

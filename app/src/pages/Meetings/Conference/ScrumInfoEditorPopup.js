@@ -34,7 +34,7 @@ const ScrumInfoEditorPopup = ({
       null,
       (result) => {
         if (result.length < 1) {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('데이터 없음'), `${dateUtil.getDateString(date, 'days')} 이전에 작성된 정보가 없습니다.`);
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('데이터 없음'), t('이전에 작성된 정보가 없습니다.', { day: dateUtil.getDateString(date, 'days') }));
           return;
         }
 

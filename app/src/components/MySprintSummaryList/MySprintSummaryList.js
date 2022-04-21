@@ -6,12 +6,13 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { Button, EmptyContent, Liner } from '@/components';
 import withLoader from '@/components/Common/withLoader';
-import { HistoryPropTypes, SprintPropTypes } from '@/proptypes';
+import { SprintPropTypes } from '@/proptypes';
 import dateUtil from '@/utils/dateUtil';
 import './MySprintSummaryList.scss';
 import { DATE_FORMATS_TYPES } from '@/constants/constants';
+import commonUtil from '@/utils/commonUtil';
 
-const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo }) => {
+const MySprintSummaryList = ({ className, t, sprints, onClickScrumInfo }) => {
   const now = Date.now();
   return (
     <div className={`my-sprint-summary-list-wrapper ${className}`}>
@@ -25,7 +26,7 @@ const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo 
                 size="md"
                 color="point"
                 onClick={() => {
-                  history.push('/sprints/new');
+                  commonUtil.move('/sprints/new');
                 }}
               >
                 <i className="fas fa-plus" /> {t('새 스프린트')}
@@ -50,7 +51,7 @@ const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo 
                 <li
                   key={sprint.id}
                   onClick={() => {
-                    history.push(`/sprints/${sprint.id}/daily`);
+                    commonUtil.move(`/sprints/${sprint.id}/daily`);
                   }}
                 >
                   {sprint.isMember && (
@@ -62,7 +63,8 @@ const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo 
                         rounded
                         onClick={(e) => {
                           e.stopPropagation();
-                          history.push(`/sprints/${sprint.id}`);
+
+                          commonUtil.move(`/sprints/${sprint.id}`);
                         }}
                       >
                         <i className="fas fa-cog" />
@@ -94,8 +96,8 @@ const MySprintSummaryList = ({ className, t, history, sprints, onClickScrumInfo 
                     </div>
                     <div className="message">
                       {isStarted && isDone && <span>{t('스트린트 종료일이 지났습니다.')}</span>}
-                      {isStarted && !isDone && <span>{dateUtil.getSpan(now, endTime).days}일 남았습니다</span>}
-                      {!isStarted && <span>{dateUtil.getSpan(now, startTime).days}일 후 시작됩니다</span>}
+                      {isStarted && !isDone && <span>{t('일 남았습니다.', { day: dateUtil.getSpan(now, endTime).days })}</span>}
+                      {!isStarted && <span>{t('일 후 시작됩니다.', dateUtil.getSpan(now, startTime).days)}</span>}
                     </div>
                   </div>
                   <Liner width="100%" height="1px" color="light" margin="1rem 0" />
@@ -144,6 +146,5 @@ MySprintSummaryList.propTypes = {
   className: PropTypes.string,
   t: PropTypes.func,
   sprints: PropTypes.arrayOf(SprintPropTypes),
-  history: HistoryPropTypes,
   onClickScrumInfo: PropTypes.func,
 };
