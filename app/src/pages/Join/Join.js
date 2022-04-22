@@ -18,6 +18,7 @@ import {
   ImageMaker,
   Input,
   Label,
+  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -25,6 +26,7 @@ import {
   Popup,
   Selector,
   TextMaker,
+  UserCard,
 } from '@/components';
 import storage from '@/utils/storage';
 import dialog from '@/utils/dialog';
@@ -116,9 +118,30 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
       <PageContent className="d-flex" info>
         <Form className="join-content" onSubmit={onSubmit}>
           <div className="join-info">
-            <div className="layout-1">
-              <Block className="general-info picture-info pt-0">
-                <BlockTitle>{t('이미지 & 아이콘')}</BlockTitle>
+            <Block className="general-info pt-0">
+              <BlockTitle>{t('로그인 정보')}</BlockTitle>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('이메일')}
+                </Label>
+                <Input type="email" size="md" value={info.email} onChange={(val) => changeInfo('email', val)} required outline simple />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('비밀번호')}
+                </Label>
+                <Input type="password" value={info.password} onChange={(val) => changeInfo('password', val)} required minLength={2} outline simple />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('비밀번호 확인')}
+                </Label>
+                <Input type="password" value={info.password2} onChange={(val) => changeInfo('password2', val)} required minLength={2} outline simple />
+              </BlockRow>
+            </Block>
+            <Block className="general-info pt-0">
+              <BlockTitle>{t('사용자 정보')}</BlockTitle>
+              <div className="user-info-content">
                 <div className="user-picture">
                   <div className="preview">
                     <div className="preview-content">
@@ -128,7 +151,7 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
                           color="black"
                           className="remove-image-button"
                           onClick={() => {
-                            setInfo({ ...setInfo, imageType: '', imageData: '' });
+                            setInfo({ ...info, imageType: '', imageData: '' });
                           }}
                         />
                       )}
@@ -203,119 +226,98 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
                     </Button>
                   </div>
                 </div>
-              </Block>
-            </div>
-            <div className="layout-2">
-              <div />
-            </div>
-            <div className="layout-3">
-              <Block className="general-info pt-0">
-                <BlockTitle>{t('로그인 정보')}</BlockTitle>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth} required>
-                    {t('이메일')}
-                  </Label>
-                  <Input type="email" size="md" value={info.email} onChange={(val) => changeInfo('email', val)} required outline simple />
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth} required>
-                    {t('비밀번호')}
-                  </Label>
-                  <Input type="password" value={info.password} onChange={(val) => changeInfo('password', val)} required minLength={2} outline simple />
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth} required>
-                    {t('비밀번호 확인')}
-                  </Label>
-                  <Input type="password" value={info.password2} onChange={(val) => changeInfo('password2', val)} required minLength={2} outline simple />
-                </BlockRow>
-              </Block>
-              <Block className="general-info pt-0">
-                <BlockTitle>{t('사용자 정보')}</BlockTitle>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth} required>
-                    {t('별명')}
-                  </Label>
-                  <Input required minLength={1} type="text" size="md" value={info.alias} onChange={(val) => changeInfo('alias', val)} outline simple />
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>
-                    <span>{t('이름')}</span>
-                  </Label>
-                  <Input type="text" size="md" value={info.name} onChange={(val) => changeInfo('name', val)} outline simple />
-                  <CheckBox
-                    className="ml-2"
-                    size="sm"
-                    type="checkbox"
-                    value={info.isNameOpened}
-                    onChange={(val) => changeInfo('isNameOpened', val)}
-                    label={t('이름을 공개합니다')}
-                  />
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('전화번호')}</Label>
-                  <Input type="text" size="md" value={info.tel} onChange={(val) => changeInfo('tel', val)} outline simple />
-                  <CheckBox
-                    className="ml-2"
-                    size="sm"
-                    type="checkbox"
-                    value={info.isTelOpened}
-                    onChange={(val) => changeInfo('isTelOpened', val)}
-                    label={t('전화번호를 공개합니다')}
-                  />
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('언어')}</Label>
-                  <RadioButton
-                    size="sm"
-                    items={[
-                      { key: 'ko', value: '한글' },
-                      { key: 'en', value: 'English' },
-                    ]}
-                    value={info.language}
-                    onClick={(val) => {
-                      changeInfo('language', val);
-                    }}
-                  />
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('지역')}</Label>
-                  <RadioButton
-                    size="sm"
-                    items={[
-                      { key: 'KR', value: '한국' },
-                      { key: 'US', value: 'US' },
-                    ]}
-                    value={info.country}
-                    onClick={(val) => {
-                      changeInfo('country', val);
-                    }}
-                  />
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('자동 로그인')}</Label>
-                  <CheckBox size="sm" type="checkbox" value={info.autoLogin} onChange={(val) => changeInfo('autoLogin', val)} label={t('')} />
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('타임존')}</Label>
-                  <Selector
-                    outline
-                    size="md"
-                    items={Object.keys(TIMEZONES).map((timezone) => {
-                      return {
-                        key: timezone,
-                        value: TIMEZONES[timezone].name,
-                      };
-                    })}
-                    value={info.timezone}
-                    onChange={(val) => {
-                      changeInfo('timezone', val);
-                    }}
-                    minWidth="100px"
-                  />
-                </BlockRow>
-              </Block>
-            </div>
+                <div>
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth} required>
+                      {t('별명')}
+                    </Label>
+                    <Input required minLength={1} type="text" size="md" value={info.alias} onChange={(val) => changeInfo('alias', val)} outline simple />
+                  </BlockRow>
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth}>
+                      <span>{t('이름')}</span>
+                    </Label>
+                    <Input type="text" size="md" value={info.name} onChange={(val) => changeInfo('name', val)} outline simple />
+                    <CheckBox
+                      className="ml-2"
+                      size="sm"
+                      type="checkbox"
+                      value={info.isNameOpened}
+                      onChange={(val) => changeInfo('isNameOpened', val)}
+                      label={t('이름을 공개합니다')}
+                    />
+                  </BlockRow>
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth}>{t('전화번호')}</Label>
+                    <Input type="text" size="md" value={info.tel} onChange={(val) => changeInfo('tel', val)} outline simple />
+                    <CheckBox
+                      className="ml-2"
+                      size="sm"
+                      type="checkbox"
+                      value={info.isTelOpened}
+                      onChange={(val) => changeInfo('isTelOpened', val)}
+                      label={t('전화번호를 공개합니다')}
+                    />
+                  </BlockRow>
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth}>{t('언어')}</Label>
+                    <RadioButton
+                      size="sm"
+                      items={[
+                        { key: 'ko', value: '한글' },
+                        { key: 'en', value: 'English' },
+                      ]}
+                      value={info.language}
+                      onClick={(val) => {
+                        changeInfo('language', val);
+                      }}
+                    />
+                  </BlockRow>
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth}>{t('지역')}</Label>
+                    <RadioButton
+                      size="sm"
+                      items={[
+                        { key: 'KR', value: '한국' },
+                        { key: 'US', value: 'US' },
+                      ]}
+                      value={info.country}
+                      onClick={(val) => {
+                        changeInfo('country', val);
+                      }}
+                    />
+                  </BlockRow>
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth}>{t('자동 로그인')}</Label>
+                    <CheckBox size="sm" type="checkbox" value={info.autoLogin} onChange={(val) => changeInfo('autoLogin', val)} label={t('')} />
+                  </BlockRow>
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth}>{t('타임존')}</Label>
+                    <Selector
+                      outline
+                      size="md"
+                      items={Object.keys(TIMEZONES).map((timezone) => {
+                        return {
+                          key: timezone,
+                          value: TIMEZONES[timezone].name,
+                        };
+                      })}
+                      value={info.timezone}
+                      onChange={(val) => {
+                        changeInfo('timezone', val);
+                      }}
+                      minWidth="100px"
+                    />
+                  </BlockRow>
+                </div>
+              </div>
+            </Block>
+            <Block className="general-info pt-0">
+              <Liner className="preview-liner" height="1px" width="100%" color="rainbow" />
+              <div className="user-card">
+                <UserCard user={info} editable={{ role: false, member: false }} showAdmin={false} />
+              </div>
+            </Block>
           </div>
           <BottomButtons
             onCancel={() => {
