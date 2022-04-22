@@ -34,6 +34,7 @@ public class ProjectRequest {
                         .id(projectUser.getId())
                         .user(com.mindplates.everyonesprint.biz.user.entity.User.builder().id(projectUser.getUserId()).build())
                         .role(projectUser.getRole())
+                        .CRUD(projectUser.getCRUD())
                         .project(project).build()).collect(Collectors.toList());
 
         project.setUsers(projectUsers);

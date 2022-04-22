@@ -20,7 +20,7 @@ public interface MeetingUserRepository extends JpaRepository<MeetingUser, Long> 
     @Modifying
     @Query(" DELETE FROM MeetingUser mu " +
             "WHERE mu.meeting.id in (SELECT m.id FROM Meeting m WHERE m.sprint.id in " +
-            "       (SELECT sp.id FROM Sprint sp WHERE sp.project.id = :spaceCode)) " +
+            "       (SELECT sp.id FROM Sprint sp WHERE sp.project.id = :projectId)) " +
             "  AND mu.user.id = :userId")
     void deleteByProjectIdAndUserId(@Param("projectId") Long projectId, @Param("userId") Long userId);
 

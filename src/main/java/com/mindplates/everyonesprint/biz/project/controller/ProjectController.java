@@ -76,15 +76,16 @@ public class ProjectController {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
-        Project projectInfo = projectRequest.buildEntity();
-        Optional<Space> space = spaceService.selectSpaceInfo(spaceCode);
-        if (space.isPresent()) {
-            projectInfo.setSpace(space.get());
-        } else {
+        Optional<Project> projectInfo = projectService.selectProjectInfo(spaceCode, id);
+
+        if (!projectInfo.isPresent()) {
             throw new ServiceException(HttpStatus.NOT_FOUND);
         }
 
-        return new ProjectResponse(projectService.updateProjectInfo(projectInfo, userSession), userSession);
+        Project nextProjectInfo = projectRequest.buildEntity();
+        nextProjectInfo.setSpace(projectInfo.get().getSpace());
+
+        return new ProjectResponse(projectService.updateProjectInfo(nextProjectInfo, userSession), userSession);
     }
 
     @Operation(description = "프로젝트 사용자 조회")

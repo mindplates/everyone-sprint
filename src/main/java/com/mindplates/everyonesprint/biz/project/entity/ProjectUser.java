@@ -32,4 +32,7 @@ public class ProjectUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_PROJECT__USER"))
     private Project project;
+
+    @Transient
+    private String CRUD;
 }
