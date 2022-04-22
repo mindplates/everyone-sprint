@@ -73,7 +73,7 @@ const UserApplicants = ({ className, t, applicants, icon, onReject, onApprove })
   );
 };
 
-export default compose(withLoader, withRouter, withTranslation())(UserApplicants, 'applicants');
+export default compose(withRouter, withTranslation())(withLoader(UserApplicants, 'applicants'));
 
 UserApplicants.defaultProps = {
   className: '',

@@ -139,6 +139,53 @@ const EditSprint = ({
     const next = { ...sprint };
     next[key] = value;
 
+    if (key === 'projectId') {
+      const project = projects.find((d) => d.id === Number(value));
+
+      const changedProjectUsers = project?.users.map((d) => {
+        return {
+          userId: d.userId,
+          email: d.email,
+          alias: d.alias,
+          name: d.name,
+          imageType: d.imageType,
+          imageData: d.imageData,
+          role: d.role,
+          CRUD: 'C',
+        };
+      });
+
+      const currentUsers = next.users.slice(0);
+
+      const nextUsers = currentUsers
+        .map((d) => {
+          if (changedProjectUsers.find((u) => u.userId === d.userId)) {
+            return d;
+          }
+
+          if (d.CRUD !== 'C') {
+            return {
+              ...d,
+              CRUD: 'D',
+            };
+          }
+
+          return null;
+        })
+        .concat(
+          changedProjectUsers.map((d) => {
+            if (currentUsers.find((u) => u.userId === d.userId)) {
+              return null;
+            }
+
+            return d;
+          }),
+        )
+        .filter((d) => d);
+
+      next.users = nextUsers;
+    }
+
     if (key === 'startDate' && next.startDate > next.endDate) {
       const nextEnd = new Date(next.startDate);
       nextEnd.setHours(18);
@@ -845,6 +892,8 @@ const EditSprint = ({
             <Block className="g-last-block">
               <BlockTitle>{t('멤버')}</BlockTitle>
               <UserList
+                target="project"
+                targetId={sprint.projectId}
                 users={sprint.users}
                 onChange={(val) => changeInfo('users', val)}
                 onChangeUsers={changeUsers}

@@ -8,25 +8,25 @@ import UserSelector from '@/components/UserList/UserSelector';
 import withLoader from '@/components/Common/withLoader';
 import './UserList.scss';
 
-const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type, icon, showAdmin }) => {
+const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type, icon, showAdmin, target, targetId }) => {
   const [popup, setPopup] = useState(false);
 
   const changeUser = useCallback(
     (targetIndex, field, value) => {
       const next = users.slice();
-      const target = next[targetIndex];
+      const targetUser = next[targetIndex];
 
       if (field === 'CRUD' && value === 'D') {
-        if (!target.id) {
+        if (!targetUser.id) {
           next.splice(targetIndex, 1);
         } else {
-          target.CRUD = 'D';
+          targetUser.CRUD = 'D';
         }
       } else if (field !== 'CRUD') {
-        target[field] = value;
-        target.CRUD = 'U';
+        targetUser[field] = value;
+        targetUser.CRUD = 'U';
       } else {
-        target[field] = value;
+        targetUser[field] = value;
       }
 
       onChange(next);
@@ -84,7 +84,7 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
       )}
       {popup && (
         <Popup
-          title="스페이스 사용자 검색"
+          title={target === 'space' ? '스페이스 사용자 검색' : '프로젝트 사용자 검색'}
           open
           size="md"
           setOpen={() => {
@@ -92,6 +92,8 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
           }}
         >
           <UserSelector
+            target={target}
+            targetId={targetId}
             close={() => {
               setPopup(false);
             }}
@@ -118,6 +120,7 @@ UserList.defaultProps = {
   type: 'card',
   icon: true,
   showAdmin: false,
+  target: 'space',
 };
 
 UserList.propTypes = {
@@ -134,4 +137,6 @@ UserList.propTypes = {
   type: PropTypes.string,
   icon: PropTypes.bool,
   showAdmin: PropTypes.bool,
+  target: PropTypes.string,
+  targetId : PropTypes.number,
 };
