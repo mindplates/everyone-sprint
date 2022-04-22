@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
@@ -25,12 +25,13 @@ import {
   PictureMaker,
   Popup,
   Selector,
+  Text,
   TextMaker,
   UserCard,
 } from '@/components';
 import storage from '@/utils/storage';
 import dialog from '@/utils/dialog';
-import { MESSAGE_CATEGORY, TIMEZONES, USER_STUB } from '@/constants/constants';
+import { COUNTRIES, LANGUAGES, MESSAGE_CATEGORY, TIMEZONES, USER_STUB } from '@/constants/constants';
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes } from '@/proptypes';
@@ -40,7 +41,7 @@ import './Join.scss';
 
 const labelMinWidth = '140px';
 
-const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSpaceInfoReducer }) => {
+const Join = ({ t, history, type, setUserInfo: setUserInfoReducer, setSpaceInfo: setSpaceInfoReducer }) => {
   const [info, setInfo] = useState({
     ...USER_STUB,
     password: '',
@@ -62,40 +63,58 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
     setInfo(next);
   };
 
+  const getMyInfo = () => {
+    request.get('/api/users/my-info', null, (data) => {
+      setInfo(data);
+    });
+  };
+
+  useEffect(() => {
+    if (type === 'edit') {
+      getMyInfo();
+    }
+  }, [type]);
+
+  console.log(info);
+
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (info.password !== info.password2) {
-      dialog.setMessage(MESSAGE_CATEGORY.INFO, t('validation.badInput'), t('validation.notEqualPassword'));
-      return;
+    if (type === 'edit') {
+      //
+    } else {
+      if (info.password !== info.password2) {
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('validation.badInput'), t('validation.notEqualPassword'));
+        return;
+      }
+
+      const nextInfo = _.cloneDeep(info);
+      if (nextInfo.imageType === 'icon') {
+        nextInfo.imageData = JSON.stringify(nextInfo.imageData);
+      }
+
+      request.post(
+        '/api/users',
+        nextInfo,
+        (data) => {
+          const { autoLogin, ...last } = data;
+          if (data.autoLogin) {
+            storage.setItem('auth', 'token', data.loginToken);
+          } else {
+            storage.setItem('auth', 'token', null);
+          }
+
+          setUserInfoReducer(last);
+          setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
+
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
+            history.push('/');
+          });
+        },
+        null,
+        t('사용자 정보를 등록하고 있습니다.'),
+      );
     }
-
-    const nextInfo = _.cloneDeep(info);
-    if (nextInfo.imageType === 'icon') {
-      nextInfo.imageData = JSON.stringify(nextInfo.imageData);
-    }
-
-    request.post(
-      '/api/users',
-      nextInfo,
-      (data) => {
-        const { autoLogin, ...last } = data;
-        if (data.autoLogin) {
-          storage.setItem('auth', 'token', data.loginToken);
-        } else {
-          storage.setItem('auth', 'token', null);
-        }
-
-        setUserInfoReducer(last);
-        setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
-
-        dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
-          history.push('/');
-        });
-      },
-      null,
-      t('사용자 정보를 등록하고 있습니다.'),
-    );
   };
 
   return (
@@ -113,32 +132,34 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
           },
         ]}
       >
-        {t('사용자 등록')}
+        {type === 'edit' ? t('내 정보 변경') : t('사용자 등록')}
       </PageTitle>
       <PageContent className="d-flex" info>
         <Form className="join-content" onSubmit={onSubmit}>
           <div className="join-info">
-            <Block className="general-info pt-0">
-              <BlockTitle>{t('로그인 정보')}</BlockTitle>
-              <BlockRow>
-                <Label minWidth={labelMinWidth} required>
-                  {t('이메일')}
-                </Label>
-                <Input type="email" size="md" value={info.email} onChange={(val) => changeInfo('email', val)} required outline simple />
-              </BlockRow>
-              <BlockRow>
-                <Label minWidth={labelMinWidth} required>
-                  {t('비밀번호')}
-                </Label>
-                <Input type="password" value={info.password} onChange={(val) => changeInfo('password', val)} required minLength={2} outline simple />
-              </BlockRow>
-              <BlockRow>
-                <Label minWidth={labelMinWidth} required>
-                  {t('비밀번호 확인')}
-                </Label>
-                <Input type="password" value={info.password2} onChange={(val) => changeInfo('password2', val)} required minLength={2} outline simple />
-              </BlockRow>
-            </Block>
+            {type !== 'edit' && (
+              <Block className="general-info pt-0">
+                <BlockTitle>{t('로그인 정보')}</BlockTitle>
+                <BlockRow>
+                  <Label minWidth={labelMinWidth} required>
+                    {t('이메일')}
+                  </Label>
+                  <Input type="email" size="md" value={info.email} onChange={(val) => changeInfo('email', val)} required outline simple />
+                </BlockRow>
+                <BlockRow>
+                  <Label minWidth={labelMinWidth} required>
+                    {t('비밀번호')}
+                  </Label>
+                  <Input type="password" value={info.password} onChange={(val) => changeInfo('password', val)} required minLength={2} outline simple />
+                </BlockRow>
+                <BlockRow>
+                  <Label minWidth={labelMinWidth} required>
+                    {t('비밀번호 확인')}
+                  </Label>
+                  <Input type="password" value={info.password2} onChange={(val) => changeInfo('password2', val)} required minLength={2} outline simple />
+                </BlockRow>
+              </Block>
+            )}
             <Block className="general-info pt-0">
               <BlockTitle>{t('사용자 정보')}</BlockTitle>
               <div className="user-info-content">
@@ -227,6 +248,12 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
                   </div>
                 </div>
                 <div>
+                  {type === 'edit' && (
+                    <BlockRow>
+                      <Label minWidth={labelMinWidth}>{t('이메일')}</Label>
+                      <Text>{info.email}</Text>
+                    </BlockRow>
+                  )}
                   <BlockRow>
                     <Label minWidth={labelMinWidth} required>
                       {t('별명')}
@@ -263,10 +290,12 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
                     <Label minWidth={labelMinWidth}>{t('언어')}</Label>
                     <RadioButton
                       size="sm"
-                      items={[
-                        { key: 'ko', value: '한글' },
-                        { key: 'en', value: 'English' },
-                      ]}
+                      items={Object.keys(LANGUAGES).map((key) => {
+                        return {
+                          key,
+                          value: LANGUAGES[key],
+                        };
+                      })}
                       value={info.language}
                       onClick={(val) => {
                         changeInfo('language', val);
@@ -277,10 +306,12 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
                     <Label minWidth={labelMinWidth}>{t('지역')}</Label>
                     <RadioButton
                       size="sm"
-                      items={[
-                        { key: 'KR', value: '한국' },
-                        { key: 'US', value: 'US' },
-                      ]}
+                      items={Object.keys(COUNTRIES).map((key) => {
+                        return {
+                          key,
+                          value: COUNTRIES[key],
+                        };
+                      })}
                       value={info.country}
                       onClick={(val) => {
                         changeInfo('country', val);
@@ -324,7 +355,7 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
               history.goBack();
             }}
             onSubmit
-            onSubmitText="사용자 등록"
+            onSubmitText={type === 'edit' ? t('변경') : t('사용자 등록')}
             onCancelIcon=""
           />
         </Form>
@@ -433,8 +464,13 @@ const mapDispatchToProps = (dispatch) => {
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(Join);
 
+Join.defaultProps = {
+  type: 'new',
+};
+
 Join.propTypes = {
   t: PropTypes.func,
+  type: PropTypes.string,
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),

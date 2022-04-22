@@ -32,4 +32,7 @@ public class SpaceUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_SPACE__USER"))
     private Space space;
+
+    @Transient
+    private String CRUD;
 }

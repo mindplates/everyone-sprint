@@ -97,7 +97,10 @@ const MySprintSummaryList = ({ className, t, sprints, onClickScrumInfo }) => {
                     <div className="message">
                       {isStarted && isDone && <span>{t('스트린트 종료일이 지났습니다.')}</span>}
                       {isStarted && !isDone && <span>{t('일 남았습니다.', { day: dateUtil.getSpan(now, endTime).days })}</span>}
-                      {!isStarted && <span>{t('일 후 시작됩니다.', dateUtil.getSpan(now, startTime).days)}</span>}
+                      {!isStarted && dateUtil.getSpan(now, startTime).days > 0 && (
+                        <span>{t('일 후 시작됩니다.', { day: dateUtil.getSpan(now, startTime).days })}</span>
+                      )}
+                      {!isStarted && dateUtil.getSpan(now, startTime).days < 1 && <span>{t('오늘 시작 예정입니다.')}</span>}
                     </div>
                   </div>
                   <Liner width="100%" height="1px" color="light" margin="1rem 0" />

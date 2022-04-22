@@ -36,6 +36,7 @@ public class SpaceRequest {
                         .id(spaceUser.getId())
                         .user(com.mindplates.everyonesprint.biz.user.entity.User.builder().id(spaceUser.getUserId()).build())
                         .role(spaceUser.getRole())
+                        .CRUD(spaceUser.getCRUD())
                         .space(space).build()).collect(Collectors.toList());
 
         space.setUsers(spaceUsers);

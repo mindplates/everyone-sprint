@@ -1,6 +1,9 @@
 package com.mindplates.everyonesprint.biz.space.service;
 
+import com.mindplates.everyonesprint.biz.meeting.repository.MeetingUserRepository;
+import com.mindplates.everyonesprint.biz.meeting.repository.RoomUserRepository;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
+import com.mindplates.everyonesprint.biz.project.repository.ProjectUserRepository;
 import com.mindplates.everyonesprint.biz.project.service.ProjectService;
 import com.mindplates.everyonesprint.biz.space.entity.Space;
 import com.mindplates.everyonesprint.biz.space.entity.SpaceApplicant;
@@ -9,20 +12,26 @@ import com.mindplates.everyonesprint.biz.space.repository.SpaceApplicantReposito
 import com.mindplates.everyonesprint.biz.space.repository.SpaceRepository;
 import com.mindplates.everyonesprint.biz.space.repository.SpaceUserRepository;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
+import com.mindplates.everyonesprint.biz.sprint.repository.ScrumMeetingAnswerRepository;
+import com.mindplates.everyonesprint.biz.sprint.repository.SprintUserRepository;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.code.ApprovalStatusCode;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class SpaceService {
 
     final private SpaceRepository spaceRepository;
@@ -35,18 +44,20 @@ public class SpaceService {
 
     final private SprintService sprintService;
 
-    public SpaceService(SpaceRepository spaceRepository, ProjectService projectService, SprintService sprintService, SpaceApplicantRepository spaceApplicantRepository, SpaceUserRepository spaceUserRepository) {
-        this.spaceRepository = spaceRepository;
-        this.projectService = projectService;
-        this.sprintService = sprintService;
-        this.spaceApplicantRepository = spaceApplicantRepository;
-        this.spaceUserRepository = spaceUserRepository;
-    }
+    final private MeetingUserRepository meetingUserRepository;
+
+    final private ProjectUserRepository projectUserRepository;
+
+    final private SprintUserRepository sprintUserRepository;
+
+    final private RoomUserRepository roomUserRepository;
+
+    final private ScrumMeetingAnswerRepository scrumMeetingAnswerRepository;
+
 
     public Space selectByName(String name) {
         return spaceRepository.findByName(name).orElse(null);
     }
-
 
 
     public Space selectByCode(Long spaceId, String code) {
@@ -69,6 +80,22 @@ public class SpaceService {
         space.setCode(space.getCode().toUpperCase());
         space.setLastUpdateDate(now);
         space.setLastUpdatedBy(userSession.getId());
+
+        ArrayList<Long> deleteUserIds = new ArrayList<>();
+        space.getUsers().stream()
+                .filter((spaceUser -> spaceUser.getCRUD().equals("D")))
+                .forEach((spaceUser -> deleteUserIds.add(spaceUser.getUser().getId())));
+
+        space.setUsers(space.getUsers().stream().filter((spaceUser -> !spaceUser.getCRUD().equals("D"))).collect(Collectors.toList()));
+
+        deleteUserIds.forEach((userId -> {
+            meetingUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            sprintUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            projectUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            roomUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            scrumMeetingAnswerRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+        }));
+
         spaceRepository.save(space);
         return space;
     }

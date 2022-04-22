@@ -18,6 +18,7 @@ import {
   Login,
   Meetings,
   Message,
+  MyInfo,
   MySpaces,
   Notice,
   Project,
@@ -56,7 +57,8 @@ function App({ history, setting }) {
           <Route exact path="/" component={Notice} />
           <Route exact path="/home" component={Home} />
           <Route exact path="/public-park" component={PublicPark} />
-
+          <Route exact path="/my-info/edit" render={() => <Join type="edit" />} />
+          <Route exact path="/my-info" component={MyInfo} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/join" component={Join} />
 

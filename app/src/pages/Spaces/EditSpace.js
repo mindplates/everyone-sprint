@@ -43,6 +43,12 @@ const EditSpace = ({
         `/api/spaces/${spaceCode}`,
         null,
         (data) => {
+          data.users = data.users.map((d) => {
+            return {
+              ...d,
+              CRUD: 'R',
+            };
+          });
           setSpace(data);
         },
         null,
@@ -85,29 +91,41 @@ const EditSpace = ({
     setSpace(next);
   };
 
+  const updateSpace = () => {
+    request.put(
+      `/api/spaces/${space.code}`,
+      space,
+      (data) => {
+        setSpaceInfoReducer(data.space);
+        setUserInfoReducer(data.user);
+
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
+          history.push(`/spaces/${data.space.code}`);
+        });
+      },
+      null,
+      t('스페이스를 변경하고 있습니다.'),
+    );
+  };
+
   const save = () => {
     if (type === 'edit') {
-      request.put(
-        `/api/spaces/${space.code}`,
-        {
-          ...space,
-          users: space.users.filter((u) => u.CRUD !== 'D'),
-        },
-        (data) => {
-          setSpaceInfoReducer(data.space);
-          setUserInfoReducer(data.user);
-
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/spaces/${data.space.code}`);
-          });
-        },
-        null,
-        t('스페이스를 변경하고 있습니다.'),
-      );
+      if (space.users.filter((u) => u.CRUD === 'D').length > 0) {
+        dialog.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('스페이스 사용자 제거 경고'),
+          t('스페이스에서 제외된 사용자가 참여중인 프로젝트, 스프린트, 미팅을 비롯한 스페이스와 관련된 사용자 정보가 모두 삭제됩니다. 변경하시겠습니까?'),
+          () => {
+            updateSpace();
+          },
+        );
+      } else {
+        updateSpace();
+      }
     } else {
       request.post(
         '/api/spaces',
-        { ...space },
+        space,
         (data) => {
           setSpaceInfoReducer(data.space);
           setUserInfoReducer(data.user);
