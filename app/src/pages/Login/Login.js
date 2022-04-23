@@ -20,7 +20,7 @@ const enableTypingEffect = true;
 const Login = ({ t, history, location, setUserInfo: setUserInfoReducer, setSpaceInfo: setSpaceInfoReducer }) => {
   const bgRef = useRef(null);
 
-  const [info, setInfo] = useState({ email: '', password: '', autoLogin: false });
+  const [info, setInfo] = useState({ email: '', password: '', autoLogin: true });
   const [url, setUrl] = useState('');
   const [dots, setDots] = useState([]);
   const [typing, setTyping] = useState(false);
