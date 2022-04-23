@@ -67,15 +67,15 @@ public class UserController {
     }
 
     @PutMapping("/my-info/language")
-    public ResponseEntity updateUserLanguage(@Valid @RequestBody UserRequest userRequest, UserSession userSession) {
+    public ResponseEntity<?> updateUserLanguage(@Valid @RequestBody UserRequest userRequest, UserSession userSession) {
         userService.updateUserLanguage(userSession.getId(), userRequest.getLanguage());
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/my-info/country")
-    public ResponseEntity updateUserCountry(@Valid @RequestBody UserRequest userRequest, UserSession userSession) {
+    public ResponseEntity<?> updateUserCountry(@Valid @RequestBody UserRequest userRequest, UserSession userSession) {
         userService.updateUserCountry(userSession.getId(), userRequest.getCountry());
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DisableLogin

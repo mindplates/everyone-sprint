@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.user.service;
 
+import com.mindplates.everyonesprint.biz.project.repository.ProjectUserRepository;
 import com.mindplates.everyonesprint.biz.space.repository.SpaceUserRepository;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.repository.UserRepository;
@@ -21,10 +22,12 @@ public class UserService {
 
     final private EncryptUtil encryptUtil;
     final private SpaceUserRepository spaceUserRepository;
+    final private ProjectUserRepository projectUserRepository;
 
-    public UserService(UserRepository userRepository, SpaceUserRepository spaceUserRepository, EncryptUtil encryptUtil) {
+    public UserService(UserRepository userRepository, SpaceUserRepository spaceUserRepository, ProjectUserRepository projectUserRepository, EncryptUtil encryptUtil) {
         this.userRepository = userRepository;
         this.spaceUserRepository = spaceUserRepository;
+        this.projectUserRepository = projectUserRepository;
         this.encryptUtil = encryptUtil;
     }
 
@@ -42,6 +45,11 @@ public class UserService {
 
     public List<User> selectSpaceUserList(String spaceCode, String email, String alias) {
         return spaceUserRepository.findAllByUserUseYnTrueAndSpaceCodeAndUserEmailLikeOrUserUseYnTrueAndSpaceCodeAndUserAliasLike(spaceCode, email, spaceCode, alias)
+                .stream().map((d) -> d.getUser()).collect(Collectors.toList());
+    }
+
+    public List<User> selectProjectUserList(Long projectId, String email, String alias) {
+        return projectUserRepository.findAllByUserUseYnTrueAndProjectIdAndUserEmailLikeOrUserUseYnTrueAndProjectIdAndUserAliasLike(projectId, email, projectId, alias)
                 .stream().map((d) -> d.getUser()).collect(Collectors.toList());
     }
 

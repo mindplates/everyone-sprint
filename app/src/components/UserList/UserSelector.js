@@ -7,7 +7,7 @@ import request from '@/utils/request';
 import { UserPropTypes } from '@/proptypes';
 import './UserSelector.scss';
 
-const UserSelector = ({ t, users: parentUsers, close, onChangeUsers, editable }) => {
+const UserSelector = ({ t, users: parentUsers, close, onChangeUsers, target, targetId, editable }) => {
   const [word, setWord] = useState('');
   const [users, setUsers] = useState([]);
   const [currentUsers, setCurrentUsers] = useState([]);
@@ -18,7 +18,7 @@ const UserSelector = ({ t, users: parentUsers, close, onChangeUsers, editable })
 
   const getUsers = () => {
     request.get(
-      '/api/{spaceCode}/users',
+      target === 'space' ? '/api/{spaceCode}/users' : `/api/{spaceCode}/projects/${targetId}/users`,
       { word },
       (list) => {
         setUsers(list);
@@ -191,6 +191,7 @@ export default compose(withTranslation())(UserSelector);
 
 UserSelector.defaultProps = {
   editable: true,
+  target: 'space',
 };
 
 UserSelector.propTypes = {
@@ -199,4 +200,6 @@ UserSelector.propTypes = {
   users: PropTypes.arrayOf(UserPropTypes),
   onChangeUsers: PropTypes.func,
   editable: PropTypes.bool,
+  target: PropTypes.string,
+  targetId : PropTypes.number,
 };

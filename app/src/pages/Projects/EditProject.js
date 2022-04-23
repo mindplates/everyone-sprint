@@ -53,6 +53,12 @@ const EditProject = ({
         `/api/{spaceCode}/projects/${id}`,
         null,
         (data) => {
+          data.users = data.users.map((u) => {
+            return {
+              ...u,
+              CRUD: 'R',
+            };
+          });
           setProject(data);
         },
         null,
@@ -95,26 +101,38 @@ const EditProject = ({
     setProject(next);
   };
 
+  const updateProject = () => {
+    request.put(
+      `/api/{spaceCode}/projects/${project.id}`,
+      project,
+      (data) => {
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
+          commonUtil.move(`/projects/${data.id}`);
+        });
+      },
+      null,
+      t('프로젝트를 변경하고 있습니다.'),
+    );
+  };
+
   const save = () => {
     if (type === 'edit') {
-      request.put(
-        `/api/{spaceCode}/projects/${project.id}`,
-        {
-          ...project,
-          users: project.users.filter((u) => u.CRUD !== 'D'),
-        },
-        (data) => {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            commonUtil.move(`/projects/${data.id}`);
-          });
-        },
-        null,
-        t('프로젝트를 변경하고 있습니다.'),
-      );
+      if (project.users.filter((u) => u.CRUD === 'D').length > 0) {
+        dialog.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('프로젝트 사용자 제거 경고'),
+          t('프로젝트에서 제외된 사용자가 참여중인 스프린트, 미팅을 비롯한 프로젝트와 관련된 사용자 정보가 모두 삭제됩니다. 변경하시겠습니까?'),
+          () => {
+            updateProject();
+          },
+        );
+      } else {
+        updateProject();
+      }
     } else {
       request.post(
         '/api/{spaceCode}/projects',
-        { ...project },
+        project,
         (data) => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
             commonUtil.move(`/projects/${data.id}`);

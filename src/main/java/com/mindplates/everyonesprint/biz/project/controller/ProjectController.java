@@ -7,6 +7,9 @@ import com.mindplates.everyonesprint.biz.project.vo.response.ProjectListResponse
 import com.mindplates.everyonesprint.biz.project.vo.response.ProjectResponse;
 import com.mindplates.everyonesprint.biz.space.entity.Space;
 import com.mindplates.everyonesprint.biz.space.service.SpaceService;
+import com.mindplates.everyonesprint.biz.user.entity.User;
+import com.mindplates.everyonesprint.biz.user.service.UserService;
+import com.mindplates.everyonesprint.biz.user.vo.response.UserResponse;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,9 +33,12 @@ public class ProjectController {
 
     final private SpaceService spaceService;
 
-    public ProjectController(ProjectService projectService, SpaceService spaceService) {
+    final private UserService userService;
+
+    public ProjectController(ProjectService projectService, SpaceService spaceService, UserService userService) {
         this.projectService = projectService;
         this.spaceService = spaceService;
+        this.userService = userService;
     }
 
     @Operation(description = "사용자의 프로젝트 목록 조회")
@@ -70,23 +76,31 @@ public class ProjectController {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
-        Project projectInfo = projectRequest.buildEntity();
-        Optional<Space> space = spaceService.selectSpaceInfo(spaceCode);
-        if (space.isPresent()) {
-            projectInfo.setSpace(space.get());
-        } else {
+        Optional<Project> projectInfo = projectService.selectProjectInfo(spaceCode, id);
+
+        if (!projectInfo.isPresent()) {
             throw new ServiceException(HttpStatus.NOT_FOUND);
         }
 
-        return new ProjectResponse(projectService.updateProjectInfo(projectInfo, userSession), userSession);
+        Project nextProjectInfo = projectRequest.buildEntity();
+        nextProjectInfo.setSpace(projectInfo.get().getSpace());
+
+        return new ProjectResponse(projectService.updateProjectInfo(nextProjectInfo, userSession), userSession);
+    }
+
+    @Operation(description = "프로젝트 사용자 조회")
+    @GetMapping("/{id}/users")
+    public List<UserResponse> selectUsers(@PathVariable String spaceCode, @PathVariable Long id, @RequestParam("word") String word) {
+        List<User> users = userService.selectProjectUserList(id, word + "%", word + "%");
+        return users.stream().map(UserResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "프로젝트 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
+    public ResponseEntity<?> deleteProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
         Project project = projectService.selectProjectInfo(spaceCode, id).get();
         projectService.deleteProjectInfo(project);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

@@ -1,6 +1,9 @@
 package com.mindplates.everyonesprint.biz.space.service;
 
+import com.mindplates.everyonesprint.biz.meeting.repository.MeetingUserRepository;
+import com.mindplates.everyonesprint.biz.meeting.repository.RoomUserRepository;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
+import com.mindplates.everyonesprint.biz.project.repository.ProjectUserRepository;
 import com.mindplates.everyonesprint.biz.project.service.ProjectService;
 import com.mindplates.everyonesprint.biz.space.entity.Space;
 import com.mindplates.everyonesprint.biz.space.entity.SpaceApplicant;
@@ -9,20 +12,29 @@ import com.mindplates.everyonesprint.biz.space.repository.SpaceApplicantReposito
 import com.mindplates.everyonesprint.biz.space.repository.SpaceRepository;
 import com.mindplates.everyonesprint.biz.space.repository.SpaceUserRepository;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
+import com.mindplates.everyonesprint.biz.sprint.repository.ScrumMeetingAnswerRepository;
+import com.mindplates.everyonesprint.biz.sprint.repository.SprintUserRepository;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.code.ApprovalStatusCode;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import com.mindplates.everyonesprint.framework.config.CacheConfig;
+import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class SpaceService {
 
     final private SpaceRepository spaceRepository;
@@ -35,24 +47,22 @@ public class SpaceService {
 
     final private SprintService sprintService;
 
-    public SpaceService(SpaceRepository spaceRepository, ProjectService projectService, SprintService sprintService, SpaceApplicantRepository spaceApplicantRepository, SpaceUserRepository spaceUserRepository) {
-        this.spaceRepository = spaceRepository;
-        this.projectService = projectService;
-        this.sprintService = sprintService;
-        this.spaceApplicantRepository = spaceApplicantRepository;
-        this.spaceUserRepository = spaceUserRepository;
-    }
+    final private MeetingUserRepository meetingUserRepository;
 
-    public Space selectByName(String name) {
-        return spaceRepository.findByName(name).orElse(null);
-    }
+    final private ProjectUserRepository projectUserRepository;
 
+    final private SprintUserRepository sprintUserRepository;
+
+    final private RoomUserRepository roomUserRepository;
+
+    final private ScrumMeetingAnswerRepository scrumMeetingAnswerRepository;
 
 
     public Space selectByCode(Long spaceId, String code) {
         return spaceRepository.findByIdNotAndCode(spaceId, code).orElse(null);
     }
 
+    @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
     public Space createSpaceInfo(Space space, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         space.setCode(space.getCode().toUpperCase());
@@ -64,16 +74,34 @@ public class SpaceService {
         return space;
     }
 
+    @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
     public Space updateSpaceInfo(Space space, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         space.setCode(space.getCode().toUpperCase());
         space.setLastUpdateDate(now);
         space.setLastUpdatedBy(userSession.getId());
+
+        ArrayList<Long> deleteUserIds = new ArrayList<>();
+        space.getUsers().stream()
+                .filter((spaceUser -> spaceUser.getCRUD().equals("D")))
+                .forEach((spaceUser -> deleteUserIds.add(spaceUser.getUser().getId())));
+
+        space.setUsers(space.getUsers().stream().filter((spaceUser -> !spaceUser.getCRUD().equals("D"))).collect(Collectors.toList()));
+
+        deleteUserIds.forEach((userId -> {
+            meetingUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            sprintUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            projectUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            roomUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            scrumMeetingAnswerRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+        }));
+
         spaceRepository.save(space);
+
         return space;
     }
 
-
+    @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
     public void deleteSpaceInfo(Space space) {
 
         List<Project> spaceProjects = projectService.selectSpaceProjectList(space.getId());
@@ -99,27 +127,18 @@ public class SpaceService {
         return spaceRepository.findAllByNameLikeAndAllowSearchTrueAndActivatedTrue("%" + text + "%");
     }
 
-    public Optional<Space> selectSpaceInfo(Long id) {
-        return spaceRepository.findById(id);
-    }
-
+    @Cacheable(key = "#spaceCode", value = CacheConfig.SPACE)
     public Optional<Space> selectSpaceInfo(String spaceCode) {
         return spaceRepository.findByCode(spaceCode);
-    }
-
-    public Long selectAllSpaceCount() {
-        return spaceRepository.countBy();
     }
 
     public boolean selectIsSpaceMember(String spaceCode, UserSession userSession) {
         return spaceRepository.existsByCodeAndUsersUserId(spaceCode, userSession.getId());
     }
 
-    public Optional<SpaceApplicant> selectIsSpaceMember(String spaceCode, Long userId) {
-        return spaceApplicantRepository.findBySpaceCodeAndUserId(spaceCode, userId);
-    }
 
-    public SpaceApplicant createSpaceApplicantInfo(SpaceApplicant spaceApplicant, UserSession userSession) {
+    @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
+    public SpaceApplicant createSpaceApplicantInfo(String spaceCode, SpaceApplicant spaceApplicant, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         spaceApplicant.setApprovalStatusCode(ApprovalStatusCode.REQUEST);
         spaceApplicant.setCreationDate(now);
@@ -130,7 +149,8 @@ public class SpaceService {
         return spaceApplicant;
     }
 
-    public SpaceApplicant updateApplicantReject(SpaceApplicant spaceApplicant, UserSession userSession) {
+    @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
+    public SpaceApplicant updateApplicantReject(String spaceCode, SpaceApplicant spaceApplicant, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         spaceApplicant.setLastUpdateDate(now);
         spaceApplicant.setLastUpdatedBy(userSession.getId());
@@ -139,7 +159,8 @@ public class SpaceService {
         return spaceApplicant;
     }
 
-    public SpaceApplicant updateApplicantInfo(SpaceApplicant spaceApplicant, UserSession userSession) {
+    @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
+    public SpaceApplicant updateApplicantInfo(String spaceCode, SpaceApplicant spaceApplicant, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         spaceApplicant.setLastUpdateDate(now);
         spaceApplicant.setLastUpdatedBy(userSession.getId());
@@ -147,7 +168,8 @@ public class SpaceService {
         return spaceApplicant;
     }
 
-    public SpaceApplicant updateApplicantApprove(SpaceApplicant spaceApplicant, UserSession userSession) {
+    @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
+    public SpaceApplicant updateApplicantApprove(String spaceCode, SpaceApplicant spaceApplicant, UserSession userSession) {
 
         LocalDateTime now = LocalDateTime.now();
         spaceApplicant.setLastUpdateDate(now);
@@ -170,8 +192,8 @@ public class SpaceService {
         return spaceApplicant;
     }
 
-
-    public SpaceUser createSpaceUserInfo(SpaceUser spaceUser, UserSession userSession) {
+    @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
+    public SpaceUser createSpaceUserInfo(String spaceCode, SpaceUser spaceUser, UserSession userSession) {
         if (!spaceUserRepository.existsBySpaceIdAndUserId(spaceUser.getSpace().getId(), spaceUser.getUser().getId())) {
             LocalDateTime now = LocalDateTime.now();
             spaceUser.setCreationDate(now);
@@ -191,8 +213,8 @@ public class SpaceService {
         return spaceApplicantRepository.findById(id);
     }
 
-
-    public void deleteSpaceApplicantInfo(SpaceApplicant spaceApplicant) {
+    @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
+    public void deleteSpaceApplicantInfo(String spaceCode, SpaceApplicant spaceApplicant) {
         spaceApplicantRepository.delete(spaceApplicant);
     }
 

@@ -4,7 +4,22 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, BottomButtons, Form, Input, Label, Page, PageContent, PageTitle, TextArea, UserList, withLogin } from '@/components';
+import {
+  Block,
+  BlockRow,
+  BlockTitle,
+  BottomButtons,
+  EmptyContent,
+  Form,
+  Input,
+  Label,
+  Page,
+  PageContent,
+  PageTitle,
+  TextArea,
+  UserList,
+  withLogin,
+} from '@/components';
 import dialog from '@/utils/dialog';
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
@@ -43,6 +58,12 @@ const EditSpace = ({
         `/api/spaces/${spaceCode}`,
         null,
         (data) => {
+          data.users = data.users.map((d) => {
+            return {
+              ...d,
+              CRUD: 'R',
+            };
+          });
           setSpace(data);
         },
         null,
@@ -85,29 +106,41 @@ const EditSpace = ({
     setSpace(next);
   };
 
+  const updateSpace = () => {
+    request.put(
+      `/api/spaces/${space.code}`,
+      space,
+      (data) => {
+        setSpaceInfoReducer(data.space);
+        setUserInfoReducer(data.user);
+
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
+          history.push(`/spaces/${data.space.code}`);
+        });
+      },
+      null,
+      t('스페이스를 변경하고 있습니다.'),
+    );
+  };
+
   const save = () => {
     if (type === 'edit') {
-      request.put(
-        `/api/spaces/${space.code}`,
-        {
-          ...space,
-          users: space.users.filter((u) => u.CRUD !== 'D'),
-        },
-        (data) => {
-          setSpaceInfoReducer(data.space);
-          setUserInfoReducer(data.user);
-
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/spaces/${data.space.code}`);
-          });
-        },
-        null,
-        t('스페이스를 변경하고 있습니다.'),
-      );
+      if (space.users.filter((u) => u.CRUD === 'D').length > 0) {
+        dialog.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('스페이스 사용자 제거 경고'),
+          t('스페이스에서 제외된 사용자가 참여중인 프로젝트, 스프린트, 미팅을 비롯한 스페이스와 관련된 사용자 정보가 모두 삭제됩니다. 변경하시겠습니까?'),
+          () => {
+            updateSpace();
+          },
+        );
+      } else {
+        updateSpace();
+      }
     } else {
       request.post(
         '/api/spaces',
-        { ...space },
+        space,
         (data) => {
           setSpaceInfoReducer(data.space);
           setUserInfoReducer(data.user);
@@ -168,6 +201,8 @@ const EditSpace = ({
     }
   };
 
+  console.log(space);
+
   return (
     <Page className="edit-space-wrapper">
       <PageTitle
@@ -211,110 +246,130 @@ const EditSpace = ({
       >
         {type === 'edit' ? t('스페이스 변경') : t('새로운 스페이스')}
       </PageTitle>
-      <PageContent className="d-flex" info>
-        <Form className="flex-grow-1 d-flex flex-column" onSubmit={onSubmit}>
-          <Block className="pt-0">
-            <BlockTitle>{t('스페이스 정보')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('이름')}
-              </Label>
-              <Input type="text" size="md" value={space.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('코드')}
-              </Label>
-              <Input
-                className="code"
-                pattern="^[a-zA-Z0-9-_]+$"
-                type="text"
-                size="md"
-                value={space.code}
-                onChange={(val) => changeInfo('code', val)}
-                outline
-                simple
-                required
-                minLength={1}
-                maxLength={20}
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('설명')}</Label>
-              <TextArea
-                className="description"
-                type="text"
-                size="md"
-                value={space.description}
-                onChange={(val) => changeInfo('description', val)}
-                simple
-                minLength={1}
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('활성화')}</Label>
-              <RadioButton
-                size="sm"
-                items={ACTIVATES}
-                value={space.activated}
-                onClick={(val) => {
-                  changeInfo('activated', val);
-                }}
-              />
-            </BlockRow>
-          </Block>
-          <Block>
-            <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
-              <RadioButton
-                size="sm"
-                items={ALLOW_SEARCHES}
-                value={space.allowSearch}
-                onClick={(val) => {
-                  changeInfo('allowSearch', val);
-                }}
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
-              <RadioButton
-                size="sm"
-                items={JOIN_POLICIES}
-                value={space.allowAutoJoin}
-                onClick={(val) => {
-                  changeInfo('allowAutoJoin', val);
-                }}
-              />
-            </BlockRow>
-          </Block>
-          <Block className="g-last-block">
-            <BlockTitle>{t('멤버')}</BlockTitle>
-            <div className="flex-grow-1">
-              <UserList
-                users={space.users}
-                onChange={(val) => changeInfo('users', val)}
-                onChangeUsers={changeUsers}
-                editable={{
-                  role: type === 'edit',
-                  member: type === 'edit',
-                  add: false,
-                }}
-              />
-            </div>
-          </Block>
-          <BottomButtons
-            onCancel={() => {
-              history.goBack();
-            }}
-            onDelete={space?.isAdmin ? onDelete : null}
-            onDeleteText="삭제"
-            onSubmit={type === 'new' || space?.isAdmin}
-            onSubmitText="저장"
-            onCancelIcon=""
+      {type === 'edit' && !space.id && (
+        <PageContent className="space-content">
+          <EmptyContent
+            height="100%"
+            icon={<i className="fas fa-globe-asia" />}
+            message={
+              <div>
+                <div>{t('스페이스가 존재하지 않습니다.')}</div>
+              </div>
+            }
           />
-        </Form>
-      </PageContent>
+          <BottomButtons
+            onList={() => {
+              history.push('/spaces');
+            }}
+          />
+        </PageContent>
+      )}
+      {!(type === 'edit' && !space.id) && (
+        <PageContent className="d-flex" info>
+          <Form className="flex-grow-1 d-flex flex-column" onSubmit={onSubmit}>
+            <Block className="pt-0">
+              <BlockTitle>{t('스페이스 정보')}</BlockTitle>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('이름')}
+                </Label>
+                <Input type="text" size="md" value={space.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('코드')}
+                </Label>
+                <Input
+                  className="code"
+                  pattern="^[a-zA-Z0-9-_]+$"
+                  type="text"
+                  size="md"
+                  value={space.code}
+                  onChange={(val) => changeInfo('code', val)}
+                  outline
+                  simple
+                  required
+                  minLength={1}
+                  maxLength={20}
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('설명')}</Label>
+                <TextArea
+                  className="description"
+                  type="text"
+                  size="md"
+                  value={space.description}
+                  onChange={(val) => changeInfo('description', val)}
+                  simple
+                  minLength={1}
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('활성화')}</Label>
+                <RadioButton
+                  size="sm"
+                  items={ACTIVATES}
+                  value={space.activated}
+                  onClick={(val) => {
+                    changeInfo('activated', val);
+                  }}
+                />
+              </BlockRow>
+            </Block>
+            <Block>
+              <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
+                <RadioButton
+                  size="sm"
+                  items={ALLOW_SEARCHES}
+                  value={space.allowSearch}
+                  onClick={(val) => {
+                    changeInfo('allowSearch', val);
+                  }}
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
+                <RadioButton
+                  size="sm"
+                  items={JOIN_POLICIES}
+                  value={space.allowAutoJoin}
+                  onClick={(val) => {
+                    changeInfo('allowAutoJoin', val);
+                  }}
+                />
+              </BlockRow>
+            </Block>
+            <Block className="g-last-block">
+              <BlockTitle>{t('멤버')}</BlockTitle>
+              <div className="flex-grow-1">
+                <UserList
+                  users={space.users}
+                  onChange={(val) => changeInfo('users', val)}
+                  onChangeUsers={changeUsers}
+                  editable={{
+                    role: type === 'edit',
+                    member: type === 'edit',
+                    add: false,
+                  }}
+                />
+              </div>
+            </Block>
+            <BottomButtons
+              onCancel={() => {
+                history.goBack();
+              }}
+              onDelete={space?.isAdmin ? onDelete : null}
+              onDeleteText="삭제"
+              onSubmit={type === 'new' || space?.isAdmin}
+              onSubmitText="저장"
+              onCancelIcon=""
+            />
+          </Form>
+        </PageContent>
+      )}
     </Page>
   );
 };

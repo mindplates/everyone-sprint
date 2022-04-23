@@ -1,29 +1,44 @@
 package com.mindplates.everyonesprint.biz.project.service;
 
+import com.mindplates.everyonesprint.biz.meeting.repository.MeetingUserRepository;
+import com.mindplates.everyonesprint.biz.meeting.repository.RoomUserRepository;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.project.repository.ProjectRepository;
+import com.mindplates.everyonesprint.biz.project.repository.ProjectUserRepository;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
+import com.mindplates.everyonesprint.biz.sprint.repository.ScrumMeetingAnswerRepository;
+import com.mindplates.everyonesprint.biz.sprint.repository.SprintUserRepository;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class ProjectService {
 
     final private ProjectRepository projectRepository;
 
     final private SprintService sprintService;
 
-    public ProjectService(ProjectRepository projectRepository, SprintService sprintService) {
-        this.projectRepository = projectRepository;
-        this.sprintService = sprintService;
-    }
+    final private MeetingUserRepository meetingUserRepository;
+
+    final private ProjectUserRepository projectUserRepository;
+
+    final private SprintUserRepository sprintUserRepository;
+
+    final private RoomUserRepository roomUserRepository;
+
+    final private ScrumMeetingAnswerRepository scrumMeetingAnswerRepository;
+
 
     public Project selectByName(String spaceCode, String name) {
         return projectRepository.findBySpaceCodeAndName(spaceCode, name).orElse(null);
@@ -43,6 +58,23 @@ public class ProjectService {
         LocalDateTime now = LocalDateTime.now();
         project.setLastUpdateDate(now);
         project.setLastUpdatedBy(userSession.getId());
+
+
+        ArrayList<Long> deleteUserIds = new ArrayList<>();
+        project.getUsers().stream()
+                .filter((projectUser -> projectUser.getCRUD().equals("D")))
+                .forEach((projectUser -> deleteUserIds.add(projectUser.getUser().getId())));
+
+        project.setUsers(project.getUsers().stream().filter((spaceUser -> !spaceUser.getCRUD().equals("D"))).collect(Collectors.toList()));
+
+        deleteUserIds.forEach((userId -> {
+            meetingUserRepository.deleteByProjectIdAndUserId(project.getId(), userId);
+            sprintUserRepository.deleteByProjectIdAndUserId(project.getId(), userId);
+            roomUserRepository.deleteByProjectIdAndUserId(project.getId(), userId);
+            scrumMeetingAnswerRepository.deleteByProjectIdAndUserId(project.getId(), userId);
+        }));
+
+
         projectRepository.save(project);
         return project;
     }

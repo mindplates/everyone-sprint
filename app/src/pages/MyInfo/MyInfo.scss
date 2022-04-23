@@ -1,0 +1,57 @@
+.my-info-wrapper {
+  .user-info-content {
+    display: flex;
+
+    .user-image {
+      margin-right: 2rem;
+      min-width: 120px;
+      div.preview-content {
+        width: 120px;
+        height: 120px;
+        background-color: $gray-100;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        display: flex;
+        border-radius: 2px;
+        position: relative;
+        margin: 0 auto;
+
+        .remove-image-button {
+          position: absolute;
+          top: 0;
+          right: -24px;
+        }
+
+        > div.preview-image {
+          align-self: center;
+          width: 100%;
+          text-align: center;
+          font-size: 50px;
+          color: $gray-400;
+
+          > img {
+            width: 100%;
+          }
+        }
+
+        > .avatar-text {
+          color: $black;
+          font-size: 30px;
+          align-self: center;
+          width: 100%;
+          text-align: center;
+        }
+
+        > .avatar-icon {
+          color: $black;
+          font-size: 40px;
+          align-self: center;
+          width: 100%;
+          text-align: center;
+        }
+      }
+    }
+
+    .general-info {
+    }
+  }
+}

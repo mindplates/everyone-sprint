@@ -38,7 +38,7 @@ class Common extends React.Component {
     request.get('/api/users/my-info', null, (data) => {
       setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
 
-      const token = storage.setItem('auth', 'token');
+      const token = storage.getItem('auth', 'token');
       if (!data.id && token) {
         storage.setItem('auth', 'token', null);
       }
