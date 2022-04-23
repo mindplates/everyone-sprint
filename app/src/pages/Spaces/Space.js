@@ -157,7 +157,25 @@ const Space = ({
       >
         {t('스페이스 정보')}
       </PageTitle>
-      {!allowed && (
+      {!allowed && allowed === null && (
+        <PageContent className="space-content">
+          <EmptyContent
+            height="100%"
+            icon={<i className="fas fa-globe-asia" />}
+            message={
+              <div>
+                <div>{t('스페이스가 존재하지 않습니다.')}</div>
+              </div>
+            }
+          />
+          <BottomButtons
+            onList={() => {
+              history.push('/spaces');
+            }}
+          />
+        </PageContent>
+      )}
+      {!allowed && allowed === false && (
         <PageContent className="space-content">
           <EmptyContent
             height="100%"

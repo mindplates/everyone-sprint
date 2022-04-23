@@ -94,13 +94,13 @@ public class MeetingController {
 
     @Operation(description = "미팅 정보 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteMeetingInfo(@PathVariable String spaceCode, @PathVariable Long id, @ApiIgnore UserSession userSession) {
+    public ResponseEntity<?> deleteMeetingInfo(@PathVariable String spaceCode, @PathVariable Long id, @ApiIgnore UserSession userSession) {
         Meeting meeting = meetingService.selectMeetingInfo(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if (!userSession.getId().equals(meeting.getCreatedBy())) {
             throw new ServiceException("common.not.authorized");
         }
         meetingService.deleteMeetingInfo(meeting);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "미팅 정보 조회")

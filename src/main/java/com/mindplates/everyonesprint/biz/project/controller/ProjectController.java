@@ -97,10 +97,10 @@ public class ProjectController {
 
     @Operation(description = "프로젝트 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
+    public ResponseEntity<?> deleteProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
         Project project = projectService.selectProjectInfo(spaceCode, id).get();
         projectService.deleteProjectInfo(project);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

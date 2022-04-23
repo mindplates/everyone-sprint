@@ -4,7 +4,22 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, BottomButtons, Form, Input, Label, Page, PageContent, PageTitle, TextArea, UserList, withLogin } from '@/components';
+import {
+  Block,
+  BlockRow,
+  BlockTitle,
+  BottomButtons,
+  EmptyContent,
+  Form,
+  Input,
+  Label,
+  Page,
+  PageContent,
+  PageTitle,
+  TextArea,
+  UserList,
+  withLogin,
+} from '@/components';
 import dialog from '@/utils/dialog';
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
@@ -186,6 +201,8 @@ const EditSpace = ({
     }
   };
 
+  console.log(space);
+
   return (
     <Page className="edit-space-wrapper">
       <PageTitle
@@ -229,110 +246,130 @@ const EditSpace = ({
       >
         {type === 'edit' ? t('스페이스 변경') : t('새로운 스페이스')}
       </PageTitle>
-      <PageContent className="d-flex" info>
-        <Form className="flex-grow-1 d-flex flex-column" onSubmit={onSubmit}>
-          <Block className="pt-0">
-            <BlockTitle>{t('스페이스 정보')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('이름')}
-              </Label>
-              <Input type="text" size="md" value={space.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('코드')}
-              </Label>
-              <Input
-                className="code"
-                pattern="^[a-zA-Z0-9-_]+$"
-                type="text"
-                size="md"
-                value={space.code}
-                onChange={(val) => changeInfo('code', val)}
-                outline
-                simple
-                required
-                minLength={1}
-                maxLength={20}
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('설명')}</Label>
-              <TextArea
-                className="description"
-                type="text"
-                size="md"
-                value={space.description}
-                onChange={(val) => changeInfo('description', val)}
-                simple
-                minLength={1}
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('활성화')}</Label>
-              <RadioButton
-                size="sm"
-                items={ACTIVATES}
-                value={space.activated}
-                onClick={(val) => {
-                  changeInfo('activated', val);
-                }}
-              />
-            </BlockRow>
-          </Block>
-          <Block>
-            <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
-              <RadioButton
-                size="sm"
-                items={ALLOW_SEARCHES}
-                value={space.allowSearch}
-                onClick={(val) => {
-                  changeInfo('allowSearch', val);
-                }}
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
-              <RadioButton
-                size="sm"
-                items={JOIN_POLICIES}
-                value={space.allowAutoJoin}
-                onClick={(val) => {
-                  changeInfo('allowAutoJoin', val);
-                }}
-              />
-            </BlockRow>
-          </Block>
-          <Block className="g-last-block">
-            <BlockTitle>{t('멤버')}</BlockTitle>
-            <div className="flex-grow-1">
-              <UserList
-                users={space.users}
-                onChange={(val) => changeInfo('users', val)}
-                onChangeUsers={changeUsers}
-                editable={{
-                  role: type === 'edit',
-                  member: type === 'edit',
-                  add: false,
-                }}
-              />
-            </div>
-          </Block>
-          <BottomButtons
-            onCancel={() => {
-              history.goBack();
-            }}
-            onDelete={space?.isAdmin ? onDelete : null}
-            onDeleteText="삭제"
-            onSubmit={type === 'new' || space?.isAdmin}
-            onSubmitText="저장"
-            onCancelIcon=""
+      {type === 'edit' && !space.id && (
+        <PageContent className="space-content">
+          <EmptyContent
+            height="100%"
+            icon={<i className="fas fa-globe-asia" />}
+            message={
+              <div>
+                <div>{t('스페이스가 존재하지 않습니다.')}</div>
+              </div>
+            }
           />
-        </Form>
-      </PageContent>
+          <BottomButtons
+            onList={() => {
+              history.push('/spaces');
+            }}
+          />
+        </PageContent>
+      )}
+      {!(type === 'edit' && !space.id) && (
+        <PageContent className="d-flex" info>
+          <Form className="flex-grow-1 d-flex flex-column" onSubmit={onSubmit}>
+            <Block className="pt-0">
+              <BlockTitle>{t('스페이스 정보')}</BlockTitle>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('이름')}
+                </Label>
+                <Input type="text" size="md" value={space.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} required>
+                  {t('코드')}
+                </Label>
+                <Input
+                  className="code"
+                  pattern="^[a-zA-Z0-9-_]+$"
+                  type="text"
+                  size="md"
+                  value={space.code}
+                  onChange={(val) => changeInfo('code', val)}
+                  outline
+                  simple
+                  required
+                  minLength={1}
+                  maxLength={20}
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('설명')}</Label>
+                <TextArea
+                  className="description"
+                  type="text"
+                  size="md"
+                  value={space.description}
+                  onChange={(val) => changeInfo('description', val)}
+                  simple
+                  minLength={1}
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('활성화')}</Label>
+                <RadioButton
+                  size="sm"
+                  items={ACTIVATES}
+                  value={space.activated}
+                  onClick={(val) => {
+                    changeInfo('activated', val);
+                  }}
+                />
+              </BlockRow>
+            </Block>
+            <Block>
+              <BlockTitle>{t('검색 및 참여 설정')}</BlockTitle>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
+                <RadioButton
+                  size="sm"
+                  items={ALLOW_SEARCHES}
+                  value={space.allowSearch}
+                  onClick={(val) => {
+                    changeInfo('allowSearch', val);
+                  }}
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
+                <RadioButton
+                  size="sm"
+                  items={JOIN_POLICIES}
+                  value={space.allowAutoJoin}
+                  onClick={(val) => {
+                    changeInfo('allowAutoJoin', val);
+                  }}
+                />
+              </BlockRow>
+            </Block>
+            <Block className="g-last-block">
+              <BlockTitle>{t('멤버')}</BlockTitle>
+              <div className="flex-grow-1">
+                <UserList
+                  users={space.users}
+                  onChange={(val) => changeInfo('users', val)}
+                  onChangeUsers={changeUsers}
+                  editable={{
+                    role: type === 'edit',
+                    member: type === 'edit',
+                    add: false,
+                  }}
+                />
+              </div>
+            </Block>
+            <BottomButtons
+              onCancel={() => {
+                history.goBack();
+              }}
+              onDelete={space?.isAdmin ? onDelete : null}
+              onDeleteText="삭제"
+              onSubmit={type === 'new' || space?.isAdmin}
+              onSubmitText="저장"
+              onCancelIcon=""
+            />
+          </Form>
+        </PageContent>
+      )}
     </Page>
   );
 };

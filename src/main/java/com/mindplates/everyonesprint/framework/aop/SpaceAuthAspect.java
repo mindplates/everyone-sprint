@@ -6,11 +6,11 @@ import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -18,16 +18,12 @@ import javax.servlet.http.HttpServletRequest;
 
 @Aspect
 @Component
+@AllArgsConstructor
 public class SpaceAuthAspect {
 
     final private SpaceService spaceService;
 
-    @Autowired
-    private HttpServletRequest request;
-
-    public SpaceAuthAspect(SpaceService spaceService) {
-        this.spaceService = spaceService;
-    }
+    final private HttpServletRequest request;
 
     @Pointcut("execution(* com.mindplates.everyonesprint.biz.space.controller..create*(..))")
     private void createOperator() {
@@ -49,21 +45,21 @@ public class SpaceAuthAspect {
     private void cudOperator() {
     }
 
-    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableAuth) && cudOperator() && args(spaceId, ..)")
-    public void checkIsSpaceAdminUser(JoinPoint joinPoint, long spaceId) throws Throwable {
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableAuth) && cudOperator() && args(spaceCode, ..)")
+    public void checkIsSpaceAdminUser(JoinPoint joinPoint, String spaceCode) throws Throwable {
 
         UserSession userSession = SessionUtil.getUserInfo(request);
-        Space space = spaceService.selectSpaceInfo(spaceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Space space = spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(userSession.getId()) && spaceUser.getRole().equals(RoleCode.ADMIN))) {
             throw new ServiceException("common.not.authorized");
         }
     }
 
-    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableAuth) && selectOperator() && args(spaceId, ..)")
-    public void checkIsProjectUser(JoinPoint joinPoint, long spaceId) throws Throwable {
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableAuth) && selectOperator() && args(spaceCode, ..)")
+    public void checkIsSpaceUser(JoinPoint joinPoint, String spaceCode) throws Throwable {
         UserSession userSession = SessionUtil.getUserInfo(request);
-        Space space = spaceService.selectSpaceInfo(spaceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Space space = spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(userSession.getId()))) {
             throw new ServiceException("common.not.authorized");

@@ -11,13 +11,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
 @EntityListeners(value = {AuditingEntityListener.class})
 @Getter
 @Setter
-public class CommonEntity {
+public class CommonEntity implements Serializable {
 
     @CreatedDate
     @Column(name = "creation_date", updatable = false)

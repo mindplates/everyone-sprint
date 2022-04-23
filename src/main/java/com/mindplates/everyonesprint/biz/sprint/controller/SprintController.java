@@ -114,9 +114,9 @@ public class SprintController {
     @Operation(description = "스프린트 삭제")
     @DeleteMapping("/{sprintId}")
     @CheckSprintAdminAuth
-    public ResponseEntity deleteSprintInfo(@PathVariable String spaceCode, @PathVariable Long sprintId) {
+    public ResponseEntity<?> deleteSprintInfo(@PathVariable String spaceCode, @PathVariable Long sprintId) {
         sprintService.deleteSprintInfo(sprintId);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

@@ -108,7 +108,7 @@ public class MeetController {
 
     @Operation(description = "스크럼 공유 상태 변경")
     @PutMapping("/{code}/scrum")
-    public ResponseEntity updateScrumInfo(@PathVariable String spaceCode, @PathVariable String code, @RequestParam("operation") String operation, UserSession userSession) {
+    public ResponseEntity<?> updateScrumInfo(@PathVariable String spaceCode, @PathVariable String code, @RequestParam("operation") String operation, UserSession userSession) {
 
         Meeting meeting = meetingService.selectMeetingInfo(code).get();
         boolean started = false;
@@ -144,12 +144,12 @@ public class MeetController {
         MessageData data = MessageData.builder().type("DAILY_SCRUM_CHANGED").data(sendData).build();
         messageSendService.sendTo("meets/" + code, data, userSession);
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "사용자 참석 정보 변경")
     @PutMapping("/{code}/status")
-    public ResponseEntity updateUserTalkedInfo(@PathVariable String spaceCode, @PathVariable String code, @RequestBody TalkedRequest talkedRequest, UserSession userSession) {
+    public ResponseEntity<?> updateUserTalkedInfo(@PathVariable String spaceCode, @PathVariable String code, @RequestBody TalkedRequest talkedRequest, UserSession userSession) {
 
         Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
@@ -180,13 +180,13 @@ public class MeetController {
         }
 
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "미팅 참석 요청")
     @PutMapping("/{code}/request/join")
     @DisableMeetingAuth
-    public ResponseEntity updateUserRequestJoin(@PathVariable String spaceCode, @PathVariable String code, UserSession userSession) {
+    public ResponseEntity<?> updateUserRequestJoin(@PathVariable String spaceCode, @PathVariable String code, UserSession userSession) {
 
         Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
@@ -195,7 +195,7 @@ public class MeetController {
             Iterable<Participant> conferenceUsers = participantService.findAll(conferenceCondition);
             long connectedUserCount = StreamSupport.stream(conferenceUsers.spliterator(), false).filter(p -> Optional.ofNullable(p.getConnected()).orElse(false)).count();
             if (connectedUserCount < 1) {
-                return new ResponseEntity(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             Map<String, Object> sendData = new HashMap<>();
             sendData.put("user", userService.selectUser(userSession.getId()));
@@ -205,12 +205,12 @@ public class MeetController {
             throw new ServiceException(HttpStatus.FORBIDDEN, "common.not.allowed.meetingType");
         }
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "미팅 참석 요청 응답")
     @PutMapping("/{code}/request/join/response")
-    public ResponseEntity updateUserRequestResponseJoin(@PathVariable String spaceCode, @PathVariable String code, @RequestBody JoinResponseRequest joinResponseRequest, UserSession userSession) {
+    public ResponseEntity<?> updateUserRequestResponseJoin(@PathVariable String spaceCode, @PathVariable String code, @RequestBody JoinResponseRequest joinResponseRequest, UserSession userSession) {
 
         Meeting meeting = meetingService.selectMeetingInfo(code).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
@@ -230,7 +230,7 @@ public class MeetController {
             messageSendService.sendTo("meets/" + code + "/standby/" + joinResponseRequest.getUserId(), responseData, userSession);
         }
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

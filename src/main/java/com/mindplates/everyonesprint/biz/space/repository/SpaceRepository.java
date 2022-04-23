@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SpaceRepository extends JpaRepository<Space, Long> {
-    Optional<Space> findByName(String name);
 
     Optional<Space> findByCode(String code);
 
@@ -19,8 +18,6 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
     List<Space> findAllByUsersUserIdAndActivatedTrue(Long userId);
 
     List<Space> findAllByNameLikeAndAllowSearchTrueAndActivatedTrue(String text);
-
-    Long countBy();
 
     boolean existsByCodeAndUsersUserId(String spaceCode, Long userId);
 
