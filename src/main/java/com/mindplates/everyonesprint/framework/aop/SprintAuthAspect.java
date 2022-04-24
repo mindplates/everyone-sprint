@@ -6,12 +6,11 @@ import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
-import com.mindplates.everyonesprint.framework.annotation.CheckSprintAdminAuth;
+import lombok.AllArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -19,16 +18,12 @@ import javax.servlet.http.HttpServletRequest;
 
 @Aspect
 @Component
+@AllArgsConstructor
 public class SprintAuthAspect {
 
     final private SprintService sprintService;
 
-    @Autowired
     private HttpServletRequest request;
-
-    public SprintAuthAspect(SprintService sprintService) {
-        this.sprintService = sprintService;
-    }
 
     @Pointcut("execution(* com.mindplates.everyonesprint.biz.sprint.controller..create*(..))")
     private void createOperator() {

@@ -5,18 +5,16 @@ import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.message.vo.MessageInfo;
 import com.mindplates.everyonesprint.common.message.vo.SenderInfo;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 @Log
 @Service
+@AllArgsConstructor
 public class MessageSendService {
 
     final private MessageBroker messageBroker;
-
-    public MessageSendService(MessageBroker messageBroker) {
-        this.messageBroker = messageBroker;
-    }
 
     public void sendTo(String topic, MessageData messageData, UserSession userSession) {
         messageBroker.pubMessage(MessageInfo.builder()

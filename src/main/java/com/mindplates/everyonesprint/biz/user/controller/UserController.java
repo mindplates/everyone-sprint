@@ -11,6 +11,7 @@ import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,17 +25,12 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
+@AllArgsConstructor
 public class UserController {
 
     final private UserService userService;
     final private SessionUtil sessionUtil;
     final private SpaceService spaceService;
-
-    public UserController(UserService userService, SessionUtil sessionUtil, SpaceService spaceService) {
-        this.userService = userService;
-        this.sessionUtil = sessionUtil;
-        this.spaceService = spaceService;
-    }
 
     @DisableLogin
     @PostMapping("")

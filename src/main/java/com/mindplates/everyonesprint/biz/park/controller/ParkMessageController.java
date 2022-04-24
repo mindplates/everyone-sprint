@@ -10,6 +10,7 @@ import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -20,19 +21,13 @@ import java.util.Map;
 @Log
 @RestController
 @MessageMapping("/api/park/message")
+@AllArgsConstructor
 public class ParkMessageController {
 
     final private WalkerService walkerService;
     final private UserService userService;
     final private ObjectMapper mapper;
     final private MessageSendService messageSendService;
-
-    public ParkMessageController(WalkerService walkerService, UserService userService, ObjectMapper mapper, MessageSendService messageSendService) {
-        this.walkerService = walkerService;
-        this.userService = userService;
-        this.mapper = mapper;
-        this.messageSendService = messageSendService;
-    }
 
     @SuppressWarnings({"unused", "unchecked"})
     @MessageMapping("/send")

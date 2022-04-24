@@ -10,6 +10,10 @@ import com.mindplates.everyonesprint.biz.sprint.repository.SprintRepository;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import com.mindplates.everyonesprint.framework.config.CacheConfig;
+import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,26 +26,19 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class SprintService {
 
     final private SprintRepository sprintRepository;
     final private MeetingRepository meetingRepository;
     final private ScrumMeetingAnswerRepository scrumMeetingPlanAnswerRepository;
 
-    public SprintService(SprintRepository sprintRepository, MeetingRepository meetingRepository, ScrumMeetingAnswerRepository scrumMeetingPlanAnswerRepository) {
-        this.sprintRepository = sprintRepository;
-        this.meetingRepository = meetingRepository;
-        this.scrumMeetingPlanAnswerRepository = scrumMeetingPlanAnswerRepository;
+    @Cacheable(key = "#id", value = CacheConfig.SPRINT)
+    public Optional<Sprint> selectSprintInfo(Long id) {
+        return sprintRepository.findById(id);
     }
 
-    public boolean selectIsExistProjectSprintName(String spaceCode, Long projectId, Long sprintId, String name) {
-        if (sprintId == null) {
-            return sprintRepository.countByProjectSpaceCodeAndProjectIdAndName(spaceCode, projectId, name) > 0L;
-        }
-
-        return sprintRepository.countByProjectSpaceCodeAndProjectIdAndIdNotAndName(spaceCode, projectId, sprintId, name) > 0L;
-    }
-
+    @CacheEvict(key = "#sprint.id", value = CacheConfig.SPRINT)
     public Sprint createSprintInfo(Sprint sprint, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         sprint.setCreationDate(now);
@@ -71,6 +68,7 @@ public class SprintService {
         return sprint;
     }
 
+    @CacheEvict(key = "#sprint.id", value = CacheConfig.SPRINT)
     public Sprint updateSprintInfo(Sprint sprint, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         sprint.setLastUpdateDate(now);
@@ -89,13 +87,9 @@ public class SprintService {
             meetingRepository.deleteAllByScrumMeetingPlanId(scrumMeetingPlan.getId());
         }));
 
-        deleteSprintDailyMeetings.forEach((scrumMeetingPlan -> {
-            if (sprint.getScrumMeetingPlans().indexOf(scrumMeetingPlan) > -1) {
-                sprint.getScrumMeetingPlans().remove(sprint.getScrumMeetingPlans().indexOf(scrumMeetingPlan));
-            }
-        }));
+        deleteSprintDailyMeetings.forEach(scrumMeetingPlan -> sprint.getScrumMeetingPlans().remove(scrumMeetingPlan));
 
-        sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "C".equals(scrumMeetingPlan.getCRUD()))).forEach(scrumMeetingPlan -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) scrumMeetingPlan, startDate, endDate, userSession)));
+        sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "C".equals(scrumMeetingPlan.getCRUD()))).forEach(scrumMeetingPlan -> updateMeetings.addAll(makeMeetings(scrumMeetingPlan, startDate, endDate, userSession)));
 
         sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "U".equals(scrumMeetingPlan.getCRUD()))).forEach((scrumMeetingPlan -> {
             List<Meeting> meetings = meetingRepository.findAllBySprintIdAndScrumMeetingPlanId(sprint.getId(), scrumMeetingPlan.getId());
@@ -112,18 +106,13 @@ public class SprintService {
                     meetingRepository.deleteAllBySmallTalkMeetingPlanId(smallTalkMeetingPlan.getId());
                 }));
 
-        deleteSprintDailySmallTalkMeetings.forEach((smallTalkMeetingPlan -> {
-            if (sprint.getSmallTalkMeetingPlans().indexOf(smallTalkMeetingPlan) > -1) {
-                sprint.getSmallTalkMeetingPlans().remove(sprint.getSmallTalkMeetingPlans().indexOf(smallTalkMeetingPlan));
-            }
-        }));
-
+        deleteSprintDailySmallTalkMeetings.forEach(smallTalkMeetingPlan -> sprint.getSmallTalkMeetingPlans().remove(smallTalkMeetingPlan));
 
         // 새 스몰톡 미팅 생성
         sprint.getSmallTalkMeetingPlans()
                 .stream()
                 .filter((smallTalkMeetingPlan -> "C".equals(smallTalkMeetingPlan.getCRUD())))
-                .forEach(smallTalkMeetingPlan -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) smallTalkMeetingPlan, startDate, endDate, userSession)));
+                .forEach(smallTalkMeetingPlan -> updateMeetings.addAll(makeMeetings(smallTalkMeetingPlan, startDate, endDate, userSession)));
 
         sprint.getSmallTalkMeetingPlans()
                 .stream()
@@ -139,6 +128,22 @@ public class SprintService {
         sprintRepository.save(sprint);
 
         return sprint;
+    }
+
+    @CacheEvict(key = "#sprintId", value = CacheConfig.SPRINT)
+    public void deleteSprintInfo(long sprintId) {
+        List<Meeting> sprintMeetings = meetingRepository.findAllBySprintId(sprintId);
+        scrumMeetingPlanAnswerRepository.deleteAllBySprintId(sprintId);
+        meetingRepository.deleteAll(sprintMeetings);
+        sprintRepository.deleteById(sprintId);
+    }
+
+    public boolean selectIsExistProjectSprintName(String spaceCode, Long projectId, Long sprintId, String name) {
+        if (sprintId == null) {
+            return sprintRepository.countByProjectSpaceCodeAndProjectIdAndName(spaceCode, projectId, name) > 0L;
+        }
+
+        return sprintRepository.countByProjectSpaceCodeAndProjectIdAndIdNotAndName(spaceCode, projectId, sprintId, name) > 0L;
     }
 
     private void fillMeetings(Sprint sprint, UserSession userSession, LocalDateTime now, LocalDateTime startDate, LocalDateTime endDate, List<Meeting> updateMeetings, List<Meeting> deleteMeetings, AbstractMeetingPlan abstractDailyMeeting, List<Meeting> meetings) {
@@ -203,7 +208,6 @@ public class SprintService {
         return meetings;
     }
 
-
     private Meeting getMeeting(Sprint sprint, UserSession userSession, LocalDateTime now, LocalDateTime currentDate, AbstractMeetingPlan abstractDailyMeeting, Meeting pMeeting) {
         String code = pMeeting != null ? pMeeting.getCode() : "";
         Long count;
@@ -261,19 +265,9 @@ public class SprintService {
         return meeting;
     }
 
-    public void deleteSprintInfo(long sprintId) {
-        List<Meeting> sprintMeetings = meetingRepository.findAllBySprintId(sprintId);
-        scrumMeetingPlanAnswerRepository.deleteAllBySprintId(sprintId);
-        meetingRepository.deleteAll(sprintMeetings);
-        sprintRepository.deleteById(sprintId);
-    }
-
     public List<Sprint> selectUserSprintList(String spaceCode, UserSession userSession, Boolean closed) {
-        return sprintRepository.findAllByProjectSpaceCodeAndUsersUserIdAndClosed(spaceCode, userSession.getId(), closed);
-    }
-
-    public Optional<Sprint> selectSprintInfo(Long id) {
-        return sprintRepository.findById(id);
+        // return sprintRepository.findAllByProjectSpaceCodeAndUsersUserIdAndClosed(spaceCode, userSession.getId(), closed);
+        return sprintRepository.findUserSprintList(spaceCode, userSession.getId(), closed);
     }
 
     public List<ScrumMeetingAnswer> createSprintDailyMeetingAnswers(List<ScrumMeetingAnswer> scrumMeetingAnswers, UserSession userSession) {
@@ -322,14 +316,8 @@ public class SprintService {
         return sprintRepository.countByProjectSpaceCode(sprintCode);
     }
 
-    public Long selectProjectActivatedSprintCount(Long projectId) {
-        return sprintRepository.countByProjectIdAndActivatedTrue(projectId);
-    }
-
-
     public List<Map<String, Object>> selectUserScrumMeetingAnswerCount(Long sprintId) {
         return scrumMeetingPlanAnswerRepository.selectSprintScrumAnswerStatList(sprintId);
     }
-
 
 }

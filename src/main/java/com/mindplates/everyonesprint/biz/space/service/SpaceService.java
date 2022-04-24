@@ -110,7 +110,7 @@ public class SpaceService {
             for (Sprint sprint : project.getSprints()) {
                 sprintService.deleteSprintInfo(sprint.getId());
             }
-            projectService.deleteProjectInfo(project);
+            projectService.deleteProjectInfo(space.getCode(), project);
         }
         spaceRepository.delete(space);
     }

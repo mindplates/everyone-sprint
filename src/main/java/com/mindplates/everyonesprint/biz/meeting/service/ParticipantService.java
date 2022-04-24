@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.meeting.service;
 
 import com.mindplates.everyonesprint.biz.meeting.redis.Participant;
 import com.mindplates.everyonesprint.biz.meeting.repository.ParticipantRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,13 +12,10 @@ import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class ParticipantService {
 
     final private ParticipantRepository participantRepository;
-
-    public ParticipantService(ParticipantRepository participantRepository) {
-        this.participantRepository = participantRepository;
-    }
 
     public void save(Participant walker) {
         participantRepository.save(walker);
