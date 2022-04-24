@@ -11,6 +11,7 @@ import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import com.mindplates.everyonesprint.framework.annotation.CheckSprintAuth;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -26,17 +27,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api/{spaceCode}/meetings")
+@AllArgsConstructor
 public class MeetingController {
 
     final private MeetingService meetingService;
 
     final private ParticipantService participantService;
-
-    public MeetingController(MeetingService meetingService, ParticipantService participantService) {
-        this.meetingService = meetingService;
-        this.participantService = participantService;
-    }
-
 
     @Operation(description = "사용자가 참석 가능한 미팅 목록 조회")
     @GetMapping("")

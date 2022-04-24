@@ -4,6 +4,7 @@ import com.mindplates.everyonesprint.biz.meeting.entity.Meeting;
 import com.mindplates.everyonesprint.biz.meeting.redis.Participant;
 import com.mindplates.everyonesprint.biz.meeting.repository.ParticipantRepository;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,14 +17,11 @@ import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class DailyScrumService {
+
     final private ParticipantRepository participantRepository;
     final private MeetingService meetingService;
-
-    public DailyScrumService(ParticipantRepository participantRepository, MeetingService meetingService) {
-        this.participantRepository = participantRepository;
-        this.meetingService = meetingService;
-    }
 
     public List<Participant> createDailyScrumInfo(Meeting meeting, UserSession userSession, boolean resetAll) {
         Participant condition = Participant.builder().code(meeting.getCode()).build();

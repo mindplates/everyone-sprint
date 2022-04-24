@@ -9,11 +9,11 @@ import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -21,18 +21,12 @@ import javax.servlet.http.HttpServletRequest;
 
 @Aspect
 @Component
+@AllArgsConstructor
 public class MeetingAuthAspect {
 
     final private SprintService sprintService;
     final private MeetingService meetingService;
-
-    @Autowired
-    private HttpServletRequest request;
-
-    public MeetingAuthAspect(SprintService sprintService, MeetingService meetingService) {
-        this.sprintService = sprintService;
-        this.meetingService = meetingService;
-    }
+    final private HttpServletRequest request;
 
     @Pointcut("execution(* com.mindplates.everyonesprint.biz.meeting.controller..create*(..))")
     private void createOperator() {

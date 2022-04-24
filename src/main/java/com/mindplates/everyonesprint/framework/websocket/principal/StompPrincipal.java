@@ -1,15 +1,14 @@
 package com.mindplates.everyonesprint.framework.websocket.principal;
 
+import lombok.AllArgsConstructor;
+
 import java.security.Principal;
 
+@AllArgsConstructor
 public class StompPrincipal implements Principal {
 
     final private String name;
-
-    public StompPrincipal(String name) {
-        this.name = name;
-    }
-
+    
     @Override
     public String getName() {
         return name;

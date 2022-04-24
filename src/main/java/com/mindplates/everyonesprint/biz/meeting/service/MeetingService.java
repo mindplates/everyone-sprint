@@ -9,6 +9,7 @@ import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class MeetingService {
 
     final private ParticipantService participantService;
@@ -31,16 +33,6 @@ public class MeetingService {
     final private MeetingUserRepository meetingUserRepository;
     final private RoomUserRepository roomUserRepository;
     final private RoomRepository roomRepository;
-
-    public MeetingService(ParticipantService participantService, ParticipantRepository participantRepository, MeetingRepository meetingRepository, MessageSendService messageSendService, MeetingUserRepository meetingUserRepository, RoomRepository roomRepository, RoomUserRepository roomUserRepository) {
-        this.participantService = participantService;
-        this.participantRepository = participantRepository;
-        this.meetingRepository = meetingRepository;
-        this.messageSendService = messageSendService;
-        this.meetingUserRepository = meetingUserRepository;
-        this.roomUserRepository = roomUserRepository;
-        this.roomRepository = roomRepository;
-    }
 
     public static String makeShortUUID() {
         UUID uuid = UUID.randomUUID();

@@ -8,6 +8,7 @@ import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/common")
+@AllArgsConstructor
 public class CommonController {
 
     final private BuildProperties buildProperties;
@@ -22,14 +24,6 @@ public class CommonController {
     final private MeetingService meetingService;
     final private UserService userService;
     final private ProjectService projectService;
-
-    public CommonController(BuildProperties buildProperties, SprintService sprintService, MeetingService meetingService, UserService userService, ProjectService projectService) {
-        this.buildProperties = buildProperties;
-        this.sprintService = sprintService;
-        this.meetingService = meetingService;
-        this.userService = userService;
-        this.projectService = projectService;
-    }
 
     @DisableLogin
     @GetMapping("/system/info")

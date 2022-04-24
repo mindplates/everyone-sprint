@@ -16,6 +16,7 @@ import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import com.mindplates.everyonesprint.framework.annotation.CheckSprintAdminAuth;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,15 +35,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api/{spaceCode}/sprints")
+@AllArgsConstructor
 public class SprintController {
 
     final private SprintService sprintService;
     final private MeetingService meetingService;
-
-    public SprintController(SprintService sprintService, MeetingService meetingService) {
-        this.sprintService = sprintService;
-        this.meetingService = meetingService;
-    }
 
     @Operation(description = "사용자의 스프린트 목록 조회")
     @GetMapping("")

@@ -6,6 +6,7 @@ import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.repository.UserRepository;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.util.EncryptUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,20 +17,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class UserService {
 
     final private UserRepository userRepository;
-
     final private EncryptUtil encryptUtil;
     final private SpaceUserRepository spaceUserRepository;
     final private ProjectUserRepository projectUserRepository;
-
-    public UserService(UserRepository userRepository, SpaceUserRepository spaceUserRepository, ProjectUserRepository projectUserRepository, EncryptUtil encryptUtil) {
-        this.userRepository = userRepository;
-        this.spaceUserRepository = spaceUserRepository;
-        this.projectUserRepository = projectUserRepository;
-        this.encryptUtil = encryptUtil;
-    }
 
     public User selectUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);

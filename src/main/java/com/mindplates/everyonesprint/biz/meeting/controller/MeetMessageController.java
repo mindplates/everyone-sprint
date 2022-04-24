@@ -14,6 +14,7 @@ import com.mindplates.everyonesprint.common.message.service.MessageSendService;
 import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 @Log
 @RestController
 @MessageMapping("/api/message/meets/{code}")
+@AllArgsConstructor
 public class MeetMessageController {
 
     final private UserService userService;
@@ -38,14 +40,6 @@ public class MeetMessageController {
     final private ObjectMapper mapper;
     final private MessageSendService messageSendService;
     final private DailyScrumService dailyScrumService;
-
-    public MeetMessageController(UserService userService, MeetingService meetingService, ObjectMapper mapper, MessageSendService messageSendService, DailyScrumService dailyScrumService) {
-        this.userService = userService;
-        this.meetingService = meetingService;
-        this.mapper = mapper;
-        this.messageSendService = messageSendService;
-        this.dailyScrumService = dailyScrumService;
-    }
 
     @MessageMapping("/rooms/{roomCode}/send")
     public void sendToRoom(@DestinationVariable(value = "code") String code, @DestinationVariable(value = "roomCode") String roomCode, String message, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {

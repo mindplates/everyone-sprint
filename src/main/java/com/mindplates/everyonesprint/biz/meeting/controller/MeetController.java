@@ -21,6 +21,7 @@ import com.mindplates.everyonesprint.common.message.vo.MessageData;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import com.mindplates.everyonesprint.framework.annotation.DisableMeetingAuth;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,7 @@ import java.util.stream.StreamSupport;
 @Slf4j
 @RestController
 @RequestMapping("/api/{spaceCode}/meets")
+@AllArgsConstructor
 public class MeetController {
 
     final private MeetingService meetingService;
@@ -41,14 +43,6 @@ public class MeetController {
     final private MessageSendService messageSendService;
     final private DailyScrumService dailyScrumService;
     final private UserService userService;
-
-    public MeetController(MeetingService meetingService, ParticipantService participantService, MessageSendService messageSendService, DailyScrumService dailyScrumService, UserService userService) {
-        this.meetingService = meetingService;
-        this.participantService = participantService;
-        this.messageSendService = messageSendService;
-        this.dailyScrumService = dailyScrumService;
-        this.userService = userService;
-    }
 
     @Operation(description = "회의 정보 조회")
     @GetMapping("/{code}")

@@ -10,6 +10,7 @@ import com.mindplates.everyonesprint.biz.sprint.repository.SprintRepository;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.code.MeetingTypeCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,17 +23,12 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class SprintService {
 
     final private SprintRepository sprintRepository;
     final private MeetingRepository meetingRepository;
     final private ScrumMeetingAnswerRepository scrumMeetingPlanAnswerRepository;
-
-    public SprintService(SprintRepository sprintRepository, MeetingRepository meetingRepository, ScrumMeetingAnswerRepository scrumMeetingPlanAnswerRepository) {
-        this.sprintRepository = sprintRepository;
-        this.meetingRepository = meetingRepository;
-        this.scrumMeetingPlanAnswerRepository = scrumMeetingPlanAnswerRepository;
-    }
 
     public boolean selectIsExistProjectSprintName(String spaceCode, Long projectId, Long sprintId, String name) {
         if (sprintId == null) {
@@ -91,11 +87,11 @@ public class SprintService {
 
         deleteSprintDailyMeetings.forEach((scrumMeetingPlan -> {
             if (sprint.getScrumMeetingPlans().indexOf(scrumMeetingPlan) > -1) {
-                sprint.getScrumMeetingPlans().remove(sprint.getScrumMeetingPlans().indexOf(scrumMeetingPlan));
+                sprint.getScrumMeetingPlans().remove(scrumMeetingPlan);
             }
         }));
 
-        sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "C".equals(scrumMeetingPlan.getCRUD()))).forEach(scrumMeetingPlan -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) scrumMeetingPlan, startDate, endDate, userSession)));
+        sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "C".equals(scrumMeetingPlan.getCRUD()))).forEach(scrumMeetingPlan -> updateMeetings.addAll(makeMeetings(scrumMeetingPlan, startDate, endDate, userSession)));
 
         sprint.getScrumMeetingPlans().stream().filter((scrumMeetingPlan -> "U".equals(scrumMeetingPlan.getCRUD()))).forEach((scrumMeetingPlan -> {
             List<Meeting> meetings = meetingRepository.findAllBySprintIdAndScrumMeetingPlanId(sprint.getId(), scrumMeetingPlan.getId());
@@ -114,7 +110,7 @@ public class SprintService {
 
         deleteSprintDailySmallTalkMeetings.forEach((smallTalkMeetingPlan -> {
             if (sprint.getSmallTalkMeetingPlans().indexOf(smallTalkMeetingPlan) > -1) {
-                sprint.getSmallTalkMeetingPlans().remove(sprint.getSmallTalkMeetingPlans().indexOf(smallTalkMeetingPlan));
+                sprint.getSmallTalkMeetingPlans().remove(smallTalkMeetingPlan);
             }
         }));
 
@@ -123,7 +119,7 @@ public class SprintService {
         sprint.getSmallTalkMeetingPlans()
                 .stream()
                 .filter((smallTalkMeetingPlan -> "C".equals(smallTalkMeetingPlan.getCRUD())))
-                .forEach(smallTalkMeetingPlan -> updateMeetings.addAll(makeMeetings((AbstractMeetingPlan) smallTalkMeetingPlan, startDate, endDate, userSession)));
+                .forEach(smallTalkMeetingPlan -> updateMeetings.addAll(makeMeetings(smallTalkMeetingPlan, startDate, endDate, userSession)));
 
         sprint.getSmallTalkMeetingPlans()
                 .stream()
