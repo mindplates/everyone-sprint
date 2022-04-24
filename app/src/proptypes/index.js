@@ -108,7 +108,6 @@ const SprintPropTypes = PropTypes.shape({
   scrumMeetingPlans: PropTypes.arrayOf(SprintDailyMeetingPropTypes),
   isMember: PropTypes.bool,
   isAdmin: PropTypes.bool,
-  userCount: PropTypes.number,
   hasScrumMeeting: PropTypes.bool,
   isUserScrumInfoRegistered: PropTypes.bool,
   projectId: PropTypes.number,

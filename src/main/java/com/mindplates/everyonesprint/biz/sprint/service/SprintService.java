@@ -266,7 +266,8 @@ public class SprintService {
     }
 
     public List<Sprint> selectUserSprintList(String spaceCode, UserSession userSession, Boolean closed) {
-        return sprintRepository.findAllByProjectSpaceCodeAndUsersUserIdAndClosed(spaceCode, userSession.getId(), closed);
+        // return sprintRepository.findAllByProjectSpaceCodeAndUsersUserIdAndClosed(spaceCode, userSession.getId(), closed);
+        return sprintRepository.findUserSprintList(spaceCode, userSession.getId(), closed);
     }
 
     public List<ScrumMeetingAnswer> createSprintDailyMeetingAnswers(List<ScrumMeetingAnswer> scrumMeetingAnswers, UserSession userSession) {

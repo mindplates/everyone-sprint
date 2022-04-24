@@ -46,7 +46,7 @@ public class SprintController {
     public List<SprintListResponse> selectUserSprintList(@PathVariable String spaceCode, @RequestParam(value = "date", required = false) LocalDate date, @RequestParam(value = "startDate", required = false) LocalDateTime startDate, @ApiIgnore UserSession userSession) {
         List<Sprint> sprints = sprintService.selectUserSprintList(spaceCode, userSession, false);
         return sprints.stream().map((sprint -> {
-            SprintListResponse item = new SprintListResponse(sprint, userSession);
+            SprintListResponse item = new SprintListResponse(sprint);
             if (startDate != null && date != null) {
                 LocalDateTime endDate = startDate.plusDays(1).minusSeconds(1);
                 if (meetingService.selectHasSprintMeeting(item.getId(), startDate, endDate)) {
