@@ -13,6 +13,7 @@ import com.mindplates.everyonesprint.biz.user.vo.response.UserResponse;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api/{spaceCode}/projects")
+@AllArgsConstructor
 public class ProjectController {
 
     final private ProjectService projectService;
@@ -35,11 +37,6 @@ public class ProjectController {
 
     final private UserService userService;
 
-    public ProjectController(ProjectService projectService, SpaceService spaceService, UserService userService) {
-        this.projectService = projectService;
-        this.spaceService = spaceService;
-        this.userService = userService;
-    }
 
     @Operation(description = "사용자의 프로젝트 목록 조회")
     @GetMapping("")
