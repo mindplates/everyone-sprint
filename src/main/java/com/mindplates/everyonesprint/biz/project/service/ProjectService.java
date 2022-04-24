@@ -4,13 +4,15 @@ import com.mindplates.everyonesprint.biz.meeting.repository.MeetingUserRepositor
 import com.mindplates.everyonesprint.biz.meeting.repository.RoomUserRepository;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.project.repository.ProjectRepository;
-import com.mindplates.everyonesprint.biz.project.repository.ProjectUserRepository;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.repository.ScrumMeetingAnswerRepository;
 import com.mindplates.everyonesprint.biz.sprint.repository.SprintUserRepository;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import com.mindplates.everyonesprint.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,20 +33,19 @@ public class ProjectService {
 
     final private MeetingUserRepository meetingUserRepository;
 
-    final private ProjectUserRepository projectUserRepository;
-
     final private SprintUserRepository sprintUserRepository;
 
     final private RoomUserRepository roomUserRepository;
 
     final private ScrumMeetingAnswerRepository scrumMeetingAnswerRepository;
 
-
-    public Project selectByName(String spaceCode, String name) {
-        return projectRepository.findBySpaceCodeAndName(spaceCode, name).orElse(null);
+    @Cacheable(key = "{#spaceCode,#id}", value = CacheConfig.PROJECT)
+    public Optional<Project> selectProjectInfo(String spaceCode, Long id) {
+        return projectRepository.findBySpaceCodeAndId(spaceCode, id);
     }
 
-    public Project createProjectInfo(Project project, UserSession userSession) {
+    @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
+    public Project createProjectInfo(String spaceCode, Project project, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         project.setCreationDate(now);
         project.setLastUpdateDate(now);
@@ -54,11 +55,11 @@ public class ProjectService {
         return project;
     }
 
-    public Project updateProjectInfo(Project project, UserSession userSession) {
+    @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
+    public Project updateProjectInfo(String spaceCode, Project project, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         project.setLastUpdateDate(now);
         project.setLastUpdatedBy(userSession.getId());
-
 
         ArrayList<Long> deleteUserIds = new ArrayList<>();
         project.getUsers().stream()
@@ -74,17 +75,20 @@ public class ProjectService {
             scrumMeetingAnswerRepository.deleteByProjectIdAndUserId(project.getId(), userId);
         }));
 
-
         projectRepository.save(project);
         return project;
     }
 
-
-    public void deleteProjectInfo(Project project) {
+    @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
+    public void deleteProjectInfo(String spaceCode, Project project) {
         for (Sprint sprint : project.getSprints()) {
             sprintService.deleteSprintInfo(sprint.getId());
         }
         projectRepository.delete(project);
+    }
+
+    public Project selectByName(String spaceCode, String name) {
+        return projectRepository.findBySpaceCodeAndName(spaceCode, name).orElse(null);
     }
 
     public List<Project> selectUserProjectList(String spaceCode, UserSession userSession) {
@@ -94,11 +98,6 @@ public class ProjectService {
     public List<Project> selectSpaceProjectList(Long spaceId) {
         return projectRepository.findAllBySpaceId(spaceId);
     }
-
-    public Optional<Project> selectProjectInfo(String spaceCode, Long id) {
-        return projectRepository.findBySpaceCodeAndId(spaceCode, id);
-    }
-
 
     public Long selectAllProjectCount() {
         return projectRepository.countBy();

@@ -62,7 +62,7 @@ public class ProjectController {
             throw new ServiceException(HttpStatus.NOT_FOUND);
         }
 
-        return new ProjectResponse(projectService.createProjectInfo(project, userSession), userSession);
+        return new ProjectResponse(projectService.createProjectInfo(spaceCode, project, userSession), userSession);
     }
 
     @Operation(description = "프로젝트 수정")
@@ -82,7 +82,7 @@ public class ProjectController {
         Project nextProjectInfo = projectRequest.buildEntity();
         nextProjectInfo.setSpace(projectInfo.get().getSpace());
 
-        return new ProjectResponse(projectService.updateProjectInfo(nextProjectInfo, userSession), userSession);
+        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, nextProjectInfo, userSession), userSession);
     }
 
     @Operation(description = "프로젝트 사용자 조회")
@@ -95,18 +95,15 @@ public class ProjectController {
     @Operation(description = "프로젝트 삭제")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
-        Project project = projectService.selectProjectInfo(spaceCode, id).get();
-        projectService.deleteProjectInfo(project);
+        Project project = projectService.selectProjectInfo(spaceCode, id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        projectService.deleteProjectInfo(spaceCode, project);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
     @Operation(description = "프로젝트 조회")
     @GetMapping("/{id}")
     public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @ApiIgnore UserSession userSession) {
-        Project project = projectService.selectProjectInfo(spaceCode, id).get();
+        Project project = projectService.selectProjectInfo(spaceCode, id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new ProjectResponse(project, userSession);
     }
-
-
 }

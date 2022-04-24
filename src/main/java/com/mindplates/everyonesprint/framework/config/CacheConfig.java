@@ -25,7 +25,7 @@ public class CacheConfig {
     public static final int DEFAULT_EXPIRE_SEC = 60 * 60;
     public static final String SPACE = "space";
     public static final int SPACE_EXPIRE_SEC = 60 * 60 * 24;
-    public static final String PROJECT = "ticket";
+    public static final String PROJECT = "project";
     public static final int PROJECT_EXPIRE_SEC = 60 * 60 * 24;
 
     final private RedisConnectionFactory connectionFactory;
