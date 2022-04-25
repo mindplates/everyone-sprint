@@ -50,15 +50,15 @@ public class SpaceResponse {
 
         this.creationDate = space.getCreationDate();
         this.users = space.getUsers().stream().map(
-                (projectUser) -> SimpleUserResponse.builder()
-                        .id(projectUser.getId())
-                        .userId(projectUser.getUser().getId())
-                        .role(projectUser.getRole())
-                        .email(projectUser.getUser().getEmail())
-                        .name(projectUser.getUser().getName())
-                        .alias(projectUser.getUser().getAlias())
-                        .imageType(projectUser.getUser().getImageType())
-                        .imageData(projectUser.getUser().getImageData())
+                (spaceUser) -> SimpleUserResponse.builder()
+                        .id(spaceUser.getId())
+                        .userId(spaceUser.getUser().getId())
+                        .role(spaceUser.getRole())
+                        .email(spaceUser.getUser().getEmail())
+                        .name(spaceUser.getUser().getName())
+                        .alias(spaceUser.getUser().getAlias())
+                        .imageType(spaceUser.getUser().getImageType())
+                        .imageData(spaceUser.getUser().getImageData())
                         .build()).collect(Collectors.toList());
 
         if (this.isAdmin && space.getApplicants() != null) {

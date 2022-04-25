@@ -38,7 +38,7 @@
     </springProfile>
 
     <springProfile name="production">
-        <root level="info" additivity="false">
+        <root level="error" additivity="false">
             <appender-ref ref="FILE"/>
         </root>
     </springProfile>
