@@ -14,6 +14,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
@@ -32,6 +33,11 @@ public class WebConfig implements WebMvcConfigurer {
     public WebConfig(SessionUtil sessionUtil, UserService userService) {
         this.sessionUtil = sessionUtil;
         this.userService = userService;
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("forward:/index.html");
     }
 
     @Override
@@ -74,8 +80,15 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(localeChangeInterceptor());
 
         registry.addInterceptor(
-                new LoginCheckInterceptor(this.userService, this.sessionUtil))
+                        new LoginCheckInterceptor(this.userService, this.sessionUtil))
                 .addPathPatterns("/**")
+                .excludePathPatterns("/")
+                .excludePathPatterns("/static/**")
+                .excludePathPatterns("/*.ico")
+                .excludePathPatterns("/*.png")
+                .excludePathPatterns("/*.html")
+                .excludePathPatterns("/*.json")
+                .excludePathPatterns("/*.txt")
                 .excludePathPatterns("/test/**/")
                 .excludePathPatterns("/api/common/**")
                 .excludePathPatterns("/v3/**")

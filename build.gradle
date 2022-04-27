@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.mindplates'
-version = '0.1.0-SNAPSHOT'
+version = '0.5.0-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -49,5 +49,84 @@ test {
 
 springBoot {
     buildInfo()
+}
+
+def webappDir = "$projectDir/app"
+def fileName = "${rootProject.name}-${version}"
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["$webappDir/build", "$projectDir/src/main/resources"]
+        }
+    }
+}
+
+processResources {
+    dependsOn "copyWebApp"
+}
+
+task copyWebApp(type: Copy) {
+    dependsOn "deletePreBuildWebApp"
+    from "$webappDir/build"
+    into "$projectDir/src/main/resources/static"
+}
+
+task deletePreBuildWebApp(type: Delete) {
+    dependsOn "buildReact"
+    delete files("$projectDir/src/main/resources/static")
+}
+
+task buildReact(type: Exec) {
+    dependsOn "installReact"
+    workingDir "$webappDir"
+    inputs.dir "$webappDir"
+    group = BasePlugin.BUILD_GROUP
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine "npm.cmd", "run-script", "build"
+    } else {
+        commandLine "npm", "run-script", "build"
+    }
+}
+
+task installReact(type: Exec) {
+    workingDir "$webappDir"
+    inputs.dir "$webappDir"
+    group = BasePlugin.BUILD_GROUP
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine "npm.cmd", "audit", "fix"
+        commandLine 'npm.cmd', 'install'
+    } else {
+        commandLine "npm", "audit", "fix"
+        commandLine 'npm', 'install'
+    }
+}
+
+tasks.bootWar.doLast {
+    mkdir "$buildDir/release"
+    mkdir "$buildDir/dist"
+    copy {
+        from "$projectDir/files/application.properties"
+        into "$buildDir/release/"
+    }
+    copy {
+        from "$projectDir/files/start.sh"
+        into "$buildDir/release/"
+    }
+    copy {
+        from "$projectDir/files/start.bat"
+        into "$buildDir/release/"
+    }
+
+    copy {
+        from "$buildDir/libs/${fileName}.war"
+        into "$buildDir/release/"
+    }
+}
+
+task packageDistribution(type: Zip) {
+    archiveFileName = "${fileName}.zip"
+    destinationDirectory = file("$buildDir/dist")
+    from "$buildDir/release"
 }
 

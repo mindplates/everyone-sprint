@@ -13,7 +13,8 @@ function fullscreen(value) {
     if (value) {
       if (elem.requestFullscreen) {
         const promise = elem.requestFullscreen();
-        promise.catch(() => {});
+        promise.catch(() => {
+        });
       } else if (elem.mozRequestFullScreen) {
         elem.mozRequestFullScreen();
       } else if (elem.webkitRequestFullscreen) {
@@ -82,7 +83,7 @@ function getSpaceUrl(url) {
 }
 
 function isDev() {
-  return window.location.hostname === 'localhost';
+  return process.env.NODE_ENV !== 'production';
 }
 
 const commonUtil = {

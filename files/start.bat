@@ -1,0 +1,1 @@
+start /b java -jar -DapplicationName=everyone-sprint everyone-sprint-0.5.0-SNAPSHOT.war 2>log.txt
