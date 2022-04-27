@@ -77,6 +77,7 @@ public class WebConfig implements WebMvcConfigurer {
                 new LoginCheckInterceptor(this.userService, this.sessionUtil))
                 .addPathPatterns("/**")
                 .excludePathPatterns("/test/**/")
+                .excludePathPatterns("/api/common/**")
                 .excludePathPatterns("/v3/**")
                 .excludePathPatterns("/v2/**")
                 .excludePathPatterns("/webjars/**")

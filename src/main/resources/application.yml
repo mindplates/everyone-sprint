@@ -36,8 +36,8 @@ spring:
     redis:
       cluster:
         nodes: 127.0.0.1:6479
-      flush-mode: immediate # Sessions flush mode.
-      namespace: spring:session # Namespace for keys used to store sessions.
+      flush-mode: immediate
+      namespace: everyonesprint
   messages:
     basename: messages/message
     encoding: UTF-8
@@ -66,7 +66,7 @@ server:
   port : 15000
   servlet:
     session:
-      timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
+      timeout: 60 # Session timeout. If a duration suffix is not specified, seconds is used.
   ssl:
     key-store: classpath:keystores/keystore.p12
     key-store-type: PKCS12
