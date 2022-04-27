@@ -47,3 +47,5 @@ app/.env.local
 app/.env.development.local
 app/.env.test.local
 app/.env.production.local
+
+src/main/resources/static/**

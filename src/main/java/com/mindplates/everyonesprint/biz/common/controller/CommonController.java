@@ -4,6 +4,7 @@ import com.mindplates.everyonesprint.biz.common.vo.response.StatsInfoResponse;
 import com.mindplates.everyonesprint.biz.common.vo.response.SystemInfo;
 import com.mindplates.everyonesprint.biz.meeting.service.MeetingService;
 import com.mindplates.everyonesprint.biz.project.service.ProjectService;
+import com.mindplates.everyonesprint.biz.space.entity.Space;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
@@ -36,6 +37,23 @@ public class CommonController {
     @GetMapping("/stats")
     @Operation(summary = "주요 데이터의 통계", description = "주요 데이터의 통계")
     public StatsInfoResponse selectStatsInfo() {
+        return StatsInfoResponse.builder()
+                .sprintCount(sprintService.selectAllSprintCount())
+                .meetingCount(meetingService.selectAllMeetingCount())
+                .userCount(userService.selectAllUserCount())
+                .projectCount(projectService.selectAllProjectCount())
+                .build();
+    }
+
+    @DisableLogin
+    @GetMapping("/error")
+    @Operation(summary = "에러 로깅 테스트", description = "에러 로깅 테스트")
+    public StatsInfoResponse selectError() {
+        Space space = Space.builder().build();
+        if (space.getCode().equals("ERROR")) {
+            //
+        }
+
         return StatsInfoResponse.builder()
                 .sprintCount(sprintService.selectAllSprintCount())
                 .meetingCount(meetingService.selectAllMeetingCount())

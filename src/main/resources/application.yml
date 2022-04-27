@@ -24,52 +24,34 @@ spring:
     host: 127.0.0.1
     port: 6479
     password: admin1234
-  mail:
-    host: localhost
-    port: 20000
-    protocol: smtp
-    username: everyone_sprint
-    password: enterpr1se!
-    default-encoding: UTF-8
   session:
     store-type: redis
     redis:
-      cluster:
-        nodes: 127.0.0.1:6479
-      flush-mode: immediate # Sessions flush mode.
-      namespace: spring:session # Namespace for keys used to store sessions.
+      flush-mode: immediate
+      namespace: everyonesprint
   messages:
     basename: messages/message
     encoding: UTF-8
-#  autoconfigure:
-#    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
   servlet:
     multipart:
      enabled: true
      file-size-threshold: 2KB
      max-file-size: 200MB
      max-request-size: 215MB
-
-file:
-  upload-dir: c:/fileupload/
-  allowed-extension: txt,pdf,png,jpg,gif
-
-everyone_sprint:
-  locale:
-    default: ko
-  corsUrls: https://localhost:5000, https://everyone-sprint.com:5000, https://everyone-sprint.com, http://localhost:5000, http://everyone-sprint.com:5000, http://everyone-sprint.com, http://mindplates.com:5000, https://mindplates.com:5000, https://192.168.39.3:5000, http://192.168.39.3:5000
-  url: https://www.everyone-sprint.com
-  web-url: https://localhost:5000/
-  mail:
-    senderName: noreply@everyone-sprint.com
 server:
   port : 15000
   servlet:
     session:
-      timeout: 6000 # Session timeout. If a duration suffix is not specified, seconds is used.
+      timeout: 12h # Session timeout. If a duration suffix is not specified, seconds is used.
   ssl:
     key-store: classpath:keystores/keystore.p12
     key-store-type: PKCS12
     key-store-password: 123456
     key-password: a123456
     key-alias: keystore-alias
+everyone_sprint:
+  locale:
+    default: en
+  corsUrls: https://localhost:5000, https://everyone-sprint.com:5000, https://everyone-sprint.com, http://localhost:5000, http://everyone-sprint.com:5000, http://everyone-sprint.com
+  url: https://www.everyone-sprint.com
+  web-url: https://localhost:5000/
