@@ -49,3 +49,4 @@ app/.env.test.local
 app/.env.production.local
 
 src/main/resources/static/**
+application.pid

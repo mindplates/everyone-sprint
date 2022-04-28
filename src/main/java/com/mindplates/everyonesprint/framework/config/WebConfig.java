@@ -27,7 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
     final private UserService userService;
     @Value("${spring.profiles.active}")
     private String activeProfile;
-    @Value("${everyone_sprint.corsUrls}")
+    @Value("${everyone-sprint.corsUrls}")
     private String[] corsUrls;
 
     public WebConfig(SessionUtil sessionUtil, UserService userService) {

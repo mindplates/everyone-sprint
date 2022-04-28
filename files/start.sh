@@ -1,1 +1,3 @@
-nohup java -jar -DapplicationName=everyone-sprint  everyone-sprint-0.5.0-SNAPSHOT.war > log.txt
+#!/bin/sh
+
+nohup java -jar -Djava.net.preferIPv4Stack=true -Dname=everyone-sprint -Dspring.profiles.active=default,production -Dspring.config.additional-location=./conf/application.properties -Dlog.dir=./logs  ./bin/everyone-sprint-0.5.0-SNAPSHOT.war
