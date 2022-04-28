@@ -9,7 +9,7 @@
     </appender>
 
     <springProfile name="production">
-        <property name="LOG_DIR" value="/logs/tomcat/eesprint"/>
+        <property name="LOG_DIR" value="${log.dir}"/>
         <property name="LOG_PATH_NAME" value="${LOG_DIR}/${PROJECT_NAME}.log"/>
     </springProfile>
 

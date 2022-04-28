@@ -17,7 +17,7 @@ import java.util.Optional;
 @Component
 public class SessionUtil {
 
-    @Value("${everyone_sprint.locale.default}")
+    @Value("${everyone-sprint.locale.default}")
     private String defaultLanguage;
 
     public SessionUtil() {

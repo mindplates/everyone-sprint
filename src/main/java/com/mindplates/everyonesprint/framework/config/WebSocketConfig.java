@@ -14,7 +14,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     final private WebSocketInterceptor webSocketInterceptor;
-    @Value("${everyone_sprint.corsUrls}")
+    @Value("${everyone-sprint.corsUrls}")
     private String[] corsUrls;
 
 
