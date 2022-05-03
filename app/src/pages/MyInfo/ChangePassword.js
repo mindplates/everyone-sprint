@@ -29,7 +29,7 @@ const ChangePassword = ({ t, history }) => {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (false && info.changePassword1 !== info.changePassword2) {
+    if (info.changePassword1 !== info.changePassword2) {
       dialog.setMessage(MESSAGE_CATEGORY.INFO, t('validation.badInput'), t('validation.notEqualPassword'));
       return;
     }
