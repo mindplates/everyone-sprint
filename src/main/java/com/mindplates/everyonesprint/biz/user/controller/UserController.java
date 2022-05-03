@@ -12,6 +12,7 @@ import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.util.SessionUtil;
 import com.mindplates.everyonesprint.common.vo.UserSession;
 import com.mindplates.everyonesprint.framework.annotation.DisableLogin;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ public class UserController {
     final private SessionUtil sessionUtil;
     final private SpaceService spaceService;
 
+    @Operation(description = "사용자 추가")
     @DisableLogin
     @PostMapping("")
     public MyInfoResponse createUser(@Valid @RequestBody UserRequest userRequest, HttpServletRequest request, HttpServletResponse response) {
@@ -50,6 +52,7 @@ public class UserController {
         return new MyInfoResponse(result, spaces);
     }
 
+    @Operation(description = "내 정보 변경")
     @PutMapping("/my-info")
     public MyInfoResponse updateUser(@Valid @RequestBody UserRequest userRequest, HttpServletRequest request, HttpServletResponse response, UserSession userSession) {
 
@@ -65,6 +68,7 @@ public class UserController {
         return new MyInfoResponse(result, spaces);
     }
 
+    @Operation(description = "내 비밀번호 변경")
     @PutMapping("/my-info/password")
     public ResponseEntity<?> updateUserPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, HttpServletRequest request, HttpServletResponse response, UserSession userSession) {
 
@@ -83,6 +87,7 @@ public class UserController {
         }
     }
 
+    @Operation(description = "내 정보 조회")
     @DisableLogin
     @GetMapping("/my-info")
     public MyInfoResponse selectMyInfo(UserSession userSession) {
@@ -96,18 +101,21 @@ public class UserController {
         }
     }
 
+    @Operation(description = "내 언어 변경")
     @PutMapping("/my-info/language")
     public ResponseEntity<?> updateUserLanguage(@Valid @RequestBody UserRequest userRequest, UserSession userSession) {
         userService.updateUserLanguage(userSession.getId(), userRequest.getLanguage());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(description = "내 지역 변경")
     @PutMapping("/my-info/country")
     public ResponseEntity<?> updateUserCountry(@Valid @RequestBody UserRequest userRequest, UserSession userSession) {
         userService.updateUserCountry(userSession.getId(), userRequest.getCountry());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(description = "로그인")
     @DisableLogin
     @PostMapping("/login")
     public MyInfoResponse login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
@@ -122,6 +130,7 @@ public class UserController {
         return new MyInfoResponse(user, spaces);
     }
 
+    @Operation(description = "로그아웃")
     @DisableLogin
     @DeleteMapping("/logout")
     public void logout(HttpServletRequest request) {
