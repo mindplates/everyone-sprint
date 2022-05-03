@@ -41,7 +41,6 @@
         <logger name="org.springframework" level="INFO"/>
         <root level="error" additivity="false">
             <appender-ref ref="FILE"/>
-            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
