@@ -96,8 +96,11 @@ const MyInfo = ({ t, history }) => {
               </div>
             </div>
           </Block>
-
           <BottomButtons
+            onListText={t('비밀번호 변경')}
+            onList={() => {
+              history.push('/my-info/password');
+            }}
             onEdit={() => {
               history.push('/my-info/edit');
             }}

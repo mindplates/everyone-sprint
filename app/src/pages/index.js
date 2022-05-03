@@ -27,6 +27,7 @@ import SpaceHome from './SpaceHome/SpaceHome';
 import Notice from './Notice/Notice';
 import MyInfo from './MyInfo/MyInfo';
 import EditMyInfo from './MyInfo/EditMyInfo';
+import ChangePassword from './MyInfo/ChangePassword';
 
 export {
   PublicPark,
@@ -58,4 +59,5 @@ export {
   Notice,
   MyInfo,
   EditMyInfo,
+  ChangePassword,
 };

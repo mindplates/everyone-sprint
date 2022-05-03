@@ -96,6 +96,13 @@ public class UserService {
         return user;
     }
 
+    public Boolean isValidPassword(User user, String password) {
+        String salt = user.getSalt();
+        byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
+        String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
+        return user.getPassword().equals(encryptedText);
+    }
+
     public User updateUser(User user) {
         LocalDateTime now = LocalDateTime.now();
         user.setLastUpdateDate(now);
@@ -107,6 +114,21 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    public void updatePassword(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        user.setLastUpdateDate(now);
+        user.setLastUpdatedBy(user.getId());
+
+        String plainText = user.getPassword();
+        byte[] saltBytes = encryptUtil.getSaltByteArray();
+        String salt = encryptUtil.getSaltString(saltBytes);
+        user.setSalt(salt);
+        String encryptedText = encryptUtil.getEncrypt(plainText, saltBytes);
+        user.setPassword(encryptedText);
+
+        userRepository.save(user);
     }
 
     public void updateUserLanguage(Long userId, String language) {

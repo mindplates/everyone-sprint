@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import {
+  ChangePassword,
   Common,
   Conference,
   ConferenceHeader,
@@ -59,6 +60,7 @@ function App({ history, setting }) {
           <Route exact path="/home" component={Home} />
           <Route exact path="/public-park" component={PublicPark} />
           <Route exact path="/my-info/edit" component={EditMyInfo} />
+          <Route exact path="/my-info/password" component={ChangePassword} />
           <Route exact path="/my-info" component={MyInfo} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/join" component={Join} />

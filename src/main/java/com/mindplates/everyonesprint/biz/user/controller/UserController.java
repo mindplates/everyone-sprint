@@ -4,6 +4,7 @@ import com.mindplates.everyonesprint.biz.space.entity.Space;
 import com.mindplates.everyonesprint.biz.space.service.SpaceService;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.service.UserService;
+import com.mindplates.everyonesprint.biz.user.vo.request.ChangePasswordRequest;
 import com.mindplates.everyonesprint.biz.user.vo.request.LoginRequest;
 import com.mindplates.everyonesprint.biz.user.vo.request.UserRequest;
 import com.mindplates.everyonesprint.biz.user.vo.response.MyInfoResponse;
@@ -62,6 +63,24 @@ public class UserController {
         List<Space> spaces = spaceService.selectUserActivatedSpaceList(sessionUtil.getUserId(request));
 
         return new MyInfoResponse(result, spaces);
+    }
+
+    @PutMapping("/my-info/password")
+    public ResponseEntity<?> updateUserPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, HttpServletRequest request, HttpServletResponse response, UserSession userSession) {
+
+        User user = userService.selectUser(userSession.getId());
+
+        if (!changePasswordRequest.getChangePassword1().equals(changePasswordRequest.getChangePassword2())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST, "common.password.not.equal");
+        }
+
+        if (userService.isValidPassword(user, changePasswordRequest.getCurrentPassword())) {
+            User userInfo = changePasswordRequest.merge(user);
+            userService.updatePassword(userInfo);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            throw new ServiceException("common.password.not.correct");
+        }
     }
 
     @DisableLogin
