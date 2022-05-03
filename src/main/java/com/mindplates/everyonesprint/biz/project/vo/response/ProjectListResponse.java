@@ -27,7 +27,7 @@ public class ProjectListResponse {
     private List<SimpleUserResponse> users;
     private Boolean isMember;
     private Boolean isAdmin;
-    private Long activatedSprintCount = 0L;
+    private Long activatedSprintCount;
 
     public ProjectListResponse(Project project, UserSession userSession) {
         this.id = project.getId();
