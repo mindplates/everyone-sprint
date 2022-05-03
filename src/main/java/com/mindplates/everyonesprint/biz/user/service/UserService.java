@@ -96,8 +96,17 @@ public class UserService {
         return user;
     }
 
-    public void updateUser(User user) {
-        userRepository.save(user);
+    public User updateUser(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        user.setLastUpdateDate(now);
+        user.setLastUpdatedBy(user.getId());
+
+        if (user.getAutoLogin() != null && user.getAutoLogin()) {
+            String loginTokenUUID = UUID.randomUUID().toString().replaceAll("-", "");
+            user.setLoginToken(loginTokenUUID);
+        }
+
+        return userRepository.save(user);
     }
 
     public void updateUserLanguage(Long userId, String language) {

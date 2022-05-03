@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Block, BlockRow, BlockTitle, BottomButtons, Label, Page, PageContent, PageTitle, Text, withLogin } from '@/components';
+import { Block, BlockRow, BlockTitle, BottomButtons, Label, Page, PageContent, PageTitle, Text, UserImage, withLogin } from '@/components';
 import request from '@/utils/request';
-import './MyInfo.scss';
 import commonUtil from '@/utils/commonUtil';
 import { COUNTRIES, LANGUAGES, TIMEZONES } from '@/constants/constants';
 import { HistoryPropTypes } from '@/proptypes';
+import './MyInfo.scss';
 
 const labelMinWidth = '140px';
 
@@ -17,9 +16,15 @@ const MyInfo = ({ t, history }) => {
   const [myInfo, setMyInfo] = useState(null);
 
   const getMyInfo = () => {
-    request.get('/api/users/my-info', null, (data) => {
-      setMyInfo(data);
-    });
+    request.get(
+      '/api/users/my-info',
+      null,
+      (data) => {
+        setMyInfo(data);
+      },
+      null,
+      t('사용자의 정보를 가져오고 있습니다.'),
+    );
   };
 
   useEffect(() => {
@@ -49,28 +54,9 @@ const MyInfo = ({ t, history }) => {
             <BlockTitle>{t('사용자 정보')}</BlockTitle>
             <div className="user-info-content">
               <div className="user-image">
-                <div className="preview-content">
-                  {!myInfo.imageType && (
-                    <div className="preview-image">
-                      <i className="fas fa-robot" />
-                    </div>
-                  )}
-                  {myInfo.imageType && myInfo.imageType === 'image' && (
-                    <div className="preview-image">
-                      <img src={myInfo.imageData} alt="USER" />
-                    </div>
-                  )}
-                  {myInfo.imageType && myInfo.imageType === 'text' && <div className="avatar-text">{myInfo.imageData}</div>}
-                  {myInfo.imageType && myInfo.imageType === 'icon' && (
-                    <div className="avatar-icon">
-                      <span>
-                        <i className={myInfo.imageData.icon} />
-                      </span>
-                    </div>
-                  )}
-                </div>
+                <UserImage size="120px" iconFontSize="50px" rounded={false} imageType={myInfo.imageType} imageData={myInfo.imageData} border />
               </div>
-              <div className="general-info">
+              <div>
                 <BlockRow>
                   <Label minWidth={labelMinWidth}>{t('이메일')}</Label>
                   <Text>{myInfo.email}</Text>
@@ -123,13 +109,7 @@ const MyInfo = ({ t, history }) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-  };
-};
-
-export default compose(withLogin, connect(mapStateToProps, undefined), withRouter, withTranslation())(MyInfo);
+export default compose(withLogin, withRouter, withTranslation())(MyInfo);
 
 MyInfo.propTypes = {
   t: PropTypes.func,

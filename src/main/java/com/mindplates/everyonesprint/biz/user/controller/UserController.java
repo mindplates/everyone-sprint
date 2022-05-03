@@ -49,6 +49,21 @@ public class UserController {
         return new MyInfoResponse(result, spaces);
     }
 
+    @PutMapping("/my-info")
+    public MyInfoResponse updateUser(@Valid @RequestBody UserRequest userRequest, HttpServletRequest request, HttpServletResponse response, UserSession userSession) {
+
+        User user = userService.selectUser(userSession.getId());
+        if (user == null) {
+            throw new ServiceException("BAD_REQUEST");
+        }
+
+        User userInfo = userRequest.merge(user);
+        User result = userService.updateUser(userInfo);
+        List<Space> spaces = spaceService.selectUserActivatedSpaceList(sessionUtil.getUserId(request));
+
+        return new MyInfoResponse(result, spaces);
+    }
+
     @DisableLogin
     @GetMapping("/my-info")
     public MyInfoResponse selectMyInfo(UserSession userSession) {

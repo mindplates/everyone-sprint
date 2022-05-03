@@ -40,4 +40,19 @@ public class UserRequest {
                 .build();
     }
 
+    public User merge(User user) {
+        user.setName(this.name);
+        user.setIsNameOpened(this.isNameOpened);
+        user.setAlias(this.alias);
+        user.setTel(this.tel);
+        user.setIsTelOpened(this.isTelOpened);
+        user.setImageType(this.imageType);
+        user.setImageData(this.imageData);
+        user.setLanguage(this.language);
+        user.setCountry(this.country);
+        user.setAutoLogin(this.autoLogin);
+        user.setTimezone(this.timezone);
+        return user;
+    }
+
 }

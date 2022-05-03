@@ -26,6 +26,7 @@ import Space from './Spaces/Space';
 import SpaceHome from './SpaceHome/SpaceHome';
 import Notice from './Notice/Notice';
 import MyInfo from './MyInfo/MyInfo';
+import EditMyInfo from './MyInfo/EditMyInfo';
 
 export {
   PublicPark,
@@ -56,4 +57,5 @@ export {
   MySpaces,
   Notice,
   MyInfo,
+  EditMyInfo,
 };
