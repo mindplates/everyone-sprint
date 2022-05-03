@@ -8,7 +8,7 @@ import java.time.LocalTime;
 @Entity
 
 @Table(name = "small_talk_meeting_plan")
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper=false)
 @Getter
 @Setter
 @NoArgsConstructor

@@ -30,7 +30,7 @@ public class ProjectResponse {
     private List<SimpleUserResponse> users;
     private Boolean isMember;
     private Boolean isAdmin;
-    private Long activatedSprintCount = 0L;
+    private Long activatedSprintCount;
     private LocalDateTime creationDate;
 
     public ProjectResponse(Project project, UserSession userSession) {

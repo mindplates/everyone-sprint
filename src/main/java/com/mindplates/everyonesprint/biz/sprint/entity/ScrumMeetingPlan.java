@@ -13,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "scrum_meeting_plan")
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper=false)
 @Getter
 @Setter
 public class ScrumMeetingPlan extends AbstractMeetingPlan {
