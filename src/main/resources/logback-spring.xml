@@ -26,7 +26,7 @@
         </appender>
     </springProfile>
 
-    <springProfile name="default">
+    <springProfile name="development">
         <logger name="org.springframework" level="INFO"/>
         <logger name="com.mindplates.everyonesprint.Application" level="DEBUG"/>
         <logger name="com.mindplates.everyonesprint"/>
