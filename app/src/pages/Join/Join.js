@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
@@ -10,24 +10,17 @@ import {
   BlockRow,
   BlockTitle,
   BottomButtons,
-  Button,
   CheckBox,
-  ExitButton,
   Form,
-  IconSelector,
-  ImageMaker,
   Input,
   Label,
   Liner,
   Page,
   PageContent,
   PageTitle,
-  PictureMaker,
-  Popup,
   Selector,
-  Text,
-  TextMaker,
   UserCard,
+  UserPictureEditor,
 } from '@/components';
 import storage from '@/utils/storage';
 import dialog from '@/utils/dialog';
@@ -41,7 +34,7 @@ import './Join.scss';
 
 const labelMinWidth = '140px';
 
-const Join = ({ t, history, type, setUserInfo: setUserInfoReducer, setSpaceInfo: setSpaceInfoReducer }) => {
+const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSpaceInfoReducer }) => {
   const [info, setInfo] = useState({
     ...USER_STUB,
     password: '',
@@ -50,71 +43,46 @@ const Join = ({ t, history, type, setUserInfo: setUserInfoReducer, setSpaceInfo:
     isTelOpened: true,
   });
 
-  const [popup, setPopup] = useState({
-    camera: false,
-    imageMaker: false,
-    textMaker: false,
-    iconSelector: false,
-  });
-
   const changeInfo = (key, value) => {
     const next = { ...info };
     next[key] = value;
     setInfo(next);
   };
 
-  const getMyInfo = () => {
-    request.get('/api/users/my-info', null, (data) => {
-      setInfo(data);
-    });
-  };
-
-  useEffect(() => {
-    if (type === 'edit') {
-      getMyInfo();
-    }
-  }, [type]);
-
-  console.log(info);
-
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (type === 'edit') {
-      //
-    } else {
-      if (info.password !== info.password2) {
-        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('validation.badInput'), t('validation.notEqualPassword'));
-        return;
-      }
-
-      const nextInfo = _.cloneDeep(info);
-      if (nextInfo.imageType === 'icon') {
-        nextInfo.imageData = JSON.stringify(nextInfo.imageData);
-      }
-
-      request.post(
-        '/api/users',
-        nextInfo,
-        (data) => {
-          const { autoLogin, ...last } = data;
-          if (data.autoLogin) {
-            storage.setItem('auth', 'token', data.loginToken);
-          } else {
-            storage.setItem('auth', 'token', null);
-          }
-
-          setUserInfoReducer(last);
-          setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
-
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
-            history.push('/');
-          });
-        },
-        null,
-        t('사용자 정보를 등록하고 있습니다.'),
-      );
+    if (info.password !== info.password2) {
+      dialog.setMessage(MESSAGE_CATEGORY.INFO, t('validation.badInput'), t('validation.notEqualPassword'));
+      return;
     }
+
+    const nextInfo = _.cloneDeep(info);
+    if (nextInfo.imageType === 'icon') {
+      nextInfo.imageData = JSON.stringify(nextInfo.imageData);
+    }
+
+    request.post(
+      '/api/users',
+      nextInfo,
+      (data) => {
+        const { autoLogin, ...last } = data;
+        if (data.autoLogin) {
+          storage.setItem('auth', 'token', data.loginToken);
+        } else {
+          storage.setItem('auth', 'token', null);
+        }
+
+        setUserInfoReducer(last);
+        setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
+
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, '성공', '정상적으로 등록되었습니다.', () => {
+          history.push('/');
+        });
+      },
+      null,
+      t('사용자 정보를 등록하고 있습니다.'),
+    );
   };
 
   return (
@@ -132,14 +100,14 @@ const Join = ({ t, history, type, setUserInfo: setUserInfoReducer, setSpaceInfo:
           },
         ]}
       >
-        {type === 'edit' ? t('내 정보 변경') : t('사용자 등록')}
+        {t('사용자 등록')}
       </PageTitle>
       <PageContent className="d-flex" info>
         <Form className="join-content" onSubmit={onSubmit}>
           <div className="join-info">
-            {type !== 'edit' && (
-              <Block className="general-info pt-0">
-                <BlockTitle>{t('로그인 정보')}</BlockTitle>
+            <Block className="pt-0">
+              <BlockTitle>{t('로그인 정보')}</BlockTitle>
+              <div className="login-info">
                 <BlockRow>
                   <Label minWidth={labelMinWidth} required>
                     {t('이메일')}
@@ -158,102 +126,21 @@ const Join = ({ t, history, type, setUserInfo: setUserInfoReducer, setSpaceInfo:
                   </Label>
                   <Input type="password" value={info.password2} onChange={(val) => changeInfo('password2', val)} required minLength={2} outline simple />
                 </BlockRow>
-              </Block>
-            )}
-            <Block className="general-info pt-0">
+              </div>
+            </Block>
+            <Block className="pt-0">
               <BlockTitle>{t('사용자 정보')}</BlockTitle>
               <div className="user-info-content">
-                <div className="user-picture">
-                  <div className="preview">
-                    <div className="preview-content">
-                      {info.imageType && (
-                        <ExitButton
-                          size="xxs"
-                          color="black"
-                          className="remove-image-button"
-                          onClick={() => {
-                            setInfo({ ...info, imageType: '', imageData: '' });
-                          }}
-                        />
-                      )}
-                      {!info.imageType && (
-                        <div className="preview-image">
-                          <i className="fas fa-robot" />
-                        </div>
-                      )}
-                      {info.imageType && info.imageType === 'image' && (
-                        <div className="preview-image">
-                          <img src={info.imageData} alt="USER" />
-                        </div>
-                      )}
-                      {info.imageType && info.imageType === 'text' && <div className="avatar-text">{info.imageData}</div>}
-                      {info.imageType && info.imageType === 'icon' && (
-                        <div className="avatar-icon">
-                          <span>
-                            <i className={info.imageData.icon} />
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="picture-controls">
-                    <Button
-                      size="sm"
-                      color="white"
-                      outline
-                      rounded
-                      onClick={() => {
-                        setPopup({ ...popup, camera: true });
-                      }}
-                      data-tip={t('사진 찍기')}
-                    >
-                      <i className="fas fa-camera-retro" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      color="white"
-                      outline
-                      rounded
-                      onClick={() => {
-                        setPopup({ ...popup, imageMaker: true });
-                      }}
-                      data-tip={t('이미지 업로드')}
-                    >
-                      <i className="fas fa-upload" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      color="white"
-                      outline
-                      rounded
-                      onClick={() => {
-                        setPopup({ ...popup, iconSelector: true });
-                      }}
-                      data-tip={t('아이콘 선택')}
-                    >
-                      <i className="fas fa-icons" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      color="white"
-                      outline
-                      rounded
-                      onClick={() => {
-                        setPopup({ ...popup, textMaker: true });
-                      }}
-                      data-tip={t('문자')}
-                    >
-                      <i className="fas fa-font" />
-                    </Button>
-                  </div>
-                </div>
+                <UserPictureEditor
+                  info={info}
+                  onChangeImageData={(imageType, imageData) => {
+                    const next = { ...info };
+                    next.imageType = imageType;
+                    next.imageData = imageData;
+                    setInfo(next);
+                  }}
+                />
                 <div>
-                  {type === 'edit' && (
-                    <BlockRow>
-                      <Label minWidth={labelMinWidth}>{t('이메일')}</Label>
-                      <Text>{info.email}</Text>
-                    </BlockRow>
-                  )}
                   <BlockRow>
                     <Label minWidth={labelMinWidth} required>
                       {t('별명')}
@@ -355,96 +242,11 @@ const Join = ({ t, history, type, setUserInfo: setUserInfoReducer, setSpaceInfo:
               history.goBack();
             }}
             onSubmit
-            onSubmitText={type === 'edit' ? t('변경') : t('사용자 등록')}
+            onSubmitText={t('사용자 등록')}
             onCancelIcon=""
           />
         </Form>
       </PageContent>
-      {popup.camera && (
-        <Popup
-          title={t('사진 찍기')}
-          open
-          setOpen={() => {
-            setPopup({ ...popup, camera: false });
-          }}
-        >
-          <PictureMaker
-            close={() => {
-              setPopup({ ...popup, camera: false });
-            }}
-            onChange={(d) => {
-              const next = { ...info };
-              next.imageType = 'image';
-              next.imageData = d;
-              setInfo(next);
-            }}
-          />
-        </Popup>
-      )}
-      {popup.imageMaker && (
-        <Popup
-          title={t('이미지 등록')}
-          open
-          setOpen={() => {
-            setPopup({ ...popup, imageMaker: false });
-          }}
-        >
-          <ImageMaker
-            close={() => {
-              setPopup({ ...popup, imageMaker: false });
-            }}
-            onChange={(d) => {
-              const next = { ...info };
-              next.imageType = 'image';
-              next.imageData = d;
-              setInfo(next);
-            }}
-          />
-        </Popup>
-      )}
-      {popup.textMaker && (
-        <Popup
-          title={t('텍스트 입력')}
-          size="sm"
-          open
-          setOpen={() => {
-            setPopup({ ...popup, textMaker: false });
-          }}
-        >
-          <TextMaker
-            close={() => {
-              setPopup({ ...popup, textMaker: false });
-            }}
-            onChange={(d) => {
-              const next = { ...info };
-              next.imageType = 'text';
-              next.imageData = d;
-              setInfo(next);
-            }}
-          />
-        </Popup>
-      )}
-      {popup.iconSelector && (
-        <Popup
-          title={t('아이콘 선택')}
-          open
-          setOpen={() => {
-            setPopup({ ...popup, iconSelector: false });
-          }}
-        >
-          <IconSelector
-            close={() => {
-              setPopup({ ...popup, iconSelector: false });
-            }}
-            onChange={(d) => {
-              const next = { ...info };
-              next.imageType = 'icon';
-              next.imageData = d;
-              setInfo(next);
-            }}
-          />
-        </Popup>
-      )}
     </Page>
   );
 };
@@ -464,13 +266,11 @@ const mapDispatchToProps = (dispatch) => {
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(Join);
 
-Join.defaultProps = {
-  type: 'new',
-};
+Join.defaultProps = {};
 
 Join.propTypes = {
   t: PropTypes.func,
-  type: PropTypes.string,
+
   systemInfo: PropTypes.shape({
     version: PropTypes.string,
   }),

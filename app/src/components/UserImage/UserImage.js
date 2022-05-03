@@ -5,7 +5,7 @@ import './UserImage.scss';
 const UserImage = ({ className, imageType, border, imageData, rounded, size, iconFontSize }) => {
   const userImageData = useMemo(() => {
     let result = imageData;
-    if (imageType === 'icon' && imageData) {
+    if (imageType === 'icon' && imageData && typeof imageData === 'string') {
       result = JSON.parse(imageData);
     }
 
@@ -68,7 +68,7 @@ UserImage.defaultProps = {
 UserImage.propTypes = {
   className: PropTypes.string,
   imageType: PropTypes.string,
-  imageData: PropTypes.string,
+  imageData: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   rounded: PropTypes.bool,
   size: PropTypes.string,
   border: PropTypes.bool,

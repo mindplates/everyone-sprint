@@ -1,17 +1,16 @@
-.join-wrapper {
+.edit-my-info-wrapper {
   .join-content {
     display: flex;
     flex-direction: column;
     .join-info {
-      .login-info {
-        padding: 0 1rem;
-      }
       .user-info-content {
         display: flex;
 
         @media (max-width: 768px) {
           display: block;
         }
+
+
       }
 
       .preview-liner {

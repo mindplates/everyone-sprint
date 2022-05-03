@@ -47,7 +47,7 @@ const UserPropTypes = PropTypes.shape({
   language: PropTypes.string,
   country: PropTypes.string,
   email: PropTypes.string,
-  imageData: PropTypes.string,
+  imageData: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   imageType: PropTypes.string,
   loginToken: PropTypes.string,
   name: PropTypes.string,
