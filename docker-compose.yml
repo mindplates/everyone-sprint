@@ -5,7 +5,7 @@ services:
   # 서비스 명
   db:
     # 사용할 이미지
-    image: d4c3cafb11d5
+    image: mysql:5.7
     # 컨테이너 이름 설정
     container_name: everyone-sprint-mysql-dev
     # 접근 포트 설정 (컨테이너 외부:컨테이너 내부)
@@ -22,9 +22,10 @@ services:
       - --default-authentication-plugin=mysql_native_password
     volumes:
       # -v 옵션 (다렉토리 마운트 설정)
-      - d:/docker/everyone-spring/data:/var/lib/mysql
+      - ./database/db:/var/lib/mysql
+      - ./database/script/:/docker-entrypoint-initdb.d/:ro
   redis:
-    image: dca52f4b96b0
+    image: redis:alpine
     command: redis-server --requirepass admin1234 --port 6479
     container_name: everyone-sprint-redis-dev
     hostname: redis6479
