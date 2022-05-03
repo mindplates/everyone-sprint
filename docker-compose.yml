@@ -22,8 +22,8 @@ services:
       - --default-authentication-plugin=mysql_native_password
     volumes:
       # -v 옵션 (다렉토리 마운트 설정)
-      - /var/lib/mysql:/var/lib/mysql
-      - ./docs/:/docker-entrypoint-initdb.d/:ro
+      - ./database/db:/var/lib/mysql
+      - ./database/script/:/docker-entrypoint-initdb.d/:ro
   redis:
     image: redis:alpine
     command: redis-server --requirepass admin1234 --port 6479

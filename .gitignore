@@ -50,3 +50,4 @@ app/.env.production.local
 
 src/main/resources/static/**
 application.pid
+database/db
