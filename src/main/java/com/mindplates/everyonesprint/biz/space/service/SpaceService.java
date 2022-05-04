@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -136,7 +137,6 @@ public class SpaceService {
         return spaceRepository.existsByCodeAndUsersUserId(spaceCode, userSession.getId());
     }
 
-
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     public SpaceApplicant createSpaceApplicantInfo(String spaceCode, SpaceApplicant spaceApplicant, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
@@ -216,6 +216,18 @@ public class SpaceService {
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     public void deleteSpaceApplicantInfo(String spaceCode, SpaceApplicant spaceApplicant) {
         spaceApplicantRepository.delete(spaceApplicant);
+    }
+
+    public String getSpaceUniqueToken() {
+
+        String token = "";
+        boolean exists = false;
+        do {
+            token = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
+            exists = spaceRepository.existsByToken(token);
+        } while (exists);
+
+        return token;
     }
 
 

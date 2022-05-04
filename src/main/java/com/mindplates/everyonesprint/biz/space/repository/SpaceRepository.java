@@ -21,5 +21,7 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
 
     boolean existsByCodeAndUsersUserId(String spaceCode, Long userId);
 
+    boolean existsByToken(String token);
+
 }
 

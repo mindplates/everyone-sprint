@@ -216,5 +216,12 @@ public class SpaceController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(description = "스페이스 토큰 조회")
+    @GetMapping("/token")
+    @DisableAuth
+    public String selectToken(@ApiIgnore UserSession userSession) {
+        return spaceService.getSpaceUniqueToken();
+    }
+
 
 }

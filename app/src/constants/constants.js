@@ -23,7 +23,7 @@ const country = Object.keys(COUNTRIES).includes(defaultCountry) ? defaultCountry
 const USER_STUB = {
   id: null,
   alias: '',
-  autoLogin: false,
+  autoLogin: true,
   language,
   country,
   email: '',
@@ -183,7 +183,7 @@ const ALLOW_SEARCHES = [
   },
   {
     key: false,
-    value: '초대 혹은 링크만 허용',
+    value: '초대 링크만 허용',
   },
 ];
 

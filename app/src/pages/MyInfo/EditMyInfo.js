@@ -118,8 +118,8 @@ const EditMyInfo = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo:
       </PageTitle>
       <PageContent className="d-flex" info>
         {info && (
-          <Form className="join-content" onSubmit={onSubmit}>
-            <div className="join-info">
+          <Form className="edit-my-info-content" onSubmit={onSubmit}>
+            <div className="edit-my-info-info">
               <Block className="general-info pt-0">
                 <BlockTitle>{t('사용자 정보')}</BlockTitle>
                 <div className="user-info-content">
@@ -228,6 +228,9 @@ const EditMyInfo = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo:
               </Block>
               <Block className="general-info pt-0">
                 <Liner className="preview-liner" height="1px" width="100%" color="rainbow" />
+                <div className="preview-label">
+                  <span>PREVIEW USER CARD</span>
+                </div>
                 <div className="user-card">
                   <UserCard user={info} editable={{ role: false, member: false }} showAdmin={false} />
                 </div>

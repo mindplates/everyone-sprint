@@ -204,7 +204,7 @@
       > div {
         width: auto !important;
         min-width: 200px;
-        margin-right: 100px;
+        margin-right: 67px;
         padding: 0.75rem !important;
       }
 
@@ -239,6 +239,30 @@
             }
             &.selected {
               background-color: $yellow;
+            }
+
+            .space-item {
+              display: flex;
+              > div {
+                align-self: center;
+                &.name {
+                  flex-grow: 1;
+                  margin-right: 0.5rem;
+                  max-width: 200px;
+                  white-space: nowrap;
+                  overflow-x: hidden;
+                  text-overflow: ellipsis;
+                }
+
+                &.buttons {
+                  > button {
+                    margin-right: 0.25rem;
+                    &:last-child {
+                      margin-right: 0;
+                    }
+                  }
+                }
+              }
             }
           }
 
@@ -689,6 +713,7 @@
               display: flex;
               height: 100%;
               padding: 0 0.5rem;
+              margin-right: 0.5rem;
 
               &.clickable {
                 &:hover {

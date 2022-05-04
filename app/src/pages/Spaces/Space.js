@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'recompose';
+import copy from 'copy-to-clipboard';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -12,6 +13,7 @@ import {
   Button,
   EmptyContent,
   Label,
+  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -39,6 +41,7 @@ const Space = ({
   setSpaceInfo: setSpaceInfoReducer,
   setUserInfo: setUserInfoReducer,
 }) => {
+  const [copyText, setCopyText] = useState(t('URL 복사'));
   const [space, setSpace] = useState(null);
   const [allowed, setAllowed] = useState(null);
 
@@ -135,6 +138,8 @@ const Space = ({
   const activated = ACTIVATES.find((d) => d.key === space?.activated) || {};
 
   const labelMinWidth = '140px';
+
+  const spaceLink = `${window.location.origin}/spaces/tokens/${space?.token}`;
 
   return (
     <Page className="space-wrapper" title={false}>
@@ -287,6 +292,36 @@ const Space = ({
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
               <Text>{allowSearch.value}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('초대 링크')}</Label>
+              <Text>
+                <div className="d-flex">
+                  <div>{spaceLink}</div>
+                  <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                  <div>
+                    <Button
+                      size="xs"
+                      color="point"
+                      outline
+                      onClick={() => {
+                        copy(spaceLink);
+                        setCopyText(
+                          <span>
+                            <i className="fas fa-check mr-2" />
+                            {t('URL 복사')}
+                          </span>,
+                        );
+                        setTimeout(() => {
+                          setCopyText(t('URL 복사'));
+                        }, 1000);
+                      }}
+                    >
+                      {copyText}
+                    </Button>
+                  </div>
+                </div>
+              </Text>
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
