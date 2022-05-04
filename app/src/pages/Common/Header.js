@@ -290,19 +290,6 @@ const Header = (props) => {
                     </div>
                   )}
                 </div>
-                {user?.spaces?.length > 0 && (
-                  <div
-                    className="space-config"
-                    onClick={() => {
-                      // history.push('/spaces/my');
-                      history.push(`/spaces/${commonUtil.getCurrentSpaceCode()}`);
-                    }}
-                  >
-                    <div>
-                      <i className="fas fa-cog" />
-                    </div>
-                  </div>
-                )}
                 {user?.spaces?.length < 1 && (
                   <>
                     <div
@@ -428,7 +415,41 @@ const Header = (props) => {
                           setSpaceOpen(false);
                         }}
                       >
-                        {d.name}
+                        <div className="space-item">
+                          <div className="name">{d.name}</div>
+                          <div className="buttons">
+                            {d.isMember && (
+                              <Button
+                                size="xs"
+                                rounded
+                                color="white"
+                                outline
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSpaceOpen(false);
+                                  history.push(`/spaces/${d.code}`);
+                                }}
+                              >
+                                <i className="fas fa-info" />
+                              </Button>
+                            )}
+                            {d.isAdmin && (
+                              <Button
+                                size="xs"
+                                rounded
+                                color="white"
+                                outline
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSpaceOpen(false);
+                                  history.push(`/spaces/${d.code}/edit`);
+                                }}
+                              >
+                                <i className="fas fa-cog" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
                       </li>
                     );
                   })}

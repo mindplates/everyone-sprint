@@ -26,6 +26,7 @@ public class SpaceRequest {
     private Boolean allowAutoJoin;
     @NotNull
     private Boolean activated;
+    private String token;
     private List<SpaceUserRequest> users;
 
     public Space buildEntity() {
@@ -38,6 +39,7 @@ public class SpaceRequest {
                 .allowSearch(allowSearch)
                 .allowAutoJoin(allowAutoJoin)
                 .activated(activated)
+                .token(token)
                 .build();
 
         List<SpaceUser> spaceUsers = users.stream().map(

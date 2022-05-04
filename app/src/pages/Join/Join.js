@@ -40,7 +40,7 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
     password: '',
     password2: '',
     isNameOpened: true,
-    isTelOpened: true,
+    isTelOpened: false,
   });
 
   const changeInfo = (key, value) => {
@@ -232,6 +232,9 @@ const Join = ({ t, history, setUserInfo: setUserInfoReducer, setSpaceInfo: setSp
             </Block>
             <Block className="general-info pt-0">
               <Liner className="preview-liner" height="1px" width="100%" color="rainbow" />
+              <div className="preview-label">
+                <span>PREVIEW USER CARD</span>
+              </div>
               <div className="user-card">
                 <UserCard user={info} editable={{ role: false, member: false }} showAdmin={false} />
               </div>

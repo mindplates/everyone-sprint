@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,6 +95,7 @@ public class SpaceService {
             projectUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
             roomUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
             scrumMeetingAnswerRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            spaceApplicantRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
         }));
 
         spaceRepository.save(space);
@@ -132,10 +134,13 @@ public class SpaceService {
         return spaceRepository.findByCode(spaceCode);
     }
 
+    public Optional<Space> selectSpaceInfoByToken(String token) {
+        return spaceRepository.findByToken(token);
+    }
+
     public boolean selectIsSpaceMember(String spaceCode, UserSession userSession) {
         return spaceRepository.existsByCodeAndUsersUserId(spaceCode, userSession.getId());
     }
-
 
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     public SpaceApplicant createSpaceApplicantInfo(String spaceCode, SpaceApplicant spaceApplicant, UserSession userSession) {
@@ -216,6 +221,18 @@ public class SpaceService {
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     public void deleteSpaceApplicantInfo(String spaceCode, SpaceApplicant spaceApplicant) {
         spaceApplicantRepository.delete(spaceApplicant);
+    }
+
+    public String getSpaceUniqueToken() {
+
+        String token = "";
+        boolean exists = false;
+        do {
+            token = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
+            exists = spaceRepository.existsByToken(token);
+        } while (exists);
+
+        return token;
     }
 
 

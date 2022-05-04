@@ -10,6 +10,8 @@ public interface SpaceApplicantRepository extends JpaRepository<SpaceApplicant, 
 
     Optional<SpaceApplicant> findBySpaceCodeAndUserId(String spaceCode, Long userId);
 
+    void deleteBySpaceCodeAndUserId(String spaceCode, Long userId);
+
 
 }
 

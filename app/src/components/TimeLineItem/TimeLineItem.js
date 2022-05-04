@@ -10,9 +10,6 @@ import commonUtil from '@/utils/commonUtil';
 import './TimeLineItem.scss';
 
 const TimeLineItem = ({ className, t, meeting, timeSpan, user, height, onClick }) => {
-
-  console.log(meeting);
-
   return (
     <div
       className={`time-line-item-wrapper ${className} ${meeting.type}`}

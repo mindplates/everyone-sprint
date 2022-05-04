@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'recompose';
+import copy from 'copy-to-clipboard';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -10,8 +10,8 @@ import {
   BlockTitle,
   BottomButtons,
   Button,
-  EmptyContent,
   Label,
+  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -22,23 +22,21 @@ import {
 } from '@/components';
 import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
-import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
+import { HistoryPropTypes } from '@/proptypes';
 import dialog from '@/utils/dialog';
 import dateUtil from '@/utils/dateUtil';
 import commonUtil from '@/utils/commonUtil';
-import { setSpaceInfo, setUserInfo } from '@/store/actions';
-import './Space.scss';
+import SpaceApplicantStatus from '@/pages/Spaces/SpaceApplicantStatus';
 
 const Space = ({
   t,
   history,
-  user,
+
   match: {
     params: { spaceCode },
   },
-  setSpaceInfo: setSpaceInfoReducer,
-  setUserInfo: setUserInfoReducer,
 }) => {
+  const [copyText, setCopyText] = useState(t('URL 복사'));
   const [space, setSpace] = useState(null);
   const [allowed, setAllowed] = useState(null);
 
@@ -51,8 +49,8 @@ const Space = ({
         setSpace(data);
       },
       (error, response) => {
-        if (response && response.status === 423) {
-          setAllowed(false);
+        setAllowed(false);
+        if (response && (response.status === 423 || response.status === 404)) {
           return true;
         }
 
@@ -65,44 +63,6 @@ const Space = ({
   useEffect(() => {
     getSpace();
   }, [spaceCode]);
-
-  const getMyInfo = () => {
-    request.get('/api/users/my-info', null, (data) => {
-      setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
-      setUserInfoReducer(data);
-    });
-  };
-
-  const onJoin = () => {
-    request.post(
-      `/api/spaces/${spaceCode}/join`,
-      { userId: user.id },
-      (d, r) => {
-        getSpace();
-        if (r.status === 201) {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스에 가입을 요청하였습니다.'));
-        } else {
-          getMyInfo();
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스 가입에 가입하였습니다.'));
-        }
-      },
-      null,
-      t('스페이스에 참여 의사를 전달 중입니다.'),
-    );
-  };
-
-  const onJoinCancel = () => {
-    request.del(
-      `/api/spaces/${spaceCode}/join`,
-      { userId: user.id },
-      () => {
-        getSpace();
-        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스 가입 요청을 취소되었습니다.'));
-      },
-      null,
-      t('스페이스 참여 요청을 취소하고 있습니다.'),
-    );
-  };
 
   const onReject = (applicantId) => {
     request.put(
@@ -136,8 +96,10 @@ const Space = ({
 
   const labelMinWidth = '140px';
 
+  const spaceLink = `${window.location.origin}/spaces/tokens/${space?.token}`;
+
   return (
-    <Page className="space-wrapper" title={false}>
+    <Page title={false}>
       <PageTitle
         breadcrumbs={[
           {
@@ -157,112 +119,8 @@ const Space = ({
       >
         {t('스페이스 정보')}
       </PageTitle>
-      {!allowed && allowed === null && (
-        <PageContent className="space-content">
-          <EmptyContent
-            height="100%"
-            icon={<i className="fas fa-globe-asia" />}
-            message={
-              <div>
-                <div>{t('스페이스가 존재하지 않습니다.')}</div>
-              </div>
-            }
-          />
-          <BottomButtons
-            onList={() => {
-              history.push('/spaces');
-            }}
-          />
-        </PageContent>
-      )}
-      {!allowed && allowed === false && (
-        <PageContent className="space-content">
-          <EmptyContent
-            height="100%"
-            icon={<i className="fas fa-globe-asia" />}
-            message={
-              <div>
-                <div>{t('접근 할 수 있는 스페이스가 아닙니다.')}</div>
-                <div>{t('멤버만 접근 가능하거나, 혹은 접근이 허용되지 않는 스페이스입니다.')}</div>
-              </div>
-            }
-          />
-          <BottomButtons
-            onList={() => {
-              history.push('/spaces');
-            }}
-          />
-        </PageContent>
-      )}
-      {allowed && space && !space.isMember && (
-        <PageContent className="space-content">
-          <EmptyContent
-            height="100%"
-            icon={<i className="fas fa-globe-asia" />}
-            message={
-              <div className="space-requesting-info">
-                <div className="space-name">{space.name}</div>
-                {!space.userApplicantStatus.approvalStatusCode && space.allowAutoJoin && (
-                  <>
-                    <div>{t('스페이스 멤버만 접근할 수 접근할 수 있습니다.')}</div>
-                    <div>{t('아래 버튼을 클릭하여, 바로 스페이스 멤버로 참여할 수 있습니다.')}</div>
-                    <div className="button">
-                      <Button size="md" color="point" outline onClick={onJoin}>
-                        {t('스페이스 가입')}
-                      </Button>
-                    </div>
-                  </>
-                )}
-                {!space.userApplicantStatus.approvalStatusCode && !space.allowAutoJoin && (
-                  <>
-                    <div>{t('스페이스 멤버만 접근할 수 있습니다.')}</div>
-                    <div>
-                      {t('스페이스에 참여하기 위해서는 스페이스 관리자의 승인이 필요합니다. 아래 버튼을 클릭하여, 스페이스 가입을 요청할 수 있습니다.')}
-                    </div>
-                    <div className="button">
-                      <Button size="md" color="point" outline onClick={onJoin}>
-                        {t('스페이스 가입 요청')}
-                      </Button>
-                    </div>
-                  </>
-                )}
-                {space.userApplicantStatus?.approvalStatusCode === 'REQUEST' && !space.allowAutoJoin && (
-                  <>
-                    <div>{t('스페이스 참여를 요청 중입니다.')}</div>
-                    <div>{t('아직 관리자의 승인이 이루어지지 않았습니다. 스페이스 관리자의 승인 이 후 접근이 가능합니다.')}</div>
-                    <div className="button">
-                      <Button size="md" color="danger" outline onClick={onJoinCancel}>
-                        {t('스페이스 가입 요청 취소')}
-                      </Button>
-                    </div>
-                  </>
-                )}
-                {space.userApplicantStatus?.approvalStatusCode === 'REJECTED' && !space.allowAutoJoin && (
-                  <>
-                    <div>{t('스페이스 참여 요청이 거절되었습니다.')}</div>
-                    <div>{t('요청 정보를 삭제하거나, 다시 한번 가입 요청을 할 수 있습니다.')}</div>
-                    <div className="button">
-                      <Button className="mr-2" size="md" color="danger" outline onClick={onJoinCancel}>
-                        {t('요청 정보 삭제')}
-                      </Button>
-                      <Button size="md" color="point" outline onClick={onJoin}>
-                        {t('가입 재요청')}
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </div>
-            }
-          />
-          <BottomButtons
-            onList={() => {
-              history.push('/spaces');
-            }}
-          />
-        </PageContent>
-      )}
       {allowed && space && space.isMember && (
-        <PageContent className="space-content" info>
+        <PageContent className="d-flex" info>
           <Block className="pt-0">
             <BlockTitle>{t('스페이스 정보')}</BlockTitle>
             <BlockRow>
@@ -287,6 +145,36 @@ const Space = ({
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
               <Text>{allowSearch.value}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('초대 링크')}</Label>
+              <Text>
+                <div className="d-flex">
+                  <div>{spaceLink}</div>
+                  <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                  <div>
+                    <Button
+                      size="xs"
+                      color="point"
+                      outline
+                      onClick={() => {
+                        copy(spaceLink);
+                        setCopyText(
+                          <span>
+                            <i className="fas fa-check mr-2" />
+                            {t('URL 복사')}
+                          </span>,
+                        );
+                        setTimeout(() => {
+                          setCopyText(t('URL 복사'));
+                        }, 1000);
+                      }}
+                    >
+                      {copyText}
+                    </Button>
+                  </div>
+                </div>
+              </Text>
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
@@ -330,34 +218,20 @@ const Space = ({
           />
         </PageContent>
       )}
+      <SpaceApplicantStatus allowed={allowed} spaceCode={space?.code} space={space} getSpace={getSpace} />
     </Page>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
-    setUserInfo: (user) => dispatch(setUserInfo(user)),
-  };
-};
-
-export default compose(withLogin, connect(mapStateToProps, mapDispatchToProps), withRouter, withTranslation())(Space);
+export default compose(withLogin, withRouter, withTranslation())(Space);
 
 Space.propTypes = {
   t: PropTypes.func,
-  user: UserPropTypes,
+
   history: HistoryPropTypes,
   match: PropTypes.shape({
     params: PropTypes.shape({
       spaceCode: PropTypes.string,
     }),
   }),
-  setSpaceInfo: PropTypes.func,
-  setUserInfo: PropTypes.func,
 };

@@ -23,6 +23,7 @@ import Spaces from './Spaces/Spaces';
 import MySpaces from './Spaces/MySpaces';
 import EditSpace from './Spaces/EditSpace';
 import Space from './Spaces/Space';
+import SpaceLink from './Spaces/SpaceLink';
 import SpaceHome from './SpaceHome/SpaceHome';
 import Notice from './Notice/Notice';
 import MyInfo from './MyInfo/MyInfo';
@@ -54,6 +55,7 @@ export {
   Spaces,
   EditSpace,
   Space,
+  SpaceLink,
   SpaceHome,
   MySpaces,
   Notice,

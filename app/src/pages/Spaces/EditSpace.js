@@ -3,16 +3,19 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
+import copy from 'copy-to-clipboard';
 import PropTypes from 'prop-types';
 import {
   Block,
   BlockRow,
   BlockTitle,
   BottomButtons,
+  Button,
   EmptyContent,
   Form,
   Input,
   Label,
+  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -42,6 +45,8 @@ const EditSpace = ({
   setSpaceInfo: setSpaceInfoReducer,
   setUserInfo: setUserInfoReducer,
 }) => {
+  const [copyText, setCopyText] = useState(t('URL 복사'));
+
   const [space, setSpace] = useState({
     name: '',
     code: '',
@@ -49,11 +54,27 @@ const EditSpace = ({
     allowSearch: true,
     allowAutoJoin: true,
     activated: true,
+    token: '',
     users: [],
   });
 
+  const getToken = (nextSpace) => {
+    request.get(
+      '/api/spaces/token',
+      null,
+      (data) => {
+        setSpace({
+          ...nextSpace,
+          token: data,
+        });
+      },
+      null,
+      t('토큰을 재발급하고 있습니다.'),
+    );
+  };
+
   useEffect(() => {
-    if (spaceCode && type === 'edit')
+    if (user && spaceCode && type === 'edit') {
       request.get(
         `/api/spaces/${spaceCode}`,
         null,
@@ -69,30 +90,32 @@ const EditSpace = ({
         null,
         t('스페이스 정보를 가져오고 있습니다'),
       );
-  }, [spaceCode, type]);
-
-  useEffect(() => {
-    if (type === 'new') {
-      const users = space.users.splice(0);
-      if (user && user.id && users.length < 1) {
-        users.push({
-          userId: user.id,
-          email: user.email,
-          alias: user.alias,
-          name: user.name,
-          imageType: user.imageType,
-          imageData: user.imageData,
-          role: 'ADMIN',
-          CRUD: 'C',
-        });
-
-        setSpace({
-          ...space,
-          users,
-        });
-      }
     }
-  }, [user]);
+
+    if (user && type === 'new') {
+      getToken({
+        name: '',
+        code: '',
+        description: '',
+        allowSearch: true,
+        allowAutoJoin: true,
+        activated: true,
+        token: '',
+        users: [
+          {
+            userId: user.id,
+            email: user.email,
+            alias: user.alias,
+            name: user.name,
+            imageType: user.imageType,
+            imageData: user.imageData,
+            role: 'ADMIN',
+            CRUD: 'C',
+          },
+        ],
+      });
+    }
+  }, [spaceCode, type, user]);
 
   const changeInfo = (key, value) => {
     const next = { ...space };
@@ -201,7 +224,7 @@ const EditSpace = ({
     }
   };
 
-  console.log(space);
+  const spaceLink = `${window.location.origin}/spaces/tokens/${space.token}`;
 
   return (
     <Page className="edit-space-wrapper">
@@ -289,9 +312,10 @@ const EditSpace = ({
                   outline
                   simple
                   required
-                  minLength={1}
+                  minLength={2}
                   maxLength={20}
                 />
+                <span className="align-self-center ml-3 small">* {t('2자 이상의 공백 없는 영문자, 숫자 및 -, _기호만 사용 가능합니다.')}</span>
               </BlockRow>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('설명')}</Label>
@@ -330,6 +354,48 @@ const EditSpace = ({
                   }}
                 />
               </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('초대 링크')}</Label>
+                <div className="d-flex">
+                  <div>{spaceLink}</div>
+                  <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                  <div>
+                    <Button
+                      size="xs"
+                      color="point"
+                      outline
+                      onClick={() => {
+                        getToken(space);
+                      }}
+                    >
+                      {t('재발급')}
+                    </Button>
+                  </div>
+                  <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                  <div>
+                    <Button
+                      size="xs"
+                      color="point"
+                      outline
+                      onClick={() => {
+                        copy(spaceLink);
+                        setCopyText(
+                          <span>
+                            <i className="fas fa-check mr-2" />
+                            {t('URL 복사')}
+                          </span>,
+                        );
+                        setTimeout(() => {
+                          setCopyText(t('URL 복사'));
+                        }, 1000);
+                      }}
+                    >
+                      {copyText}
+                    </Button>
+                  </div>
+                </div>
+              </BlockRow>
+
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
                 <RadioButton

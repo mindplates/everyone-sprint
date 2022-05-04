@@ -41,6 +41,9 @@ public class Space extends CommonEntity {
     @Column(name = "activated")
     private Boolean activated;
 
+    @Column(name = "token", length = ColumnsDef.CODE)
+    private String token;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<SpaceUser> users;

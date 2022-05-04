@@ -1,25 +1,37 @@
 .edit-my-info-wrapper {
-  .join-content {
+  .edit-my-info-content {
     display: flex;
     flex-direction: column;
-    .join-info {
+    .edit-my-info-info {
       .user-info-content {
         display: flex;
 
         @media (max-width: 768px) {
           display: block;
         }
-
-
       }
 
-      .preview-liner {
-        margin-bottom: 2.5rem;
-        margin-top: 0.5rem;
-      }
       .user-card {
         width: 300px;
         margin: 0 auto;
+      }
+
+      .preview-label {
+        text-align: center;
+        margin-bottom: 1rem;
+        > span {
+          display: inline-block;
+          font-size: 12px;
+          background-color: $gray-700;
+          color: $white;
+          line-height: 100%;
+          padding: 0.5rem;
+        }
+      }
+
+      .preview-liner {
+        margin-bottom: 2rem;
+        margin-top: 0.5rem;
       }
     }
   }

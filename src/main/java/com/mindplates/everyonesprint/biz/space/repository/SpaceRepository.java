@@ -11,6 +11,8 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
 
     Optional<Space> findByCode(String code);
 
+    Optional<Space> findByToken(String token);
+
     Optional<Space> findByIdNotAndCode(Long spaceId, String code);
 
     List<Space> findAllByUsersUserIdAndNameLike(Long userId, String text);
@@ -20,6 +22,8 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
     List<Space> findAllByNameLikeAndAllowSearchTrueAndActivatedTrue(String text);
 
     boolean existsByCodeAndUsersUserId(String spaceCode, Long userId);
+
+    boolean existsByToken(String token);
 
 }
 

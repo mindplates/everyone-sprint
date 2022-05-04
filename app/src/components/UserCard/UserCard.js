@@ -87,7 +87,7 @@ class UserCard extends React.PureComponent {
             <div className="user-card-content">
               <div className="alias">
                 <span className="alias-text">{user.alias}</span>
-                {user.name && <span className="name-text">{user.name}</span>}
+                {user.isNameOpened && user.name && <span className="name-text">{user.name}</span>}
               </div>
               <div className="email">{user.email}</div>
             </div>
