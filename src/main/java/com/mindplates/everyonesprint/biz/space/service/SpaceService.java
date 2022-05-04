@@ -95,6 +95,7 @@ public class SpaceService {
             projectUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
             roomUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
             scrumMeetingAnswerRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
+            spaceApplicantRepository.deleteBySpaceCodeAndUserId(space.getCode(), userId);
         }));
 
         spaceRepository.save(space);
@@ -131,6 +132,10 @@ public class SpaceService {
     @Cacheable(key = "#spaceCode", value = CacheConfig.SPACE)
     public Optional<Space> selectSpaceInfo(String spaceCode) {
         return spaceRepository.findByCode(spaceCode);
+    }
+
+    public Optional<Space> selectSpaceInfoByToken(String token) {
+        return spaceRepository.findByToken(token);
     }
 
     public boolean selectIsSpaceMember(String spaceCode, UserSession userSession) {

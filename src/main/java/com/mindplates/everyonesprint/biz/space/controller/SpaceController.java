@@ -173,7 +173,7 @@ public class SpaceController {
     @Operation(description = "스페이스 참여 요청")
     @PostMapping("/{spaceCode}/join")
     @DisableAuth
-    public ResponseEntity<?> createSpaceApplicantInfo(@PathVariable String spaceCode, @Valid @RequestBody SpaceApplicantRequest spaceApplicantRequest, @ApiIgnore UserSession userSession) {
+    public ResponseEntity<?> createSpaceApplicantInfo(@PathVariable String spaceCode, @RequestParam(value = "token", required = false) String token, @Valid @RequestBody SpaceApplicantRequest spaceApplicantRequest, @ApiIgnore UserSession userSession) {
         Space space = spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
 
@@ -183,6 +183,31 @@ public class SpaceController {
         } else if (!space.getActivated()) {
             throw new ServiceException(HttpStatus.LOCKED);
         } else if (!space.getAllowSearch()) {
+            // 검색이 금지된 경우, 토큰 값이 일치하는 경우에만, 가입 또는 가입 요청 정보 입력
+            if (token != null && token.length() > 1) {
+                Optional<Space> tokenSpace = spaceService.selectSpaceInfoByToken(token);
+                if (tokenSpace.isPresent() && tokenSpace.get().getCode().equals(space.getCode())) {
+                    if (space.getAllowAutoJoin()) {
+                        SpaceUser spaceUser = SpaceUser.builder()
+                                .user(User.builder().id(spaceApplicantRequest.getUserId()).build())
+                                .role(RoleCode.MEMBER)
+                                .space(space)
+                                .build();
+                        spaceService.createSpaceUserInfo(spaceCode, spaceUser, userSession);
+                        return new ResponseEntity<>(HttpStatus.OK);
+                    } else {
+                        Optional<SpaceApplicant> existApplicant = spaceService.selectSpaceApplicantInfo(spaceCode, spaceApplicantRequest.getUserId());
+                        if (existApplicant.isPresent()) {
+                            existApplicant.get().setApprovalStatusCode(ApprovalStatusCode.REQUEST);
+                            spaceService.updateApplicantInfo(spaceCode, existApplicant.get(), userSession);
+                        } else {
+                            SpaceApplicant spaceApplicant = spaceApplicantRequest.buildEntity(space);
+                            spaceService.createSpaceApplicantInfo(spaceCode, spaceApplicant, userSession);
+                        }
+                        return new ResponseEntity<>(HttpStatus.CREATED);
+                    }
+                }
+            }
             throw new ServiceException(HttpStatus.LOCKED);
         } else if (space.getAllowAutoJoin()) {
             SpaceUser spaceUser = SpaceUser.builder()
@@ -209,7 +234,8 @@ public class SpaceController {
     @Operation(description = "스페이스 참여 요청 취소")
     @DeleteMapping("/{spaceCode}/join")
     @DisableAuth
-    public ResponseEntity<?> deleteSpaceApplicantInfo(@PathVariable String spaceCode, @Valid @RequestBody SpaceApplicantRequest spaceApplicantRequest, @ApiIgnore UserSession userSession) {
+    public ResponseEntity<?> deleteSpaceApplicantInfo(@PathVariable String
+                                                              spaceCode, @Valid @RequestBody SpaceApplicantRequest spaceApplicantRequest, @ApiIgnore UserSession userSession) {
         SpaceApplicant spaceApplicant = spaceService.selectSpaceApplicantInfo(spaceCode, userSession.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         spaceService.deleteSpaceApplicantInfo(spaceCode, spaceApplicant);
@@ -221,6 +247,24 @@ public class SpaceController {
     @DisableAuth
     public String selectToken(@ApiIgnore UserSession userSession) {
         return spaceService.getSpaceUniqueToken();
+    }
+
+    @Operation(description = "토큰으로 스페이스 조회")
+    @GetMapping("/token/{token}")
+    @DisableAuth
+    public SpaceResponse selectSpaceInfoByToken(@PathVariable String token, @ApiIgnore UserSession userSession) {
+        Space space = spaceService.selectSpaceInfoByToken(token).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        boolean isMember = spaceService.selectIsSpaceMember(space.getCode(), userSession);
+        if (isMember) {
+            return new SpaceResponse(space, userSession);
+        } else if (!space.getActivated()) {
+            throw new ServiceException(HttpStatus.LOCKED);
+        } else {
+            SpaceResponse response = new SpaceResponse(space, userSession);
+            response.setUserApplicantStatus(new SpaceApplicantResponse(spaceService.selectSpaceApplicantInfo(space.getCode(), userSession.getId()).orElse(null)));
+            response.getUsers().clear();
+            return response;
+        }
     }
 
 
