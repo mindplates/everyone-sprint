@@ -104,6 +104,24 @@ public class SpaceService {
     }
 
     @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
+    public Space updateUserSpaceExit(Space space, UserSession userSession) {
+        LocalDateTime now = LocalDateTime.now();
+        space.setLastUpdateDate(now);
+        space.setLastUpdatedBy(userSession.getId());
+        space.setUsers(space.getUsers().stream().filter((spaceUser -> !spaceUser.getUser().getId().equals(userSession.getId()))).collect(Collectors.toList()));
+        spaceRepository.save(space);
+
+        meetingUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userSession.getId());
+        sprintUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userSession.getId());
+        projectUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userSession.getId());
+        roomUserRepository.deleteBySpaceCodeAndUserId(space.getCode(), userSession.getId());
+        scrumMeetingAnswerRepository.deleteBySpaceCodeAndUserId(space.getCode(), userSession.getId());
+        spaceApplicantRepository.deleteBySpaceCodeAndUserId(space.getCode(), userSession.getId());
+
+        return space;
+    }
+
+    @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
     public void deleteSpaceInfo(Space space) {
 
         List<Project> spaceProjects = projectService.selectSpaceProjectList(space.getId());

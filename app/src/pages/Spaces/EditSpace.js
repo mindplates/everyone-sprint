@@ -28,7 +28,7 @@ import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/co
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import { setSpaceInfo, setUserInfo } from '@/store/actions';
+import { setSpaceInfo } from '@/store/actions';
 import commonUtil from '@/utils/commonUtil';
 import './EditSpace.scss';
 
@@ -43,7 +43,6 @@ const EditSpace = ({
     params: { spaceCode },
   },
   setSpaceInfo: setSpaceInfoReducer,
-  setUserInfo: setUserInfoReducer,
 }) => {
   const [copyText, setCopyText] = useState(t('URL 복사'));
 
@@ -129,16 +128,26 @@ const EditSpace = ({
     setSpace(next);
   };
 
+  const getMyInfo = () => {
+    request.get(
+      '/api/users/my-info',
+      null,
+      (data) => {
+        setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
+      },
+      null,
+      t('사용자의 정보를 가져오고 있습니다.'),
+    );
+  };
+
   const updateSpace = () => {
     request.put(
       `/api/spaces/${space.code}`,
       space,
-      (data) => {
-        setSpaceInfoReducer(data.space);
-        setUserInfoReducer(data.user);
-
-        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-          history.push(`/spaces/${data.space.code}`);
+      () => {
+        getMyInfo();
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 변경되었습니다.'), () => {
+          history.push(`/spaces/${space.code}`);
         });
       },
       null,
@@ -164,12 +173,10 @@ const EditSpace = ({
       request.post(
         '/api/spaces',
         space,
-        (data) => {
-          setSpaceInfoReducer(data.space);
-          setUserInfoReducer(data.user);
-
+        () => {
+          getMyInfo();
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/spaces/${data.space.code}`);
+            history.push(`/spaces/${space.code.toUpperCase()}`);
           });
         },
         null,
@@ -183,9 +190,8 @@ const EditSpace = ({
       request.del(
         `/api/spaces/${spaceCode}`,
         null,
-        (data) => {
-          setSpaceInfoReducer(commonUtil.getUserSpace(data.user.spaces));
-          setUserInfoReducer(data.user);
+        () => {
+          getMyInfo();
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
             history.push('/spaces');
           });
@@ -449,7 +455,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
-    setUserInfo: (user) => dispatch(setUserInfo(user)),
   };
 };
 
@@ -466,5 +471,4 @@ EditSpace.propTypes = {
     }),
   }),
   setSpaceInfo: PropTypes.func,
-  setUserInfo: PropTypes.func,
 };

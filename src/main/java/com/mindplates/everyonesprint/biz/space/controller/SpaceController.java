@@ -12,11 +12,9 @@ import com.mindplates.everyonesprint.biz.space.vo.request.SpaceRequest;
 import com.mindplates.everyonesprint.biz.space.vo.response.SpaceApplicantResponse;
 import com.mindplates.everyonesprint.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.everyonesprint.biz.space.vo.response.SpaceResponse;
-import com.mindplates.everyonesprint.biz.space.vo.response.UserAndSpaceResponse;
 import com.mindplates.everyonesprint.biz.sprint.service.SprintService;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.biz.user.service.UserService;
-import com.mindplates.everyonesprint.biz.user.vo.response.MyInfoResponse;
 import com.mindplates.everyonesprint.common.code.ApprovalStatusCode;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
@@ -50,7 +48,7 @@ public class SpaceController {
     @Operation(description = "스페이스 생성")
     @PostMapping("")
     @DisableAuth
-    public UserAndSpaceResponse createSpaceInfo(@Valid @RequestBody SpaceRequest spaceRequest, @ApiIgnore UserSession userSession) {
+    public ResponseEntity<?> createSpaceInfo(@Valid @RequestBody SpaceRequest spaceRequest, @ApiIgnore UserSession userSession) {
 
         Optional<Space> alreadySpace = spaceService.selectSpaceInfo(spaceRequest.getCode());
         if (alreadySpace.isPresent()) {
@@ -58,16 +56,14 @@ public class SpaceController {
         }
 
         Space space = spaceRequest.buildEntity();
-        SpaceResponse spaceResponse = new SpaceResponse(spaceService.createSpaceInfo(space, userSession), userSession);
-        List<Space> spaces = spaceService.selectUserActivatedSpaceList(userSession.getId());
-        User user = userService.selectUser(userSession.getId());
-        MyInfoResponse userResponse = new MyInfoResponse(user, spaces);
-        return UserAndSpaceResponse.builder().space(spaceResponse).user(userResponse).build();
+        spaceService.createSpaceInfo(space, userSession);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "스페이스 수정")
     @PutMapping("/{spaceCode}")
-    public UserAndSpaceResponse updateSpaceInfo(@PathVariable String spaceCode, @Valid @RequestBody SpaceRequest spaceRequest, @ApiIgnore UserSession userSession) {
+    public ResponseEntity<?> updateSpaceInfo(@PathVariable String spaceCode, @Valid @RequestBody SpaceRequest spaceRequest, @ApiIgnore UserSession userSession) {
 
         if (!spaceCode.equals(spaceRequest.getCode())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
@@ -79,23 +75,25 @@ public class SpaceController {
         }
 
         Space space = spaceRequest.buildEntity();
-        SpaceResponse spaceResponse = new SpaceResponse(spaceService.updateSpaceInfo(space, userSession), userSession);
-        List<Space> spaces = spaceService.selectUserActivatedSpaceList(userSession.getId());
-        User user = userService.selectUser(userSession.getId());
-        MyInfoResponse userResponse = new MyInfoResponse(user, spaces);
-        return UserAndSpaceResponse.builder().space(spaceResponse).user(userResponse).build();
+        spaceService.updateSpaceInfo(space, userSession);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "스페이스 삭제")
     @DeleteMapping("/{spaceCode}")
-    public UserAndSpaceResponse deleteSpaceInfo(@PathVariable String spaceCode, @ApiIgnore UserSession userSession) {
+    public ResponseEntity<?> deleteSpaceInfo(@PathVariable String spaceCode, @ApiIgnore UserSession userSession) {
         Space space = spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         spaceService.deleteSpaceInfo(space);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-        List<Space> spaces = spaceService.selectUserActivatedSpaceList(userSession.getId());
-        User user = userService.selectUser(userSession.getId());
-        MyInfoResponse userResponse = new MyInfoResponse(user, spaces);
-        return UserAndSpaceResponse.builder().user(userResponse).build();
+    @Operation(description = "사용자 스페이스 나가기")
+    @PutMapping("/{spaceCode}/exit")
+    @DisableAuth
+    public ResponseEntity<?> updateUserSpaceExit(@PathVariable String spaceCode, @ApiIgnore UserSession userSession) {
+        Space space = spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        spaceService.updateUserSpaceExit(space, userSession);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "스페이스 데이터의 통계", description = "주요 데이터의 통계")
