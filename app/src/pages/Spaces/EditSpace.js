@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'recompose';
@@ -28,7 +28,7 @@ import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/co
 import request from '@/utils/request';
 import RadioButton from '@/components/RadioButton/RadioButton';
 import { HistoryPropTypes, UserPropTypes } from '@/proptypes';
-import { setSpaceInfo } from '@/store/actions';
+import { setSpaceInfo, setUserInfo } from '@/store/actions';
 import commonUtil from '@/utils/commonUtil';
 import './EditSpace.scss';
 
@@ -43,8 +43,11 @@ const EditSpace = ({
     params: { spaceCode },
   },
   setSpaceInfo: setSpaceInfoReducer,
+  setUserInfo: setUserInfoReducer,
 }) => {
   const [copyText, setCopyText] = useState(t('URL 복사'));
+
+  const skip = useRef(false);
 
   const [space, setSpace] = useState({
     name: '',
@@ -73,6 +76,10 @@ const EditSpace = ({
   };
 
   useEffect(() => {
+    if (skip.current) {
+      return;
+    }
+
     if (user && spaceCode && type === 'edit') {
       request.get(
         `/api/spaces/${spaceCode}`,
@@ -133,7 +140,9 @@ const EditSpace = ({
       '/api/users/my-info',
       null,
       (data) => {
+        skip.current = true;
         setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
+        setUserInfoReducer(data);
       },
       null,
       t('사용자의 정보를 가져오고 있습니다.'),
@@ -455,6 +464,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
+    setUserInfo: (user) => dispatch(setUserInfo(user)),
   };
 };
 
@@ -471,4 +481,5 @@ EditSpace.propTypes = {
     }),
   }),
   setSpaceInfo: PropTypes.func,
+  setUserInfo: PropTypes.func,
 };

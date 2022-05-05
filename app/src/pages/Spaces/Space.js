@@ -28,7 +28,7 @@ import dialog from '@/utils/dialog';
 import dateUtil from '@/utils/dateUtil';
 import commonUtil from '@/utils/commonUtil';
 import SpaceApplicantStatus from '@/pages/Spaces/SpaceApplicantStatus';
-import { setSpaceInfo } from '@/store/actions';
+import { setSpaceInfo, setUserInfo } from '@/store/actions';
 
 const Space = ({
   t,
@@ -37,6 +37,7 @@ const Space = ({
     params: { spaceCode },
   },
   setSpaceInfo: setSpaceInfoReducer,
+  setUserInfo: setUserInfoReducer,
 }) => {
   const [copyText, setCopyText] = useState(t('URL 복사'));
   const [space, setSpace] = useState(null);
@@ -68,6 +69,7 @@ const Space = ({
       null,
       (data) => {
         setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
+        setUserInfoReducer(data);
       },
       null,
       t('사용자의 정보를 가져오고 있습니다.'),
@@ -264,6 +266,7 @@ const Space = ({
 const mapDispatchToProps = (dispatch) => {
   return {
     setSpaceInfo: (space) => dispatch(setSpaceInfo(space)),
+    setUserInfo: (user) => dispatch(setUserInfo(user)),
   };
 };
 
@@ -279,4 +282,5 @@ Space.propTypes = {
     }),
   }),
   setSpaceInfo: PropTypes.func,
+  setUserInfo: PropTypes.func,
 };
