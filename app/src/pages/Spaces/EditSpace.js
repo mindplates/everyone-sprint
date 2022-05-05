@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'recompose';
@@ -47,6 +47,8 @@ const EditSpace = ({
 }) => {
   const [copyText, setCopyText] = useState(t('URL 복사'));
 
+  const skip = useRef(false);
+
   const [space, setSpace] = useState({
     name: '',
     code: '',
@@ -74,6 +76,10 @@ const EditSpace = ({
   };
 
   useEffect(() => {
+    if (skip.current) {
+      return;
+    }
+
     if (user && spaceCode && type === 'edit') {
       request.get(
         `/api/spaces/${spaceCode}`,
@@ -129,16 +135,28 @@ const EditSpace = ({
     setSpace(next);
   };
 
+  const getMyInfo = () => {
+    request.get(
+      '/api/users/my-info',
+      null,
+      (data) => {
+        skip.current = true;
+        setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
+        setUserInfoReducer(data);
+      },
+      null,
+      t('사용자의 정보를 가져오고 있습니다.'),
+    );
+  };
+
   const updateSpace = () => {
     request.put(
       `/api/spaces/${space.code}`,
       space,
-      (data) => {
-        setSpaceInfoReducer(data.space);
-        setUserInfoReducer(data.user);
-
-        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-          history.push(`/spaces/${data.space.code}`);
+      () => {
+        getMyInfo();
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 변경되었습니다.'), () => {
+          history.push(`/spaces/${space.code}`);
         });
       },
       null,
@@ -164,12 +182,10 @@ const EditSpace = ({
       request.post(
         '/api/spaces',
         space,
-        (data) => {
-          setSpaceInfoReducer(data.space);
-          setUserInfoReducer(data.user);
-
+        () => {
+          getMyInfo();
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            history.push(`/spaces/${data.space.code}`);
+            history.push(`/spaces/${space.code.toUpperCase()}`);
           });
         },
         null,
@@ -183,9 +199,8 @@ const EditSpace = ({
       request.del(
         `/api/spaces/${spaceCode}`,
         null,
-        (data) => {
-          setSpaceInfoReducer(commonUtil.getUserSpace(data.user.spaces));
-          setUserInfoReducer(data.user);
+        () => {
+          getMyInfo();
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
             history.push('/spaces');
           });
