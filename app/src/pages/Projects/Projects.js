@@ -16,7 +16,7 @@ const Projects = ({ t, history }) => {
     text: '',
   });
 
-  const getSpaces = () => {
+  const getProjects = () => {
     request.get(
       '/api/{spaceCode}/projects',
       search,
@@ -29,7 +29,7 @@ const Projects = ({ t, history }) => {
   };
 
   useEffect(() => {
-    getSpaces();
+    getProjects();
   }, [search.type]);
 
   return (
@@ -81,11 +81,11 @@ const Projects = ({ t, history }) => {
                 text: val,
               });
             }}
-            onEnter={getSpaces}
+            onEnter={getProjects}
           />
         </div>
         <div className="search-button">
-          <Button size="sm" color="white" outline onClick={getSpaces}>
+          <Button size="sm" color="white" outline onClick={getProjects}>
             {t('검색')}
           </Button>
         </div>

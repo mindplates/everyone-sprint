@@ -94,7 +94,7 @@ const EditSprint = ({
 
   const getProjects = () => {
     request.get(
-      '/api/{spaceCode}/projects',
+      '/api/{spaceCode}/projects/my',
       null,
       (list) => {
         setProjects(list);

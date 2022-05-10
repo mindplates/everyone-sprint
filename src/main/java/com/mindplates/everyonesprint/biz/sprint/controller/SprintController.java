@@ -26,10 +26,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -68,7 +65,7 @@ public class SprintController {
 
         Sprint sprint = sprintRequest.buildEntity();
         sprint.setClosed(false);
-        return new SprintResponse(sprintService.createSprintInfo(sprint, userSession));
+        return new SprintResponse(sprintService.createSprintInfo(spaceCode, sprintRequest.getProjectId(), sprint, userSession));
     }
 
     @Operation(description = "스프린트 닫기")
@@ -112,7 +109,8 @@ public class SprintController {
     @DeleteMapping("/{sprintId}")
     @CheckSprintAdminAuth
     public ResponseEntity<?> deleteSprintInfo(@PathVariable String spaceCode, @PathVariable Long sprintId) {
-        sprintService.deleteSprintInfo(sprintId);
+        Optional<Sprint> sprint = sprintService.selectSprintInfo(sprintId);
+        sprintService.deleteSprintInfo(spaceCode, sprint.get().getProject().getId(), sprintId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

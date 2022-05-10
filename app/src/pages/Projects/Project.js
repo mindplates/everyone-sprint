@@ -29,14 +29,27 @@ const Project = ({
 
   const [project, setProject] = useState(null);
   const [tab, setTab] = useState('project');
+  const [allowed, setAllowed] = useState(null);
 
   useEffect(() => {
-    request.get(`/api/{spaceCode}/projects/${id}`, null, setProject, null, t('프로젝트 정보를 가져오고 있습니다.'));
+    request.get(
+      `/api/{spaceCode}/projects/${id}`,
+      null,
+      setProject,
+      (error, response) => {
+        console.log(response);
+        setAllowed(false);
+        return response && (response.status === 423 || response.status === 404);
+      },
+      t('프로젝트 정보를 가져오고 있습니다.'),
+    );
   }, [id]);
 
   const allowSearch = ALLOW_SEARCHES.find((d) => d.key === project?.allowSearch) || {};
   const allowAutoJoin = JOIN_POLICIES.find((d) => d.key === project?.allowAutoJoin) || {};
   const activated = ACTIVATES.find((d) => d.key === project?.activated) || {};
+
+  console.log(project);
 
   return (
     <Page
@@ -58,7 +71,7 @@ const Project = ({
         },
       ]}
     >
-      {project && (
+      {allowed && project && project.isMember && (
         <PageContent className={`project-content ${tab}`} padding="0">
           <Tabs className="tabs" tab={tab} tabs={tabs} onChange={setTab} border={false} cornered size="sm" />
           <div className="project-info">

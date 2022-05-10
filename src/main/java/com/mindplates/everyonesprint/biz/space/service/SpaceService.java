@@ -128,7 +128,7 @@ public class SpaceService {
 
         for (Project project : spaceProjects) {
             for (Sprint sprint : project.getSprints()) {
-                sprintService.deleteSprintInfo(sprint.getId());
+                sprintService.deleteSprintInfo(space.getCode(), project.getId(), sprint.getId());
             }
             projectService.deleteProjectInfo(space.getCode(), project);
         }

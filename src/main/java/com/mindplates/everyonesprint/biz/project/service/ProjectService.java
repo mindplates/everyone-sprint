@@ -3,6 +3,8 @@ package com.mindplates.everyonesprint.biz.project.service;
 import com.mindplates.everyonesprint.biz.meeting.repository.MeetingUserRepository;
 import com.mindplates.everyonesprint.biz.meeting.repository.RoomUserRepository;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
+import com.mindplates.everyonesprint.biz.project.entity.ProjectApplicant;
+import com.mindplates.everyonesprint.biz.project.repository.ProjectApplicantRepository;
 import com.mindplates.everyonesprint.biz.project.repository.ProjectRepository;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.repository.ScrumMeetingAnswerRepository;
@@ -38,6 +40,8 @@ public class ProjectService {
     final private RoomUserRepository roomUserRepository;
 
     final private ScrumMeetingAnswerRepository scrumMeetingAnswerRepository;
+
+    final private ProjectApplicantRepository projectApplicantRepository;
 
     @Cacheable(key = "{#spaceCode,#id}", value = CacheConfig.PROJECT)
     public Optional<Project> selectProjectInfo(String spaceCode, Long id) {
@@ -82,7 +86,7 @@ public class ProjectService {
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, Project project) {
         for (Sprint sprint : project.getSprints()) {
-            sprintService.deleteSprintInfo(sprint.getId());
+            sprintService.deleteSprintInfo(spaceCode, project.getId(), sprint.getId());
         }
         projectRepository.delete(project);
     }
@@ -109,6 +113,10 @@ public class ProjectService {
 
     public List<Project> selectProjectList(String spaceCode, String text) {
         return projectRepository.findAllBySpaceCodeAndNameLikeAndAllowSearchTrueAndActivatedTrue(spaceCode, "%" + text + "%");
+    }
+
+    public Optional<ProjectApplicant> selectProjectApplicantInfo(Long projectId, Long userId) {
+        return projectApplicantRepository.findByProjectIdAndUserId(projectId, userId);
     }
 
 

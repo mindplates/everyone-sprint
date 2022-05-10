@@ -188,6 +188,8 @@ const EditProject = ({
     }
   };
 
+  console.log(project);
+
   return (
     <Page className="edit-project-wrapper">
       <PageTitle

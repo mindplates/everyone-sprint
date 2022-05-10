@@ -4,12 +4,10 @@ import com.mindplates.everyonesprint.biz.common.vo.response.SimpleUserResponse;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.biz.sprint.vo.response.SprintResponse;
+import com.mindplates.everyonesprint.common.code.ApprovalStatusCode;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.vo.UserSession;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectResponse {
@@ -28,10 +27,12 @@ public class ProjectResponse {
     private Boolean activated;
     private List<SprintResponse> sprints;
     private List<SimpleUserResponse> users;
+    private List<ProjectApplicantResponse> applicants;
     private Boolean isMember;
     private Boolean isAdmin;
     private Long activatedSprintCount;
     private LocalDateTime creationDate;
+    private ProjectApplicantResponse userApplicantStatus;
 
     public ProjectResponse(Project project, UserSession userSession) {
         this.id = project.getId();
@@ -71,6 +72,10 @@ public class ProjectResponse {
                             .closed(sprint.getClosed())
                             .build()
                     ).collect(Collectors.toList());
+        }
+
+        if (this.isAdmin && project.getApplicants() != null) {
+            this.applicants = project.getApplicants().stream().filter((projectApplicant -> projectApplicant.getApprovalStatusCode().equals(ApprovalStatusCode.REQUEST))).map(ProjectApplicantResponse::new).collect(Collectors.toList());
         }
 
 

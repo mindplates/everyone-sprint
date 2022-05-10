@@ -3,6 +3,7 @@ package com.mindplates.everyonesprint.biz.project.controller;
 import com.mindplates.everyonesprint.biz.project.entity.Project;
 import com.mindplates.everyonesprint.biz.project.service.ProjectService;
 import com.mindplates.everyonesprint.biz.project.vo.request.ProjectRequest;
+import com.mindplates.everyonesprint.biz.project.vo.response.ProjectApplicantResponse;
 import com.mindplates.everyonesprint.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.everyonesprint.biz.project.vo.response.ProjectResponse;
 import com.mindplates.everyonesprint.biz.space.entity.Space;
@@ -48,7 +49,6 @@ public class ProjectController {
 
     @Operation(description = "프로젝트 검색")
     @GetMapping("")
-    @DisableAuth
     public List<ProjectListResponse> selectSpaceProjectSpaceList(@PathVariable String spaceCode, @RequestParam("text") String text, @ApiIgnore UserSession userSession) {
         List<Project> projects = projectService.selectProjectList(spaceCode, text);
         return projects.stream().map((project -> new ProjectListResponse(project, userSession))).collect(Collectors.toList());
@@ -111,9 +111,35 @@ public class ProjectController {
 
     @Operation(description = "프로젝트 조회")
     @GetMapping("/{id}")
+    @DisableAuth
     public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @ApiIgnore UserSession userSession) {
+        Space space = spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        boolean isSpaceMember = spaceService.selectIsSpaceMember(spaceCode, userSession);
+
+        if (!isSpaceMember) {
+            throw new ServiceException("common.not.authorized");
+        }
+
         Project project = projectService.selectProjectInfo(spaceCode, id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new ProjectResponse(project, userSession);
+
+        boolean isProjectMember = project.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userSession.getId())));
+
+        if (isProjectMember) {
+            return new ProjectResponse(project, userSession);
+        } else if (!project.getActivated()) {
+            throw new ServiceException(HttpStatus.LOCKED);
+        } else if (!project.getAllowSearch()) {
+            throw new ServiceException(HttpStatus.LOCKED);
+        } else {
+            ProjectResponse response = new ProjectResponse(project, userSession);
+            response.setUserApplicantStatus(new ProjectApplicantResponse(projectService.selectProjectApplicantInfo(project.getId(), userSession.getId()).orElse(null)));
+            response.getUsers().clear();
+            response.getSprints().clear();
+            return response;
+        }
+
+
     }
 
 
