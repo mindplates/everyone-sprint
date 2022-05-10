@@ -23,6 +23,7 @@ const MENU = {
     submenus: [],
   },
   projects: {
+    path : '/my',
     icon: <i className="fas fa-archive" />,
     name: '프로젝트',
     enabled: true,

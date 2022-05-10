@@ -1,0 +1,28 @@
+.spaces-wrapper {
+  .search {
+    display: flex;
+    margin-bottom: 1rem;
+    _border: 1px solid rgba(0,0,0,0.2);
+    _padding: 1rem;
+    _background-color: $white;
+
+    > div {
+      align-self: center;
+
+      &.type {
+        margin-right: 0.5rem;
+      }
+
+      &.text {
+        flex-grow: 1;
+        margin-right: 0.5rem;
+      }
+
+      &.search-button {
+        button {
+          min-width: 60px;
+        }
+      }
+    }
+  }
+}

@@ -151,7 +151,7 @@ const EditProject = ({
         null,
         () => {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('삭제되었습니다.'), () => {
-            commonUtil.move('/projects');
+            commonUtil.move('/projects/my');
           });
         },
         null,
@@ -199,7 +199,7 @@ const EditProject = ({
                   name: t('TOP'),
                 },
                 {
-                  link: commonUtil.getSpaceUrl('/projects'),
+                  link: commonUtil.getSpaceUrl('/projects/my'),
                   name: t('프로젝트 목록'),
                 },
                 {
@@ -214,7 +214,7 @@ const EditProject = ({
                   name: t('TOP'),
                 },
                 {
-                  link: commonUtil.getSpaceUrl('/projects'),
+                  link: commonUtil.getSpaceUrl('/projects/my'),
                   name: t('프로젝트 목록'),
                 },
                 {
@@ -248,9 +248,7 @@ const EditProject = ({
               <Input type="text" size="md" value={project.name} onChange={(val) => changeInfo('name', val)} outline simple required minLength={1} />
             </BlockRow>
             <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('설명')}
-              </Label>
+              <Label minWidth={labelMinWidth}>{t('설명')}</Label>
               <Input className="w-100" type="text" size="md" value={project.description} onChange={(val) => changeInfo('description', val)} outline simple />
             </BlockRow>
             <BlockRow>
@@ -270,7 +268,6 @@ const EditProject = ({
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('검색 허용')}</Label>
               <RadioButton
-                disabled
                 size="sm"
                 items={ALLOW_SEARCHES}
                 value={project.allowSearch}
@@ -282,7 +279,6 @@ const EditProject = ({
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
               <RadioButton
-                disabled
                 size="sm"
                 items={JOIN_POLICIES}
                 value={project.allowAutoJoin}

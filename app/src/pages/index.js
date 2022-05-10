@@ -14,9 +14,10 @@ import ConferenceHeader from './Common/ConferenceHeader';
 import Home from './Home/Home';
 import Stats from './Stats/Stats';
 import Message from './Message/Message';
-import Projects from './Projects/Projects';
+import MyProjects from './Projects/MyProjects';
 import EditProject from './Projects/EditProject';
 import Project from './Projects/Project';
+import Projects from './Projects/Projects';
 import SprintDaily from './Sprints/SprintDaily';
 import SprintSummary from './Sprints/SprintSummary';
 import Spaces from './Spaces/Spaces';
@@ -47,9 +48,10 @@ export {
   Home,
   Stats,
   Message,
-  Projects,
+  MyProjects,
   EditProject,
   Project,
+  Projects,
   SprintDaily,
   SprintSummary,
   Spaces,

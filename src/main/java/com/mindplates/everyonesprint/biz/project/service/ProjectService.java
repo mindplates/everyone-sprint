@@ -107,5 +107,9 @@ public class ProjectService {
         return projectRepository.countBySpaceCode(spaceCode);
     }
 
+    public List<Project> selectProjectList(String spaceCode, String text) {
+        return projectRepository.findAllBySpaceCodeAndNameLikeAndAllowSearchTrueAndActivatedTrue(spaceCode, "%" + text + "%");
+    }
+
 
 }

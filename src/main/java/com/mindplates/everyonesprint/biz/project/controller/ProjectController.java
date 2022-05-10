@@ -12,6 +12,7 @@ import com.mindplates.everyonesprint.biz.user.service.UserService;
 import com.mindplates.everyonesprint.biz.user.vo.response.UserResponse;
 import com.mindplates.everyonesprint.common.exception.ServiceException;
 import com.mindplates.everyonesprint.common.vo.UserSession;
+import com.mindplates.everyonesprint.framework.annotation.DisableAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +40,17 @@ public class ProjectController {
 
 
     @Operation(description = "사용자의 프로젝트 목록 조회")
-    @GetMapping("")
+    @GetMapping("/my")
     public List<ProjectListResponse> selectUserProjectList(@PathVariable String spaceCode, @ApiIgnore UserSession userSession) {
         List<Project> projects = projectService.selectUserProjectList(spaceCode, userSession);
+        return projects.stream().map((project -> new ProjectListResponse(project, userSession))).collect(Collectors.toList());
+    }
+
+    @Operation(description = "프로젝트 검색")
+    @GetMapping("")
+    @DisableAuth
+    public List<ProjectListResponse> selectSpaceProjectSpaceList(@PathVariable String spaceCode, @RequestParam("text") String text, @ApiIgnore UserSession userSession) {
+        List<Project> projects = projectService.selectProjectList(spaceCode, text);
         return projects.stream().map((project -> new ProjectListResponse(project, userSession))).collect(Collectors.toList());
     }
 
@@ -106,4 +115,6 @@ public class ProjectController {
         Project project = projectService.selectProjectInfo(spaceCode, id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new ProjectResponse(project, userSession);
     }
+
+
 }

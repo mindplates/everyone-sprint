@@ -48,7 +48,7 @@ const Project = ({
           name: t('TOP'),
         },
         {
-          link: commonUtil.getSpaceUrl('/projects'),
+          link: commonUtil.getSpaceUrl('/projects/my'),
           name: t('프로젝트 목록'),
         },
         {
@@ -101,7 +101,7 @@ const Project = ({
           </div>
           <BottomButtons
             onList={() => {
-              commonUtil.move('/projects');
+              commonUtil.move('/projects/my');
             }}
             onEdit={
               project?.isAdmin

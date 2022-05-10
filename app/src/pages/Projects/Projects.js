@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { Button, EmptyContent, Page, PageContent, PageTitle, ProjectList, withLogin, withSpace } from '@/components';
+import { Button, EmptyContent, Input, Page, PageContent, PageTitle, ProjectList, withLogin } from '@/components';
+import { HistoryPropTypes } from '@/proptypes';
 import request from '@/utils/request';
+import './Projects.scss';
 import commonUtil from '@/utils/commonUtil';
-import { SpacePropTypes } from '@/proptypes';
 
-const Projects = ({ t, space }) => {
+const Projects = ({ t, history }) => {
   const [projects, setProjects] = useState(null);
+  const [search, setSearch] = useState({
+    type: 'search',
+    text: '',
+  });
 
-  const getProjects = () => {
+  const getSpaces = () => {
     request.get(
       '/api/{spaceCode}/projects',
-      null,
+      search,
       (list) => {
         setProjects(list);
       },
@@ -25,12 +29,13 @@ const Projects = ({ t, space }) => {
   };
 
   useEffect(() => {
-    getProjects();
-  }, [space]);
+    getSpaces();
+  }, [search.type]);
 
   return (
-    <Page>
+    <Page className="spaces-wrapper">
       <PageTitle
+        className="pb-2"
         isListPageTitle
         buttons={[
           {
@@ -38,6 +43,13 @@ const Projects = ({ t, space }) => {
             text: t('새 프로젝트'),
             handler: () => {
               commonUtil.move('/projects/new');
+            },
+          },
+          {
+            icon: <i className="fas fa-map-marker-alt" />,
+            text: t('내 프로젝트'),
+            handler: () => {
+              commonUtil.move('/projects/my');
             },
           },
         ]}
@@ -48,30 +60,54 @@ const Projects = ({ t, space }) => {
           },
           {
             link: commonUtil.getSpaceUrl('/projects'),
-            name: t('프로젝트 목록'),
+            name: t('프로젝트 검색'),
             current: true,
           },
         ]}
       >
-        {t('프로젝트')}
+        {t('프로젝트 검색')}
       </PageTitle>
+      <div className="search">
+        <div className="text">
+          <Input
+            simple
+            outline
+            type="text"
+            size="sm"
+            value={search.text}
+            onChange={(val) => {
+              setSearch({
+                ...search,
+                text: val,
+              });
+            }}
+            onEnter={getSpaces}
+          />
+        </div>
+        <div className="search-button">
+          <Button size="sm" color="white" outline onClick={getSpaces}>
+            {t('검색')}
+          </Button>
+        </div>
+      </div>
       <PageContent listLayout={projects === null || projects?.length > 0}>
         {projects?.length > 0 && <ProjectList projects={projects} />}
         {projects?.length < 1 && (
           <EmptyContent
             height="100%"
-            icon={<i className="fas fa-archive" />}
-            message={t('참여 중인 프로젝트가 없습니다.')}
+            icon={<i className="fas fa-globe-asia" />}
+            message={t('검색된 프로젝트가 없습니다.')}
             additionalContent={
               <div className="mt-3">
                 <Button
                   size="md"
-                  color="point"
+                  color="white"
+                  outline
                   onClick={() => {
-                    commonUtil.move('/projects/new');
+                    history.push('/spaces/new');
                   }}
                 >
-                  <i className="fas fa-plus" /> {t('새 프로젝트')}
+                  <i className="fas fa-plus" /> {t('새로운 프로젝트 만들기')}
                 </Button>
               </div>
             }
@@ -82,15 +118,9 @@ const Projects = ({ t, space }) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    space: state.space,
-  };
-};
-
-export default compose(withLogin, withSpace, withRouter, withTranslation(), connect(mapStateToProps, undefined))(Projects);
+export default compose(withLogin, withRouter, withTranslation())(Projects);
 
 Projects.propTypes = {
   t: PropTypes.func,
-  space: SpacePropTypes,
+  history: HistoryPropTypes,
 };
