@@ -145,7 +145,6 @@ const Header = (props) => {
                 <i className="fas fa-bars" />
               </Button>
             </li>
-
             <div>
               <div className="space-info">
                 <div className="space-info-title">
@@ -244,7 +243,7 @@ const Header = (props) => {
                 return (
                   <li key={topMenuKey} className={`${menuAlias === topMenuKey ? 'selected' : 'no-selected'}`}>
                     <Link
-                      to={space.code ? `/${space.code}/${topMenuKey}` : `/${topMenuKey}`}
+                      to={space.code ? `/${space.code}/${topMenuKey}${MENU[topMenuKey]?.path || ''}` : `/${topMenuKey}`}
                       onClick={() => {
                         setMenuOpen(false);
                       }}

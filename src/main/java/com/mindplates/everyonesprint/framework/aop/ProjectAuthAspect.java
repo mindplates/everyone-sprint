@@ -67,18 +67,18 @@ public class ProjectAuthAspect {
         }
     }
 
-    @Before("(createOperator() || selectOperator()) && args(spaceCode, ..)")
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableAuth) && (createOperator() || selectOperator()) && args(spaceCode, ..)")
     public void checkIsSpaceMember(JoinPoint joinPoint, String spaceCode) throws Throwable {
         this.checkIsSpaceMember(spaceCode);
     }
 
-    @Before("udOperator() && args(spaceCode, projectId, ..)")
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableAuth) && udOperator() && args(spaceCode, projectId, ..)")
     public void checkIsProjectAdminUser(JoinPoint joinPoint, String spaceCode, long projectId) throws Throwable {
         this.checkIsSpaceMember(spaceCode);
         this.checkIsProjectMember(spaceCode, projectId, RoleCode.ADMIN);
     }
 
-    @Before("selectOperator() && args(spaceCode, projectId, ..)")
+    @Before("!@annotation(com.mindplates.everyonesprint.framework.annotation.DisableAuth) && selectOperator() && args(spaceCode, projectId, ..)")
     public void checkIsProjectUser(JoinPoint joinPoint, String spaceCode, long projectId) throws Throwable {
         this.checkIsSpaceMember(spaceCode);
         this.checkIsProjectMember(spaceCode, projectId, null);

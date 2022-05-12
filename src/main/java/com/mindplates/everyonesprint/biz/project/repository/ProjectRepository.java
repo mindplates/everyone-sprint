@@ -20,5 +20,14 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Long countBySpaceCode(String spaceCode);
 
+    List<Project> findAllBySpaceCodeAndNameLikeAndAllowSearchTrueAndActivatedTrue(String spaceCode, String text);
+
+    Optional<Project> findByToken(String token);
+
+    boolean existsByToken(String token);
+
+    boolean existsByIdAndUsersUserId(Long projectId, Long userId);
+
+
 }
 

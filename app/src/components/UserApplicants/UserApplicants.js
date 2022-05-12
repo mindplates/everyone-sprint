@@ -19,21 +19,21 @@ const UserApplicants = ({ className, t, applicants, icon, onReject, onApprove })
       )}
       {applicants.length > 0 && (
         <div className="user-list">
-          {applicants.map((user, index) => {
+          {applicants.map((applicant, index) => {
             return (
               <div key={index} className="user-card">
                 {icon && (
                   <div className="user-image">
-                    <UserImage border rounded size="36px" imageType={user.imageType} imageData={user.imageData} iconFontSize="18px" />
+                    <UserImage border rounded size="36px" imageType={applicant.imageType} imageData={applicant.imageData} iconFontSize="18px" />
                   </div>
                 )}
                 <div className="user-list-item-content">
                   <div className="item-content">
                     <div className="alias">
-                      <span className="alias-text">{user.alias}</span>
-                      {user.name && <span className="name-text">{user.name}</span>}
+                      <span className="alias-text">{applicant.alias}</span>
+                      {applicant.name && <span className="name-text">{applicant.name}</span>}
                     </div>
-                    <div className="email">{user.email}</div>
+                    <div className="email">{applicant.email}</div>
                   </div>
                   {onReject && (
                     <div className="on-reject-button">
@@ -42,7 +42,7 @@ const UserApplicants = ({ className, t, applicants, icon, onReject, onApprove })
                         color="danger"
                         outline
                         onClick={() => {
-                          onReject(user.id);
+                          onReject(applicant.id);
                         }}
                       >
                         {t('거절')}
@@ -56,7 +56,7 @@ const UserApplicants = ({ className, t, applicants, icon, onReject, onApprove })
                         color="point"
                         outline
                         onClick={() => {
-                          onApprove(user.id);
+                          onApprove(applicant.id);
                         }}
                       >
                         {t('승인')}

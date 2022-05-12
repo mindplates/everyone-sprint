@@ -53,11 +53,7 @@ const Space = ({
       },
       (error, response) => {
         setAllowed(false);
-        if (response && (response.status === 423 || response.status === 404)) {
-          return true;
-        }
-
-        return false;
+        return response && (response.status === 423 || response.status === 404);
       },
       t('스페이스 정보를 가져오고 있습니다.'),
     );

@@ -3,6 +3,36 @@
     display: flex;
     flex-direction: column;
 
+    .project-member-title {
+      position: relative;
+      .request-count {
+        position: absolute;
+        top: 12px;
+        font-size: 14px;
+        right: 16px;
+
+        > a {
+          color: $point !important;
+
+          .count {
+            background-color: $danger;
+            color: $white;
+            position: absolute;
+            top: -10px;
+            right: -18px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            > span {
+              align-self: center;
+            }
+          }
+        }
+      }
+    }
+
     .tabs {
       flex-grow: 0;
       padding: 1.5rem 2rem 0;
@@ -31,43 +61,6 @@
 
           @media (max-width: 1200px) {
             display: none;
-          }
-
-          .project-card {
-            margin-bottom: 1rem;
-            margin-left: 0.5rem;
-
-            .project-name {
-              font-family: pretendard, sans-serif;
-              font-weight: bold;
-              font-size: 1.2rem;
-
-              &.deactivate {
-                text-decoration: line-through;
-              }
-            }
-
-            .project-info-tag {
-              margin-top: 0.5rem;
-              line-height: 100%;
-              > span {
-                display: inline-block;
-                font-size: 12px;
-                margin-right: 0.5rem;
-                padding: 0.4rem;
-                line-height: 100%;
-                border-radius: 2px;
-                &.allowed {
-                  background-color: $green;
-                  color: $white;
-                }
-
-                &.deactivated {
-                  background-color: $warning;
-                  color: $white;
-                }
-              }
-            }
           }
 
           .project-user-list {

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withTranslation } from 'react-i18next';
@@ -11,28 +11,25 @@ import './UserList.scss';
 const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type, icon, showAdmin, target, targetId }) => {
   const [popup, setPopup] = useState(false);
 
-  const changeUser = useCallback(
-    (targetIndex, field, value) => {
-      const next = users.slice();
-      const targetUser = next[targetIndex];
+  const changeUser = (targetIndex, field, value) => {
+    const next = users.slice();
+    const targetUser = next[targetIndex];
 
-      if (field === 'CRUD' && value === 'D') {
-        if (!targetUser.id) {
-          next.splice(targetIndex, 1);
-        } else {
-          targetUser.CRUD = 'D';
-        }
-      } else if (field !== 'CRUD') {
-        targetUser[field] = value;
-        targetUser.CRUD = 'U';
+    if (field === 'CRUD' && value === 'D') {
+      if (!targetUser.id) {
+        next.splice(targetIndex, 1);
       } else {
-        targetUser[field] = value;
+        targetUser.CRUD = 'D';
       }
+    } else if (field !== 'CRUD') {
+      targetUser[field] = value;
+      targetUser.CRUD = 'U';
+    } else {
+      targetUser[field] = value;
+    }
 
-      onChange(next);
-    },
-    [users],
-  );
+    onChange(next);
+  };
 
   return (
     <div className={`user-list-wrapper ${className} type-${type}`}>
@@ -138,5 +135,5 @@ UserList.propTypes = {
   icon: PropTypes.bool,
   showAdmin: PropTypes.bool,
   target: PropTypes.string,
-  targetId : PropTypes.number,
+  targetId: PropTypes.number,
 };

@@ -183,9 +183,9 @@ public class SpaceController {
         } else if (!space.getAllowSearch()) {
             // 검색이 금지된 경우, 토큰 값이 일치하는 경우에만, 가입 또는 가입 요청 정보 입력
             if (token != null && token.length() > 1) {
-                Optional<Space> tokenSpace = spaceService.selectSpaceInfoByToken(token);
-                if (tokenSpace.isPresent() && tokenSpace.get().getCode().equals(space.getCode())) {
-                    if (space.getAllowAutoJoin()) {
+                Space tokenSpace = spaceService.selectSpaceInfoByToken(token).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+                if (tokenSpace.getCode().equals(space.getCode())) {
+                    if (tokenSpace.getAllowAutoJoin()) {
                         SpaceUser spaceUser = SpaceUser.builder()
                                 .user(User.builder().id(spaceApplicantRequest.getUserId()).build())
                                 .role(RoleCode.MEMBER)

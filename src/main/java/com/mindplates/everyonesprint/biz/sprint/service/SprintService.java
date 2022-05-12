@@ -14,6 +14,7 @@ import com.mindplates.everyonesprint.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +39,11 @@ public class SprintService {
         return sprintRepository.findById(id);
     }
 
-    @CacheEvict(key = "#sprint.id", value = CacheConfig.SPRINT)
-    public Sprint createSprintInfo(Sprint sprint, UserSession userSession) {
+    @Caching(evict = {
+            @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
+            @CacheEvict(key = "#sprint.id", value = CacheConfig.SPRINT)
+    })
+    public Sprint createSprintInfo(String spaceCode, Long projectId, Sprint sprint, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         sprint.setCreationDate(now);
         sprint.setLastUpdateDate(now);
@@ -68,7 +72,10 @@ public class SprintService {
         return sprint;
     }
 
-    @CacheEvict(key = "#sprint.id", value = CacheConfig.SPRINT)
+    @Caching(evict = {
+            @CacheEvict(key = "{#sprint.project.space.code,#sprint.project.id}", value = CacheConfig.PROJECT),
+            @CacheEvict(key = "#sprint.id", value = CacheConfig.SPRINT)
+    })
     public Sprint updateSprintInfo(Sprint sprint, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         sprint.setLastUpdateDate(now);
@@ -131,7 +138,11 @@ public class SprintService {
     }
 
     @CacheEvict(key = "#sprintId", value = CacheConfig.SPRINT)
-    public void deleteSprintInfo(long sprintId) {
+    @Caching(evict = {
+            @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
+            @CacheEvict(key = "#sprintId", value = CacheConfig.SPRINT)
+    })
+    public void deleteSprintInfo(String spaceCode, long projectId, long sprintId) {
         List<Meeting> sprintMeetings = meetingRepository.findAllBySprintId(sprintId);
         scrumMeetingPlanAnswerRepository.deleteAllBySprintId(sprintId);
         meetingRepository.deleteAll(sprintMeetings);

@@ -2,6 +2,7 @@ package com.mindplates.everyonesprint.biz.project.entity;
 
 import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.biz.space.entity.Space;
+import com.mindplates.everyonesprint.biz.space.entity.SpaceApplicant;
 import com.mindplates.everyonesprint.biz.sprint.entity.Sprint;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
 import lombok.*;
@@ -40,6 +41,9 @@ public class Project extends CommonEntity {
     @Column(name = "activated")
     private Boolean activated;
 
+    @Column(name = "token", length = ColumnsDef.CODE)
+    private String token;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "project")
     @Fetch(value = FetchMode.SELECT)
     private List<Sprint> sprints;
@@ -51,5 +55,10 @@ public class Project extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_PROJECT__SPACE"))
     private Space space;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL)
+    @Column(updatable = false, insertable = false)
+    @Fetch(value = FetchMode.SELECT)
+    private List<ProjectApplicant> applicants;
 
 }

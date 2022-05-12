@@ -53,6 +53,7 @@ const UserPropTypes = PropTypes.shape({
   name: PropTypes.string,
   tel: PropTypes.string,
   spaces: PropTypes.arrayOf(SpaceListPropTypes),
+  spaceName: PropTypes.string,
 });
 
 const SimpleUserPropTypes = PropTypes.shape({
