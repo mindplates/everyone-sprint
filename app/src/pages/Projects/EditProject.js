@@ -9,9 +9,12 @@ import {
   BlockRow,
   BlockTitle,
   BottomButtons,
+  Button,
+  ClipBoardCopyButton,
   Form,
   Input,
   Label,
+  Liner,
   Page,
   PageContent,
   PageTitle,
@@ -35,7 +38,7 @@ const EditProject = ({
   space,
   user,
   match: {
-    params: { id },
+    params: { id, spaceCode },
   },
 }) => {
   const [project, setProject] = useState({
@@ -47,8 +50,23 @@ const EditProject = ({
     users: [],
   });
 
+  const getToken = (nextProject) => {
+    request.get(
+      '/api/{spaceCode}/projects/token',
+      null,
+      (data) => {
+        setProject({
+          ...nextProject,
+          token: data,
+        });
+      },
+      null,
+      t('토큰을 재발급하고 있습니다.'),
+    );
+  };
+
   useEffect(() => {
-    if (id && type === 'edit')
+    if (id && type === 'edit') {
       request.get(
         `/api/{spaceCode}/projects/${id}`,
         null,
@@ -64,7 +82,14 @@ const EditProject = ({
         null,
         t('프로젝트 정보를 가져오고 있습니다'),
       );
+    }
   }, [id, type]);
+
+  useEffect(() => {
+    if (type === 'new') {
+      getToken(project);
+    }
+  }, []);
 
   useEffect(() => {
     if (type === 'new') {
@@ -188,7 +213,7 @@ const EditProject = ({
     }
   };
 
-  console.log(project);
+  const projectLink = `${window.location.origin}/${spaceCode}/projects/tokens/${project.token}`;
 
   return (
     <Page className="edit-project-wrapper">
@@ -279,6 +304,30 @@ const EditProject = ({
               />
             </BlockRow>
             <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('초대 링크')}</Label>
+              <div className="d-flex">
+                <div>{projectLink}</div>
+                <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                <div>
+                  <Button
+                    size="xs"
+                    color="point"
+                    outline
+                    onClick={() => {
+                      getToken(project);
+                    }}
+                  >
+                    {t('재발급')}
+                  </Button>
+                </div>
+                <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                <div>
+                  <ClipBoardCopyButton size="xs" data={projectLink} text="URL 복사" />
+                </div>
+              </div>
+            </BlockRow>
+
+            <BlockRow>
               <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
               <RadioButton
                 size="sm"
@@ -294,6 +343,7 @@ const EditProject = ({
             <BlockTitle>{t('멤버')}</BlockTitle>
             <div className="flex-grow-1">
               <UserList
+                project={project}
                 users={project.users}
                 onChange={(val) => changeInfo('users', val)}
                 onChangeUsers={changeUsers}
@@ -338,6 +388,7 @@ EditProject.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,
+      spaceCode: PropTypes.string,
     }),
   }),
 };

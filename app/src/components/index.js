@@ -57,6 +57,7 @@ import SpaceList from '@/components/SpaceList/SpaceList';
 import UserApplicants from '@/components/UserApplicants/UserApplicants';
 import SpaceCard from '@/components/SpaceCard/SpaceCard';
 import UserPictureEditor from '@/components/UserPictureEditor/UserPictureEditor';
+import ClipBoardCopyButton from '@/components/ClipBoardCopyButton/ClipBoardCopyButton';
 
 export {
   MessageDialog,
@@ -119,4 +120,5 @@ export {
   SpaceCard,
   withSpace,
   UserPictureEditor,
+  ClipBoardCopyButton,
 };

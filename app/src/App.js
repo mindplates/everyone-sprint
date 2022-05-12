@@ -26,6 +26,7 @@ import {
   Notice,
   Project,
   Projects,
+  ProjectSummary,
   PublicPark,
   Space,
   SpaceHome,
@@ -75,8 +76,10 @@ function App({ history, setting }) {
           <Route exact path="/:spaceCode/projects/new" render={() => <EditProject type="new" />} />
           <Route exact path="/:spaceCode/projects/my" component={MyProjects} />
           <Route exact path="/:spaceCode/sprints/new" render={() => <EditSprint type="new" />} />
+          <Route exact path="/:spaceCode/projects/tokens/:token" component={ProjectSummary} />
           <Route exact path="/:spaceCode/projects/:id/edit" render={() => <EditProject type="edit" />} />
-          <Route exact path="/:spaceCode/projects/:id" component={Project} />
+          <Route exact path="/:spaceCode/projects/:id/info" component={Project} />
+          <Route exact path="/:spaceCode/projects/:id" component={ProjectSummary} />
           <Route exact path="/:spaceCode/projects" component={Projects} />
           <Route exact path="/:spaceCode/sprints/:id/deactivate" render={() => <SprintSummary type="close" />} />
           <Route exact path="/:spaceCode/sprints/:id/daily/:date" component={SprintDaily} />

@@ -16,10 +16,11 @@ import Stats from './Stats/Stats';
 import Message from './Message/Message';
 import MyProjects from './Projects/MyProjects';
 import EditProject from './Projects/EditProject';
-import Project from './Projects/Project';
+import ProjectSummary from './Projects/ProjectSummary';
 import Projects from './Projects/Projects';
 import SprintDaily from './Sprints/SprintDaily';
 import SprintSummary from './Sprints/SprintSummary';
+import Project from './Projects/Project';
 import Spaces from './Spaces/Spaces';
 import MySpaces from './Spaces/MySpaces';
 import EditSpace from './Spaces/EditSpace';
@@ -30,6 +31,7 @@ import Notice from './Notice/Notice';
 import MyInfo from './MyInfo/MyInfo';
 import EditMyInfo from './MyInfo/EditMyInfo';
 import ChangePassword from './MyInfo/ChangePassword';
+import ProjectApplicantStatus from './Projects/ProjectApplicantStatus';
 
 export {
   PublicPark,
@@ -50,7 +52,7 @@ export {
   Message,
   MyProjects,
   EditProject,
-  Project,
+  ProjectSummary,
   Projects,
   SprintDaily,
   SprintSummary,
@@ -64,4 +66,6 @@ export {
   MyInfo,
   EditMyInfo,
   ChangePassword,
+  ProjectApplicantStatus,
+  Project,
 };

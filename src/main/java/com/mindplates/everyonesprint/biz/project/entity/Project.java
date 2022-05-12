@@ -41,6 +41,9 @@ public class Project extends CommonEntity {
     @Column(name = "activated")
     private Boolean activated;
 
+    @Column(name = "token", length = ColumnsDef.CODE)
+    private String token;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "project")
     @Fetch(value = FetchMode.SELECT)
     private List<Sprint> sprints;

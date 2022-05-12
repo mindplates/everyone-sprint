@@ -22,6 +22,7 @@ public class ProjectResponse {
     private Long id;
     private String name;
     private String description;
+    private String token;
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean activated;
@@ -33,17 +34,20 @@ public class ProjectResponse {
     private Long activatedSprintCount;
     private LocalDateTime creationDate;
     private ProjectApplicantResponse userApplicantStatus;
+    private String spaceName;
 
     public ProjectResponse(Project project, UserSession userSession) {
         this.id = project.getId();
         this.name = project.getName();
         this.description = project.getDescription();
+        this.token = project.getToken();
         this.allowSearch = project.getAllowSearch();
         this.allowAutoJoin = project.getAllowAutoJoin();
         this.activated = project.getActivated();
         this.isMember = project.getUsers().stream().anyMatch((projectUser -> projectUser.getUser().getId().equals(userSession.getId())));
         this.isAdmin = project.getUsers().stream().anyMatch((projectUser -> projectUser.getRole().equals(RoleCode.ADMIN) && projectUser.getUser().getId().equals(userSession.getId())));
         this.creationDate = project.getCreationDate();
+        this.spaceName = project.getSpace().getName();
         this.users = project.getUsers().stream().map(
                 (projectUser) -> SimpleUserResponse.builder()
                         .id(projectUser.getId())

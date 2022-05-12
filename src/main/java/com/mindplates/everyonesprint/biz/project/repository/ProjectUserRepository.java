@@ -25,5 +25,7 @@ public interface ProjectUserRepository extends JpaRepository<ProjectUser, Long> 
             "WHERE pu.project.id = :projectId " +
             "  AND pu.user.id = :userId")
     void deleteByProjectIdAndUserId(@Param("projectId") Long projectId, @Param("userId") Long userId);
+
+    boolean existsByProjectIdAndUserId(Long projectId, Long userId);
 }
 

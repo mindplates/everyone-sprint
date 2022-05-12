@@ -17,6 +17,6 @@ public interface ProjectApplicantRepository extends JpaRepository<ProjectApplica
     @Query(" DELETE FROM ProjectApplicant pa " +
             "WHERE pa.project.id = :projectId " +
             "  AND pa.user.id = :userId")
-    void deleteBySpaceCodeAndUserId(@Param("projectId") Long projectId, @Param("userId") Long userId);
+    void deleteByProjectIdAndUserId(@Param("projectId") Long projectId, @Param("userId") Long userId);
 }
 
