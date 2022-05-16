@@ -85,12 +85,13 @@
   .description {
     font-size: 11px;
     padding: 0.5rem;
-    max-height: 50px;
     overflow-y: auto;
 
     > div {
       background-color: $light;
       padding: 0.5rem;
+      max-height: 34px;
+      min-height: 34px;
     }
   }
 }

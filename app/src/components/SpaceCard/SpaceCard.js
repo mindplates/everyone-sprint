@@ -23,7 +23,7 @@ const SpaceCard = ({ className, space, description }) => {
           {!space.isMember && !space.isAdmin && <div className="is-no-auth">NOT AUTHORIZED</div>}
         </div>
       </div>
-      <div className="activated">{space.activated ? 'ACTIVE' : 'DISABLED'}</div>
+      <div className="activated">{space.activated ? '' : 'DISABLED'}</div>
       {description && (
         <div className="description">
           <div>{space.description}</div>

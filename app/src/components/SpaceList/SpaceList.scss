@@ -66,8 +66,10 @@
         font-size: 12px;
         margin-bottom: 0.5rem;
         position: absolute;
-        bottom: 0;
-        right: 1rem;
+        top: 0.25rem;
+        left: 0;
+        right: 0;
+        text-align: center;
         > span {
           display: inline-block;
           padding: 0.25rem;
@@ -78,15 +80,17 @@
           }
 
           &.deactivated {
-            color: $warning;
+            color: $danger;
           }
         }
       }
 
       .options {
-        padding: 0.5rem 0;
-        margin: 0.25rem -0.25rem 0.5rem;
+        padding: 0;
+        margin: 1rem -0.25rem 0;
         text-align: right;
+        position: relative;
+        line-height: 100%;
         > span {
           font-size: 12px;
           display: inline-block;
@@ -94,25 +98,18 @@
           border: 1px solid $gray-500;
           margin-right: 0.25rem;
           line-height: 100%;
+
+          &.role {
+            position: absolute;
+            left: 0;
+          }
         }
       }
 
-      .role {
-        font-size: 12px;
-        margin-bottom: 0.5rem;
-        position: absolute;
-        bottom: 0;
-        left: 1rem;
-        > span {
-          display: inline-block;
-          padding: 0.25rem;
-          font-weight: bold;
-        }
-      }
       .name {
         display: flex;
         flex-direction: row;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
         > div {
           align-self: center;
         }

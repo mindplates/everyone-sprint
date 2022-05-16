@@ -394,8 +394,14 @@ const Header = (props) => {
               setSpaceOpen(false);
             }}
           />
-          <div className="popup-layout">
-            <div>
+          <div
+            className="popup-layout"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSpaceOpen(false);
+            }}
+          >
+            <div onClick={(e) => e.stopPropagation()}>
               <div className="arrow">
                 <div />
               </div>
@@ -452,51 +458,51 @@ const Header = (props) => {
                       </li>
                     );
                   })}
-                  <div className="other-button">
-                    <div>
-                      <Button
-                        type="submit"
-                        size="xs"
-                        color="white"
-                        outline
-                        onClick={() => {
-                          history.push('/spaces/new');
-                          setSpaceOpen(false);
-                        }}
-                      >
-                        <i className="fas fa-plus" /> {t('새 스페이스')}
-                      </Button>
-                    </div>
-                    <div>
-                      <Button
-                        type="submit"
-                        size="xs"
-                        color="white"
-                        outline
-                        onClick={() => {
-                          history.push('/spaces/my');
-                          setSpaceOpen(false);
-                        }}
-                      >
-                        <i className="fas fa-house-user" /> {t('내 스페이스')}
-                      </Button>
-                    </div>
-                    <div>
-                      <Button
-                        type="submit"
-                        size="xs"
-                        color="white"
-                        outline
-                        onClick={() => {
-                          history.push('/spaces');
-                          setSpaceOpen(false);
-                        }}
-                      >
-                        <i className="fas fa-search" /> {t('스페이스 검색')}
-                      </Button>
-                    </div>
-                  </div>
                 </ul>
+                <div className="other-button">
+                  <div>
+                    <Button
+                      type="submit"
+                      size="xs"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        history.push('/spaces/new');
+                        setSpaceOpen(false);
+                      }}
+                    >
+                      <i className="fas fa-plus" /> {t('새 스페이스')}
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      type="submit"
+                      size="xs"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        history.push('/spaces/my');
+                        setSpaceOpen(false);
+                      }}
+                    >
+                      <i className="fas fa-house-user" /> {t('내 스페이스')}
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      type="submit"
+                      size="xs"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        history.push('/spaces');
+                        setSpaceOpen(false);
+                      }}
+                    >
+                      <i className="fas fa-search" /> {t('스페이스 검색')}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

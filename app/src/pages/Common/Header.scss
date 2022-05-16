@@ -221,14 +221,15 @@
           margin: 0;
           list-style: none;
           font-size: 13px;
-          max-height: 240px;
+          max-height: 157px;
           overflow-y: auto;
+          border: 1px solid $gray-300;
 
           li {
             padding: 0.5rem 0.5rem;
             line-height: 100%;
             cursor: pointer;
-            border-bottom: 1px solid $gray-100;
+            border-bottom: 1px solid $gray-300;
             max-width: 300px;
 
             &:last-child {
@@ -266,21 +267,21 @@
               }
             }
           }
+        }
 
-          .other-button {
+        .other-button {
+          text-align: center;
+          padding: 0.75rem 0.5rem 0;
+          > div {
             text-align: center;
-            padding: 0.75rem 0.5rem 0;
-            > div {
-              text-align: center;
-              margin-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
 
-              > button {
-                min-width: 120px;
-              }
+            > button {
+              min-width: 120px;
+            }
 
-              &:last-child {
-                margin-bottom: 0;
-              }
+            &:last-child {
+              margin-bottom: 0;
             }
           }
         }

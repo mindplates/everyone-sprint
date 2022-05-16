@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Builder
-@Table(name = "space")
+@Table(name = "space", indexes = @Index(name = "IDX_SPACE_CODE", columnList = "code"))
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
