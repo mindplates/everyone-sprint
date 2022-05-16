@@ -25,25 +25,29 @@ import { ACTIVATES, ALLOW_SEARCHES, JOIN_POLICIES, MESSAGE_CATEGORY } from '@/co
 import request from '@/utils/request';
 import commonUtil from '@/utils/commonUtil';
 import dialog from '@/utils/dialog';
+import { ProjectApplicantStatus } from '@/pages';
 
 const labelMinWidth = '140px';
 
 const Project = ({
   t,
   match: {
-    params: { id, spaceCode },
+    params: { id, spaceCode, token },
   },
 }) => {
   const [project, setProject] = useState(null);
+  const [allowed, setAllowed] = useState(null);
 
   const getProject = (projectId) => {
     request.get(
       `/api/{spaceCode}/projects/${projectId}`,
       null,
       (data) => {
+        setAllowed(true);
         setProject(data);
       },
       (error, response) => {
+        setAllowed(false);
         return response && (response.status === 423 || response.status === 404);
       },
       t('프로젝트 정보를 가져오고 있습니다.'),
@@ -121,7 +125,7 @@ const Project = ({
       >
         {t('프로젝트 정보')}
       </PageTitle>
-      {project && (
+      {allowed && project && project.isMember && (
         <PageContent info>
           {project.closed && (
             <Block>
@@ -208,6 +212,7 @@ const Project = ({
           />
         </PageContent>
       )}
+      <ProjectApplicantStatus allowed={allowed} spaceCode={spaceCode} projectId={project?.id || id} project={project} getProject={getProject} token={token} />
     </Page>
   );
 };
@@ -220,6 +225,7 @@ Project.propTypes = {
     params: PropTypes.shape({
       id: PropTypes.string,
       spaceCode: PropTypes.string,
+      token: PropTypes.string,
     }),
   }),
 };

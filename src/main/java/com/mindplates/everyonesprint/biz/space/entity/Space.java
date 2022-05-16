@@ -11,7 +11,10 @@ import java.util.List;
 
 @Entity
 @Builder
-@Table(name = "space", indexes = @Index(name = "IDX_SPACE_CODE", columnList = "code"))
+@Table(name = "space", indexes = {
+        @Index(name = "IDX_SPACE_CODE", columnList = "code"),
+        @Index(name = "IDX_SPACE_ALLOW_SEARCH_AND_ACTIVATED", columnList = "allow_search, activated")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -45,12 +48,12 @@ public class Space extends CommonEntity {
     private String token;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<SpaceUser> users;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL)
     @Column(updatable = false, insertable = false)
-    @Fetch(value = FetchMode.SELECT)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<SpaceApplicant> applicants;
 
 }

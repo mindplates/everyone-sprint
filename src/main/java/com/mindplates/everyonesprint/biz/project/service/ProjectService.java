@@ -94,6 +94,10 @@ public class ProjectService {
 
         project.setUsers(project.getUsers().stream().filter(spaceUser -> spaceUser.getCRUD() == null || !spaceUser.getCRUD().equals("D")).collect(Collectors.toList()));
 
+        if (project.getApplicants() != null) {
+            project.setApplicants(project.getApplicants().stream().filter(projectApplicant -> !deleteUserIds.contains(projectApplicant.getUser().getId())).collect(Collectors.toList()));
+        }
+
         deleteUserIds.forEach((userId -> {
             meetingUserRepository.deleteByProjectIdAndUserId(project.getId(), userId);
             projectApplicantRepository.deleteByProjectIdAndUserId(project.getId(), userId);

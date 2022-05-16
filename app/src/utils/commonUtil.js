@@ -41,8 +41,15 @@ function fullscreen(value) {
   }
 }
 
-function getUserSpace(spaces) {
+function getUserSpace(spaces, code) {
   const paths = window.location.pathname.split('/');
+
+  if (code) {
+    const space = (spaces || []).find((d) => d.code === code);
+    if (space) {
+      return space;
+    }
+  }
 
   if ((paths || []).length > 1 && paths[1] && !SYSTEM_PATHS.includes(paths[1])) {
     // URL 우선 처리

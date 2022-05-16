@@ -87,13 +87,8 @@ const EditProject = ({
 
   useEffect(() => {
     if (type === 'new') {
-      getToken(project);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (type === 'new') {
-      const users = project.users.splice(0);
+      const nextProject = { ...project };
+      const users = nextProject.users.splice(0);
       if (user && user.id && users.length < 1) {
         users.push({
           userId: user.id,
@@ -106,13 +101,13 @@ const EditProject = ({
           CRUD: 'C',
         });
 
-        setProject({
-          ...project,
-          users,
-        });
+        nextProject.users = users;
+
+        setProject(nextProject);
       }
+      getToken(nextProject);
     }
-  }, [user]);
+  }, []);
 
   const changeInfo = (key, value) => {
     const next = { ...project };
@@ -131,8 +126,8 @@ const EditProject = ({
       `/api/{spaceCode}/projects/${project.id}`,
       project,
       (data) => {
-        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-          commonUtil.move(`/projects/${data.id}`);
+        dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 변경되었습니다.'), () => {
+          commonUtil.move(`/projects/${data.id}/info`);
         });
       },
       null,
@@ -159,8 +154,8 @@ const EditProject = ({
         '/api/{spaceCode}/projects',
         project,
         (data) => {
-          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('정상적으로 등록되었습니다.'), () => {
-            commonUtil.move(`/projects/${data.id}`);
+          dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('프로젝트가 생성되었습니다.'), () => {
+            commonUtil.move(`/projects/${data.id}/info`);
           });
         },
         null,

@@ -21,6 +21,8 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
 
     List<Space> findAllByNameLikeAndAllowSearchTrueAndActivatedTrue(String text);
 
+    List<Space> findAllByAllowSearchTrueAndActivatedTrue();
+
     boolean existsByCodeAndUsersUserId(String spaceCode, Long userId);
 
     boolean existsByToken(String token);

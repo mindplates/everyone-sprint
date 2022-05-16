@@ -47,8 +47,8 @@ const ProjectList = (props) => {
                 <div className="text">{project.description}</div>
               </div>
               <div className="status">
-                <span className='sprint-count'>{project.activatedSprintCount} SPRINTS</span>
-                {project.activated ? <span className="activated">ACTIVATED</span> : <span className="deactivated">DEACTIVATED</span>}
+                <span className="sprint-count">{project.activatedSprintCount} SPRINTING</span>
+                {!project.activated && <span className="deactivated">DEACTIVATED</span>}
               </div>
             </div>
           </li>

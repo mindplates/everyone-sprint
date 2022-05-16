@@ -25,6 +25,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -144,7 +145,11 @@ public class SpaceService {
     }
 
     public List<Space> selectSpaceList(String text) {
-        return spaceRepository.findAllByNameLikeAndAllowSearchTrueAndActivatedTrue("%" + text + "%");
+        if (StringUtils.hasText(text)) {
+            return spaceRepository.findAllByNameLikeAndAllowSearchTrueAndActivatedTrue("%" + text + "%");
+        }
+
+        return spaceRepository.findAllByAllowSearchTrueAndActivatedTrue();
     }
 
     @Cacheable(key = "#spaceCode", value = CacheConfig.SPACE)

@@ -14,7 +14,9 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "project_applicant")
+@Table(name = "project_applicant", indexes = {
+        @Index(name = "IDX_UNIQUE_USER_ID_AND_SPACE_ID", columnList = "user_id, project_id", unique = true)
+})
 public class ProjectApplicant extends CommonEntity {
 
     @Id
