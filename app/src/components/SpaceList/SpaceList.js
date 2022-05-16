@@ -12,54 +12,61 @@ import './SpaceList.scss';
 const SpaceList = ({ className, t, history, spaces }) => {
   return (
     <ul className={`space-list-wrapper ${className}`}>
-      {spaces.map((space) => {
-        const isMember = space.isAdmin || space.isMember;
-        return (
-          <li
-            key={space.code}
-            onClick={() => {
-              history.push(`/spaces/${space.code}`);
-            }}
-          >
-            <div>
-              <div className="name">
-                <div className="text">{space.name}</div>
-                {space.isAdmin && (
-                  <div className="controls">
-                    <Button
-                      size="sm"
-                      color="white"
-                      outline
-                      rounded
-                      data-tip={t('')}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        history.push(`/spaces/${space.code}/edit`);
-                      }}
-                    >
-                      <i className="fas fa-cog" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <div className="description">{space.description}</div>
-              <div className="options">
-                {space.allowAutoJoin ? <span className="auto-join">{t('누구나 참여')}</span> : <span className="auto-join">{t('승인 후 참가')}</span>}
-                {isMember && space.allowSearch && <span className="allow-search">{t('검색 허용')}</span>}
-              </div>
-              <div className="role">
-                {space.isAdmin && <span className="allow-search">ADMIN</span>}
-                {!space.isAdmin && space.isMember && <span className="allow-search">MEMBER</span>}
-              </div>
-              {isMember && (
-                <div className="status">
-                  {space.activated ? <span className="activated">ACTIVATED</span> : <span className="deactivated">DEACTIVATED</span>}
+      {spaces
+        .sort((a, b) => {
+          if (b.isAdmin || b.isMember) {
+            return 1;
+          }
+
+          return -1;
+        })
+        .map((space) => {
+          const isMember = space.isAdmin || space.isMember;
+          return (
+            <li
+              key={space.code}
+              onClick={() => {
+                history.push(`/spaces/${space.code}`);
+              }}
+            >
+              <div>
+                <div className="name">
+                  <div className="text">{space.name}</div>
+                  {space.isAdmin && (
+                    <div className="controls">
+                      <Button
+                        size="sm"
+                        color="white"
+                        outline
+                        rounded
+                        data-tip={t('')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          history.push(`/spaces/${space.code}/edit`);
+                        }}
+                      >
+                        <i className="fas fa-cog" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </li>
-        );
-      })}
+                <div className="description">{space.description}</div>
+                <div className="options">
+                  {(space.isAdmin || space.isMember) && (
+                    <span className="role">
+                      {space.isAdmin && <span className="allow-search">ADMIN</span>}
+                      {!space.isAdmin && space.isMember && <span className="allow-search">MEMBER</span>}
+                    </span>
+                  )}
+                  {space.allowAutoJoin ? <span className="auto-join">{t('누구나 참여')}</span> : <span className="auto-join">{t('승인 후 참가')}</span>}
+                  {isMember && space.allowSearch && <span className="allow-search">{t('검색 허용')}</span>}
+                </div>
+
+                {isMember && <div className="status">{!space.activated && <span className="deactivated">DEACTIVATED</span>}</div>}
+              </div>
+            </li>
+          );
+        })}
     </ul>
   );
 };

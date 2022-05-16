@@ -13,8 +13,7 @@ function fullscreen(value) {
     if (value) {
       if (elem.requestFullscreen) {
         const promise = elem.requestFullscreen();
-        promise.catch(() => {
-        });
+        promise.catch(() => {});
       } else if (elem.mozRequestFullScreen) {
         elem.mozRequestFullScreen();
       } else if (elem.webkitRequestFullscreen) {
@@ -42,8 +41,15 @@ function fullscreen(value) {
   }
 }
 
-function getUserSpace(spaces) {
+function getUserSpace(spaces, code) {
   const paths = window.location.pathname.split('/');
+
+  if (code) {
+    const space = (spaces || []).find((d) => d.code === code);
+    if (space) {
+      return space;
+    }
+  }
 
   if ((paths || []).length > 1 && paths[1] && !SYSTEM_PATHS.includes(paths[1])) {
     // URL 우선 처리
@@ -68,9 +74,13 @@ function getUserSpace(spaces) {
   return {};
 }
 
-function move(url) {
+function move(url, prependSpace = true) {
   const state = store.getState();
-  state.history.push(`/${getCurrentSpaceCode()}${url}`);
+  if (prependSpace) {
+    state.history.push(`/${getCurrentSpaceCode()}${url}`);
+  } else {
+    state.history.push(`${url}`);
+  }
 }
 
 function goBack() {

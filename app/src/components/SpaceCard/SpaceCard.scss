@@ -8,6 +8,17 @@
   background-color: $white;
   position: relative;
 
+  &.hover:hover {
+    border: $border-dark;
+    box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .config-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
   .space-name-code {
     padding: 0.75rem 1rem;
     line-height: 100%;
@@ -85,12 +96,13 @@
   .description {
     font-size: 11px;
     padding: 0.5rem;
-    max-height: 50px;
     overflow-y: auto;
 
     > div {
       background-color: $light;
       padding: 0.5rem;
+      max-height: 34px;
+      min-height: 34px;
     }
   }
 }

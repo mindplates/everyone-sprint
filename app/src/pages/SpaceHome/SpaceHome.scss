@@ -77,75 +77,6 @@
       display: flex;
       flex-direction: column;
 
-      .no-space-message {
-        text-align: center;
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-        > div {
-          align-self: center;
-        }
-      }
-
-      .request-available-message {
-        text-align: center;
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-
-        > div {
-          align-self: center;
-
-          .space-card {
-            margin-bottom: 2rem;
-          }
-
-          .space-name {
-            background-color: #333;
-            color: $white;
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            line-height: 100%;
-            border-radius: 30px;
-            margin-right: 0.5rem;
-            font-size: 14px;
-          }
-        }
-      }
-
-      .user-space-content {
-        margin-top: 1rem;
-        .user-space-list-content {
-          .sub-title {
-            text-align: center;
-            position: relative;
-            top: 1.25rem;
-            > span {
-              display: inline-block;
-              background-color: $white;
-              line-height: 100%;
-              padding: 0.75rem;
-              border: $border;
-              border-radius: 20px;
-            }
-          }
-          .user-space-list {
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            background-color: $gray-200;
-            padding: 2rem;
-            white-space: nowrap;
-            width: 100%;
-            overflow: auto;
-            text-align: center;
-            > div {
-              display: inline-block;
-              vertical-align: top;
-              margin-right: 1rem;
-            }
-          }
-        }
-      }
-
       .logo {
         text-align: center;
         margin-bottom: 3rem;
@@ -232,6 +163,13 @@
             font-size: 3rem;
             font-family: pretendard, sans-serif;
             font-weight: bold;
+
+            &.link {
+              > a {
+                color: $point;
+                text-decoration: none;
+              }
+            }
             @media (max-width: 768px) {
               font-size: 2.5rem;
               line-height: 100%;
@@ -245,6 +183,9 @@
             @media (max-width: 768px) {
               font-size: 14px;
             }
+          }
+
+          .icon {
           }
         }
       }

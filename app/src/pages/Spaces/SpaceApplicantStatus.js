@@ -26,9 +26,9 @@ const SpaceApplicantStatus = ({
   setUserInfo: setUserInfoReducer,
   allowed,
 }) => {
-  const getMyInfo = () => {
+  const getMyInfo = (code) => {
     request.get('/api/users/my-info', null, (data) => {
-      setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces));
+      setSpaceInfoReducer(commonUtil.getUserSpace(data.spaces, code));
       setUserInfoReducer(data);
     });
   };
@@ -42,7 +42,7 @@ const SpaceApplicantStatus = ({
         if (r.status === 201) {
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스에 가입을 요청하였습니다.'));
         } else {
-          getMyInfo();
+          getMyInfo(space.code);
           dialog.setMessage(MESSAGE_CATEGORY.INFO, t('성공'), t('스페이스에 가입하였습니다.'));
         }
       },
