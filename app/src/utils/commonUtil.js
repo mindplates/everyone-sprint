@@ -13,8 +13,7 @@ function fullscreen(value) {
     if (value) {
       if (elem.requestFullscreen) {
         const promise = elem.requestFullscreen();
-        promise.catch(() => {
-        });
+        promise.catch(() => {});
       } else if (elem.mozRequestFullScreen) {
         elem.mozRequestFullScreen();
       } else if (elem.webkitRequestFullscreen) {
@@ -68,9 +67,13 @@ function getUserSpace(spaces) {
   return {};
 }
 
-function move(url) {
+function move(url, prependSpace = true) {
   const state = store.getState();
-  state.history.push(`/${getCurrentSpaceCode()}${url}`);
+  if (prependSpace) {
+    state.history.push(`/${getCurrentSpaceCode()}${url}`);
+  } else {
+    state.history.push(`${url}`);
+  }
 }
 
 function goBack() {

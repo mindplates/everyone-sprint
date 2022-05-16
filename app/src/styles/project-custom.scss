@@ -113,6 +113,10 @@
   }
 }
 
+.g-cursor-pointer {
+  cursor: pointer;
+}
+
 .g-page-content {
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
@@ -180,12 +184,10 @@
   background-color: #ffa114;
 }
 
-
-
 .g-dark-scrollbar {
   &::-webkit-scrollbar {
     height: 5px;
-    width : 5px;
+    width: 5px;
   }
   &::-webkit-scrollbar-track {
     background-color: $gray-800;
@@ -327,7 +329,6 @@
 }
 
 .table-responsive {
-
   &::-webkit-scrollbar {
     width: 10px;
     height: 10px;
