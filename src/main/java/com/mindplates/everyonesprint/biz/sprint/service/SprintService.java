@@ -73,10 +73,10 @@ public class SprintService {
     }
 
     @Caching(evict = {
-            @CacheEvict(key = "{#sprint.project.space.code,#sprint.project.id}", value = CacheConfig.PROJECT),
+            @CacheEvict(key = "{#spaceCode,#sprint.project.id}", value = CacheConfig.PROJECT),
             @CacheEvict(key = "#sprint.id", value = CacheConfig.SPRINT)
     })
-    public Sprint updateSprintInfo(Sprint sprint, UserSession userSession) {
+    public Sprint updateSprintInfo(String spaceCode, Sprint sprint, UserSession userSession) {
         LocalDateTime now = LocalDateTime.now();
         sprint.setLastUpdateDate(now);
         sprint.setLastUpdatedBy(userSession.getId());

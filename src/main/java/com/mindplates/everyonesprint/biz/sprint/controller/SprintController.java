@@ -73,7 +73,7 @@ public class SprintController {
     public SprintResponse updateSprintClosed(@PathVariable String spaceCode, @PathVariable Long sprintId, @ApiIgnore UserSession userSession) {
         Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
         sprint.setClosed(true);
-        return new SprintResponse(sprintService.updateSprintInfo(sprint, userSession));
+        return new SprintResponse(sprintService.updateSprintInfo(spaceCode, sprint, userSession));
     }
 
     @Operation(description = "스프린트 열기")
@@ -81,7 +81,7 @@ public class SprintController {
     public SprintResponse updateSprintOpened(@PathVariable String spaceCode, @PathVariable Long sprintId, @ApiIgnore UserSession userSession) {
         Sprint sprint = sprintService.selectSprintInfo(sprintId).get();
         sprint.setClosed(false);
-        return new SprintResponse(sprintService.updateSprintInfo(sprint, userSession));
+        return new SprintResponse(sprintService.updateSprintInfo(spaceCode, sprint, userSession));
     }
 
     @Operation(description = "스프린트 수정")
@@ -102,7 +102,7 @@ public class SprintController {
         sprintInfo.setClosed(sprint.getClosed());
         sprintInfo.setRealEndDate(sprint.getRealEndDate());
 
-        return new SprintResponse(sprintService.updateSprintInfo(sprintInfo, userSession));
+        return new SprintResponse(sprintService.updateSprintInfo(spaceCode, sprintInfo, userSession));
     }
 
     @Operation(description = "스프린트 삭제")

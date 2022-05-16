@@ -28,9 +28,8 @@ import {
   withSpace,
 } from '@/components';
 import dialog from '@/utils/dialog';
-import { JOIN_POLICIES, MESSAGE_CATEGORY } from '@/constants/constants';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 import request from '@/utils/request';
-import RadioButton from '@/components/RadioButton/RadioButton';
 import { LocationPropTypes, UserPropTypes } from '@/proptypes';
 import sprintUtil from '@/pages/Sprints/sprintUtil';
 import commonUtil from '@/utils/commonUtil';
@@ -134,6 +133,83 @@ const EditSprint = ({
   useEffect(() => {
     getProjects();
   }, [user]);
+
+  const addSprintDailyMeeting = (nextSprint) => {
+    const next = nextSprint ? { ...nextSprint } : { ...sprint };
+    const scrumMeetingPlans = next.scrumMeetingPlans.slice(0);
+
+    const scrumMeetingQuestions = [];
+    scrumMeetingQuestions.push({
+      question: t('지난 데일리 스크럼부터 지금까지 내가 완수한 것이 무엇인가'),
+      sortOrder: 1,
+    });
+
+    scrumMeetingQuestions.push({
+      question: t('다음 데일리 스크럼까지 내가 하기로 한 것이 무엇인가'),
+      sortOrder: 2,
+    });
+
+    scrumMeetingQuestions.push({
+      question: t('현재 장애가 되고 있는 것(곤란하고 어려운 것)이 무엇인가'),
+      sortOrder: 3,
+    });
+
+    const startTime = new Date();
+    startTime.setHours(10);
+    startTime.setMinutes(30);
+    startTime.setSeconds(0);
+    startTime.setMilliseconds(0);
+
+    const endTime = new Date();
+    endTime.setHours(11);
+    endTime.setMinutes(30);
+    endTime.setSeconds(0);
+    endTime.setMilliseconds(0);
+
+    scrumMeetingPlans.push({
+      CRUD: 'C',
+      name: '데일리 스크럼',
+      startTime: startTime.getTime(),
+      endTime: endTime.getTime(),
+      days: '1111100',
+      onHoliday: true,
+      useQuestion: true,
+      scrumMeetingQuestions,
+    });
+
+    next.scrumMeetingPlans = scrumMeetingPlans;
+    setSprint(next);
+  };
+
+  const addSprintDailySmallTalkMeeting = (nextSprint) => {
+    const next = nextSprint ? { ...nextSprint } : { ...sprint };
+    const smallTalkMeetingPlans = next.smallTalkMeetingPlans.slice(0);
+
+    const startTime = new Date();
+    startTime.setHours(13);
+    startTime.setMinutes(30);
+    startTime.setSeconds(0);
+    startTime.setMilliseconds(0);
+
+    const endTime = new Date();
+    endTime.setHours(14);
+    endTime.setMinutes(0);
+    endTime.setSeconds(0);
+    endTime.setMilliseconds(0);
+
+    smallTalkMeetingPlans.push({
+      CRUD: 'C',
+      name: '스몰톡 미팅',
+      startTime: startTime.getTime(),
+      endTime: endTime.getTime(),
+      days: '1111100',
+      onHoliday: false,
+      limitUserCount: 5,
+    });
+
+    next.smallTalkMeetingPlans = smallTalkMeetingPlans;
+    setSprint(next);
+  };
 
   const changeInfo = (key, value) => {
     const next = { ...sprint };
@@ -243,6 +319,14 @@ const EditSprint = ({
     }
 
     setSprint(next);
+
+    if (key === 'doDailySmallTalkMeeting' && value) {
+      addSprintDailySmallTalkMeeting(next);
+    }
+
+    if (key === 'doDailyScrumMeeting' && value) {
+      addSprintDailyMeeting(next);
+    }
   };
 
   const changeSprintDailyMeeting = (inx, key, value) => {
@@ -291,6 +375,10 @@ const EditSprint = ({
     } else {
       nextSprintDailyMeetings[inx].CRUD = 'D';
       next.scrumMeetingPlans = nextSprintDailyMeetings;
+    }
+
+    if (next.scrumMeetingPlans && next.scrumMeetingPlans.filter((d) => d.CRUD !== 'D').length < 1) {
+      next.doDailyScrumMeeting = false;
     }
 
     setSprint(next);
@@ -351,53 +439,6 @@ const EditSprint = ({
     setSprint(next);
   };
 
-  const addSprintDailyMeeting = () => {
-    const next = { ...sprint };
-    const scrumMeetingPlans = next.scrumMeetingPlans.slice(0);
-
-    const scrumMeetingQuestions = [];
-    scrumMeetingQuestions.push({
-      question: t('지난 데일리 스크럼부터 지금까지 내가 완수한 것이 무엇인가'),
-      sortOrder: 1,
-    });
-
-    scrumMeetingQuestions.push({
-      question: t('다음 데일리 스크럼까지 내가 하기로 한 것이 무엇인가'),
-      sortOrder: 2,
-    });
-
-    scrumMeetingQuestions.push({
-      question: t('현재 장애가 되고 있는 것(곤란하고 어려운 것)이 무엇인가'),
-      sortOrder: 3,
-    });
-
-    const startTime = new Date();
-    startTime.setHours(10);
-    startTime.setMinutes(30);
-    startTime.setSeconds(0);
-    startTime.setMilliseconds(0);
-
-    const endTime = new Date();
-    endTime.setHours(11);
-    endTime.setMinutes(30);
-    endTime.setSeconds(0);
-    endTime.setMilliseconds(0);
-
-    scrumMeetingPlans.push({
-      CRUD: 'C',
-      name: '데일리 스크럼',
-      startTime: startTime.getTime(),
-      endTime: endTime.getTime(),
-      days: '1111100',
-      onHoliday: true,
-      useQuestion: true,
-      scrumMeetingQuestions,
-    });
-
-    next.scrumMeetingPlans = scrumMeetingPlans;
-    setSprint(next);
-  };
-
   const removeSprintDailySmallTalkMeeting = (inx) => {
     const next = { ...sprint };
     const nextSprintDailySmallTalkMeetings = next.smallTalkMeetingPlans.slice(0);
@@ -408,6 +449,10 @@ const EditSprint = ({
     } else {
       nextSprintDailySmallTalkMeetings[inx].CRUD = 'D';
       next.smallTalkMeetingPlans = nextSprintDailySmallTalkMeetings;
+    }
+
+    if (next.smallTalkMeetingPlans && next.smallTalkMeetingPlans.filter((d) => d.CRUD !== 'D').length < 1) {
+      next.doDailySmallTalkMeeting = false;
     }
 
     setSprint(next);
@@ -446,36 +491,6 @@ const EditSprint = ({
     }
 
     next.smallTalkMeetingPlans = nextSprintDailySmallTalkMeetings;
-    setSprint(next);
-  };
-
-  const addSprintDailySmallTalkMeeting = () => {
-    const next = { ...sprint };
-    const smallTalkMeetingPlans = next.smallTalkMeetingPlans.slice(0);
-
-    const startTime = new Date();
-    startTime.setHours(13);
-    startTime.setMinutes(30);
-    startTime.setSeconds(0);
-    startTime.setMilliseconds(0);
-
-    const endTime = new Date();
-    endTime.setHours(14);
-    endTime.setMinutes(0);
-    endTime.setSeconds(0);
-    endTime.setMilliseconds(0);
-
-    smallTalkMeetingPlans.push({
-      CRUD: 'C',
-      name: '스몰톡 미팅',
-      startTime: startTime.getTime(),
-      endTime: endTime.getTime(),
-      days: '1111100',
-      onHoliday: false,
-      limitUserCount: 5,
-    });
-
-    next.smallTalkMeetingPlans = smallTalkMeetingPlans;
     setSprint(next);
   };
 
@@ -631,6 +646,9 @@ const EditSprint = ({
     return null;
   };
 
+  let scrumIndex = 0;
+  let smallTalkIndex = 0;
+
   return (
     <Page className="edit-sprint-wrapper">
       <PageTitle
@@ -751,12 +769,16 @@ const EditSprint = ({
             {sprint.doDailyScrumMeeting && (
               <Block className="sprint-daily-meetings">
                 {sprint.scrumMeetingPlans.map((scrumMeetingPlan, inx) => {
+                  if (scrumMeetingPlan.CRUD !== 'D') {
+                    scrumIndex += 1;
+                  }
+
                   return (
                     <DailyScrumMeeting
                       className={scrumMeetingPlan.CRUD === 'D' ? 'd-none' : ''}
                       key={inx}
                       edit
-                      no={inx + 1}
+                      no={scrumIndex}
                       scrumMeetingPlan={scrumMeetingPlan}
                       onRemove={() => {
                         removeSprintDailyMeeting(inx);
@@ -779,7 +801,14 @@ const EditSprint = ({
                 })}
                 <BlockRow>
                   <div className="flex-grow-1 text-center">
-                    <Button size="sm" color="white" outline onClick={addSprintDailyMeeting}>
+                    <Button
+                      size="sm"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        addSprintDailyMeeting();
+                      }}
+                    >
                       미팅 추가
                     </Button>
                   </div>
@@ -802,12 +831,16 @@ const EditSprint = ({
             {sprint.doDailySmallTalkMeeting && (
               <Block className="sprint-daily-meetings">
                 {sprint.smallTalkMeetingPlans.map((smallTalkMeetingPlan, inx) => {
+                  if (smallTalkMeetingPlan.CRUD !== 'D') {
+                    smallTalkIndex += 1;
+                  }
+
                   return (
                     <DailySmallTalkMeeting
                       className={smallTalkMeetingPlan.CRUD === 'D' ? 'd-none' : ''}
                       key={inx}
                       edit
-                      no={inx + 1}
+                      no={smallTalkIndex}
                       smallTalkMeetingPlan={smallTalkMeetingPlan}
                       onRemove={() => {
                         removeSprintDailySmallTalkMeeting(inx);
@@ -824,7 +857,14 @@ const EditSprint = ({
                 })}
                 <BlockRow>
                   <div className="flex-grow-1 text-center">
-                    <Button size="sm" color="white" outline onClick={addSprintDailySmallTalkMeeting}>
+                    <Button
+                      size="sm"
+                      color="white"
+                      outline
+                      onClick={() => {
+                        addSprintDailySmallTalkMeeting();
+                      }}
+                    >
                       미팅 추가
                     </Button>
                   </div>
@@ -873,21 +913,6 @@ const EditSprint = ({
                   </BlockRow>
                 </>
               )}
-            </Block>
-            <Block>
-              <BlockTitle>{t('참여 설정')}</BlockTitle>
-              <BlockRow>
-                <Label minWidth={labelMinWidth}>{t('자동 승인')}</Label>
-                <RadioButton
-                  disabled
-                  size="sm"
-                  items={JOIN_POLICIES}
-                  value={sprint.allowAutoJoin}
-                  onClick={(val) => {
-                    changeInfo('allowAutoJoin', val);
-                  }}
-                />
-              </BlockRow>
             </Block>
             <Block className="g-last-block">
               <BlockTitle>{t('멤버')}</BlockTitle>
