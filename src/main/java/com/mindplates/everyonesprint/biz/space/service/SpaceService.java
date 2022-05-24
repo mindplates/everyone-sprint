@@ -128,9 +128,6 @@ public class SpaceService {
         List<Project> spaceProjects = projectService.selectSpaceProjectList(space.getId());
 
         for (Project project : spaceProjects) {
-            for (Sprint sprint : project.getSprints()) {
-                sprintService.deleteSprintInfo(space.getCode(), project.getId(), sprint.getId());
-            }
             projectService.deleteProjectInfo(space.getCode(), project);
         }
         spaceRepository.delete(space);
