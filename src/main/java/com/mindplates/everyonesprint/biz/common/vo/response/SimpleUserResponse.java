@@ -15,4 +15,6 @@ public class SimpleUserResponse {
     private String alias;
     private String imageType;
     private String imageData;
+    private String tags;
+
 }

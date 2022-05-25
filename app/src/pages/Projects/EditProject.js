@@ -338,6 +338,7 @@ const EditProject = ({
             <BlockTitle>{t('멤버')}</BlockTitle>
             <div className="flex-grow-1">
               <UserList
+                useTags
                 project={project}
                 users={project.users}
                 onChange={(val) => changeInfo('users', val)}

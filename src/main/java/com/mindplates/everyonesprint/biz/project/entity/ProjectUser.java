@@ -1,5 +1,6 @@
 package com.mindplates.everyonesprint.biz.project.entity;
 
+import com.mindplates.everyonesprint.biz.common.constants.ColumnsDef;
 import com.mindplates.everyonesprint.biz.user.entity.User;
 import com.mindplates.everyonesprint.common.code.RoleCode;
 import com.mindplates.everyonesprint.common.entity.CommonEntity;
@@ -32,6 +33,9 @@ public class ProjectUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_PROJECT__USER"))
     private Project project;
+
+    @Column(name = "tags", length = ColumnsDef.TEXT)
+    private String tags;
 
     @Transient
     private String CRUD;
