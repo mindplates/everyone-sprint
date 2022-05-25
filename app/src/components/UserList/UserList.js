@@ -8,7 +8,7 @@ import UserSelector from '@/components/UserList/UserSelector';
 import withLoader from '@/components/Common/withLoader';
 import './UserList.scss';
 
-const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type, icon, showAdmin, target, targetId }) => {
+const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type, icon, showAdmin, target, targetId, useTags}) => {
   const [popup, setPopup] = useState(false);
 
   const changeUser = (targetIndex, field, value) => {
@@ -31,6 +31,18 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
     onChange(next);
   };
 
+  const changeUserTag = (targetIndex, tags) => {
+    const next = users.slice();
+    const targetUser = next[targetIndex];
+
+    targetUser.tags = String(tags);
+    if (targetUser.CRUD === 'R') {
+      targetUser.CRUD = 'U';
+    }
+
+    onChange(next);
+  };
+
   return (
     <div className={`user-list-wrapper ${className} type-${type}`}>
       {!editable.member && users.length < 1 && (
@@ -44,7 +56,7 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
             if (type === 'card') {
               return (
                 <div key={index} className="user-card">
-                  <UserCard icon={icon} userIndex={index} user={user} editable={editable} onChange={changeUser} showAdmin={showAdmin} />
+                  <UserCard icon={icon} userIndex={index} user={user} editable={editable} onChange={changeUser} showAdmin={showAdmin} useTags={useTags} onChangeTag={changeUserTag} />
                 </div>
               );
             }
@@ -61,6 +73,7 @@ const UserList = ({ className, t, users, editable, onChange, onChangeUsers, type
                 <UserCard
                   icon={icon}
                   addCard
+                  useTags={useTags}
                   onClick={() => {
                     setPopup(true);
                   }}
@@ -118,6 +131,7 @@ UserList.defaultProps = {
   icon: true,
   showAdmin: false,
   target: 'space',
+  useTags : false,
 };
 
 UserList.propTypes = {
@@ -136,4 +150,5 @@ UserList.propTypes = {
   showAdmin: PropTypes.bool,
   target: PropTypes.string,
   targetId: PropTypes.number,
+  useTags : PropTypes.bool,
 };

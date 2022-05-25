@@ -91,7 +91,7 @@ class Input extends React.Component {
   onKeyDown = (e) => {
     if (e.keyCode === 13) {
       const { onEnter } = this.props;
-      if (onEnter) onEnter();
+      if (onEnter) onEnter(e);
     }
 
     if (e.keyCode === 27) {

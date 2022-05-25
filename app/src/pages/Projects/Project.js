@@ -175,6 +175,7 @@ const Project = ({
             <BlockTitle>{t('멤버')}</BlockTitle>
             <div className="flex-grow-1">
               <UserList
+                useTags
                 showAdmin
                 users={project.users}
                 editable={{

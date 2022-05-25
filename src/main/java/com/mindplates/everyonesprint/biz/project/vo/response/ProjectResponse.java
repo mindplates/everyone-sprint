@@ -58,6 +58,7 @@ public class ProjectResponse {
                         .alias(projectUser.getUser().getAlias())
                         .imageType(projectUser.getUser().getImageType())
                         .imageData(projectUser.getUser().getImageData())
+                        .tags(projectUser.getTags())
                         .build()).collect(Collectors.toList());
 
         if (project.getSprints() != null) {

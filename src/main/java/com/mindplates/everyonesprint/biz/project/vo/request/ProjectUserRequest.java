@@ -11,4 +11,5 @@ public class ProjectUserRequest {
     private Long userId;
     private String CRUD;
     private RoleCode role;
+    private String tags;
 }
