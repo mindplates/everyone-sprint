@@ -62,7 +62,7 @@ public class DailyScrumService {
         Collections.sort(list);
 
         meeting.setCurrentMaxOrder(counter);
-        meeting.setDailyScrumStarted(list.stream().anyMatch(Participant::getIsCurrentSpeaker));
+        meeting.setDailyScrumStarted(list.stream().anyMatch((participant) -> participant != null && participant.getIsCurrentSpeaker()));
         meetingService.updateMeetingInfo(meeting, userSession);
 
         return list;
@@ -110,7 +110,7 @@ public class DailyScrumService {
             }
         }
 
-        if (list.stream().noneMatch(Participant::getIsCurrentSpeaker)) {
+        if (list.stream().noneMatch((participant) -> participant != null && participant.getIsCurrentSpeaker())) {
             meeting.setDailyScrumStarted(false);
             meetingService.updateMeetingInfo(meeting, userSession);
         }
