@@ -15,6 +15,7 @@ import { UserPropTypes } from '@/proptypes';
 import mediaUtil from '@/utils/mediaUtil';
 import commonUtil from '@/utils/commonUtil';
 import './ConferenceDeviceConfig.scss';
+import storage from '@/utils/storage';
 
 const browser = detect();
 
@@ -31,17 +32,23 @@ class ConferenceDeviceConfig extends React.Component {
   constructor(props) {
     super(props);
 
+    const lastPixInfoString = storage.getItem('conference', 'lastPixInfo');
+    let pixInfo = {
+      enabled: false,
+      type: 'effect',
+      key: 'none',
+      value: null,
+    };
+    if (lastPixInfoString) {
+      pixInfo = JSON.parse(lastPixInfoString);
+    }
+
     this.state = {
       openConfigPopup: false,
       openCapabilities: false,
       openPixInfo: false,
       capabilities: [],
-      pixInfo: {
-        enabled: false,
-        type: 'effect',
-        key: 'none',
-        value: null,
-      },
+      pixInfo,
       size: {
         width: 640,
         height: 480,
@@ -362,7 +369,7 @@ class ConferenceDeviceConfig extends React.Component {
     this.setState({
       pixInfo: nextPixInfo,
     });
-
+    storage.setItem('conference', 'lastPixInfo', JSON.stringify(nextPixInfo));
     setPixInfo(nextPixInfo);
   };
 
